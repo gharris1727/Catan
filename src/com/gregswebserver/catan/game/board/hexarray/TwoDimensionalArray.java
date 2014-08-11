@@ -4,12 +4,13 @@ import java.util.*;
 
 /**
  * Created by Greg on 8/9/2014.
- * Management class for a 2d-array
+ * Management class for a 2d-hexArray
  */
 public class TwoDimensionalArray<T> extends AbstractCollection<T> {
 
     private final int MAX_SIZE = Integer.MAX_VALUE - 8;
     private int sizeX, sizeY;
+    private int size;
     private Object[] data;
 
     public TwoDimensionalArray(int x, int y) {
@@ -19,6 +20,16 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         sizeX = x;
         sizeY = y;
         data = new Object[x * y];
+    }
+
+    private boolean set(int x, int y, T o) {
+        rangeCheck(x, y);
+        data[x + y * sizeX] = o;
+        return true;
+    }
+
+    public boolean set(Coordinate c, T o) {
+        return set(c.getX(), c.getY(), o);
     }
 
     @SuppressWarnings("unchecked")
@@ -34,7 +45,8 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
     public T remove(int x, int y) {
         rangeCheck(x, y);
         T obj = get(x, y);
-        data[x + y * sizeX] = null;
+        set(x, y, null);
+        if (obj != null) size--;
         return obj;
     }
 
@@ -55,8 +67,8 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         return coordinates;
     }
 
-    public ArrayList<Coordinate> getEmptyCoordinates() {
-        ArrayList<Coordinate> coordinates = new ArrayList<>();
+    public HashSet<Coordinate> getEmptyCoordinates() {
+        HashSet<Coordinate> coordinates = new HashSet<>();
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
                 if (get(x, y) == null) {
@@ -67,8 +79,8 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         return coordinates;
     }
 
-    public ArrayList<Coordinate> getAllCoordinates() {
-        ArrayList<Coordinate> coordinates = new ArrayList<>();
+    public HashSet<Coordinate> getAllCoordinates() {
+        HashSet<Coordinate> coordinates = new HashSet<>();
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
                 coordinates.add(new Coordinate(x, y));
@@ -131,6 +143,6 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
     }
 
     public int size() {
-        return sizeX * sizeY;
+        return size;
     }
 }

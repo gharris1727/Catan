@@ -22,6 +22,10 @@ public enum Terrain {
         this.resource = resource;
     }
 
+    public static Terrain random() {
+        return values()[(int) (Math.random() * 5)]; //Only choose from the first five terrain options.
+    }
+
     public Resource getResource() {
         return resource;
     }

@@ -4,7 +4,7 @@ import com.gregswebserver.catan.game.player.Player;
 
 /**
  * Created by Greg on 8/8/2014.
- * Subclass of Path, rests on the edges of tiles.
+ * Subclass of Path, rests on the edges of hexagons.
  */
 public class Road extends Path {
 

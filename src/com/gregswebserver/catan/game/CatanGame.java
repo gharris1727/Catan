@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.game;
 
-import com.gregswebserver.catan.game.board.hexarray.HexagonalArray;
+import com.gregswebserver.catan.game.board.GameBoard;
 import com.gregswebserver.catan.game.gameplay.GameAction;
 import com.gregswebserver.catan.game.gameplay.GameType;
 import com.gregswebserver.catan.game.player.Player;
@@ -13,11 +13,11 @@ import java.util.ArrayList;
  */
 public class CatanGame {
 
-    private HexagonalArray board;
+    private GameBoard board;
     private ArrayList<GameAction> history;
     private ArrayList<Player> players;
 
     public CatanGame(GameType type) {
-        type.init(board);
+        type.LoadSettingsTo(board);
     }
 }

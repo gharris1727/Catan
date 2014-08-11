@@ -5,7 +5,7 @@ import com.gregswebserver.catan.game.player.PlayerOwned;
 
 /**
  * Created by Greg on 8/8/2014.
- * Superclass of all object placed on the edges of tiles, connecting vertexes.
+ * Superclass of all object placed on the edges of hexagons, connecting vertexes.
  */
 public abstract class Path extends PlayerOwned {
 

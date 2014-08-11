@@ -1,10 +1,12 @@
 package com.gregswebserver.catan.game.board.hexarray;
 
+import java.io.Serializable;
+
 /**
  * Created by Greg on 8/9/2014.
  * Coordinate class for talking to the Dimensional Array.
  */
-public class Coordinate {
+public class Coordinate implements Serializable {
 
     private int x, y;
 
@@ -14,7 +16,22 @@ public class Coordinate {
     }
 
     public Coordinate(String input) {
-
+        String[] data = input.split("[^\\d-]"); //Splits the string where it finds breaks in the numbers
+        boolean foundOne = false;
+        for (String string : data) {
+            try {
+                int num = Integer.parseInt(string);
+                if (foundOne) {
+                    x = num;
+                    return;
+                } else {
+                    y = num;
+                    foundOne = true;
+                }
+            } catch (NumberFormatException e) {
+                //Something went wrong and the parser killed itself.
+            }
+        }
     }
 
     public Coordinate(int x, int y) {
@@ -39,7 +56,10 @@ public class Coordinate {
     }
 
     public int hashCode() {
-        return toString().hashCode();
+        //Using Szudzik's Formula.
+        int A = x >= 0 ? 2 * x : -2 * x - 1;
+        int B = y >= 0 ? 2 * y : -2 * y - 1;
+        return A >= B ? A * A + A + B : A + B * B;
     }
 
     public String toString() {

@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.game.board.tiles;
 
 import com.gregswebserver.catan.game.cards.Resource;
+import com.gregswebserver.catan.game.gameplay.DiceRoll;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -9,12 +10,12 @@ import com.gregswebserver.catan.game.cards.Resource;
 public class Tile {
 
     private Terrain terrain;
-    private int diceNumber;
+    private DiceRoll diceRoll;
     private boolean robber;
 
-    public Tile(Terrain terrain, int diceNumber) {
+    public Tile(Terrain terrain, DiceRoll diceRoll) {
         this.terrain = terrain;
-        this.diceNumber = diceNumber;
+        this.diceRoll = diceRoll;
         this.robber = false;
     }
 
@@ -31,7 +32,7 @@ public class Tile {
         return terrain.getResource();
     }
 
-    public int getDiceNumber() {
-        return diceNumber;
+    public DiceRoll getDiceRoll() {
+        return diceRoll;
     }
 }

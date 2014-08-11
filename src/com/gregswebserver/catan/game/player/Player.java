@@ -6,5 +6,10 @@ package com.gregswebserver.catan.game.player;
  */
 public class Player {
 
+    private String name;
 
+    public Player(String name) {
+
+
+    }
 }
