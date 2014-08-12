@@ -48,7 +48,7 @@ public class HexagonalArray<X, Y, Z> {
             try {
                 out.add(getSpaceCoordinate(c, d));
             } catch (Exception e) {
-                //Any errors indicate that either the direction was invalid
+                //Any log indicate that either the direction was invalid
                 //Or was trying to reference the edge of the map.
             }
         }
@@ -61,7 +61,7 @@ public class HexagonalArray<X, Y, Z> {
             try {
                 out.add(getEdgeCoordinate(c, d));
             } catch (Exception e) {
-                //Any errors indicate that either the direction was invalid
+                //Any log indicate that either the direction was invalid
                 //Or was trying to reference the edge of the map.
             }
         }
@@ -74,7 +74,7 @@ public class HexagonalArray<X, Y, Z> {
             try {
                 out.add(getVertexCoordinate(c, d));
             } catch (Exception e) {
-                //Any errors indicate that either the direction was invalid
+                //Any log indicate that either the direction was invalid
                 //Or was trying to reference the edge of the map.
             }
         }

@@ -8,6 +8,7 @@ import com.gregswebserver.catan.game.board.paths.OceanPath;
 import com.gregswebserver.catan.game.board.paths.Path;
 import com.gregswebserver.catan.game.board.tiles.Terrain;
 import com.gregswebserver.catan.game.board.tiles.Tile;
+import com.gregswebserver.catan.game.gameplay.DiceGenerator;
 import com.gregswebserver.catan.game.gameplay.DiceRoll;
 
 import java.util.HashSet;

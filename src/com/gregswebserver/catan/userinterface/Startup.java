@@ -1,38 +1,31 @@
 package com.gregswebserver.catan.userinterface;
 
-import com.gregswebserver.catan.debug.Debug;
+import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.log.LogLevel;
+import com.gregswebserver.catan.log.Logger;
+import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
 
 /**
  * Created by Greg on 8/10/2014.
- * Splash screen to allow either starting a server or logging into one.
+ * Splash screen to allow either starting a server or log into one.
  */
-public class Startup extends JFrame {
+public class Startup extends GenericWindow {
+
     private JPanel contentPane;
     private JTextField[] fields = new JTextField[TextField.values().length];
     private JButton[] buttons = new JButton[ActionButton.values().length];
 
-    public Startup() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-        }
-
-        setResizable(false);
-        setTitle("Settlers of Catan - Startup");
-
-        Dimension windowSize = new Dimension(300, 500);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(windowSize.width, windowSize.height);
-        setLocationRelativeTo(null);
+    public Startup(Logger logger) {
+        super("Settlers of Catan - Startup", new Dimension(300, 500), false, logger);
         contentPane = new JPanel();
-        contentPane.setLayout(null);
         setContentPane(contentPane);
+        setLayout(null);
 
         int i = 0;
         for (TextField tf : TextField.values()) {
@@ -66,29 +59,59 @@ public class Startup extends JFrame {
         buttons[0].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    startClient(Integer.parseInt(fields[3].getText()), fields[2].getText(), fields[0].getText(), fields[1].getText());
+                    startClient(getHost(), getPort(), getUsername(), getPassword());
                 } catch (Exception ex) {
-                    Debug.printStack(ex);
+                    logger.log("Error starting client", ex, LogLevel.ERROR);
                 }
             }
         });
         buttons[1].addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    startServer(Integer.parseInt(fields[3].getText()), fields[1].getText());
+                    startServer(getPort(), getPassword());
                 } catch (Exception ex) {
-                    Debug.printStack(ex);
+                    logger.log("Error while starting server", ex, LogLevel.ERROR);
                 }
             }
         });
+        setVisible(true);
     }
 
-    private void startClient(int port, String hostname, String username, String password) {
-        dispose();
+    private int getPort() {
+        try {
+            return Integer.parseInt(fields[3].getText());
+        } catch (Exception e) {
+            logger.log("Invalid port entered", e, LogLevel.POPUP);
+        }
+        return 0;
+    }
+
+    private InetAddress getHost() {
+        try {
+            return InetAddress.getByName(fields[2].getText());
+        } catch (Exception e) {
+            logger.log("Hostname Field Error", e, LogLevel.POPUP);
+        }
+        return null;
+        //TODO: better error handling
+    }
+
+    private String getPassword() {
+        return fields[1].getText();
+    }
+
+    private String getUsername() {
+        return fields[0].getText();
+    }
+
+    private void startClient(InetAddress host, int port, String username, String password) {
+        Client client = new Client();
+        client.connect(host, port);
+        client.login(username, password);
     }
 
     private void startServer(int port, String password) {
-        dispose();
+        Server server = new Server(port);
     }
 
     private enum TextField {
