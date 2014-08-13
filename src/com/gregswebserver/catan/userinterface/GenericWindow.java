@@ -5,6 +5,8 @@ import com.gregswebserver.catan.log.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -27,5 +29,14 @@ public abstract class GenericWindow extends JFrame {
         setResizable(resizable);
         if (resizable) setMinimumSize(d);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                onClose();
+                super.windowClosing(e);
+            }
+        });
     }
+
+    // Gracefully close any pertinent threads when the window is closed.
+    protected abstract void onClose();
 }

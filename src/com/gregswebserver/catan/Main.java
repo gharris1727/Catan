@@ -7,7 +7,7 @@ import java.awt.*;
 
 /**
  * Created by Greg on 8/8/2014.
- * Main game file that contains the main(String[] args) to run the program from an executable jar.
+ * Main game file that contains the main(String[] args) to execute the program from an executable jar.
  */
 public class Main {
 

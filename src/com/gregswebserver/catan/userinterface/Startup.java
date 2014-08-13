@@ -106,12 +106,13 @@ public class Startup extends GenericWindow {
 
     private void startClient(InetAddress host, int port, String username, String password) {
         Client client = new Client();
-        client.connect(host, port);
-        client.login(username, password);
     }
 
     private void startServer(int port, String password) {
-        Server server = new Server(port);
+        Server server = new Server();
+    }
+
+    protected void onClose() {
     }
 
     private enum TextField {

@@ -13,7 +13,7 @@ import java.net.Socket;
  * Created by Greg on 8/11/2014.
  * Generic connection class with buffers and IO functions built in.
  */
-public abstract class NetworkConnection {
+public abstract class NetConnection {
 
     private InetAddress remote;
     private int port;
@@ -24,20 +24,21 @@ public abstract class NetworkConnection {
     private boolean open;
     private Logger logger;
 
-    public NetworkConnection(InetAddress remote, int port) {
-        this();
+    public NetConnection(InetAddress remote, int port, Logger logger) {
+        this(logger);
         this.remote = remote;
         this.port = port;
     }
 
-    public NetworkConnection(Socket socket, Logger logger) {
-        this();
+    public NetConnection(Socket socket, Logger logger) {
+        this(logger);
         this.remote = socket.getInetAddress();
         this.port = socket.getPort();
         this.socket = socket;
     }
 
-    private NetworkConnection() {
+    private NetConnection(Logger logger) {
+        this.logger = logger;
         //Thread to open object buffers for transmitting data.
         connect = new Thread("Connect") {
             public void run() {
@@ -56,12 +57,12 @@ public abstract class NetworkConnection {
                 }
             }
         };
-        //Thread to accept incoming objects and send them to the process implementation.
+        //Thread to accept incoming objects and sendEvent them to the process implementation.
         receive = new Thread("Receive") {
             public void run() {
                 while (open) {
                     try {
-                        receive(in.readObject());
+                        getEvent((NetEvent) in.readObject());
                     } catch (Exception e) {
                         logger.log("Receive Failure", e, LogLevel.WARN);
                     }
@@ -91,10 +92,10 @@ public abstract class NetworkConnection {
         disconnect.start();
     }
 
-    public void send(Object o) {
+    public void sendEvent(NetEvent netEvent) {
         try {
             if (!open) throw new IOException("Connection is closed");
-            out.writeObject(o);
+            out.writeObject(netEvent);
         } catch (Exception e) {
             logger.log("Send Failure", e, LogLevel.WARN);
         }
@@ -104,5 +105,5 @@ public abstract class NetworkConnection {
         return open;
     }
 
-    public abstract void receive(Object o);
+    public abstract void getEvent(NetEvent e);
 }
