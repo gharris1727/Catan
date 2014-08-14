@@ -1,16 +1,14 @@
 package com.gregswebserver.catan.client.chat;
 
-import com.gregswebserver.catan.event.EventQueueThread;
+import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.log.Logger;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by Greg on 8/13/2014.
- * Chat system to keep a local record of chat messages received by the client.
+ * Thread to process a queue of ChatEvents that are coming from the Client.
+ * Stores chat data in a ChatLog object, and can give that data to the RenderThread.
  */
-public class ChatThread extends EventQueueThread<ChatEvent> {
+public class ChatThread extends QueuedInputThread<ChatEvent> {
 
     private ChatLog chatLog;
 
@@ -19,15 +17,11 @@ public class ChatThread extends EventQueueThread<ChatEvent> {
         chatLog = new ChatLog();
     }
 
+    //Process the ChatEvent queue and add messages to the ChatLog.
     public void execute() {
         ChatEvent event = getEvent(true);
-        String timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
-        String username = event.getOrigin().username;
-        String message = event.getMessage();
-        chatLog.addMessage("<" + timestamp + "> \"" + username + "\" " + message);
+        chatLog.addMessage(event.getMessage());
     }
 
-    public ChatLog getChatLog() {
-        return chatLog;
-    }
+    //TODO: add method of retrieving the ChatLog data.
 }

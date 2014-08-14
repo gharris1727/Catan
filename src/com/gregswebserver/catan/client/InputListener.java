@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.client.input;
+package com.gregswebserver.catan.client;
 
-import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.client.renderer.Hitbox;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -9,12 +9,16 @@ import java.awt.event.MouseListener;
 
 /**
  * Created by Greg on 8/12/2014.
- * Dispatcher to take in keyboard/mouse events and dispatch them to the client as actions.
+ * Dispatcher to take in keyboard/mouse events and dispatch them to the client as GenericEvents.
+ * Generates GameEvents, ChatEvents, and ClientEvents, based on hitboxes.
+ * Added as a listener to the ClientWindow.
  */
 public class InputListener implements KeyListener, MouseListener {
 
-    public InputListener(Client client) {
+    private Hitbox hitbox;
 
+    public InputListener(Client client) {
+        //TODO: implement user input using hitboxes.
     }
 
     @Override
@@ -55,5 +59,9 @@ public class InputListener implements KeyListener, MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    public void setHitbox(Hitbox hitbox) {
+        this.hitbox = hitbox;
     }
 }

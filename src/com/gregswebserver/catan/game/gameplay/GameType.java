@@ -1,12 +1,10 @@
 package com.gregswebserver.catan.game.gameplay;
 
-import com.gregswebserver.catan.config.Parser;
 import com.gregswebserver.catan.game.board.GameBoard;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.game.gameplay.generator.Generator;
-import com.gregswebserver.catan.game.gameplay.generator.RandomGenerator;
+import com.gregswebserver.catan.game.gameplay.generator.BoardGenerator;
+import com.gregswebserver.catan.game.gameplay.generator.RandomBoardGenerator;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 /**
@@ -15,68 +13,65 @@ import java.util.HashSet;
  */
 public class GameType {
 
+    public static final GameType BASE_GAME = new GameType("Settlers of Catan Base");
+
     private String name;
 
     private HashSet<Coordinate> resourceTiles;
-    private HashSet<Coordinate> tradeVertices;
-    private Coordinate boardSize;
-    private Generator generator;
+    private HashSet<Coordinate> tradingPosts;
+    private int sizeX, sizeY;
+    private BoardGenerator boardGenerator;
     private int players;
 
-    GameType(String fileName) {
-        try {
-            Parser parser = new Parser(fileName);
-            String data;
-            while ((data = parser.readData()) != null) {
-                switch (parser.getActiveTag()) {
-                    case Comment:
-                        //Ignore
-                        break;
-                    case Tile:
-                        //Add a resource tile to the game board.
-                        Coordinate tile = new Coordinate(data);
-                        resourceTiles.add(tile);
-                        break;
-                    case Name:
-                        //Store the name of the GameType
-                        name = data;
-                        break;
-                    case Size:
-                        //Store the size of the game board.
-                        Coordinate size = new Coordinate(data);
-                        boardSize = size;
-                        break;
-                    case Trade:
-                        Coordinate trade = new Coordinate(data);
-                        tradeVertices.add(trade);
-                        break;
-                    case Generator:
-                        switch (data) {
-                            case "Random":
-                                generator = new RandomGenerator();
-                                break;
-                            case "Fair":
-                                //TODO: add more generators
-                                break;
-                        }
-                        break;
-                    case Players:
-                        players = Integer.parseInt(data);
-                        break;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public GameType(String name) {
+        this.name = name;
     }
 
-    public void save(String fileName) {
-        //TODO: save custom game modes to file
+    public static void init() {
+        BASE_GAME.size(7, 7);
+        BASE_GAME.post(0, 3);
+        BASE_GAME.post(1, 1).tile(1, 3).post(1, 5);
+        BASE_GAME.tile(2, 1).tile(2, 2).tile(2, 3).tile(2, 4).tile(2, 5);
+        BASE_GAME.post(3, 0).tile(3, 1).tile(3, 2).tile(3, 3).tile(3, 4).tile(3, 5).post(3, 6);
+        BASE_GAME.tile(4, 1).tile(4, 2).tile(4, 3).tile(4, 4).tile(4, 5);
+        BASE_GAME.post(5, 0).tile(5, 2).tile(5, 3).tile(5, 4).post(5, 5);
+        BASE_GAME.post(6, 2).post(6, 4);
+        BASE_GAME.gen(new RandomBoardGenerator());
+    }
+
+    //Add a resource tile.
+    public GameType tile(int x, int y) {
+        resourceTiles.add(new Coordinate(x, y));
+        return this;
+    }
+
+    //Add a trading post.
+    public GameType post(int x, int y) {
+        tradingPosts.add(new Coordinate(x, y));
+        return this;
+    }
+
+    //Set the board size.
+    public GameType size(int x, int y) {
+        sizeX = x;
+        sizeY = y;
+        return this;
+    }
+
+    //Set the number of players.
+    public GameType players(int n) {
+        players = n;
+        return this;
+    }
+
+    //Set the generator logic.
+    public GameType gen(BoardGenerator g) {
+        boardGenerator = g;
+        return this;
     }
 
     public void LoadSettingsTo(GameBoard board) {
-        board.init(boardSize.getX(), boardSize.getY());
-        generator.run(board.hexArray, resourceTiles);
-
+        board.init(sizeX, sizeY, players);
+        boardGenerator.run(board.hexArray, resourceTiles, tradingPosts);
     }
 }

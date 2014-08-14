@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.server;
 
-import com.gregswebserver.catan.log.Logger;
 import com.gregswebserver.catan.server.console.Console;
 import com.gregswebserver.catan.userinterface.GenericWindow;
 
@@ -14,11 +13,12 @@ public class ServerWindow extends GenericWindow {
 
     Console console;
 
-    public ServerWindow(Logger logger) {
-        super("Settlers of Catan - Server", new Dimension(800, 600), true, logger);
+    public ServerWindow(Server server) {
+        super("Settlers of Catan - Server", new Dimension(800, 600), true, server.logger);
 
         setLayout(new BorderLayout());
         console = new Console(logger);
+        console.setServer(server);
         getContentPane().add(console);
         logger.addListener(console);
         setVisible(true);

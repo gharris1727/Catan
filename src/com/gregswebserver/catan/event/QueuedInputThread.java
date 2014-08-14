@@ -7,16 +7,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Greg on 8/12/2014.
- * Generic for a class that has an event queue on the frontend accepting GenericEvents, and a thread to process and dispatch them.
+ * Generic for a class that has an event queue on the frontend accepting events, and a thread to process and dispatch them.
+ * Calls the execute() function repeatedly, but does not necessarily have to block for events.
+ * execute() will continue looping until stop() is called and running is set to false.
  */
-public abstract class EventQueueThread<T> {
+public abstract class QueuedInputThread<T> {
 
     public Logger logger;
     protected LinkedBlockingQueue<T> eventQueue;
     protected Thread run;
     protected boolean running;
 
-    public EventQueueThread(Logger logger) {
+    public QueuedInputThread(Logger logger) {
         this.logger = logger;
         eventQueue = new LinkedBlockingQueue<>();
         run = new Thread(this.getClass().getName()) {
@@ -28,15 +30,18 @@ public abstract class EventQueueThread<T> {
         };
     }
 
+    //Starts the queue processing thread.
     public void start() {
-        run.start();
         running = true;
+        run.start();
     }
 
+    //Stops the queue processing thread.
     public void stop() {
         running = false;
     }
 
+    //Adds an object to the processing queue.
     public void addEvent(T event) {
         try {
             eventQueue.put(event);
@@ -45,6 +50,7 @@ public abstract class EventQueueThread<T> {
         }
     }
 
+    //pulls an object from the queue, blocks if argument is true.
     protected T getEvent(boolean block) {
         if (!block) return eventQueue.poll();
         try {
@@ -55,6 +61,7 @@ public abstract class EventQueueThread<T> {
         }
     }
 
+    //Processing function that is called repeatedly.
     protected abstract void execute();
 
 }

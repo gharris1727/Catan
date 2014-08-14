@@ -13,12 +13,14 @@ public class ServerConnection extends NetConnection {
     private Server server;
 
     public ServerConnection(Socket socket, Server server) {
-        super(socket, server.logger);
+        super(server.logger);
         this.server = server;
+        setSocket(socket);
+        connect();
     }
 
-    public void getEvent(NetEvent e) {
-        server.addEvent(e);
+    public void process(NetEvent e) {
+        server.addEvent(e.getEvent());
     }
 
 }

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.game.board.tiles;
 
-import com.gregswebserver.catan.game.cards.Resource;
 import com.gregswebserver.catan.game.gameplay.DiceRoll;
+import com.gregswebserver.catan.game.gameplay.enums.Resource;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -9,14 +9,21 @@ import com.gregswebserver.catan.game.gameplay.DiceRoll;
  */
 public class Tile {
 
-    private Terrain terrain;
     private DiceRoll diceRoll;
+    private Terrain terrain;
     private boolean robber;
 
-    public Tile(Terrain terrain, DiceRoll diceRoll) {
+    public Tile(Terrain terrain) {
         this.terrain = terrain;
-        this.diceRoll = diceRoll;
         this.robber = false;
+    }
+
+    public DiceRoll getDiceRoll() {
+        return diceRoll;
+    }
+
+    public void setDiceRoll(DiceRoll diceRoll) {
+        this.diceRoll = diceRoll;
     }
 
     public void placeRobber() {
@@ -27,12 +34,12 @@ public class Tile {
         robber = false;
     }
 
-    public Resource getResource() {
-        if (robber) return null;
-        return terrain.getResource();
+    public boolean hasRobber() {
+        return robber;
     }
 
-    public DiceRoll getDiceRoll() {
-        return diceRoll;
+    public Resource getResource() {
+        if (robber || terrain == null) return null;
+        return terrain.resource;
     }
 }

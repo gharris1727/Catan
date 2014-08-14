@@ -1,32 +1,32 @@
 package com.gregswebserver.catan.game.board.tiles;
 
-import com.gregswebserver.catan.game.cards.Resource;
+import com.gregswebserver.catan.game.gameplay.enums.Resource;
+import com.gregswebserver.catan.graphics.HexagonalSprite;
 
 /**
  * Created by Greg on 8/9/2014.
- * Enum containing terrain names and resources earned.
+ * Enum containing terrain textures and resources.
+ * Will be used to confer textures for rendering.
  */
 public enum Terrain {
 
-    Hill(Resource.Brick),
-    Forest(Resource.Lumber),
-    Pasture(Resource.Wool),
-    Mountain(Resource.Ore),
-    Field(Resource.Grain),
-    Desert(null),
-    Ocean(null);
+    //TODO: add all of the hexagonal sprites.
+    Hill(null, Resource.Brick),
+    Forest(null, Resource.Lumber),
+    Pasture(null, Resource.Wool),
+    Mountain(null, Resource.Ore),
+    Field(null, Resource.Grain),
+    Desert(null, null),
+    Ocean(null, null),
+    SingleBeach(null, null),
+    DoubleBeach(null, null);
 
-    private Resource resource;
+    public final HexagonalSprite sprite;
+    public final Resource resource;
 
-    Terrain(Resource resource) {
+    Terrain(HexagonalSprite sprite, Resource resource) {
+        this.sprite = sprite;
         this.resource = resource;
     }
 
-    public static Terrain random() {
-        return values()[(int) (Math.random() * 5)]; //Only choose from the first five terrain options.
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
 }

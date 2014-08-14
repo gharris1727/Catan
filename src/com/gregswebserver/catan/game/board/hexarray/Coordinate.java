@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 /**
  * Created by Greg on 8/9/2014.
- * Coordinate class for talking to the Dimensional Array.
+ * Coordinate class for referring to object locations.
+ * Used in HexagonalArray and TwoDimensionalArray classes.
  */
 public class Coordinate implements Serializable {
 

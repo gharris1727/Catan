@@ -1,10 +1,12 @@
-package com.gregswebserver.catan.game.cards;
+package com.gregswebserver.catan.game.gameplay.enums;
+
+import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
 
 /**
  * Created by Greg on 8/9/2014.
  * Enum for storing the different resources.
  */
-public enum Resource {
+public enum Resource implements Tradeable {
 
     Brick("Clay"),
     Lumber("Logs"),

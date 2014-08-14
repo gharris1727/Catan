@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.game.cards;
+package com.gregswebserver.catan.game.gameplay.enums;
 
 /**
  * Created by Greg on 8/9/2014.

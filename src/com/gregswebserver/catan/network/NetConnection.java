@@ -1,12 +1,12 @@
 package com.gregswebserver.catan.network;
 
+import com.gregswebserver.catan.event.ExternalEvent;
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.log.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -15,8 +15,7 @@ import java.net.Socket;
  */
 public abstract class NetConnection {
 
-    private InetAddress remote;
-    private int port;
+    private NetID netID;
     private Socket socket;
     private Thread connect, disconnect, receive;
     private ObjectInputStream in;
@@ -24,20 +23,7 @@ public abstract class NetConnection {
     private boolean open;
     private Logger logger;
 
-    public NetConnection(InetAddress remote, int port, Logger logger) {
-        this(logger);
-        this.remote = remote;
-        this.port = port;
-    }
-
-    public NetConnection(Socket socket, Logger logger) {
-        this(logger);
-        this.remote = socket.getInetAddress();
-        this.port = socket.getPort();
-        this.socket = socket;
-    }
-
-    private NetConnection(Logger logger) {
+    public NetConnection(Logger logger) {
         this.logger = logger;
         //Thread to open object buffers for transmitting data.
         connect = new Thread("Connect") {
@@ -45,7 +31,7 @@ public abstract class NetConnection {
                 logger.log("Connecting...", LogLevel.INFO);
                 try {
                     if (socket == null) {
-                        socket = new Socket(remote, port);
+                        socket = new Socket(netID.address, netID.port);
                     }
                     out = new ObjectOutputStream(socket.getOutputStream());
                     out.flush();
@@ -62,7 +48,7 @@ public abstract class NetConnection {
             public void run() {
                 while (open) {
                     try {
-                        getEvent((NetEvent) in.readObject());
+                        process((NetEvent) in.readObject());
                     } catch (Exception e) {
                         logger.log("Receive Failure", e, LogLevel.WARN);
                     }
@@ -84,6 +70,15 @@ public abstract class NetConnection {
         };
     }
 
+    public void setNetID(NetID id) {
+        netID = id;
+    }
+
+    public void setSocket(Socket s) {
+        socket = s;
+        netID = new NetID(s);
+    }
+
     public void connect() {
         connect.start();
     }
@@ -92,10 +87,10 @@ public abstract class NetConnection {
         disconnect.start();
     }
 
-    public void sendEvent(NetEvent netEvent) {
+    public void sendEvent(ExternalEvent event) {
         try {
             if (!open) throw new IOException("Connection is closed");
-            out.writeObject(netEvent);
+            out.writeObject(new NetEvent(netID, event));
         } catch (Exception e) {
             logger.log("Send Failure", e, LogLevel.WARN);
         }
@@ -105,5 +100,5 @@ public abstract class NetConnection {
         return open;
     }
 
-    public abstract void getEvent(NetEvent e);
+    public abstract void process(NetEvent e);
 }

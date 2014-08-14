@@ -12,7 +12,7 @@ import java.util.HashSet;
  * Created by Greg on 8/10/2014.
  * Generic generator class that chooses the placement of hexagons on the board.
  */
-public abstract class Generator {
+public interface BoardGenerator {
 
-    public abstract void run(HexagonalArray<Tile, Path, Building> hexArray, HashSet<Coordinate> positions);
+    public abstract void run(HexagonalArray<Tile, Path, Building> hexArray, HashSet<Coordinate> tilePositions, HashSet<Coordinate> tradingPosts);
 }

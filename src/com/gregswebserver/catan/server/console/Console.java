@@ -4,6 +4,7 @@ import com.gregswebserver.catan.log.LogEvent;
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.log.LogListener;
 import com.gregswebserver.catan.log.Logger;
+import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
@@ -21,6 +22,7 @@ public class Console extends JPanel implements UserInput, LogListener {
     private Logger logger;
     private JTextArea textArea;
     private int userInputStart = 0;
+    private Server server;
 
     public Console(Logger logger) {
         this.logger = logger;
@@ -58,5 +60,13 @@ public class Console extends JPanel implements UserInput, LogListener {
 
     public void append(String text) {
         SwingUtilities.invokeLater(new AppendTask(textArea, text));
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 }
