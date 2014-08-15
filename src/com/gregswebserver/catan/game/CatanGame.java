@@ -9,6 +9,7 @@ import com.gregswebserver.catan.game.player.Player;
 import com.gregswebserver.catan.network.Identity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -20,7 +21,8 @@ public class CatanGame {
 
     private GameBoard board;
     private ArrayList<GameAction> history;
-    private ArrayList<Player> players;
+    private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
+    private HashMap<Identity, Player> players;
 
     public CatanGame(GameType type) {
         type.LoadSettingsTo(board);

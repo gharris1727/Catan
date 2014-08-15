@@ -11,11 +11,13 @@ import java.awt.*;
  */
 public class Main {
 
+    public static Logger logger;
+
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             // Load the startup window to create/login to a server.
-            Logger startupLogger = new Logger();
-            Startup startup = new Startup(startupLogger);
+            logger = new Logger();
+            Startup startup = new Startup(logger);
             startup.setVisible(true);
         });
     }

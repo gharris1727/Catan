@@ -7,9 +7,9 @@ package com.gregswebserver.catan.game.player;
 public enum Team {
 
     Red(),
-    Blue,
-    Green,
-    Yellow();
+    Orange(),
+    Blue(),
+    White();
 
     Team() {
         //TODO: add colored sprites.

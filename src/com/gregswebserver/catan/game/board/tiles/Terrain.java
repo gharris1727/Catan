@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.game.board.tiles;
 
 import com.gregswebserver.catan.game.gameplay.enums.Resource;
-import com.gregswebserver.catan.graphics.HexagonalSprite;
+import com.gregswebserver.catan.graphics.Sprite;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -21,10 +21,10 @@ public enum Terrain {
     SingleBeach(null, null),
     DoubleBeach(null, null);
 
-    public final HexagonalSprite sprite;
+    public final Sprite sprite;
     public final Resource resource;
 
-    Terrain(HexagonalSprite sprite, Resource resource) {
+    Terrain(Sprite sprite, Resource resource) {
         this.sprite = sprite;
         this.resource = resource;
     }

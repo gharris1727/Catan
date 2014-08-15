@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.chat.ChatEvent;
 import com.gregswebserver.catan.client.chat.ChatThread;
 import com.gregswebserver.catan.client.game.GameEvent;
 import com.gregswebserver.catan.client.game.GameThread;
+import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.event.ExternalEvent;
@@ -38,7 +39,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
         chatThread = new ChatThread(logger);
         gameThread = new GameThread(logger);
         renderThread = new RenderThread(logger);
-        listener.setHitbox(renderThread.getHitbox());
+        listener.setScreenHitbox(renderThread.getScreenHitbox());
         connection = new ClientConnection(this);
     }
 

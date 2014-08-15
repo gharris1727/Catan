@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client;
 
+import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.userinterface.GenericWindow;
 
 import java.awt.*;
