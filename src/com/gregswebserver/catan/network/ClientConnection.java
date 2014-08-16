@@ -8,6 +8,8 @@ import com.gregswebserver.catan.client.Client;
  */
 public class ClientConnection extends NetConnection {
 
+    //TODO: establish connection.
+
     private Client client;
 
     public ClientConnection(Client client) {

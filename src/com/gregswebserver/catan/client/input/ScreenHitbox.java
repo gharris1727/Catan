@@ -6,6 +6,8 @@ package com.gregswebserver.catan.client.input;
  */
 public interface ScreenHitbox {
 
+    //TODO: evaluate usefulness of this interface.
+
     public void setGlobalSize(int x, int y);
 
     public void setViewSize(int x, int y);

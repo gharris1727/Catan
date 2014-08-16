@@ -9,6 +9,8 @@ import com.gregswebserver.catan.event.GenericEvent;
  */
 public interface Clickable {
 
+    //TODO: implement user input via this interface.
+
     public GenericEvent onRightClick();
 
     public GenericEvent onLeftClick();

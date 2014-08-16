@@ -2,6 +2,7 @@ package com.gregswebserver.catan;
 
 import com.gregswebserver.catan.log.Logger;
 import com.gregswebserver.catan.userinterface.Startup;
+import com.gregswebserver.catan.util.Statics;
 
 import java.awt.*;
 
@@ -17,6 +18,7 @@ public class Main {
         EventQueue.invokeLater(() -> {
             // Load the startup window to create/login to a server.
             logger = new Logger();
+            new Statics(); //Just to initialize all of the values.
             Startup startup = new Startup(logger);
             startup.setVisible(true);
         });

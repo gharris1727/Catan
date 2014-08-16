@@ -1,15 +1,15 @@
-package com.gregswebserver.catan.graphics;
+package com.gregswebserver.catan.client.graphics;
 
 /**
  * Created by Greg on 8/14/2014.
  * A diagonal path shape mask.
  */
-public class DiagonalMask extends RenderMask {
+public class DiagonalUpMask extends RenderMask {
 
     int height;
     int thickness;
 
-    public DiagonalMask(int height, int thickness) {
+    public DiagonalUpMask(int height, int thickness) {
         this.height = height;
         this.thickness = thickness;
     }

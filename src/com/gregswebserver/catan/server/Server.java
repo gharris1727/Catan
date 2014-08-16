@@ -68,4 +68,9 @@ public class Server extends QueuedInputThread<GenericEvent> {
         if (event instanceof GameEvent) {
         }
     }
+
+    public void shutdown() {
+        //Close all pertinant threads and shut down the server.
+        //TODO: implement shutdown.
+    }
 }

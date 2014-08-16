@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.renderer;
 
+import com.gregswebserver.catan.client.graphics.Screen;
 import com.gregswebserver.catan.client.input.ScreenHitbox;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.log.Logger;
@@ -12,6 +13,7 @@ import com.gregswebserver.catan.log.Logger;
 public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     private ScreenHitbox screenHitbox;
+    private Screen screen;
 
     public RenderThread(Logger logger) {
         super(logger);
@@ -25,5 +27,9 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     public ScreenHitbox getScreenHitbox() {
         return screenHitbox;
+    }
+
+    public void setScreen(Screen screen) {
+        this.screen = screen;
     }
 }

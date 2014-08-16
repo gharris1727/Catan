@@ -1,7 +1,8 @@
 package com.gregswebserver.catan.game.board.tiles;
 
+import com.gregswebserver.catan.client.graphics.Graphic;
 import com.gregswebserver.catan.game.gameplay.enums.Resource;
-import com.gregswebserver.catan.graphics.Sprite;
+import com.gregswebserver.catan.util.Statics;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -9,23 +10,22 @@ import com.gregswebserver.catan.graphics.Sprite;
  * Will be used to confer textures for rendering.
  */
 public enum Terrain {
+    Hill(Statics.hillTexture, Resource.Brick),
+    Forest(Statics.forestTexture, Resource.Lumber),
+    Pasture(Statics.pastureTexture, Resource.Wool),
+    Mountain(Statics.mountainTexture, Resource.Ore),
+    Field(Statics.fieldTexture, Resource.Grain),
+    Desert(Statics.desertTexture, null),
+    Ocean(Statics.oceanTexture, null),
+    //TODO: add beach sprites.
+    SingleBeach(Statics.oceanTexture, null),
+    DoubleBeach(Statics.oceanTexture, null);
 
-    //TODO: add all of the hexagonal sprites.
-    Hill(null, Resource.Brick),
-    Forest(null, Resource.Lumber),
-    Pasture(null, Resource.Wool),
-    Mountain(null, Resource.Ore),
-    Field(null, Resource.Grain),
-    Desert(null, null),
-    Ocean(null, null),
-    SingleBeach(null, null),
-    DoubleBeach(null, null);
-
-    public final Sprite sprite;
+    public final Graphic image;
     public final Resource resource;
 
-    Terrain(Sprite sprite, Resource resource) {
-        this.sprite = sprite;
+    Terrain(Graphic image, Resource resource) {
+        this.image = image;
         this.resource = resource;
     }
 

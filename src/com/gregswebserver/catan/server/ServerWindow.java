@@ -11,11 +11,12 @@ import java.awt.*;
  */
 public class ServerWindow extends GenericWindow {
 
+    Server server;
     Console console;
 
     public ServerWindow(Server server) {
         super("Settlers of Catan - Server", new Dimension(800, 600), true, server.logger);
-
+        this.server = server;
         setLayout(new BorderLayout());
         console = new Console(logger);
         console.setServer(server);
@@ -26,5 +27,6 @@ public class ServerWindow extends GenericWindow {
 
     protected void onClose() {
         logger.removeListener(console);
+        server.shutdown();
     }
 }

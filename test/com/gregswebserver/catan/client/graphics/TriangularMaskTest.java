@@ -1,10 +1,10 @@
-package com.gregswebserver.catan.graphics;
+package com.gregswebserver.catan.client.graphics;
 
 import org.junit.Test;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TriangularMaskTest {
 
@@ -40,13 +40,10 @@ public class TriangularMaskTest {
                 {12, 11, 9, 8, 6, 5, 3, 2, 0, 2, 3, 5, 6, 8, 9, 11, 12}
         };
         for (int i = 0; i < expected.length; i++) {
-            Iterator<Integer> test = new TriangularMask(i).getLeftPadding();
+            ArrayList<Integer> test = new TriangularMask(i).getLeftPadding();
             for (int j = 0; j < expected[i].length; j++) {
-                assertTrue("i: " + i + " j: " + j, test.hasNext());
-                assertEquals("i: " + i + " j: " + j, expected[i][j], (int) test.next());
+                assertEquals(expected[i][j], (int) test.get(j));
             }
-            assertFalse("i: " + i, test.hasNext());
-            assertNull("i: " + i, test.next());
         }
     }
 
@@ -74,13 +71,10 @@ public class TriangularMaskTest {
                 {2, 3, 5, 6, 8, 9, 11, 12, 14, 12, 11, 9, 8, 6, 5, 3, 2}
         };
         for (int i = 0; i < expected.length; i++) {
-            Iterator<Integer> test = new TriangularMask(i).getLineWidth();
+            ArrayList<Integer> test = new TriangularMask(i).getLineWidth();
             for (int j = 0; j < expected[i].length; j++) {
-                assertTrue("i: " + i + " j: " + j, test.hasNext());
-                assertEquals("i: " + i + " j: " + j, expected[i][j], (int) test.next());
+                assertEquals(expected[i][j], (int) test.get(j));
             }
-            assertFalse("i: " + i, test.hasNext());
-            assertNull("i: " + i, test.next());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client;
 
+import com.gregswebserver.catan.client.graphics.Screen;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.userinterface.GenericWindow;
 
@@ -12,9 +13,17 @@ import java.awt.*;
  */
 public class ClientWindow extends GenericWindow {
 
+    //TODO: finish getting the render thread connected.
+
+    private Client client;
+    private Screen screen;
+
     public ClientWindow(Client client) {
         super("Settlers of Catan - Client", new Dimension(1024, 768), false, client.logger);
-        //TODO: setup canvas and pass it to the RenderThread
+        this.client = client;
+        Screen screen = new Screen(512, 384, 2.0);
+        add(screen.getCanvas());
+        pack();
         setVisible(true);
     }
 
@@ -23,7 +32,11 @@ public class ClientWindow extends GenericWindow {
         getContentPane().addMouseListener(listener);
     }
 
-    protected void onClose() {
+    public Screen getScreen() {
+        return screen;
+    }
 
+    protected void onClose() {
+        client.shutdown();
     }
 }

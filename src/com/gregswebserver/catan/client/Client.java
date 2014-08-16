@@ -39,6 +39,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
         chatThread = new ChatThread(logger);
         gameThread = new GameThread(logger);
         renderThread = new RenderThread(logger);
+        renderThread.setScreen(window.getScreen());
         listener.setScreenHitbox(renderThread.getScreenHitbox());
         connection = new ClientConnection(this);
     }
@@ -77,5 +78,10 @@ public class Client extends QueuedInputThread<GenericEvent> {
             }
         }
 
+    }
+
+    public void shutdown() {
+        //Shut down the client and all running threads.
+        //TODO: implement shutdown.
     }
 }

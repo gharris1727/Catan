@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.graphics;
+package com.gregswebserver.catan.client.graphics;
 
 /**
  * Created by Greg on 8/14/2014.
@@ -28,6 +28,11 @@ public class RectangularMask extends RenderMask {
 
     public int getLineWidth(int lineNumber) {
         return width;
+    }
+
+    public int getIndex(int x, int y) {
+        //More efficient than using the built-in method.
+        return y * width + x;
     }
 
 

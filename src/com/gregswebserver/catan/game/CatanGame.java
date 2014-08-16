@@ -2,6 +2,7 @@ package com.gregswebserver.catan.game;
 
 import com.gregswebserver.catan.game.board.GameBoard;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.game.board.tiles.Tile;
 import com.gregswebserver.catan.game.gameplay.DiceRoll;
 import com.gregswebserver.catan.game.gameplay.GameAction;
 import com.gregswebserver.catan.game.gameplay.GameType;
@@ -44,9 +45,41 @@ public class CatanGame {
     }
 
     public void moveRobber(Identity origin, Coordinate data) {
+        for (Tile tile : board.hexArray.spaces) {
+            if (tile.hasRobber()) {
+                tile.removeRobber();
+                break;
+            }
+        }
+        board.hexArray.spaces.get(data).placeRobber();
     }
 
     public void roll(Identity origin, DiceRoll data) {
+
+    }
+
+    public void applyAction(GameAction action) {
+        history.add(action);
+        switch (action.type) {
+            case Player_Build_Settlement:
+                break;
+            case Player_Build_City:
+                break;
+            case Player_Build_Road:
+                break;
+            case Player_Move_Robber:
+                break;
+            case Player_Roll_Dice:
+                break;
+            case Player_Accept_Trade:
+                break;
+            case Player_Make_Trade:
+                break;
+        }
+    }
+
+    //Pulls one action off the history stack and undoes it.
+    public void undoAction() {
 
     }
 }
