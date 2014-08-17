@@ -17,6 +17,6 @@ public class AppendTask implements Runnable {
     }
 
     public void run() {
-        textArea.append(text);
+        textArea.append(text + "\n");
     }
 }

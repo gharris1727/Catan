@@ -14,10 +14,7 @@ import java.awt.event.WindowEvent;
  */
 public abstract class GenericWindow extends JFrame {
 
-    protected Logger logger;
-
     public GenericWindow(String title, Dimension d, boolean resizable, Logger logger) {
-        this.logger = logger;
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -25,9 +22,9 @@ public abstract class GenericWindow extends JFrame {
         }
         setTitle(title);
         setSize(d);
+        setMinimumSize(d);
         setLocationRelativeTo(null);
         setResizable(resizable);
-        if (resizable) setMinimumSize(d);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {

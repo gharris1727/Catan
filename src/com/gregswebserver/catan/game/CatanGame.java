@@ -26,7 +26,11 @@ public class CatanGame {
     private HashMap<Identity, Player> players;
 
     public CatanGame(GameType type) {
+        //Create a new board
+        board = new GameBoard();
         type.LoadSettingsTo(board);
+        //Preform a first time render.
+        board.render();
     }
 
     public void addPlayer(Identity identity) {
@@ -76,10 +80,5 @@ public class CatanGame {
             case Player_Make_Trade:
                 break;
         }
-    }
-
-    //Pulls one action off the history stack and undoes it.
-    public void undoAction() {
-
     }
 }

@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.client.graphics;
 
 
+import com.gregswebserver.catan.client.renderer.Renderable;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -8,14 +10,10 @@ import java.util.ArrayList;
  * Created by Greg on 8/15/2014.
  * Utility class to provide pixel-moving functions to the other image handlers.
  */
-public class Graphic {
+public class Graphic implements Renderable {
 
-    //TODO: rewrite all of this class to take advantage of RenderMask.
-
-    public static final int FORMAT_RGB = 0x0;
-    public static final int FORMAT_RGBA = 0x1;
     public static int transColor = 0xffff00ff;
-    private int[] pixels, pixelsrgb;
+    private int[] pixels, hitboxMask;
     private RenderMask mask;
 
     protected Graphic() {
@@ -23,16 +21,29 @@ public class Graphic {
         //Used primarily in the Screen class.
     }
 
-    public Graphic(GraphicSource source, RenderMask mask, Point start) {
-        //Create an image from an ImageSource following the position and mask information.
-        pixels = new int[mask.getPixelCount()];
-        this.mask = mask;
-        renderFrom(source, start);
+    public Graphic(int width, int height) {
+        this(new int[width * height], new RectangularMask(width, height));
     }
 
-    public Graphic(int[] pixels, RectangularMask mask) {
-        this.pixels = pixels;
+    public Graphic(GraphicSource source, RenderMask mask, Point start, int hitboxColor) {
+        //Create an image from an ImageSource following the position and mask information.
+        int arrayLen = mask.getPixelCount();
+        pixels = new int[arrayLen];
+        hitboxMask = new int[arrayLen];
         this.mask = mask;
+        renderFrom(source, start);
+        for (int i = 0; i < arrayLen; i++) {
+            hitboxMask[i] = hitboxColor;
+        }
+    }
+
+    public Graphic(int[] pixels, RenderMask mask) {
+        this.pixels = pixels;
+        this.hitboxMask = new int[pixels.length];
+        this.mask = mask;
+        for (int i = 0; i < pixels.length; i++) {
+            hitboxMask[i] = 0;
+        }
     }
 
     private static void render(Graphic to, Point toStart, Graphic from, Point fromStart) {
@@ -77,7 +88,8 @@ public class Graphic {
             //Find the length needed to copy
             int length = toLen;
             if (length > fromLen) length = fromLen;
-            pixelCopy(to.pixels, to.mask.getIndex(toX, toY), 1, from.pixels, from.mask.getIndex(fromX, fromY), 1, length);
+            pixelCopy(from.pixels, from.mask.getIndex(fromX, fromY), 1, to.pixels, to.mask.getIndex(toX, toY), 1, length);
+            pixelCopy(from.hitboxMask, from.mask.getIndex(fromX, fromY), 1, to.hitboxMask, to.mask.getIndex(toX, toY), 1, length);
         }
     }
 

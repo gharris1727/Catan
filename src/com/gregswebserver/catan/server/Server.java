@@ -1,12 +1,13 @@
 package com.gregswebserver.catan.server;
 
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.chat.ChatEvent;
 import com.gregswebserver.catan.client.game.GameEvent;
 import com.gregswebserver.catan.event.GenericEvent;
 import com.gregswebserver.catan.event.QueuedInputThread;
+import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.log.LogLevel;
-import com.gregswebserver.catan.log.Logger;
 import com.gregswebserver.catan.network.ServerConnection;
 
 import java.io.IOException;
@@ -18,17 +19,18 @@ import java.util.ArrayList;
  * Created by Greg on 8/9/2014.
  * Server architecture to allow for multi-player over internet.
  */
-public class Server extends QueuedInputThread<GenericEvent> {
+public class Server extends QueuedInputThread {
 
-    private final int MAX_CONNECTIONS = 1000;
     private ArrayList<ServerConnection> connections;
     private ServerSocket socket;
     private Thread listen;
+    private boolean listening;
     private ServerWindow window;
     private Server instance;
 
     public Server() {
-        super(new Logger());
+        super(Main.logger); //TODO: REMOVE ME!
+//        super(new Logger());
         instance = this;
         connections = new ArrayList<>();
         window = new ServerWindow(this);
@@ -36,7 +38,8 @@ public class Server extends QueuedInputThread<GenericEvent> {
             public void run() {
                 logger.log("Listening...", LogLevel.INFO);
                 try {
-                    while (connections.size() < MAX_CONNECTIONS) {
+                    listening = true;
+                    while (listening) {
                         Socket clientSocket = socket.accept();
                         ServerConnection newClient = new ServerConnection(clientSocket, instance);
                         connections.add(newClient);
@@ -59,18 +62,48 @@ public class Server extends QueuedInputThread<GenericEvent> {
         }
     }
 
-    public void execute() {
+    public void execute() throws ThreadStop {
         //Process events from the input queue.
         GenericEvent event = getEvent(true);
         if (event instanceof ChatEvent) {
-            //TODO: Process events
+
         }
         if (event instanceof GameEvent) {
+            switch (((GameEvent) event).type) {
+                case Game_Create:
+                    break;
+                case Player_Join:
+                    break;
+                case Player_Leave:
+                    break;
+                case Player_Build_Settlement:
+                    break;
+                case Player_Build_City:
+                    break;
+                case Player_Build_Road:
+                    break;
+                case Player_Move_Robber:
+                    break;
+                case Player_Roll_Dice:
+                    break;
+                case Player_Offer_Trade:
+                    break;
+                case Player_Accept_Trade:
+                    break;
+                case Player_Make_Trade:
+                    break;
+            }
+        }
+        if (event instanceof ServerEvent) {
+
         }
     }
 
     public void shutdown() {
-        //Close all pertinant threads and shut down the server.
-        //TODO: implement shutdown.
+        for (ServerConnection connection : connections) {
+            connection.disconnect();
+        }
+        listening = false;
+        stop();
     }
 }

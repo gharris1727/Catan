@@ -37,6 +37,7 @@ public abstract class NetConnection {
                     out.flush();
                     in = new ObjectInputStream(socket.getInputStream());
                     open = true;
+                    logger.log("Connected.", LogLevel.INFO);
                     receive.start(); //Start processing objects after the connection is established.
                 } catch (Exception e) {
                     logger.log("Connect Failure", e, LogLevel.ERROR);
@@ -50,6 +51,7 @@ public abstract class NetConnection {
                     try {
                         process((NetEvent) in.readObject());
                     } catch (Exception e) {
+                        open = false;
                         logger.log("Receive Failure", e, LogLevel.WARN);
                     }
                 }
@@ -60,9 +62,12 @@ public abstract class NetConnection {
             public void run() {
                 logger.log("Disconnecting...", LogLevel.INFO);
                 try {
-                    out.flush();
-                    socket.close();
+                    if (open) {
+                        out.flush();
+                        socket.close();
+                    }
                     open = false;
+                    logger.log("Disconnected.", LogLevel.INFO);
                 } catch (IOException e) {
                     logger.log("Disconnect Failure", LogLevel.WARN);
                 }

@@ -18,15 +18,15 @@ public class ServerWindow extends GenericWindow {
         super("Settlers of Catan - Server", new Dimension(800, 600), true, server.logger);
         this.server = server;
         setLayout(new BorderLayout());
-        console = new Console(logger);
+        console = new Console(server.logger);
         console.setServer(server);
         getContentPane().add(console);
-        logger.addListener(console);
+        server.logger.addListener(console);
         setVisible(true);
     }
 
     protected void onClose() {
-        logger.removeListener(console);
+        server.logger.removeListener(console);
         server.shutdown();
     }
 }

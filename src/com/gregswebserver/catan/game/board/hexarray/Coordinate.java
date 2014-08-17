@@ -9,30 +9,11 @@ import java.io.Serializable;
  */
 public class Coordinate implements Serializable {
 
-    private int x, y;
+    public final int x, y;
 
     public Coordinate() {
         x = 0;
         y = 0;
-    }
-
-    public Coordinate(String input) {
-        String[] data = input.split("[^\\d-]"); //Splits the string where it finds breaks in the numbers
-        boolean foundOne = false;
-        for (String string : data) {
-            try {
-                int num = Integer.parseInt(string);
-                if (foundOne) {
-                    x = num;
-                    return;
-                } else {
-                    y = num;
-                    foundOne = true;
-                }
-            } catch (NumberFormatException e) {
-                //Something went wrong and the parser killed itself.
-            }
-        }
     }
 
     public Coordinate(int x, int y) {

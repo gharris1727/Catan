@@ -12,4 +12,7 @@ public enum RenderEventType {
     Object_Remove,
     Object_Move,
     Screen_Clear,
+    Chat_Update,
+    Game_Update,
+    Player_Update,
 }

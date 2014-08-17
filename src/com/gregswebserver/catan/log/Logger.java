@@ -38,6 +38,10 @@ public class Logger {
         fire(new LogEvent(s, l));
     }
 
+    public void debug(String s) {
+        fire(new LogEvent(s, LogLevel.DEBUG));
+    }
+
     private String printStack(Throwable t) {
         StringWriter sw = new StringWriter();
         t.printStackTrace(new PrintWriter(sw));

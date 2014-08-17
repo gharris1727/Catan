@@ -2,13 +2,11 @@ package com.gregswebserver.catan.client.graphics;
 
 
 import com.gregswebserver.catan.client.renderer.ScreenObject;
-import com.gregswebserver.catan.game.board.hexarray.Coordinate;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.awt.image.DataBufferInt;
 
 /**
  * Created by Greg on 8/15/2014.
@@ -20,11 +18,13 @@ public class Screen extends Graphic {
     private BufferStrategy buffer;
     private Graphics graphics;
     private BufferedImage image;
-    private HashMap<Coordinate, ScreenObject> hitboxMap;
-    private HashSet<ScreenObject> renderBuffer;
 
-    public Screen(int width, int height, double scale) {
-        setMask(new RectangularMask((int) (width * scale), (int) (height * scale)));
+    public Screen(int width, int height) {
+        //Configure the underlying Graphic superclass.
+        GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+        image = gc.createCompatibleImage(width, height);
+        setPixels(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
+        setMask(new RectangularMask(width, height));
         canvas = new Canvas() {
             public int getWidth() {
                 return width;
@@ -34,15 +34,19 @@ public class Screen extends Graphic {
                 return height;
             }
         };
-        canvas.createBufferStrategy(3);
-        buffer = canvas.getBufferStrategy();
-        graphics = buffer.getDrawGraphics();
     }
 
-    public void render() {
-        for (ScreenObject object : renderBuffer) {
-            object.getGraphic().renderTo(this, object.getPosition());
+    public void render(ScreenObject object) {
+        object.getRenderable().renderTo(this, object.getPosition());
+    }
+
+    public void draw() {
+        if (buffer == null) {
+            canvas.createBufferStrategy(3);
+            buffer = canvas.getBufferStrategy();
         }
+        graphics = buffer.getDrawGraphics();
+        graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
     }
 
     public void show() {
@@ -52,9 +56,5 @@ public class Screen extends Graphic {
 
     public Canvas getCanvas() {
         return canvas;
-    }
-
-    public HashMap<Coordinate, ScreenObject> getHitboxMap() {
-        return hitboxMap;
     }
 }

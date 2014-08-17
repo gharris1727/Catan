@@ -39,7 +39,7 @@ public class ChatEvent extends ExternalEvent {
         this.message = format(message);
     }
 
-    public String format(String message) {
+    private String format(String message) {
         String timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
         String username = origin.username;
         return "<" + timestamp + "> \"" + username + "\" " + message;

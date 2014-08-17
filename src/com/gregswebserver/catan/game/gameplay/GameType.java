@@ -58,6 +58,7 @@ public class GameType {
 
     public void LoadSettingsTo(GameBoard board) {
         board.init(sizeX, sizeY, players);
+
         boardGenerator.run(board.hexArray, resourceTiles, tradingPosts);
     }
 }

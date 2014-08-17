@@ -3,6 +3,7 @@ package com.gregswebserver.catan.userinterface;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.log.Logger;
+import com.gregswebserver.catan.network.NetID;
 import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;
@@ -79,21 +80,22 @@ public class Startup extends GenericWindow {
 
     private int getPort() {
         try {
-            return Integer.parseInt(fields[3].getText());
+            return 25000;//TODO: REMOVE ME!
+//            return Integer.parseInt(fields[3].getText());
         } catch (Exception e) {
-            logger.log("Invalid port entered", e, LogLevel.POPUP);
+//            logger.log("Invalid port entered", e, LogLevel.POPUP);
         }
         return 0;
     }
 
     private InetAddress getHost() {
         try {
-            return InetAddress.getByName(fields[2].getText());
+            return InetAddress.getByName("localhost"); //TODO: REMOVE ME!
+//            return InetAddress.getByName(fields[2].getText());
         } catch (Exception e) {
-            logger.log("Hostname Field Error", e, LogLevel.POPUP);
+//            logger.log("Hostname Field Error", e, LogLevel.POPUP);
         }
         return null;
-        //TODO: better error handling
     }
 
     private String getPassword() {
@@ -105,11 +107,12 @@ public class Startup extends GenericWindow {
     }
 
     private void startClient(InetAddress host, int port, String username, String password) {
-        Client client = new Client();
+        Client client = new Client(new NetID(host, port));
     }
 
     private void startServer(int port, String password) {
         Server server = new Server();
+        server.start(port);
     }
 
     protected void onClose() {

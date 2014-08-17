@@ -28,20 +28,22 @@ public class Statics {
     public static GameType BASE_GAME;
 
     public Statics() {
+        //TODO: change all of this to represent the new sizes.
         tileSpriteSheet = GraphicSource.load("res/graphics/tiles.png");
-        tileRenderMask = new HexagonalMask(56, 48);
-        vertexRenderMask = new TriangularMask(8);
-        horizontalRenderMask = new RectangularMask(32, 8);
-        diagonalUpRenderMask = new DiagonalUpMask(26, 9);
-        diagonalDownRenderMask = new DiagonalDownMask(26, 9);
-        hillTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(12, 18));
-        forestTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(90, 97));
-        pastureTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(178, 16));
-        mountainTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(15, 185));
-        fieldTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(180, 184));
-        desertTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(99, 21));
-        oceanTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(183, 107));
+        tileRenderMask = new HexagonalMask(112, 96);
+        vertexRenderMask = new TriangularMask(16);
+        horizontalRenderMask = new RectangularMask(64, 16);
+        diagonalUpRenderMask = new DiagonalUpMask(52, 18);
+        diagonalDownRenderMask = new DiagonalDownMask(52, 18);
+        hillTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(12, 18), 0);
+        forestTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(90, 97), 0);
+        pastureTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(178, 16), 0);
+        mountainTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(15, 185), 0);
+        fieldTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(180, 184), 0);
+        desertTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(99, 21), 0);
+        oceanTexture = new Graphic(tileSpriteSheet, tileRenderMask, new Point(183, 107), 0);
 
+        //TODO: might want to increase the border size to offer more padding for scrolling.
         BASE_GAME = new GameType("Settlers of Catan Base");
         BASE_GAME.size(7, 7);
         BASE_GAME.post(0, 3);

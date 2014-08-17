@@ -11,10 +11,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Calls the execute() function repeatedly, but does not necessarily have to block for events.
  * execute() will continue looping until stop() is called and running is set to false.
  */
-public abstract class QueuedInputThread<T> {
+public abstract class QueuedInputThread {
 
     public Logger logger;
-    protected LinkedBlockingQueue<T> eventQueue;
+    protected LinkedBlockingQueue<GenericEvent> eventQueue;
     protected Thread run;
     protected boolean running;
 
@@ -24,7 +24,11 @@ public abstract class QueuedInputThread<T> {
         run = new Thread(this.getClass().getName()) {
             public void run() {
                 while (running) {
-                    execute();
+                    try {
+                        execute();
+                    } catch (ThreadStop threadStop) {
+                        running = false;
+                    }
                 }
             }
         };
@@ -39,10 +43,11 @@ public abstract class QueuedInputThread<T> {
     //Stops the queue processing thread.
     public void stop() {
         running = false;
+        addEvent(new ThreadStopEvent()); //Poison pill thread stopper.
     }
 
     //Adds an object to the processing queue.
-    public void addEvent(T event) {
+    public void addEvent(GenericEvent event) {
         try {
             eventQueue.put(event);
         } catch (InterruptedException e) {
@@ -51,17 +56,22 @@ public abstract class QueuedInputThread<T> {
     }
 
     //pulls an object from the queue, blocks if argument is true.
-    protected T getEvent(boolean block) {
+    protected GenericEvent getEvent(boolean block) throws ThreadStop {
         if (!block) return eventQueue.poll();
         try {
-            return eventQueue.take();
+            GenericEvent obj = eventQueue.take();
+            if (obj instanceof ThreadStopEvent) {
+                running = false;
+                throw new ThreadStop();
+            }
+            return obj;
         } catch (InterruptedException e) {
             logger.log("Error removing from event queue", e, LogLevel.ERROR);
-            return null;
+            throw new ThreadStop();
         }
     }
 
     //Processing function that is called repeatedly.
-    protected abstract void execute();
+    protected abstract void execute() throws ThreadStop;
 
 }

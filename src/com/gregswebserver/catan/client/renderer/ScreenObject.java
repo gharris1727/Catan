@@ -1,8 +1,5 @@
 package com.gregswebserver.catan.client.renderer;
 
-import com.gregswebserver.catan.client.graphics.Graphic;
-import com.gregswebserver.catan.client.input.Clickable;
-
 import java.awt.*;
 
 /**
@@ -12,25 +9,19 @@ import java.awt.*;
  */
 public class ScreenObject {
 
-    private Graphic graphic;
+    private Renderable renderable;
     private Point position;
-    private Clickable object;
 
-    public ScreenObject(Graphic graphic, Point position, Clickable object) {
-        this.graphic = graphic;
+    public ScreenObject(Renderable renderable, Point position) {
+        this.renderable = renderable;
         this.position = position;
-        this.object = object;
     }
 
-    public Graphic getGraphic() {
-        return graphic;
+    public Renderable getRenderable() {
+        return renderable;
     }
 
     public Point getPosition() {
         return position;
-    }
-
-    public Clickable getObject() {
-        return object;
     }
 }

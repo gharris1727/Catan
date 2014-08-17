@@ -19,9 +19,9 @@ public class ClientWindow extends GenericWindow {
     private Screen screen;
 
     public ClientWindow(Client client) {
-        super("Settlers of Catan - Client", new Dimension(1024, 768), false, client.logger);
+        super("Settlers of Catan - Client", new Dimension(1024, 768), true, client.logger);
         this.client = client;
-        Screen screen = new Screen(512, 384, 2.0);
+        screen = new Screen(1024, 768);
         add(screen.getCanvas());
         pack();
         setVisible(true);
