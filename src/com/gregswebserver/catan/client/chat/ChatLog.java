@@ -11,7 +11,7 @@ import java.util.LinkedList;
  */
 public class ChatLog implements Iterable<String> {
     private int maxLines = 50;
-    private int lineLength = 50;
+    private int maxWidth = 50;
     private LinkedList<String> lines;
 
     public ChatLog() {
@@ -23,16 +23,20 @@ public class ChatLog implements Iterable<String> {
         this.maxLines = maxLines;
     }
 
-    //Parses a message, and limits each line to lineLength characters.
+    public void setMaxWidth(int maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    //Parses a message, and limits each line to maxWidth characters.
     public void addMessage(String message) {
         String[] words = message.split("\\s+");
         String line = "";
         for (String word : words) {
-            if ((line.length() + word.length() + 1) < lineLength) {
+            if ((line.length() + word.length() + 1) < maxWidth) {
                 line += " " + word;
             } else {
                 append(line);
-                line = word;
+                line = "    " + word;
             }
         }
         append(line);

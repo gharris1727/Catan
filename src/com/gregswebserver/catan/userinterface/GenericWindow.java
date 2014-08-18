@@ -5,6 +5,8 @@ import com.gregswebserver.catan.log.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -32,8 +34,16 @@ public abstract class GenericWindow extends JFrame {
                 super.windowClosing(e);
             }
         });
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                onResize(e.getComponent().getSize());
+                super.componentResized(e);
+            }
+        });
     }
 
     // Gracefully close any pertinent threads when the window is closed.
     protected abstract void onClose();
+
+    protected abstract void onResize(Dimension size);
 }

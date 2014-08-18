@@ -28,6 +28,4 @@ public class ChatThread extends QueuedInputThread {
         chatLog.addMessage(event.getMessage());
         client.addEvent(new RenderEvent(this, RenderEventType.Chat_Update, chatLog));
     }
-
-    //TODO: add method of retrieving the ChatLog data.
 }

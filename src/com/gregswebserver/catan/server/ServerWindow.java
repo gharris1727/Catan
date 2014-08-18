@@ -29,4 +29,8 @@ public class ServerWindow extends GenericWindow {
         server.logger.removeListener(console);
         server.shutdown();
     }
+
+    protected void onResize(Dimension size) {
+        //Nothing to do, since the window isn't resizable.
+    }
 }

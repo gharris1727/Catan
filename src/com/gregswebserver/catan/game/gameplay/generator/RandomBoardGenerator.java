@@ -39,9 +39,9 @@ public class RandomBoardGenerator implements BoardGenerator {
         HashSet<Coordinate> validEdges = new HashSet<>();
         HashSet<Coordinate> beachTiles = new HashSet<>();
         for (Coordinate spaceCoordinate : validSpaces) {
-            validVertices.addAll(hexArray.getAdjacentVerticesFromSpace(spaceCoordinate));
-            validEdges.addAll(hexArray.getAdjacentEdgesFromSpace(spaceCoordinate));
-            beachTiles.addAll(hexArray.getAdjacentSpacesFromSpace(spaceCoordinate));
+            validVertices.addAll(hexArray.getAdjacentVerticesFromSpace(spaceCoordinate).values());
+            validEdges.addAll(hexArray.getAdjacentEdgesFromSpace(spaceCoordinate).values());
+            beachTiles.addAll(hexArray.getAdjacentSpacesFromSpace(spaceCoordinate).values());
         }
 
         //Remove any beachTiles that are actually resourceTiles.

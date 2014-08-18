@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.input;
+package com.gregswebserver.catan.client.hitbox;
 
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.game.board.hexarray.TwoDimensionalArray;
@@ -50,8 +50,7 @@ public class GridHitbox implements Hitbox {
     public Object getObject(Point p) {
         Object o = objectArray.get(getArrayCoordinate(p));
         if (o instanceof Hitbox) {
-            Hitbox h = (Hitbox) o;
-            return h.getObject(getSubCoordinate(p));
+            return ((Hitbox) o).getObject(getSubCoordinate(p));
         }
         return o;
     }

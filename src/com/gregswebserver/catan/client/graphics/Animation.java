@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics;
 
+import com.gregswebserver.catan.client.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.Renderable;
 
 import java.awt.*;
@@ -36,13 +37,13 @@ public class Animation implements Renderable {
         return (!loop && currentFrame >= graphics.size());
     }
 
-    public void renderTo(Graphic to, Point toPos) {
+    public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color) {
         Graphic g = graphics.get(currentFrame);
         step();
         if (currentFrame >= graphics.size()) {
             if (loop) reset();
             else return; //Animation is done, don't print to the screen anymore.
         }
-        g.renderTo(to, toPos);
+        g.renderTo(to, toMask, toPos, color);
     }
 }

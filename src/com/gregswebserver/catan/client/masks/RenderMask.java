@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics;
+package com.gregswebserver.catan.client.masks;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * Created by Greg on 8/14/2014.
  * Mask for rendering complex shapes to the screen.
  * Returns two Iterators describing the shape that should be rendered.
+ * Immutable at all times.
  */
 public abstract class RenderMask {
 

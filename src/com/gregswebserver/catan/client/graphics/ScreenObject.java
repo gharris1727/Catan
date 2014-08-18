@@ -1,4 +1,7 @@
-package com.gregswebserver.catan.client.renderer;
+package com.gregswebserver.catan.client.graphics;
+
+import com.gregswebserver.catan.client.masks.RenderMask;
+import com.gregswebserver.catan.client.renderer.Renderable;
 
 import java.awt.*;
 
@@ -10,15 +13,21 @@ import java.awt.*;
 public class ScreenObject {
 
     private Renderable renderable;
+    private RenderMask mask;
     private Point position;
 
-    public ScreenObject(Renderable renderable, Point position) {
+    public ScreenObject(Renderable renderable, RenderMask mask, Point position) {
         this.renderable = renderable;
+        this.mask = mask;
         this.position = position;
     }
 
     public Renderable getRenderable() {
         return renderable;
+    }
+
+    public RenderMask getMask() {
+        return mask;
     }
 
     public Point getPosition() {

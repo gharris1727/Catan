@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics;
+package com.gregswebserver.catan.client.masks;
 
 /**
  * Created by Greg on 8/14/2014.

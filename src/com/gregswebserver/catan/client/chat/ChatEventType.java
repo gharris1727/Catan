@@ -9,5 +9,5 @@ public enum ChatEventType {
 
     Broadcast,  //Message should be rebroadcast to all clients connected to the server.
     Lobby, //Message should be rebroadcast to only the clients in a local Group.
-    Private; //Message should be forwarded to only the destination client.
+    Private, //Message should be forwarded to only the destination client.
 }

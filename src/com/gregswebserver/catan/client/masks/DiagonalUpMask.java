@@ -1,15 +1,15 @@
-package com.gregswebserver.catan.client.graphics;
+package com.gregswebserver.catan.client.masks;
 
 /**
  * Created by Greg on 8/14/2014.
  * A diagonal path shape mask.
  */
-public class DiagonalDownMask extends RenderMask {
+public class DiagonalUpMask extends RenderMask {
 
     int height;
     int thickness;
 
-    public DiagonalDownMask(int height, int thickness) {
+    public DiagonalUpMask(int height, int thickness) {
         this.height = height;
         this.thickness = thickness;
     }
@@ -23,10 +23,10 @@ public class DiagonalDownMask extends RenderMask {
     }
 
     public int getLeftPadding(int lineNumber) {
-        if (lineNumber <= getCenter()) {
-            return 2 * (getCenter() - lineNumber + 1) - 1;
+        if (lineNumber < getCenter()) {
+            return ((getCenter() - lineNumber) / 2);
         }
-        return ((lineNumber - getCenter()) / 2);
+        return 2 * (lineNumber - getCenter() + 1) - 1;
     }
 
     public int getLineWidth(int lineNumber) {
@@ -39,6 +39,6 @@ public class DiagonalDownMask extends RenderMask {
     }
 
     private int getCenter() {
-        return thickness / 4;
+        return height - thickness / 4 - 1;
     }
 }

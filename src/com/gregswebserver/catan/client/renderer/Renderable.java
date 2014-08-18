@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.graphics.Graphic;
+import com.gregswebserver.catan.client.masks.RenderMask;
 
 import java.awt.*;
 
@@ -10,5 +11,5 @@ import java.awt.*;
  */
 public interface Renderable {
 
-    public void renderTo(Graphic to, Point toPos);
+    public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color);
 }

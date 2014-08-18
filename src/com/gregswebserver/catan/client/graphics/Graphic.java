@@ -1,6 +1,9 @@
 package com.gregswebserver.catan.client.graphics;
 
 
+import com.gregswebserver.catan.client.hitbox.HitboxColor;
+import com.gregswebserver.catan.client.masks.RectangularMask;
+import com.gregswebserver.catan.client.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.Renderable;
 
 import java.awt.*;
@@ -13,7 +16,7 @@ import java.util.ArrayList;
 public class Graphic implements Renderable {
 
     public static int transColor = 0xffff00ff;
-    private int[] pixels, hitboxMask;
+    private int[] pixels, hitbox;
     private RenderMask mask;
 
     protected Graphic() {
@@ -29,24 +32,26 @@ public class Graphic implements Renderable {
         //Create an image from an ImageSource following the position and mask information.
         int arrayLen = mask.getPixelCount();
         pixels = new int[arrayLen];
-        hitboxMask = new int[arrayLen];
+        hitbox = new int[arrayLen];
         this.mask = mask;
-        renderFrom(source, start);
-        for (int i = 0; i < arrayLen; i++) {
-            hitboxMask[i] = hitboxColor;
-        }
+        renderFrom(source, null, start, hitboxColor);
     }
 
     public Graphic(int[] pixels, RenderMask mask) {
         this.pixels = pixels;
-        this.hitboxMask = new int[pixels.length];
+        this.hitbox = new int[pixels.length];
         this.mask = mask;
         for (int i = 0; i < pixels.length; i++) {
-            hitboxMask[i] = 0;
+            hitbox[i] = 0;
         }
     }
 
-    private static void render(Graphic to, Point toStart, Graphic from, Point fromStart) {
+    private static void render(Graphic to, RenderMask toMask, Point toStart, Graphic from, RenderMask fromMask, Point fromStart, int color) {
+        //If color is anything but black (0x0) that will be copied instead of the pre-existing hitbox.
+        if (toMask == null)
+            toMask = to.mask;
+        if (fromMask == null)
+            fromMask = from.mask;
         //Check for lower bounds.
         if (toStart.x < 0) toStart.x = 0;
         if (toStart.y < 0) toStart.y = 0;
@@ -54,18 +59,18 @@ public class Graphic implements Renderable {
         if (fromStart.y < 0) fromStart.y = 0;
         //Check for upper bounds
         //Note: if any of these are out of spec, nothing will get copied anyway.
-        if (toStart.x >= to.mask.getWidth()) return;
-        if (toStart.y >= to.mask.getHeight()) return;
-        if (fromStart.x >= from.mask.getWidth()) return;
-        if (fromStart.y >= from.mask.getHeight()) return;
+        if (toStart.x >= toMask.getWidth()) return;
+        if (toStart.y >= toMask.getHeight()) return;
+        if (fromStart.x >= fromMask.getWidth()) return;
+        if (fromStart.y >= fromMask.getHeight()) return;
         //Pull in the masks
-        ArrayList<Integer> toPadding = to.mask.getLeftPadding();
-        ArrayList<Integer> toLength = to.mask.getLineWidth();
-        ArrayList<Integer> fromPadding = from.mask.getLeftPadding();
-        ArrayList<Integer> fromLength = from.mask.getLineWidth();
+        ArrayList<Integer> toPadding = toMask.getLeftPadding();
+        ArrayList<Integer> toLength = toMask.getLineWidth();
+        ArrayList<Integer> fromPadding = fromMask.getLeftPadding();
+        ArrayList<Integer> fromLength = fromMask.getLineWidth();
         //Find how many rows we need to iterate.
-        int numRows = to.mask.getHeight() - toStart.y;
-        if (numRows > (from.mask.getHeight() - fromStart.y)) numRows = (from.mask.getHeight() - fromStart.y);
+        int numRows = toMask.getHeight() - toStart.y;
+        if (numRows > (fromMask.getHeight() - fromStart.y)) numRows = (fromMask.getHeight() - fromStart.y);
         //Iterate over the rows going downward.
         for (int row = 0; row < numRows; row++) {
             //Find the row numbers that we are working with
@@ -89,7 +94,10 @@ public class Graphic implements Renderable {
             int length = toLen;
             if (length > fromLen) length = fromLen;
             pixelCopy(from.pixels, from.mask.getIndex(fromX, fromY), 1, to.pixels, to.mask.getIndex(toX, toY), 1, length);
-            pixelCopy(from.hitboxMask, from.mask.getIndex(fromX, fromY), 1, to.hitboxMask, to.mask.getIndex(toX, toY), 1, length);
+            if (color > 0)
+                setMask(to.hitbox, to.mask.getIndex(toX, toY), 1, color, length);
+            else
+                pixelCopy(from.hitbox, from.mask.getIndex(fromX, fromY), 1, to.hitbox, to.mask.getIndex(toX, toY), 1, length);
         }
     }
 
@@ -103,10 +111,21 @@ public class Graphic implements Renderable {
         }
     }
 
+    private static void setMask(int[] dst, int dstPos, int dstStep, int color, int length) {
+        for (int i = 0; i < length; i++) {
+            int dstCurr = i * dstStep + dstPos;
+            dst[dstCurr] = color;
+        }
+    }
+
     public void clear() {
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = transColor;
         }
+    }
+
+    public RenderMask getMask() {
+        return mask;
     }
 
     public void setMask(RenderMask mask) {
@@ -117,13 +136,17 @@ public class Graphic implements Renderable {
         this.pixels = pixels;
     }
 
-    public void renderTo(Graphic to, Point toPos) {
-        //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
-        render(to, toPos, this, new Point());
+    public HitboxColor getHitboxColor(Point p) {
+        return HitboxColor.get(hitbox[mask.getIndex(p.x, p.y)]);
     }
 
-    public void renderFrom(Graphic from, Point fromPos) {
+    public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color) {
+        //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
+        render(to, toMask, toPos, this, null, new Point(), color);
+    }
+
+    public void renderFrom(Graphic from, RenderMask fromMask, Point fromPos, int color) {
         //Renders this Image from another, with the fromPos pixel being at this image's top corner.
-        render(this, new Point(), from, fromPos);
+        render(this, null, new Point(), from, fromMask, fromPos, color);
     }
 }

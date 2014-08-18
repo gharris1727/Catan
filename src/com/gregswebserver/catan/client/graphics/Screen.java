@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics;
 
 
-import com.gregswebserver.catan.client.renderer.ScreenObject;
+import com.gregswebserver.catan.client.masks.RectangularMask;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -16,45 +16,47 @@ public class Screen extends Graphic {
 
     private Canvas canvas;
     private BufferStrategy buffer;
-    private Graphics graphics;
     private BufferedImage image;
 
-    public Screen(int width, int height) {
-        //Configure the underlying Graphic superclass.
-        GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        image = gc.createCompatibleImage(width, height);
-        setPixels(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
-        setMask(new RectangularMask(width, height));
-        canvas = new Canvas() {
-            public int getWidth() {
-                return width;
-            }
-
-            public int getHeight() {
-                return height;
-            }
-        };
+    public Screen() {
     }
 
     public void render(ScreenObject object) {
-        object.getRenderable().renderTo(this, object.getPosition());
-    }
-
-    public void draw() {
-        if (buffer == null) {
-            canvas.createBufferStrategy(3);
-            buffer = canvas.getBufferStrategy();
-        }
-        graphics = buffer.getDrawGraphics();
-        graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
+        object.getRenderable().renderTo(this, object.getMask(), object.getPosition(), 0);
     }
 
     public void show() {
-        graphics.dispose();
-        buffer.show();
+        if (canvas != null && canvas.isValid()) {
+            if (buffer == null) {
+                canvas.createBufferStrategy(3);
+                buffer = canvas.getBufferStrategy();
+            }
+            Graphics graphics = buffer.getDrawGraphics();
+            graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
+            graphics.dispose();
+            buffer.show();
+        }
     }
 
     public Canvas getCanvas() {
         return canvas;
+    }
+
+    public void setSize(Dimension size) {
+        //Configure the underlying Graphic superclass.
+        GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+        image = gc.createCompatibleImage(size.width, size.height);
+        setPixels(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
+        setMask(new RectangularMask(size.width, size.height));
+        buffer = null; //MUST INVALIDATE THE OLD BUFFER.
+        canvas = new Canvas() {
+            public int getWidth() {
+                return size.width;
+            }
+
+            public int getHeight() {
+                return size.height;
+            }
+        };
     }
 }

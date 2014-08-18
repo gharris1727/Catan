@@ -9,13 +9,13 @@ public enum Direction {
     up(0, 0, 1),
     down(1, 0, -1),
     //Vertex-only reference.
-    left(0, -1, 0),
-    right(1, 1, 0),
+    left(2, -1, 0),
+    right(3, 1, 0),
     //Dual reference.
-    upleft(2, up, left),
-    downleft(3, down, left),
-    upright(4, up, right),
-    downright(5, down, right);
+    upleft(4, up, left),
+    downleft(5, down, left),
+    upright(6, up, right),
+    downright(7, down, right);
 
     private int index;
     private int x;
@@ -35,37 +35,5 @@ public enum Direction {
 
     public int index() {
         return index;
-    }
-
-    public boolean isEdgeValid() {
-        switch (this) {
-            case up:
-            case down:
-            case upleft:
-            case downleft:
-            case upright:
-            case downright:
-                return true;
-            case left:
-            case right:
-            default:
-                return false;
-        }
-    }
-
-    public boolean isVertexValid() {
-        switch (this) {
-            case left:
-            case right:
-            case upleft:
-            case downleft:
-            case upright:
-            case downright:
-                return true;
-            case up:
-            case down:
-            default:
-                return false;
-        }
     }
 }

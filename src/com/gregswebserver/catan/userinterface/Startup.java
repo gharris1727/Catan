@@ -108,6 +108,7 @@ public class Startup extends GenericWindow {
 
     private void startClient(InetAddress host, int port, String username, String password) {
         Client client = new Client(new NetID(host, port));
+        dispose();
     }
 
     private void startServer(int port, String password) {
@@ -116,6 +117,10 @@ public class Startup extends GenericWindow {
     }
 
     protected void onClose() {
+    }
+
+    protected void onResize(Dimension size) {
+        //Nothing can happen cause this can't be resized.
     }
 
     private enum TextField {

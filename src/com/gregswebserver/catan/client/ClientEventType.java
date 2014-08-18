@@ -11,4 +11,6 @@ public enum ClientEventType {
     Net_Disconnect, //Disconnects from a remote server.
     Net_Join, //Sends Identity information to the server.
     Net_Leave, //Removes identity from the server, and disconnects from any active games.
+    Canvas_Update, //Event sent from the renderThread which updates the Canvas object kept in the ClientWindow.
+    Hitbox_Update, //Event sent from the renderThread that updates the hitbox information in ClientListener.
 }

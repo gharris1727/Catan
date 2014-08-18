@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.input;
+package com.gregswebserver.catan.client.hitbox;
 
 import java.awt.*;
 

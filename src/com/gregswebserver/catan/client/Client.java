@@ -12,6 +12,8 @@ import com.gregswebserver.catan.event.*;
 import com.gregswebserver.catan.network.ClientConnection;
 import com.gregswebserver.catan.network.NetID;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/11/2014.
  * Game client handling user input, graceful error handling, local game simulation, and communication to a server.
@@ -22,11 +24,11 @@ public class Client extends QueuedInputThread {
 
     private Client instance;
     private ClientWindow window;
-    private ClientConnection connection;
+    private InputListener listener;
     private ChatThread chatThread;
     private GameThread gameThread;
-    private InputListener listener;
     private RenderThread renderThread;
+    private ClientConnection connection;
 
     public Client(NetID server) {
         super(Main.logger); //TODO: REMOVE ME!
@@ -37,9 +39,7 @@ public class Client extends QueuedInputThread {
         window.setListener(listener);
         chatThread = new ChatThread(this);
         gameThread = new GameThread(this);
-        renderThread = new RenderThread(logger);
-        renderThread.setScreen(window.getScreen());
-        listener.setHitbox(renderThread.getHitbox());
+        renderThread = new RenderThread(this);
         connection = new ClientConnection(this);
 
         start();
@@ -53,6 +53,7 @@ public class Client extends QueuedInputThread {
     public void execute() throws ThreadStop {
         //Process events from the input queue.
         GenericEvent event = getEvent(true);
+        logger.debug("clientEvent " + event);
         if (event instanceof ExternalEvent) {
             if (event instanceof ChatEvent) {
                 chatThread.addEvent(event);
@@ -78,6 +79,13 @@ public class Client extends QueuedInputThread {
                         break;
                     case Net_Leave:
                         //TODO: handle server joins/leaves
+                        break;
+                    case Canvas_Update:
+                        //The ClientWindow is not visible until this event happens.
+                        window.setCanvas((Canvas) ((ClientEvent) event).data);
+                        break;
+                    case Hitbox_Update:
+                        listener.setHitbox(renderThread.getHitbox());
                         break;
                 }
             }

@@ -18,4 +18,8 @@ public class ClientEvent extends InternalEvent {
         this.type = type;
         this.data = data;
     }
+
+    public String toString() {
+        return super.toString() + type + data;
+    }
 }

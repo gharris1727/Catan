@@ -8,11 +8,10 @@ package com.gregswebserver.catan.client.renderer;
  */
 public enum RenderEventType {
 
-    Object_Add,
-    Object_Remove,
-    Object_Move,
-    Screen_Clear,
     Chat_Update,
     Game_Update,
     Player_Update,
+    Window_Resize,
+    Render_Disable,
+    Render_Enable,
 }

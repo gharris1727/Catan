@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.client.hitbox.Hitbox;
 import com.gregswebserver.catan.log.Logger;
 
 import java.awt.event.*;
@@ -11,7 +12,9 @@ import java.awt.event.*;
  * Generates GameEvents, ChatEvents, and ClientEvents, based on hitboxes.
  * Added as a listener to the ClientWindow.
  */
-public class InputListener implements KeyListener, MouseListener, MouseMotionListener {
+public class InputListener implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+
+    //TODO: a lot of stuff in here.
 
     private Hitbox hitbox;
     private Logger logger;
@@ -70,6 +73,11 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseMoved(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
 
     }
 }

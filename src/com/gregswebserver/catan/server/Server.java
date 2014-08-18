@@ -104,6 +104,11 @@ public class Server extends QueuedInputThread {
             connection.disconnect();
         }
         listening = false;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            logger.log("ServerSocket Close error", e, LogLevel.WARN);
+        }
         stop();
     }
 }
