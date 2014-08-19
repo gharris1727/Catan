@@ -18,8 +18,8 @@ public enum DiceRoll {
     Eleven(11, 2),
     Twelve(12, 1);
 
-    private int value;
-    private int rank;
+    private final int value;
+    private final int rank;
 
     DiceRoll(int value, int rank) {
         this.value = value;

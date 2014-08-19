@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class Graphic implements Renderable {
 
-    public static int transColor = 0xffff00ff;
+    public static final int transColor = 0xffff00ff;
     private int[] pixels, hitbox;
     private RenderMask mask;
 
@@ -26,24 +26,17 @@ public class Graphic implements Renderable {
 
     public Graphic(int width, int height) {
         this(new int[width * height], new RectangularMask(width, height));
+        clear();
     }
 
     public Graphic(GraphicSource source, RenderMask mask, Point start, int hitboxColor) {
-        //Create an image from an ImageSource following the position and mask information.
-        int arrayLen = mask.getPixelCount();
-        pixels = new int[arrayLen];
-        hitbox = new int[arrayLen];
-        this.mask = mask;
+        this(new int[mask.getPixelCount()], mask);
         renderFrom(source, null, start, hitboxColor);
     }
 
     public Graphic(int[] pixels, RenderMask mask) {
-        this.pixels = pixels;
-        this.hitbox = new int[pixels.length];
-        this.mask = mask;
-        for (int i = 0; i < pixels.length; i++) {
-            hitbox[i] = 0;
-        }
+        setPixels(pixels);
+        setMask(mask);
     }
 
     private static void render(Graphic to, RenderMask toMask, Point toStart, Graphic from, RenderMask fromMask, Point fromStart, int color) {
@@ -95,7 +88,7 @@ public class Graphic implements Renderable {
             if (length > fromLen) length = fromLen;
             pixelCopy(from.pixels, from.mask.getIndex(fromX, fromY), 1, to.pixels, to.mask.getIndex(toX, toY), 1, length);
             if (color > 0)
-                setMask(to.hitbox, to.mask.getIndex(toX, toY), 1, color, length);
+                colorCopy(to.hitbox, to.mask.getIndex(toX, toY), 1, color, length);
             else
                 pixelCopy(from.hitbox, from.mask.getIndex(fromX, fromY), 1, to.hitbox, to.mask.getIndex(toX, toY), 1, length);
         }
@@ -111,16 +104,10 @@ public class Graphic implements Renderable {
         }
     }
 
-    private static void setMask(int[] dst, int dstPos, int dstStep, int color, int length) {
+    private static void colorCopy(int[] dst, int dstPos, int dstStep, int color, int length) {
         for (int i = 0; i < length; i++) {
             int dstCurr = i * dstStep + dstPos;
             dst[dstCurr] = color;
-        }
-    }
-
-    public void clear() {
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = transColor;
         }
     }
 
@@ -130,6 +117,7 @@ public class Graphic implements Renderable {
 
     public void setMask(RenderMask mask) {
         this.mask = mask;
+        hitbox = new int[mask.getPixelCount()];
     }
 
     public void setPixels(int[] pixels) {
@@ -148,5 +136,11 @@ public class Graphic implements Renderable {
     public void renderFrom(Graphic from, RenderMask fromMask, Point fromPos, int color) {
         //Renders this Image from another, with the fromPos pixel being at this image's top corner.
         render(this, null, new Point(), from, fromMask, fromPos, color);
+    }
+
+    public void clear() {
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = transColor;
+        }
     }
 }

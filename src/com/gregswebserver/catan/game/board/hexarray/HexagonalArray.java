@@ -106,7 +106,7 @@ public class HexagonalArray<X, Y, Z> {
     }
 
     @SuppressWarnings("unchecked")
-    public static boolean isSubclass(Object o, Class c) {
+    private static boolean isSubclass(Object o, Class c) {
         return c.isAssignableFrom(o.getClass());
     }
 

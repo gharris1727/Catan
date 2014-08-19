@@ -31,8 +31,8 @@ public enum HitboxColor {
 
     public static HitboxColor get(int color) {
         for (HitboxColor hc : values()) {
-            if (hc.color == color) ;
-            return hc;
+            if (hc.color == color)
+                return hc;
         }
         return HitboxColor.Default;
     }

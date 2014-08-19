@@ -16,11 +16,13 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     //TODO: a lot of stuff in here.
 
-    private Hitbox hitbox;
+    private Client client;
     private Logger logger;
+    private Hitbox hitbox;
 
     public InputListener(Client client) {
         logger = client.logger;
+        this.client = client;
     }
 
     public void setHitbox(Hitbox hitbox) {
@@ -29,7 +31,6 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override

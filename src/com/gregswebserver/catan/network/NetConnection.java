@@ -105,5 +105,5 @@ public abstract class NetConnection {
         return open;
     }
 
-    public abstract void process(NetEvent e);
+    protected abstract void process(NetEvent e);
 }

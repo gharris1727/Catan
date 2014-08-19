@@ -8,7 +8,7 @@ public abstract class PlayerOwned {
 
     private Player owner;
 
-    public PlayerOwned(Player owner) {
+    protected PlayerOwned(Player owner) {
         this.owner = owner;
     }
 

@@ -6,7 +6,7 @@ package com.gregswebserver.catan.game.board.hexarray;
  */
 public class IllegalDirectionException extends Exception {
 
-    private Direction direction;
+    private final Direction direction;
 
     public IllegalDirectionException(Direction direction) {
         this.direction = direction;

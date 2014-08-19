@@ -14,7 +14,7 @@ public enum Resource implements Tradeable {
     Grain("Wheat"),
     Ore("Rocks");
 
-    private String name;
+    private final String name;
 
     Resource(String name) {
         this.name = name;

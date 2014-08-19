@@ -1,6 +1,5 @@
-package com.gregswebserver.catan.client.graphics;
+package com.gregswebserver.catan.client.masks;
 
-import com.gregswebserver.catan.client.masks.DiagonalDownMask;
 import org.junit.Test;
 
 import java.util.ArrayList;

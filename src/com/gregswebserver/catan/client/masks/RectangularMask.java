@@ -6,8 +6,8 @@ package com.gregswebserver.catan.client.masks;
  */
 public class RectangularMask extends RenderMask {
 
-    int width;
-    int height;
+    private final int width;
+    private final int height;
 
     public RectangularMask(int width, int height) {
         this.width = width;

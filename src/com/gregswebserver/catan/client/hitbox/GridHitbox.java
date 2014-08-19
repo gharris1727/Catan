@@ -11,16 +11,13 @@ import java.awt.*;
  */
 public class GridHitbox implements Hitbox {
 
-    TwoDimensionalArray<Object> objectArray;
-    int totalColWidth = 0;
-    int totalRowHeight = 0;
-    int[] colWidths, rowHeights;
-    int[] cumulativeWidth, cumulativeHeight;
+    private TwoDimensionalArray<Object> objectArray;
+    private int totalColWidth = 0;
+    private int totalRowHeight = 0;
+    private int[] colWidths, rowHeights;
+    private int[] cumulativeWidth, cumulativeHeight;
 
-    public GridHitbox() {
-    }
-
-    protected GridHitbox init(int width, int height, int[] colWidths, int[] rowHeights) {
+    public GridHitbox(int width, int height, int[] colWidths, int[] rowHeights) {
         this.colWidths = colWidths;
         cumulativeWidth = new int[colWidths.length];
         this.rowHeights = rowHeights;
@@ -34,7 +31,6 @@ public class GridHitbox implements Hitbox {
             cumulativeHeight[i] = totalRowHeight;
         }
         objectArray = new TwoDimensionalArray<>(width / totalColWidth * colWidths.length, height / totalRowHeight * rowHeights.length);
-        return this;
     }
 
     public GridHitbox addObject(int x, int y, Object o) {

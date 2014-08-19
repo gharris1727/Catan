@@ -7,8 +7,8 @@ package com.gregswebserver.catan.client.masks;
  */
 public class TriangularMask extends RenderMask {
 
-    private int height;
-    private int triGroup;
+    private final int height;
+    private final int triGroup;
 
     public TriangularMask(int height) {
         this.height = height;

@@ -12,9 +12,9 @@ import java.util.ArrayList;
  */
 public class Animation implements Renderable {
 
-    ArrayList<Graphic> graphics;
-    int currentFrame = 0;
-    boolean loop = false;
+    private ArrayList<Graphic> graphics;
+    private int currentFrame = 0;
+    private boolean loop = false;
 
     public Animation(boolean loop) {
         this.loop = loop;
@@ -25,7 +25,7 @@ public class Animation implements Renderable {
         return this;
     }
 
-    public void reset() {
+    private void reset() {
         currentFrame = 0;
     }
 

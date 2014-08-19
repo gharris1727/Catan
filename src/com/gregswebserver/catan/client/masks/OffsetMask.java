@@ -8,8 +8,8 @@ import java.awt.*;
  */
 public class OffsetMask extends RenderMask {
 
-    private RenderMask other;
-    private Point offset;
+    private final RenderMask other;
+    private final Point offset;
 
     public OffsetMask(RenderMask other, Point offset) {
         this.other = other;

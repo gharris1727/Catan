@@ -20,4 +20,8 @@ public class GameEvent extends ExternalEvent {
         this.type = type;
         this.data = data;
     }
+
+    public String toString() {
+        return "GameEvent " + super.toString() + " Type: " + type + " Data: " + data;
+    }
 }

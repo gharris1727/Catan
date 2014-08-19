@@ -8,5 +8,8 @@ import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
  */
 public enum Purchase implements Tradeable {
 
-    Road, Settlement, City, DevelopmentCard;
+    Road,
+    Settlement,
+    City,
+    DevelopmentCard
 }

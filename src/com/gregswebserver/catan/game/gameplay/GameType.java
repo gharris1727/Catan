@@ -47,6 +47,7 @@ public class GameType {
     }
 
     public GameType players(int n) {
+        //TODO: redo player counting.
         players = n;
         return this;
     }
@@ -57,8 +58,11 @@ public class GameType {
     }
 
     public void LoadSettingsTo(GameBoard board) {
-        board.init(sizeX, sizeY, players);
-
+        board.init(sizeX, sizeY);
         boardGenerator.run(board.hexArray, resourceTiles, tradingPosts);
+    }
+
+    public String toString() {
+        return "GameType: " + name;
     }
 }

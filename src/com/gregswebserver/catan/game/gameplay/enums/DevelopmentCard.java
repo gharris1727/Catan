@@ -12,11 +12,19 @@ public enum DevelopmentCard implements Tradeable {
     Progress("Progress Card", 0),
     VictoryPoint("Victory Point Card", 1);
 
-    private String name;
-    private int vp;
+    private final String name;
+    private final int vp;
 
     DevelopmentCard(String name, int vp) {
         this.name = name;
         this.vp = vp;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getVictoryPoints() {
+        return vp;
     }
 }

@@ -22,6 +22,7 @@ public class GameThread extends QueuedInputThread {
 
     public GameThread(Client client) {
         super(client.logger);
+        this.client = client;
     }
 
     //Process GameEvents from the event queue.
@@ -31,7 +32,7 @@ public class GameThread extends QueuedInputThread {
             case Game_Create:
                 //Create a new game, load the GameType data, and preform a first time rendering.
                 game = new CatanGame((GameType) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
+                client.addEvent(new RenderEvent(this, RenderEventType.Game_Create, game));
                 break;
             case Player_Join:
                 game.addPlayer(event.origin);
@@ -69,5 +70,9 @@ public class GameThread extends QueuedInputThread {
                 break;
             //TODO: implement trading
         }
+    }
+
+    public String toString() {
+        return client + "GameThread";
     }
 }

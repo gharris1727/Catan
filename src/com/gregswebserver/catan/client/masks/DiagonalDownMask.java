@@ -6,8 +6,8 @@ package com.gregswebserver.catan.client.masks;
  */
 public class DiagonalDownMask extends RenderMask {
 
-    int height;
-    int thickness;
+    private final int height;
+    private final int thickness;
 
     public DiagonalDownMask(int height, int thickness) {
         this.height = height;

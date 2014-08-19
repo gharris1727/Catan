@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class TokenGenerator implements FeatureGenerator<DiceRoll> {
 
-    private static int[] genOrder = {6, 8, 5, 9, 4, 10, 3, 11, 2, 12};
+    private final static int[] genOrder = {6, 8, 5, 9, 4, 10, 3, 11, 2, 12};
     private ArrayList<DiceRoll> dice;
 
     public TokenGenerator(int numTokens) {

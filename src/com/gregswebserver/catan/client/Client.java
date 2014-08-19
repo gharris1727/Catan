@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.chat.ChatEvent;
 import com.gregswebserver.catan.client.chat.ChatThread;
 import com.gregswebserver.catan.client.game.GameEvent;
 import com.gregswebserver.catan.client.game.GameThread;
+import com.gregswebserver.catan.client.hitbox.Hitbox;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderThread;
@@ -22,7 +23,6 @@ import java.awt.*;
  */
 public class Client extends QueuedInputThread {
 
-    private Client instance;
     private ClientWindow window;
     private InputListener listener;
     private ChatThread chatThread;
@@ -30,12 +30,11 @@ public class Client extends QueuedInputThread {
     private RenderThread renderThread;
     private ClientConnection connection;
 
-    public Client(NetID server) {
+    public Client() {
         super(Main.logger); //TODO: REMOVE ME!
 //        super(new Logger());
-        instance = this;
-        window = new ClientWindow(instance);
-        listener = new InputListener(instance);
+        window = new ClientWindow(this);
+        listener = new InputListener(this);
         window.setListener(listener);
         chatThread = new ChatThread(this);
         gameThread = new GameThread(this);
@@ -46,14 +45,12 @@ public class Client extends QueuedInputThread {
         chatThread.start();
         gameThread.start();
         renderThread.start();
-        connection.connectTo(server);
     }
 
 
     public void execute() throws ThreadStop {
         //Process events from the input queue.
         GenericEvent event = getEvent(true);
-        logger.debug("clientEvent " + event);
         if (event instanceof ExternalEvent) {
             if (event instanceof ChatEvent) {
                 chatThread.addEvent(event);
@@ -85,12 +82,16 @@ public class Client extends QueuedInputThread {
                         window.setCanvas((Canvas) ((ClientEvent) event).data);
                         break;
                     case Hitbox_Update:
-                        listener.setHitbox(renderThread.getHitbox());
+                        listener.setHitbox((Hitbox) ((ClientEvent) event).data);
                         break;
                 }
             }
         }
 
+    }
+
+    public void connectTo(NetID server) {
+        connection.connectTo(server);
     }
 
     public void shutdown() {
@@ -101,4 +102,9 @@ public class Client extends QueuedInputThread {
         renderThread.stop();
         stop();
     }
+
+    public String toString() {
+        return "Client";
+    }
+
 }

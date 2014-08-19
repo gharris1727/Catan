@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent;
  */
 public abstract class GenericWindow extends JFrame {
 
-    public GenericWindow(String title, Dimension d, boolean resizable, Logger logger) {
+    protected GenericWindow(String title, Dimension d, boolean resizable, Logger logger) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {

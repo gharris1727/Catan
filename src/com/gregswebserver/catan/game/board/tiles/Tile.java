@@ -42,4 +42,8 @@ public class Tile {
         if (robber || terrain == null) return null;
         return terrain.resource;
     }
+
+    public Terrain getTerrain() {
+        return terrain;
+    }
 }

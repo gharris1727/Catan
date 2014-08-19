@@ -33,6 +33,7 @@ public class RandomBoardGenerator implements BoardGenerator {
         Iterator<Terrain> terrain = terrainGenerator.iterator();
         Iterator<DiceRoll> tokens = tokenGenerator.iterator();
         Iterator<TradingPost> posts = tradeGenerator.iterator();
+        //TODO: do something with the trading posts, i forget.
 
         //Use the valid hexagons to find all valid vertices and edges, as well as adjacent tiles that are beaches.
         HashSet<Coordinate> validVertices = new HashSet<>();

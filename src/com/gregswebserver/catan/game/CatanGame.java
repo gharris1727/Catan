@@ -29,8 +29,6 @@ public class CatanGame {
         //Create a new board
         board = new GameBoard();
         type.LoadSettingsTo(board);
-        //Preform a first time render.
-        board.render();
     }
 
     public void addPlayer(Identity identity) {
@@ -80,5 +78,9 @@ public class CatanGame {
             case Player_Make_Trade:
                 break;
         }
+    }
+
+    public GameBoard getBoard() {
+        return board;
     }
 }

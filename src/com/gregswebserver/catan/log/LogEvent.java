@@ -8,7 +8,7 @@ import com.gregswebserver.catan.event.GenericEvent;
  */
 public class LogEvent extends GenericEvent {
 
-    private String text;
+    private final String text;
 
     public LogEvent(String s, LogLevel l) {
         text = "[" + l.name() + "] " + s;

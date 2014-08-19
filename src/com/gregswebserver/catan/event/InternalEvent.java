@@ -11,4 +11,8 @@ public abstract class InternalEvent extends GenericEvent {
     public InternalEvent(Object origin) {
         this.origin = origin;
     }
+
+    public String toString() {
+        return "Origin: " + origin;
+    }
 }

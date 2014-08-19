@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class Logger {
 
-    ArrayList<LogListener> listeners;
+    private ArrayList<LogListener> listeners;
 
     public Logger() {
         listeners = new ArrayList<>();
@@ -38,8 +38,8 @@ public class Logger {
         fire(new LogEvent(s, l));
     }
 
-    public void debug(String s) {
-        fire(new LogEvent(s, LogLevel.DEBUG));
+    public void debug(Object origin, String s) {
+        fire(new LogEvent("<" + origin + "> " + s, LogLevel.DEBUG));
     }
 
     private String printStack(Throwable t) {

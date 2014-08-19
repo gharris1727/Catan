@@ -7,8 +7,8 @@ package com.gregswebserver.catan.client.masks;
  */
 public class HexagonalMask extends RenderMask {
 
-    private int height;
-    private int width;
+    private final int height;
+    private final int width;
 
     public HexagonalMask(int width, int height) {
         this.width = width;

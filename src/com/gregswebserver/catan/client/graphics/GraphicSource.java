@@ -21,13 +21,21 @@ public class GraphicSource extends Graphic {
 
     public static GraphicSource load(String path) {
         int width = 0, height = 0;
-        int[] pixels = null;
+        int[] pixelsRGBA = null, pixels = null;
         try {
             BufferedImage image = ImageIO.read(new FileInputStream(path));
             width = image.getWidth();
             height = image.getHeight();
+            pixelsRGBA = new int[width * height];
             pixels = new int[width * height];
-            image.getRGB(0, 0, width, height, pixels, 0, width);
+            image.getRGB(0, 0, width, height, pixelsRGBA, 0, width);
+            pixels = new int[width * height];
+            for (int i = 0; i < width * height; i++) {
+                int r = (pixelsRGBA[i] & 0xff0000) >> 16;
+                int g = (pixelsRGBA[i] & 0xff00) >> 8;
+                int b = (pixelsRGBA[i] & 0xff);
+                pixels[i] = r << 16 | g << 8 | b;
+            }
         } catch (IOException e) {
             Main.logger.log("Error loading image source at " + path, e, LogLevel.ERROR);
         }

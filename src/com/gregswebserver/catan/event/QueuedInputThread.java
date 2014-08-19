@@ -14,9 +14,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class QueuedInputThread {
 
     public Logger logger;
-    protected LinkedBlockingQueue<GenericEvent> eventQueue;
-    protected Thread run;
-    protected boolean running;
+    private LinkedBlockingQueue<GenericEvent> eventQueue;
+    private Thread run;
+    private boolean running;
 
     public QueuedInputThread(Logger logger) {
         this.logger = logger;
@@ -57,21 +57,28 @@ public abstract class QueuedInputThread {
 
     //pulls an object from the queue, blocks if argument is true.
     protected GenericEvent getEvent(boolean block) throws ThreadStop {
-        if (!block) return eventQueue.poll();
-        try {
-            GenericEvent obj = eventQueue.take();
-            if (obj instanceof ThreadStopEvent) {
-                running = false;
+        GenericEvent obj;
+        if (!block) obj = eventQueue.poll();
+        else {
+            try {
+                obj = eventQueue.take();
+            } catch (InterruptedException e) {
+                logger.log("Error removing from event queue", e, LogLevel.ERROR);
                 throw new ThreadStop();
             }
-            return obj;
-        } catch (InterruptedException e) {
-            logger.log("Error removing from event queue", e, LogLevel.ERROR);
+
+        }
+        if (obj instanceof ThreadStopEvent) {
+            running = false;
             throw new ThreadStop();
         }
+        if (obj != null) logger.debug(this, " " + obj);
+        return obj;
     }
 
     //Processing function that is called repeatedly.
     protected abstract void execute() throws ThreadStop;
+
+    public abstract String toString(); //force downstream to override this.
 
 }

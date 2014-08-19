@@ -21,10 +21,6 @@ public class Screen extends Graphic {
     public Screen() {
     }
 
-    public void render(ScreenObject object) {
-        object.getRenderable().renderTo(this, object.getMask(), object.getPosition(), 0);
-    }
-
     public void show() {
         if (canvas != null && canvas.isValid()) {
             if (buffer == null) {

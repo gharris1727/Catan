@@ -8,8 +8,8 @@ import java.util.*;
  */
 public class TwoDimensionalArray<T> extends AbstractCollection<T> {
 
-    private final int MAX_SIZE = Integer.MAX_VALUE - 8;
-    private int sizeX, sizeY;
+    public static final int MAX_SIZE = Integer.MAX_VALUE - 8;
+    public final int sizeX, sizeY;
     private int size;
     private Object[] data;
 

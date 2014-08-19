@@ -19,6 +19,6 @@ public class RenderEvent extends InternalEvent {
     }
 
     public String toString() {
-        return super.toString() + type + data;
+        return "RenderEvent " + super.toString() + " Type: " + type + " Data: " + data;
     }
 }

@@ -8,8 +8,8 @@ import javax.swing.*;
  */
 public class AppendTask implements Runnable {
 
-    private JTextArea textArea;
-    private String text;
+    private final JTextArea textArea;
+    private final String text;
 
     public AppendTask(JTextArea textArea, String text) {
         this.textArea = textArea;

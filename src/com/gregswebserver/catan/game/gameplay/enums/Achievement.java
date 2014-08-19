@@ -8,12 +8,20 @@ public enum Achievement {
 
     LongestRoad("Longest Road", 2);
 
-    private String name;
-    private int vp;
+    private final String name;
+    private final int vp;
 
     Achievement(String name, int vp) {
         this.name = name;
         this.vp = vp;
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getVictoryPoints() {
+        return vp;
     }
 }

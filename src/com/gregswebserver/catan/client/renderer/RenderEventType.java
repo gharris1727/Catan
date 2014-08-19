@@ -9,9 +9,10 @@ package com.gregswebserver.catan.client.renderer;
 public enum RenderEventType {
 
     Chat_Update,
+    Game_Create,
     Game_Update,
     Player_Update,
     Window_Resize,
     Render_Disable,
-    Render_Enable,
+    Render_Enable, Chat_Create, Game_Scroll,
 }

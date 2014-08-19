@@ -103,6 +103,7 @@ public class Server extends QueuedInputThread {
         for (ServerConnection connection : connections) {
             connection.disconnect();
         }
+        window.dispose();
         listening = false;
         try {
             socket.close();
@@ -110,5 +111,9 @@ public class Server extends QueuedInputThread {
             logger.log("ServerSocket Close error", e, LogLevel.WARN);
         }
         stop();
+    }
+
+    public String toString() {
+        return "Server";
     }
 }

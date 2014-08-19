@@ -34,8 +34,8 @@ public class Console extends JPanel implements UserInput, LogListener {
         textArea.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    int range = textArea.getCaretPosition() - userInputStart;
                     String text = getUserInput();
+                    //TODO: process user input and control the server.
                 }
             }
         });

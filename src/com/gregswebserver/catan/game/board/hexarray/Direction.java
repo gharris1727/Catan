@@ -17,9 +17,9 @@ public enum Direction {
     upright(6, up, right),
     downright(7, down, right);
 
-    private int index;
-    private int x;
-    private int y;
+    private final int index;
+    private final int x;
+    private final int y;
 
     Direction(int index, int x, int y) {
         this.index = index;

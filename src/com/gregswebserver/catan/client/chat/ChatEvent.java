@@ -48,4 +48,8 @@ public class ChatEvent extends ExternalEvent {
     public String getMessage() {
         return message;
     }
+
+    public String toString() {
+        return "ChatEvent " + super.toString() + " Type: " + type + " Data: " + message;
+    }
 }

@@ -11,4 +11,8 @@ public class Identity {
     public Identity(String username) {
         this.username = username;
     }
+
+    public String toString() {
+        return "Identity: " + username;
+    }
 }

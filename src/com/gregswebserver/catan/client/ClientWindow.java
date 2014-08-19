@@ -18,6 +18,8 @@ public class ClientWindow extends GenericWindow {
 
     private Client client;
     private Canvas canvas;
+    //Field to prevent the onResize function from spamming resize requests when there is one still processing.
+    private boolean resizing = false;
 
     public ClientWindow(Client client) {
         super("Settlers of Catan - Client", new Dimension(1024, 768), true, client.logger);
@@ -37,7 +39,10 @@ public class ClientWindow extends GenericWindow {
     }
 
     protected void onResize(Dimension size) {
-        client.addEvent(new RenderEvent(this, RenderEventType.Window_Resize, size));
+        if (!resizing) {
+            client.addEvent(new RenderEvent(this, RenderEventType.Window_Resize, size));
+        }
+        resizing = true;
     }
 
     public void setCanvas(Canvas newCanvas) {
@@ -49,5 +54,10 @@ public class ClientWindow extends GenericWindow {
 //        pack();
         setVisible(true);
         client.addEvent(new RenderEvent(this, RenderEventType.Render_Enable, null));
+        resizing = false;
+    }
+
+    public String toString() {
+        return client + "ClientWindow";
     }
 }
