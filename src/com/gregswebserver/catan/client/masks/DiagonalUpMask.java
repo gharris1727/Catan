@@ -1,17 +1,23 @@
 package com.gregswebserver.catan.client.masks;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/14/2014.
  * A diagonal path shape mask.
  */
 public class DiagonalUpMask extends RenderMask {
 
-    private final int height;
     private final int thickness;
+    private final int height;
 
-    public DiagonalUpMask(int height, int thickness) {
-        this.height = height;
+    public DiagonalUpMask(Dimension d) {
+        this(d.width, d.height);
+    }
+
+    public DiagonalUpMask(int thickness, int height) {
         this.thickness = thickness;
+        this.height = height;
     }
 
     public int getWidth() {

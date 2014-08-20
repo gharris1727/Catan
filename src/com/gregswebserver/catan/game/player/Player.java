@@ -9,6 +9,7 @@ import com.gregswebserver.catan.network.Identity;
 public class Player {
 
     private Identity identity;
+    private Team team;
 
     public Player(Identity identity) {
         this.identity = identity;
@@ -17,5 +18,13 @@ public class Player {
 
     public Identity getIdentity() {
         return identity;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }

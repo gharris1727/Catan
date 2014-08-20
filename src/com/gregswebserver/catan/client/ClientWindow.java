@@ -18,6 +18,7 @@ public class ClientWindow extends GenericWindow {
 
     private Client client;
     private Canvas canvas;
+    private InputListener listener;
     //Field to prevent the onResize function from spamming resize requests when there is one still processing.
     private boolean resizing = false;
 
@@ -28,10 +29,7 @@ public class ClientWindow extends GenericWindow {
     }
 
     public void setListener(InputListener listener) {
-        getContentPane().addKeyListener(listener);
-        getContentPane().addMouseListener(listener);
-        getContentPane().addMouseMotionListener(listener);
-        getContentPane().addMouseWheelListener(listener);
+        this.listener = listener;
     }
 
     protected void onClose() {
@@ -46,12 +44,19 @@ public class ClientWindow extends GenericWindow {
     }
 
     public void setCanvas(Canvas newCanvas) {
-        if (canvas != null)
+        if (canvas != null) {
+            canvas.removeKeyListener(listener);
+            canvas.removeMouseListener(listener);
+            canvas.removeMouseMotionListener(listener);
+            canvas.removeMouseWheelListener(listener);
             remove(canvas);
+        }
         canvas = newCanvas;
         add(canvas);
-//        Main.logger.debug("PACK");
-//        pack();
+        canvas.addKeyListener(listener);
+        canvas.addMouseListener(listener);
+        canvas.addMouseMotionListener(listener);
+        canvas.addMouseWheelListener(listener);
         setVisible(true);
         client.addEvent(new RenderEvent(this, RenderEventType.Render_Enable, null));
         resizing = false;

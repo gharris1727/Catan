@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.masks;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/14/2014.
  * Generic mask for use with any normal rectangular/square sprite.
@@ -8,6 +10,10 @@ public class RectangularMask extends RenderMask {
 
     private final int width;
     private final int height;
+
+    public RectangularMask(Dimension d) {
+        this(d.width, d.height);
+    }
 
     public RectangularMask(int width, int height) {
         this.width = width;

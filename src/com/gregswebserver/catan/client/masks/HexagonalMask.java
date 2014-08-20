@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.masks;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/14/2014.
  * Helper class to generate iterators describing the masking on a hexagonal sprite.
@@ -9,6 +11,10 @@ public class HexagonalMask extends RenderMask {
 
     private final int height;
     private final int width;
+
+    public HexagonalMask(Dimension d) {
+        this(d.width, d.height);
+    }
 
     public HexagonalMask(int width, int height) {
         this.width = width;
@@ -25,7 +31,7 @@ public class HexagonalMask extends RenderMask {
 
     public int getLeftPadding(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
-            return (getWidth() - getLineWidth(lineNumber)) / 2;
+            return (width - getLineWidth(lineNumber)) / 2;
         }
         return getLeftPadding(getHeight() - 1 - lineNumber);
     }

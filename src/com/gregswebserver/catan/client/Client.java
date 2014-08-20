@@ -5,7 +5,7 @@ import com.gregswebserver.catan.client.chat.ChatEvent;
 import com.gregswebserver.catan.client.chat.ChatThread;
 import com.gregswebserver.catan.client.game.GameEvent;
 import com.gregswebserver.catan.client.game.GameThread;
-import com.gregswebserver.catan.client.hitbox.Hitbox;
+import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderThread;
@@ -82,7 +82,7 @@ public class Client extends QueuedInputThread {
                         window.setCanvas((Canvas) ((ClientEvent) event).data);
                         break;
                     case Hitbox_Update:
-                        listener.setHitbox((Hitbox) ((ClientEvent) event).data);
+                        listener.setHitbox((ScreenArea) ((ClientEvent) event).data);
                         break;
                 }
             }

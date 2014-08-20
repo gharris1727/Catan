@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.masks;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/14/2014.
  * Triangular shaped mask
@@ -9,6 +11,10 @@ public class TriangularMask extends RenderMask {
 
     private final int height;
     private final int triGroup;
+
+    public TriangularMask(Dimension d) {
+        this(d.height);
+    }
 
     public TriangularMask(int height) {
         this.height = height;

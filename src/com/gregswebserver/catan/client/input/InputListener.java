@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.hitbox.Hitbox;
+import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.log.Logger;
 
 import java.awt.event.*;
@@ -18,19 +18,20 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     private Client client;
     private Logger logger;
-    private Hitbox hitbox;
+    private ScreenArea hitbox;
 
     public InputListener(Client client) {
         logger = client.logger;
         this.client = client;
     }
 
-    public void setHitbox(Hitbox hitbox) {
+    public void setHitbox(ScreenArea hitbox) {
         this.hitbox = hitbox;
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
+
     }
 
     @Override
@@ -45,6 +46,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        logger.debug(this, "Clicked on: " + hitbox.getObject(e.getPoint()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.game.board.paths;
 
+import com.gregswebserver.catan.client.graphics.Graphic;
 import com.gregswebserver.catan.game.player.Player;
 import com.gregswebserver.catan.game.player.PlayerOwned;
 
@@ -12,4 +13,6 @@ public abstract class Path extends PlayerOwned {
     public Path(Player owner) {
         super(owner);
     }
+
+    public abstract Graphic getGraphic();
 }

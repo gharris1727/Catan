@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.game.board.buildings;
 
+import com.gregswebserver.catan.client.graphics.Graphic;
 import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.game.player.Player;
 
@@ -15,5 +16,9 @@ public class Settlement extends Building implements Tradeable {
 
     public int getResourceNumber() {
         return 2;
+    }
+
+    public Graphic getGraphic() {
+        return getOwner().getTeam().settlement[getPosition().x % 2];
     }
 }

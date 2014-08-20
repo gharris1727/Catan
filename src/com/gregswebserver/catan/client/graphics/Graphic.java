@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics;
 
 
-import com.gregswebserver.catan.client.hitbox.HitboxColor;
 import com.gregswebserver.catan.client.masks.RectangularMask;
 import com.gregswebserver.catan.client.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.Renderable;
@@ -20,8 +19,10 @@ public class Graphic implements Renderable {
     private RenderMask mask;
 
     protected Graphic() {
-        //Constructor in place for calling from subclasses.
-        //Used primarily in the Screen class.
+    }
+
+    public Graphic(Dimension d) {
+        this(d.width, d.height);
     }
 
     public Graphic(int width, int height) {
@@ -69,28 +70,51 @@ public class Graphic implements Renderable {
             //Find the row numbers that we are working with
             int toY = row + toStart.y;
             int fromY = row + fromStart.y;
+            //Set up the column numbers to work with.
             //Pull in the lengths
             int toLen = toLength.get(toY);
             int fromLen = fromLength.get(fromY);
-            //Find where to start copying on each
-            int toX = toPadding.get(toY);
-            if (toX < toStart.x) { //If the padding is less than the start
-                toLen -= (toStart.x - toX); //Cut that length off
-                toX = toStart.x; //Start at the start
-            } //Otherwise just use the padding.
-            int fromX = fromPadding.get(fromY);
-            if (fromX < fromStart.x) {
-                fromLen -= (fromStart.x - fromX);
-                fromX = fromStart.x;
-            }
             //Find the length needed to copy
             int length = toLen;
             if (length > fromLen) length = fromLen;
-            pixelCopy(from.pixels, from.mask.getIndex(fromX, fromY), 1, to.pixels, to.mask.getIndex(toX, toY), 1, length);
-            if (color > 0)
-                colorCopy(to.hitbox, to.mask.getIndex(toX, toY), 1, color, length);
-            else
-                pixelCopy(from.hitbox, from.mask.getIndex(fromX, fromY), 1, to.hitbox, to.mask.getIndex(toX, toY), 1, length);
+            //Pull in the padding.
+            int toPad = toPadding.get(toY);
+            int fromPad = fromPadding.get(fromY);
+            //Pull in the padding
+            int toX = toStart.x;
+            int fromX = fromStart.x;
+            if (toX < toPad) {
+                int offset = toPad - toX;
+                toX += offset;
+                fromX += offset;
+            }
+            if (fromX < fromPad) {
+                int offset = fromPad - fromX;
+                fromX += offset;
+                toX += offset;
+            }
+            int toEnd = toX + length;
+            int toMax = toPad + toLen;
+            if (toEnd > toMax) {
+                int offset = toMax - toEnd;
+//                length -= offset;
+            }
+            int fromEnd = fromX + length;
+            int fromMax = fromPad + fromLen;
+            if (fromEnd > fromMax) {
+                int offset = fromMax - fromEnd;
+//                length -= offset;
+            }
+            //TODO: REMOVE ME PLEASE.
+            try {
+                pixelCopy(from.pixels, from.mask.getIndex(fromX, fromY), 1, to.pixels, to.mask.getIndex(toX, toY), 1, length);
+                if (color > 0)
+                    colorCopy(to.hitbox, to.mask.getIndex(toX, toY), 1, color, length);
+                else
+                    pixelCopy(from.hitbox, from.mask.getIndex(fromX, fromY), 1, to.hitbox, to.mask.getIndex(toX, toY), 1, length);
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -124,8 +148,8 @@ public class Graphic implements Renderable {
         this.pixels = pixels;
     }
 
-    public HitboxColor getHitboxColor(Point p) {
-        return HitboxColor.get(hitbox[mask.getIndex(p.x, p.y)]);
+    public int getHitboxColor(Point p) {
+        return hitbox[mask.getIndex(p.x, p.y)];
     }
 
     public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color) {
@@ -141,6 +165,7 @@ public class Graphic implements Renderable {
     public void clear() {
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = transColor;
+            hitbox[i] = 0;
         }
     }
 }

@@ -1,12 +1,14 @@
 package com.gregswebserver.catan.game.board.hexarray;
 
+import com.gregswebserver.catan.game.board.BoardObject;
+
 import java.util.HashMap;
 
 /**
  * Created by Greg on 8/8/2014.
  * Map system for storing board data.
  */
-public class HexagonalArray<X, Y, Z> {
+public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z extends BoardObject> {
 
     // additions[<x or y>][<direction>] = translation
     private static final int[][] spaceToSpace = {
@@ -157,14 +159,22 @@ public class HexagonalArray<X, Y, Z> {
 
     @SuppressWarnings("unchecked")
     public void place(Coordinate c, Object o) {
-        if (isSubclass(o, xClass)) {
-            spaces.set(c, (X) o);
-        } else if (isSubclass(o, yClass)) {
-            edges.set(c, (Y) o);
-        } else if (isSubclass(o, zClass)) {
-            vertices.set(c, (Z) o);
-        } else {
-            throw new IllegalArgumentException("Object not an instanceof X Y or Z types.");
+        if (o instanceof BoardObject) {
+            BoardObject object = (BoardObject) o;
+            object.setHexArray(this);
+            object.setPosition(c);
+            if (isSubclass(object, xClass)) {
+                spaces.set(c, (X) object);
+                object.setParentArray(spaces);
+            } else if (isSubclass(object, yClass)) {
+                edges.set(c, (Y) object);
+                object.setParentArray(edges);
+            } else if (isSubclass(object, zClass)) {
+                vertices.set(c, (Z) object);
+                object.setParentArray(vertices);
+            } else {
+                throw new IllegalArgumentException("Object not an instanceof X Y or Z types.");
+            }
         }
     }
 
