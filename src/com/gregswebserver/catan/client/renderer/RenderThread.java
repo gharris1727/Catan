@@ -4,9 +4,14 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.ClientEvent;
 import com.gregswebserver.catan.client.ClientEventType;
 import com.gregswebserver.catan.client.chat.ChatLog;
+import com.gregswebserver.catan.client.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.Screen;
 import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.client.graphics.StaticGraphic;
+import com.gregswebserver.catan.client.input.Clickable;
+import com.gregswebserver.catan.client.input.ClickableBuilding;
+import com.gregswebserver.catan.client.input.ClickablePath;
+import com.gregswebserver.catan.client.input.ClickableTile;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.game.CatanGame;
@@ -16,10 +21,12 @@ import com.gregswebserver.catan.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.game.board.paths.Path;
 import com.gregswebserver.catan.game.board.tiles.Tile;
 import com.gregswebserver.catan.game.gameplay.GameAction;
+import com.gregswebserver.catan.game.player.Team;
 import com.gregswebserver.catan.util.GraphicsConfig;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -42,10 +49,13 @@ public class RenderThread extends QueuedInputThread {
     private Dimension bottomSize = new Dimension(256, 256);
     private Dimension cornerSize = new Dimension(256, 256);
 
+    private Point gamePosition = new Point(0, 0);
+    private Point sidebarPosition = new Point(256, 0);
+    private Point bottomPosition = new Point(0, 256);
+    private Point cornerPosition = new Point(256, 256);
+
     private Screen screen;
     private ScreenArea area;
-    private ScreenArea foreground;
-    private ScreenArea background;
     private ScreenArea game;
     private ScreenArea sidebar;
     private ScreenArea bottom;
@@ -64,20 +74,14 @@ public class RenderThread extends QueuedInputThread {
         area = new ScreenArea(screenSize, new Point(), 0);
 
         //T2 ScreenAreas
-        foreground = new ScreenArea(screenSize, new Point(), 1);
-        area.addScreenObject(foreground);
-        background = new ScreenArea(screenSize, new Point(), 0);
-        area.addScreenObject(background);
-
-        //T3 ScreenAreas
-        game = new ScreenArea(gameSize, new Point(), 0);
-        background.addScreenObject(game);
-        sidebar = new ScreenArea(sidebarSize, new Point(gameSize.width, 0), 1);
-        background.addScreenObject(sidebar);
-        bottom = new ScreenArea(bottomSize, new Point(0, gameSize.height), 2);
-        background.addScreenObject(bottom);
-        corner = new ScreenArea(cornerSize, new Point(gameSize.width, gameSize.height), 3);
-        background.addScreenObject(corner);
+        game = new ScreenArea(gameSize, gamePosition, 0);
+        area.addScreenObject(game);
+        sidebar = new ScreenArea(sidebarSize, sidebarPosition, 1);
+        area.addScreenObject(sidebar);
+        bottom = new ScreenArea(bottomSize, bottomPosition, 2);
+        area.addScreenObject(bottom);
+        corner = new ScreenArea(cornerSize, cornerPosition, 3);
+        area.addScreenObject(corner);
 
         client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, area));
     }
@@ -89,12 +93,14 @@ public class RenderThread extends QueuedInputThread {
         bottomSize = new Dimension(gameSize.width, 256);
 
         //Resize the necessary ScreenAreas.
-        foreground.resize(screenSize);
-        background.resize(screenSize);
+        area.resize(screenSize);
         game.resize(gameSize);
         sidebar.resize(sidebarSize);
         bottom.resize(bottomSize);
-        area.resize(screenSize);
+        gamePosition.setLocation(0, 0);
+        sidebarPosition.setLocation(gameSize.getWidth(), 0);
+        bottomPosition.setLocation(0, gameSize.getHeight());
+        cornerPosition.setLocation(gameSize.width, gameSize.height);
 
         //Actually resize the screen graphic and canvas.
         screen.setSize(screenSize);
@@ -103,7 +109,8 @@ public class RenderThread extends QueuedInputThread {
     }
 
     public void render() {
-        area.getGraphic().renderTo(screen, null, new Point(), area.getHitboxColor());
+        screen.clear();
+        area.getGraphic().renderTo(screen, null, new Point(), 0);
     }
 
     private void actionRender(GameAction action) {
@@ -114,38 +121,48 @@ public class RenderThread extends QueuedInputThread {
     private void gameRender() {
         //Render the activeGame board in it's entirety.
         GameBoard board = activeGame.getBoard();
-        //TODO: add all objects to the (game) ScreenArea.
+
+        HashSet<Coordinate> spaces = board.hexArray.spaces.getAllCoordinates();
+        HashSet<Coordinate> edges = board.hexArray.edges.getAllCoordinates();
+        HashSet<Coordinate> vertices = board.hexArray.vertices.getAllCoordinates();
 
         HashMap<Coordinate, Tile> tiles = board.hexArray.spaces.toHashMap();
         HashMap<Coordinate, Path> paths = board.hexArray.edges.toHashMap();
         HashMap<Coordinate, Building> buildings = board.hexArray.vertices.toHashMap();
 
-        for (Coordinate c : tiles.keySet()) {
-            int colorIndex = c.x % 2 + 2 * (c.y % 2);
+        for (Coordinate c : spaces) {
             Tile tile = tiles.get(c);
+            Graphic graphic = tile.getGraphic();
+            Clickable clickable = new ClickableTile(c);
             game.addScreenObject(new StaticGraphic(
-                    tile.getGraphic(),
+                    graphic,
                     GraphicsConfig.tileToScreen(c),
                     c.hashCode(),
-                    tile));
+                    clickable));
         }
-        for (Coordinate c : paths.keySet()) {
-            int colorIndex = c.x % 6;
+        for (Coordinate c : edges) {
             Path path = paths.get(c);
+            Graphic graphic = null;
+            if (path != null) graphic = path.getGraphic();
+            if (graphic == null) graphic = Team.Blank.paths[c.x % 3];
+            Clickable clickable = new ClickablePath(c);
             game.addScreenObject(new StaticGraphic(
-                    path.getGraphic(),
+                    graphic,
                     GraphicsConfig.edgeToScreen(c),
                     c.hashCode(),
-                    path));
+                    clickable));
         }
-        for (Coordinate c : buildings.keySet()) {
-            int colorIndex = c.x % 4;
+        for (Coordinate c : vertices) {
             Building building = buildings.get(c);
+            Graphic graphic = null;
+            if (building != null) graphic = building.getGraphic();
+            if (graphic == null) graphic = Team.Blank.settlement[c.x % 2];
+            Clickable clickable = new ClickableBuilding(c);
             game.addScreenObject(new StaticGraphic(
-                    building.getGraphic(),
+                    graphic,
                     GraphicsConfig.vertexToScreen(c),
                     c.hashCode(),
-                    building));
+                    clickable));
         }
     }
 
@@ -164,7 +181,7 @@ public class RenderThread extends QueuedInputThread {
                     gameRender();
                     break;
                 case Game_Scroll:
-                    game.setView((Point) event.data);
+                    game.changeView((Point) event.data);
                     break;
                 case Game_Update:
                     //process the game action, find out what changed, and re-render that section of the screen.

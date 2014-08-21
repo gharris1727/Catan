@@ -97,8 +97,8 @@ public class Statics {
         vertexRenderMaskLeft = new TriangularMask(GraphicsConfig.vertexRenderMaskSize);
         vertexRenderMaskRight = new FlippedMask(vertexRenderMaskLeft, FlippedMask.HORIZONTAL);
         horizontalRenderMask = new RectangularMask(GraphicsConfig.horizontalRenderMaskSize);
-        diagonalUpRenderMask = new DiagonalUpMask(GraphicsConfig.diagonalUpRenderMaskSize);
-        diagonalDownRenderMask = new DiagonalDownMask(GraphicsConfig.diagonalDownRenderMaskSize);
+        diagonalUpRenderMask = new DiagonalMask(GraphicsConfig.diagonalUpRenderMaskSize);
+        diagonalDownRenderMask = new FlippedMask(diagonalUpRenderMask, FlippedMask.VERTICAL);
 
         hillTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.hillTextureLocation, 0);
         forestTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.forestTextureLocation, 0);
@@ -142,11 +142,11 @@ public class Statics {
         whiteDiagonalUpPath = new Graphic(whiteTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.whiteDiagonalUpPathLocation, 0);
         whiteDiagonalDownPath = new Graphic(whiteTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.whiteDiagonalDownPathLocation, 0);
 
-        oceanVertexLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.oceanVertexLocationLeft, 0);
-        oceanVertexRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.oceanVertexLocationRight, 0);
-        oceanHorizontalPath = new Graphic(blueTeamGraphicSource, horizontalRenderMask, GraphicsConfig.oceanHorizontalPathLocation, 0);
-        oceanDiagonalUpPath = new Graphic(blueTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.oceanDiagonalUpPathLocation, 0);
-        oceanDiagonalDownPath = new Graphic(blueTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.oceanDiagonalDownPathLocation, 0);
+        oceanVertexLeft = new Graphic(oceanGraphicSource, vertexRenderMaskLeft, GraphicsConfig.oceanVertexLocationLeft, 0);
+        oceanVertexRight = new Graphic(oceanGraphicSource, vertexRenderMaskRight, GraphicsConfig.oceanVertexLocationRight, 0);
+        oceanHorizontalPath = new Graphic(oceanGraphicSource, horizontalRenderMask, GraphicsConfig.oceanHorizontalPathLocation, 0);
+        oceanDiagonalUpPath = new Graphic(oceanGraphicSource, diagonalUpRenderMask, GraphicsConfig.oceanDiagonalUpPathLocation, 0);
+        oceanDiagonalDownPath = new Graphic(oceanGraphicSource, diagonalDownRenderMask, GraphicsConfig.oceanDiagonalDownPathLocation, 0);
 
         blankVertexLeft = new Graphic(blankGraphicSource, vertexRenderMaskLeft, GraphicsConfig.blankVertexLocationLeft, 0);
         blankVertexRight = new Graphic(blankGraphicSource, vertexRenderMaskRight, GraphicsConfig.blankVertexLocationRight, 0);
@@ -154,16 +154,15 @@ public class Statics {
         blankDiagonalUpPath = new Graphic(blankGraphicSource, diagonalUpRenderMask, GraphicsConfig.blankDiagonalUpPathLocation, 0);
         blankDiagonalDownPath = new Graphic(blankGraphicSource, diagonalDownRenderMask, GraphicsConfig.blankDiagonalDownPathLocation, 0);
 
-        //TODO: might want to increase the border size to offer more padding for scrolling.
         BASE_GAME = new GameType("Settlers of Catan Base");
-        BASE_GAME.size(7, 7);
-        BASE_GAME.post(3, 0);
-        BASE_GAME.post(1, 1).tile(3, 1).post(5, 1);
-        BASE_GAME.tile(1, 2).tile(2, 2).tile(3, 2).tile(4, 2).tile(5, 2);
-        BASE_GAME.post(0, 3).tile(1, 3).tile(2, 3).tile(3, 3).tile(4, 3).tile(5, 3).post(6, 3);
-        BASE_GAME.tile(1, 4).tile(2, 4).tile(3, 4).tile(4, 4).tile(5, 4);
-        BASE_GAME.post(0, 5).tile(2, 5).tile(3, 5).tile(4, 5).post(5, 5);
-        BASE_GAME.post(2, 6).post(4, 6);
+        BASE_GAME.size(15, 11);
+        BASE_GAME.post(7, 2);
+        BASE_GAME.post(5, 3).tile(7, 3).post(9, 3);
+        BASE_GAME.tile(5, 4).tile(6, 4).tile(7, 4).tile(8, 4).tile(9, 4);
+        BASE_GAME.post(4, 5).tile(5, 5).tile(6, 5).tile(7, 5).tile(8, 5).tile(9, 5).post(10, 5);
+        BASE_GAME.tile(5, 6).tile(6, 6).tile(7, 6).tile(8, 6).tile(9, 6);
+        BASE_GAME.post(4, 7).tile(6, 7).tile(7, 7).tile(8, 7).post(9, 7);
+        BASE_GAME.post(6, 8).post(8, 8);
         BASE_GAME.gen(new RandomBoardGenerator());
         BASE_GAME.players(3);
     }

@@ -6,22 +6,22 @@ import java.awt.*;
  * Created by Greg on 8/14/2014.
  * A diagonal path shape mask.
  */
-public class DiagonalUpMask extends RenderMask {
+public class DiagonalMask extends RenderMask {
 
     private final int thickness;
     private final int height;
 
-    public DiagonalUpMask(Dimension d) {
+    public DiagonalMask(Dimension d) {
         this(d.width, d.height);
     }
 
-    public DiagonalUpMask(int thickness, int height) {
+    public DiagonalMask(int thickness, int height) {
         this.thickness = thickness;
         this.height = height;
     }
 
     public int getWidth() {
-        return height / 2 + thickness - 1 - thickness / 4;
+        return height / 2 + thickness - 2 - thickness / 3;
     }
 
     public int getHeight() {
@@ -30,21 +30,21 @@ public class DiagonalUpMask extends RenderMask {
 
     public int getLeftPadding(int lineNumber) {
         if (lineNumber < getCenter()) {
-            return ((getCenter() - lineNumber) / 2);
+            return ((getCenter() - lineNumber + 1) / 2);
         }
-        return 2 * (lineNumber - getCenter() + 1) - 1;
+        return (lineNumber - getCenter()) + (lineNumber - getCenter()) / 2;
     }
 
     public int getLineWidth(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
-            int n = 2 * lineNumber + lineNumber / 2 + 3;
+            int n = 3 + lineNumber + 2 * (lineNumber / 2);
             if (n > thickness) return thickness;
             return n;
         }
         return getLineWidth(getHeight() - 1 - lineNumber);
     }
 
-    private int getCenter() {
-        return height - thickness / 4 - 1;
+    public int getCenter() {
+        return height - thickness / 3 - 3;
     }
 }

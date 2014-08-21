@@ -18,7 +18,7 @@ public interface ScreenObject {
     public Graphic getGraphic();
 
     //If this object functions as a hitbox, then it will return the sub-object, otherwise it returns it's primary reference.
-    public Object getObject(Point p);
+    public Object getClickable(Point p);
 
     //Returns the render priority of this object. Used for layering.
     public int getRenderPriority();

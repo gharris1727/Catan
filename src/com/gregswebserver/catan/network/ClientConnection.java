@@ -7,9 +7,6 @@ import com.gregswebserver.catan.client.Client;
  * Game client that includes graphics, networking, and playing catan games.
  */
 public class ClientConnection extends NetConnection {
-
-    //TODO: establish connection.
-
     private Client client;
 
     public ClientConnection(Client client) {

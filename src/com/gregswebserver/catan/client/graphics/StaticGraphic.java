@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics;
 
+import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.util.UniqueColor;
 
 import java.awt.*;
@@ -14,14 +15,14 @@ public class StaticGraphic implements ScreenObject {
     private final Point position;
     private final int color;
     private final int priority;
-    private final Object object;
+    private final Clickable clickable;
 
-    public StaticGraphic(Graphic graphic, Point position, int priority, Object object) {
+    public StaticGraphic(Graphic graphic, Point position, int priority, Clickable clickable) {
         this.graphic = graphic;
         this.position = position;
         this.color = UniqueColor.getNext();
         this.priority = priority;
-        this.object = object;
+        this.clickable = clickable;
     }
 
     public Point getPosition() {
@@ -36,8 +37,8 @@ public class StaticGraphic implements ScreenObject {
         return graphic;
     }
 
-    public Object getObject(Point p) {
-        return null;
+    public Clickable getClickable(Point p) {
+        return clickable;
     }
 
     public int getRenderPriority() {
@@ -46,5 +47,9 @@ public class StaticGraphic implements ScreenObject {
 
     public boolean needsRendering() {
         return false; //Never needs re-rendering.
+    }
+
+    public String toString() {
+        return "StaticGraphic Position: " + position + " Color: " + color + " Priority: " + priority + " Clickable: " + clickable;
     }
 }

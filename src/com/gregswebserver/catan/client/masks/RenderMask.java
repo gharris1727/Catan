@@ -19,6 +19,12 @@ public abstract class RenderMask {
     public abstract int getLineWidth(int lineNumber);
 
     public int getIndex(int x, int y) {
+        int maxX = getLeftPadding(y) + getLineWidth(y);
+        int maxY = getHeight();
+        int minX = getLeftPadding(y);
+        int minY = 0;
+        if (x < minX || y < minY || x > maxX || y > maxY)
+            throw new IllegalArgumentException("X/" + minX + "/" + x + "/" + maxX + " Y/" + minY + "/" + y + "/" + maxY + ".");
         int index = 0;
         for (int i = 0; i < y; i++) {
             index += getLineWidth(i);

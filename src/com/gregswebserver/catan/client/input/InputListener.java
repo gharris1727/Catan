@@ -2,8 +2,11 @@ package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.ScreenArea;
+import com.gregswebserver.catan.client.renderer.RenderEvent;
+import com.gregswebserver.catan.client.renderer.RenderEventType;
 import com.gregswebserver.catan.log.Logger;
 
+import java.awt.*;
 import java.awt.event.*;
 
 /**
@@ -31,12 +34,25 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                client.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, new Point(0, -5)));
+                break;
+            case KeyEvent.VK_DOWN:
+                client.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, new Point(0, 5)));
+                break;
+            case KeyEvent.VK_LEFT:
+                client.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, new Point(-5, 0)));
+                break;
+            case KeyEvent.VK_RIGHT:
+                client.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, new Point(5, 0)));
+                break;
+            //TODO: Try and control spam somehow
+        }
     }
 
     @Override
@@ -46,7 +62,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        logger.debug(this, "Clicked on: " + hitbox.getObject(e.getPoint()));
+        logger.debug(this, "Clicked on: " + hitbox.getClickable(e.getPoint()));
     }
 
     @Override

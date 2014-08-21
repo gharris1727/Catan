@@ -52,7 +52,7 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
                     {2, 2, 0, 0, 0, 1, 3, 4}, //X
                     {0, 1, 0, 0, 0, 0, 0, 0}}, //Y
             { //ODD
-                    {2, 2, 0, 0, 1, 0, 4, 3}, //X
+                    {2, 2, 0, 0, 0, 1, 4, 3}, //X
                     {0, 1, 0, 0, 0, 1, 0, 1}}}; //Y
     private static final int[][][] spaceToVertex = {
             { //EVEN
@@ -103,7 +103,7 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
         this.yClass = yClass;
         this.zClass = zClass;
         spaces = new TwoDimensionalArray<>(x, y); // Number of spaces in a hex map is x * y
-        edges = new TwoDimensionalArray<>(4 * x, y + 1); // number of edges in a hex map is less than 4x * y+1
+        edges = new TwoDimensionalArray<>(3 * (x + 1), y + 1); // number of edges in a hex map is less than 4x * y+1
         vertices = new TwoDimensionalArray<>(2 * (x + 1), y + 1); // number of vertices in a hex map is less than 2(x+1) * y+1
     }
 

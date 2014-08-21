@@ -28,7 +28,11 @@ public enum Team {
     Ocean(
             new Graphic[]{Statics.oceanVertexRight, Statics.oceanVertexLeft},
             new Graphic[]{Statics.oceanVertexRight, Statics.oceanVertexLeft},
-            new Graphic[]{Statics.oceanDiagonalUpPath, Statics.oceanDiagonalDownPath, Statics.oceanHorizontalPath});
+            new Graphic[]{Statics.oceanDiagonalUpPath, Statics.oceanDiagonalDownPath, Statics.oceanHorizontalPath}),
+    Blank(
+            new Graphic[]{Statics.blankVertexRight, Statics.blankVertexLeft},
+            new Graphic[]{Statics.blankVertexRight, Statics.blankVertexLeft},
+            new Graphic[]{Statics.blankDiagonalUpPath, Statics.blankDiagonalDownPath, Statics.blankHorizontalPath});
 
     public final Graphic[] settlement;
     public final Graphic[] city;

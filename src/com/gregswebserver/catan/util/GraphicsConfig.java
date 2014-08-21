@@ -23,8 +23,7 @@ public class GraphicsConfig {
     public static final Dimension tileRenderMaskSize = new Dimension(112, 96);
     public static final Dimension vertexRenderMaskSize = new Dimension(0, 16);
     public static final Dimension horizontalRenderMaskSize = new Dimension(64, 16);
-    public static final Dimension diagonalUpRenderMaskSize = new Dimension(18, 52);
-    public static final Dimension diagonalDownRenderMaskSize = new Dimension(18, 52);
+    public static final Dimension diagonalUpRenderMaskSize = new Dimension(16, 54);
 
     public static final Point hillTextureLocation = new Point(235, 523);
     public static final Point forestTextureLocation = new Point(586, 321);
@@ -78,22 +77,22 @@ public class GraphicsConfig {
     public static final Point blankDiagonalUpPathLocation = new Point();
     public static final Point blankDiagonalDownPathLocation = new Point();
 
-    public static final int boardUnitWidth = 250;
-    public static final int boardUnitHeight = 200;
+    public static final int boardUnitWidth = 200;
+    public static final int boardUnitHeight = 112;
 
     public static final int[][] tileOffsets = {
-            {15, 130}, //Horizontal
-            {16, 60}}; //Vertical
+            {12, 112}, //Horizontal
+            {16, 72}}; //Vertical
     public static final int[][] edgeOffsets = {
-            {0, 0, 39, 100, 100, 150}, //Horizontal
-            {8, 65, 0, 65, 8, 30}}; //Vertical
+            {0, 0, 36, 100, 100, 136}, //Horizontal
+            {9, 65, 0, 65, 9, 56}}; //Vertical
     public static final int[][] vertOffsets = {
-            {0, 50, 100, 150}, //Horizontal
-            {100, 0, 0, 100}}; //Vertical
+            {0, 24, 100, 124}, //Horizontal
+            {56, 0, 0, 56}}; //Vertical
 
     public static Point tileToScreen(Coordinate c) {
         int outX = (c.x / 2) * boardUnitWidth;
-        int outY = (c.y / 2) * boardUnitHeight;
+        int outY = (c.y) * boardUnitHeight;
         outX += tileOffsets[0][c.x % 2];
         outY += tileOffsets[1][c.x % 2];
         return new Point(outX, outY);
@@ -101,7 +100,7 @@ public class GraphicsConfig {
 
     public static Point edgeToScreen(Coordinate c) {
         int outX = (c.x / 6) * boardUnitWidth;
-        int outY = (c.y / 6) * boardUnitHeight;
+        int outY = (c.y) * boardUnitHeight;
         outX += edgeOffsets[0][c.x % 6];
         outY += edgeOffsets[1][c.x % 6];
         return new Point(outX, outY);
@@ -109,7 +108,7 @@ public class GraphicsConfig {
 
     public static Point vertexToScreen(Coordinate c) {
         int outX = (c.x / 4) * boardUnitWidth;
-        int outY = (c.y / 4) * boardUnitHeight;
+        int outY = (c.y) * boardUnitHeight;
         outX += vertOffsets[0][c.x % 4];
         outY += vertOffsets[1][c.x % 4];
         return new Point(outX, outY);

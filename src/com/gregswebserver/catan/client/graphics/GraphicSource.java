@@ -16,7 +16,7 @@ import java.io.IOException;
 public class GraphicSource extends Graphic {
 
     private GraphicSource(int width, int height, int[] pixels) {
-        super(pixels, new RectangularMask(width, height));
+        super(pixels, new int[width * height], new RectangularMask(width, height));
     }
 
     public static GraphicSource load(String path) {

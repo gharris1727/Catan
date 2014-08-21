@@ -14,5 +14,7 @@ public enum RenderEventType {
     Player_Update,
     Window_Resize,
     Render_Disable,
-    Render_Enable, Chat_Create, Game_Scroll,
+    Render_Enable,
+    Chat_Create,
+    Game_Scroll,
 }

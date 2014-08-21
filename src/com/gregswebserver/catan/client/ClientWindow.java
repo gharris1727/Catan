@@ -14,8 +14,6 @@ import java.awt.*;
  */
 public class ClientWindow extends GenericWindow {
 
-    //TODO: finish getting the render thread connected.
-
     private Client client;
     private Canvas canvas;
     private InputListener listener;
@@ -53,11 +51,11 @@ public class ClientWindow extends GenericWindow {
         }
         canvas = newCanvas;
         add(canvas);
+        setVisible(true);
         canvas.addKeyListener(listener);
         canvas.addMouseListener(listener);
         canvas.addMouseMotionListener(listener);
         canvas.addMouseWheelListener(listener);
-        setVisible(true);
         client.addEvent(new RenderEvent(this, RenderEventType.Render_Enable, null));
         resizing = false;
     }

@@ -33,10 +33,12 @@ public class ScreenArea implements ScreenObject {
         this.graphic = new Graphic(size);
     }
 
-    public Object getObject(Point p) {
-        ScreenObject object = subObjects.get(getGraphic().getHitboxColor(p));
+    public Object getClickable(Point p) {
+        Point subPosition = new Point(p.x - position.x, p.y - position.y);
+        int color = getGraphic().getHitboxColor(subPosition);
+        ScreenObject object = subObjects.get(color);
         if (object instanceof ScreenArea)
-            return object.getObject(p);
+            return object.getClickable(p);
         return object;
     }
 
@@ -98,8 +100,8 @@ public class ScreenArea implements ScreenObject {
         needsRendering = true;
     }
 
-    public void setView(Point p) {
-        this.viewPoint = p;
+    public void changeView(Point p) {
+        this.viewPoint.translate(p.x, p.y);
         needsRendering = true;
     }
 }
