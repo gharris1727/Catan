@@ -12,6 +12,7 @@ import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.event.*;
 import com.gregswebserver.catan.network.ClientConnection;
 import com.gregswebserver.catan.network.NetID;
+import com.gregswebserver.catan.util.Statics;
 
 import java.awt.*;
 
@@ -33,6 +34,8 @@ public class Client extends QueuedInputThread {
     public Client() {
         super(Main.logger); //TODO: REMOVE ME!
 //        super(new Logger());
+
+        new Statics(); //Just to initialize all of the values.
         window = new ClientWindow(this);
         listener = new InputListener(this);
         window.setListener(listener);

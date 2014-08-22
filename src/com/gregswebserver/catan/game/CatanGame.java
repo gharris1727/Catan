@@ -31,24 +31,24 @@ public class CatanGame {
         type.LoadSettingsTo(board);
     }
 
-    public void addPlayer(Identity identity) {
+    private void addPlayer(Identity identity) {
     }
 
-    public void removePlayer(Identity origin) {
+    private void removePlayer(Identity origin) {
     }
 
-    public void buildSettlement(Identity origin, Coordinate data) {
+    private void buildSettlement(Identity origin, Coordinate data) {
     }
 
-    public void buildCity(Identity origin, Coordinate data) {
+    private void buildCity(Identity origin, Coordinate data) {
     }
 
-    public void buildRoad(Identity origin, Coordinate data) {
+    private void buildRoad(Identity origin, Coordinate data) {
     }
 
-    public void moveRobber(Identity origin, Coordinate data) {
+    private void moveRobber(Identity origin, Coordinate data) {
         for (Tile tile : board.hexArray.spaces) {
-            if (tile.hasRobber()) {
+            if (tile != null && tile.hasRobber()) {
                 tile.removeRobber();
                 break;
             }
@@ -56,7 +56,7 @@ public class CatanGame {
         board.hexArray.spaces.get(data).placeRobber();
     }
 
-    public void roll(Identity origin, DiceRoll data) {
+    private void roll(Identity origin, DiceRoll data) {
 
     }
 

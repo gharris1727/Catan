@@ -10,6 +10,8 @@ import java.util.ArrayList;
  */
 public abstract class RenderMask {
 
+    private ArrayList<Integer> cumulativePixels;
+
     public abstract int getWidth();
 
     public abstract int getHeight();
@@ -23,13 +25,12 @@ public abstract class RenderMask {
         int maxY = getHeight();
         int minX = getLeftPadding(y);
         int minY = 0;
+        String msg = "X/" + minX + "/" + x + "/" + maxX + " Y/" + minY + "/" + y + "/" + maxY;
         if (x < minX || y < minY || x > maxX || y > maxY)
-            throw new IllegalArgumentException("X/" + minX + "/" + x + "/" + maxX + " Y/" + minY + "/" + y + "/" + maxY + ".");
-        int index = 0;
-        for (int i = 0; i < y; i++) {
-            index += getLineWidth(i);
-        }
-        index += x - getLeftPadding(y);
+            throw new IllegalArgumentException(msg);
+        getPixelCount();
+        int index = x - getLeftPadding(y);
+        if (y > 0) index += cumulativePixels.get(y - 1);
         return index;
     }
 
@@ -50,10 +51,14 @@ public abstract class RenderMask {
     }
 
     public int getPixelCount() {
-        int index = 0;
-        for (int i = 0; i < getHeight(); i++) {
-            index += getLineWidth(i);
+        if (cumulativePixels == null) {
+            cumulativePixels = new ArrayList<>(getHeight());
+            int sum = 0;
+            for (int i = 0; i < getHeight(); i++) {
+                sum += getLineWidth(i);
+                cumulativePixels.add(sum);
+            }
         }
-        return index;
+        return cumulativePixels.get(cumulativePixels.size() - 1);
     }
 }

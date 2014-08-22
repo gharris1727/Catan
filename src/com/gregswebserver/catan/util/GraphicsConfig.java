@@ -20,10 +20,17 @@ public class GraphicsConfig {
     public static final String blueTeamGraphicSourcePath = "res/graphics/blueTeam.png";
     public static final String whiteTeamGraphicSourcePath = "res/graphics/whiteTeam.png";
 
+    public static final String resourceCardGraphicSourcePath = "res/graphics/resources.png";
+    public static final String developmentCardGraphicSourcePath = "res/graphics/development.png";
+    public static final String achievementCardGraphicSourcePath = "res/graphics/achievement.png";
+
     public static final Dimension tileRenderMaskSize = new Dimension(112, 96);
     public static final Dimension vertexRenderMaskSize = new Dimension(0, 16);
     public static final Dimension horizontalRenderMaskSize = new Dimension(64, 16);
     public static final Dimension diagonalUpRenderMaskSize = new Dimension(16, 54);
+    public static final Dimension resourceCardRenderMaskSize = new Dimension(128, 192);
+    public static final Dimension resourceCardRenderMaskCornerSize = new Dimension(7, 7);
+    public static final Dimension achievementCardRenderMaskSize = new Dimension(192, 192);
 
     public static final Point hillTextureLocation = new Point(235, 523);
     public static final Point forestTextureLocation = new Point(586, 321);
@@ -32,6 +39,19 @@ public class GraphicsConfig {
     public static final Point fieldTextureLocation = new Point(476, 116);
     public static final Point desertTextureLocation = new Point(131, 284);
     public static final Point oceanTextureLocation = new Point(351, 333);
+
+    public static final Point brickCardTextureLocation = new Point();
+    public static final Point lumberCardTextureLocation = new Point();
+    public static final Point woolCardTextureLocation = new Point();
+    public static final Point grainCardTextureLocation = new Point();
+    public static final Point oreCardTextureLocation = new Point();
+
+    public static final Point knightCardTextureLocation = new Point();
+    public static final Point progressCardTextureLocation = new Point();
+    public static final Point victoryPointCardTextureLocation = new Point();
+
+    public static final Point longestRoadCardTextureLocation = new Point();
+    public static final Point largestArmyCardTexture = new Point();
 
     public static final Point redSettlementLocationLeft = new Point();
     public static final Point redSettlementLocationRight = new Point();

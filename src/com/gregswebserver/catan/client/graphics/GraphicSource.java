@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.masks.RectangularMask;
 import com.gregswebserver.catan.log.LogLevel;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,8 +16,9 @@ import java.io.IOException;
  */
 public class GraphicSource extends Graphic {
 
-    private GraphicSource(int width, int height, int[] pixels) {
-        super(pixels, new int[width * height], new RectangularMask(width, height));
+    private GraphicSource(int width, int height, int[] pixels, String path) {
+        super(pixels, new int[width * height], new RectangularMask(new Dimension(width, height)));
+        name = path;
     }
 
     public static GraphicSource load(String path) {
@@ -39,6 +41,6 @@ public class GraphicSource extends Graphic {
         } catch (IOException e) {
             Main.logger.log("Error loading image source at " + path, e, LogLevel.ERROR);
         }
-        return new GraphicSource(width, height, pixels);
+        return new GraphicSource(width, height, pixels, path);
     }
 }

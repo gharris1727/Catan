@@ -6,8 +6,7 @@ import com.gregswebserver.catan.client.renderer.RenderEventType;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.game.CatanGame;
-import com.gregswebserver.catan.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.game.gameplay.DiceRoll;
+import com.gregswebserver.catan.game.gameplay.GameAction;
 import com.gregswebserver.catan.game.gameplay.GameType;
 
 /**
@@ -35,40 +34,41 @@ public class GameThread extends QueuedInputThread {
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Create, game));
                 break;
             case Player_Join:
-                game.addPlayer(event.origin);
+                game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Player_Update, event.origin));
                 break;
             case Player_Leave:
-                game.removePlayer(event.origin);
+                game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Player_Update, event.origin));
                 break;
             case Player_Build_Settlement:
-                game.buildSettlement(event.origin, (Coordinate) event.data);
+                game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
                 break;
             case Player_Build_City:
-                game.buildCity(event.origin, (Coordinate) event.data);
+                game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
                 break;
             case Player_Build_Road:
-                game.buildRoad(event.origin, (Coordinate) event.data);
+                game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
                 break;
             case Player_Move_Robber:
-                game.moveRobber(event.origin, (Coordinate) event.data);
+                game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
                 break;
             case Player_Roll_Dice:
-                game.roll(event.origin, (DiceRoll) event.data);
+                game.applyAction((GameAction) event.data);
                 //TODO: start dice animation
                 break;
             case Player_Offer_Trade:
                 break;
             case Player_Accept_Trade:
+                //TODO: finish player trading.
                 break;
             case Player_Make_Trade:
+                game.applyAction((GameAction) event.data);
                 break;
-            //TODO: implement trading
         }
     }
 

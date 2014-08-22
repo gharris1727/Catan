@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics;
 
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.masks.RectangularMask;
 import com.gregswebserver.catan.client.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.Renderable;
@@ -15,23 +16,22 @@ import java.util.ArrayList;
 public class Graphic implements Renderable {
 
     public static final int transColor = 0xffff00ff;
+    protected String name;
     protected int[] pixels, hitbox;
     private RenderMask mask;
 
     protected Graphic() {
     }
 
-    public Graphic(Dimension d) {
-        this(d.width, d.height);
-    }
-
-    public Graphic(int width, int height) {
-        this(new int[width * height], new int[width * height], new RectangularMask(width, height));
+    public Graphic(Dimension size) {
+        this(new int[size.width * size.height], new int[size.width * size.height], new RectangularMask(size));
+        name = "Blank " + size.width + "x" + size.height;
         clear();
     }
 
     public Graphic(GraphicSource source, RenderMask mask, Point start, int hitboxColor) {
         this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
+        name = "Source: " + source + " Mask: " + mask + " Pixels: " + mask.getPixelCount();
         renderFrom(source, null, start, hitboxColor);
     }
 
@@ -91,11 +91,16 @@ public class Graphic implements Renderable {
             int length = endX - currX;
             if (length < 1) continue;
             //Copy
-            pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length);
-            if (color > 0)
-                colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
-            else
-                pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), 1, to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, length);
+            try {
+                pixelCopy(from.pixels, from.mask.getIndex(currX, currY), to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), length);
+                if (color > 0)
+                    colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), color, length);
+                else
+                    pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), length);
+            } catch (Exception e) {
+                Main.logger.debug(null, e.toString());
+                Main.logger.debug(null, "X/" + startX + "/" + currX + "/" + endX + " Y/" + startY + "/" + currY + "/" + endY + " L/" + length);
+            }
         }
     }
 
@@ -109,10 +114,24 @@ public class Graphic implements Renderable {
         }
     }
 
+    private static void pixelCopy(int[] src, int srcPos, int[] dst, int dstPos, int length) {
+        for (int i = 0; i < length; i++) {
+            int color = src[i + srcPos];
+            if (color != transColor)
+                dst[i + dstPos] = color;
+        }
+    }
+
     private static void colorCopy(int[] dst, int dstPos, int dstStep, int color, int length) {
         for (int i = 0; i < length; i++) {
             int dstCurr = i * dstStep + dstPos;
             dst[dstCurr] = color;
+        }
+    }
+
+    private static void colorCopy(int[] dst, int dstPos, int color, int length) {
+        for (int i = 0; i < length; i++) {
+            dst[i + dstPos] = color;
         }
     }
 
@@ -144,5 +163,9 @@ public class Graphic implements Renderable {
             pixels[i] = transColor;
             hitbox[i] = 0;
         }
+    }
+
+    public String toString() {
+        return name;
     }
 }

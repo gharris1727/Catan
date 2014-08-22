@@ -43,7 +43,7 @@ public class Screen extends Graphic {
         GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         image = gc.createCompatibleImage(size.width, size.height);
         setPixels(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
-        setMask(new RectangularMask(size.width, size.height));
+        setMask(new RectangularMask(size));
         buffer = null; //MUST INVALIDATE THE OLD BUFFER.
         canvas = new Canvas() {
             public int getWidth() {

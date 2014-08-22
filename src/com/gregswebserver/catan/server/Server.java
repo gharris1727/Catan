@@ -9,6 +9,7 @@ import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.network.ServerConnection;
+import com.gregswebserver.catan.server.lobby.Lobby;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class Server extends QueuedInputThread {
 
     private ArrayList<ServerConnection> connections;
+    private ArrayList<Lobby> lobbies;
     private ServerSocket socket;
     private Thread listen;
     private boolean listening;
@@ -69,33 +71,28 @@ public class Server extends QueuedInputThread {
 
         }
         if (event instanceof GameEvent) {
-            switch (((GameEvent) event).type) {
-                case Game_Create:
-                    break;
-                case Player_Join:
-                    break;
-                case Player_Leave:
-                    break;
-                case Player_Build_Settlement:
-                    break;
-                case Player_Build_City:
-                    break;
-                case Player_Build_Road:
-                    break;
-                case Player_Move_Robber:
-                    break;
-                case Player_Roll_Dice:
-                    break;
-                case Player_Offer_Trade:
-                    break;
-                case Player_Accept_Trade:
-                    break;
-                case Player_Make_Trade:
-                    break;
-            }
+
         }
         if (event instanceof ServerEvent) {
-
+            switch (((ServerEvent) event).type) {
+                case Client_Connect:
+                    break;
+                case Client_Disconnect:
+                    break;
+                case Client_Join:
+                    break;
+                case Client_Leave:
+                    break;
+                case Lobby_Create:
+                    Lobby lobby = new Lobby(this, ((ServerEvent) event).origin);
+                    break;
+                case Lobby_Delete:
+                    break;
+                case Lobby_Join:
+                    break;
+                case Lobby_Leave:
+                    break;
+            }
         }
     }
 

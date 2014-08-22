@@ -12,13 +12,9 @@ public class HexagonalMask extends RenderMask {
     private final int height;
     private final int width;
 
-    public HexagonalMask(Dimension d) {
-        this(d.width, d.height);
-    }
-
-    public HexagonalMask(int width, int height) {
-        this.width = width;
-        this.height = height;
+    public HexagonalMask(Dimension size) {
+        this.width = size.width;
+        this.height = size.height;
     }
 
     public int getWidth() {

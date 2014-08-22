@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.network;
 
 import com.gregswebserver.catan.server.Server;
+import com.gregswebserver.catan.server.lobby.Lobby;
 
 import java.net.Socket;
 
@@ -11,6 +12,8 @@ import java.net.Socket;
 public class ServerConnection extends NetConnection {
 
     private Server server;
+    private Lobby lobby;
+    private Identity identity;
 
     public ServerConnection(Socket socket, Server server) {
         super(server.logger);
@@ -23,5 +26,12 @@ public class ServerConnection extends NetConnection {
         server.addEvent(e.getEvent());
     }
 
+    public void setLobby(Lobby lobby) {
+        this.lobby = lobby;
+    }
+
+    public Identity getIdentity() {
+        return identity;
+    }
 }
 

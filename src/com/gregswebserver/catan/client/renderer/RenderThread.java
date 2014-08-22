@@ -4,14 +4,8 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.ClientEvent;
 import com.gregswebserver.catan.client.ClientEventType;
 import com.gregswebserver.catan.client.chat.ChatLog;
-import com.gregswebserver.catan.client.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.Screen;
-import com.gregswebserver.catan.client.graphics.ScreenArea;
-import com.gregswebserver.catan.client.graphics.StaticGraphic;
-import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.client.input.ClickableBuilding;
-import com.gregswebserver.catan.client.input.ClickablePath;
-import com.gregswebserver.catan.client.input.ClickableTile;
+import com.gregswebserver.catan.client.graphics.*;
+import com.gregswebserver.catan.client.input.*;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.game.CatanGame;
@@ -21,10 +15,14 @@ import com.gregswebserver.catan.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.game.board.paths.Path;
 import com.gregswebserver.catan.game.board.tiles.Tile;
 import com.gregswebserver.catan.game.gameplay.GameAction;
+import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
+import com.gregswebserver.catan.game.player.Player;
 import com.gregswebserver.catan.game.player.Team;
 import com.gregswebserver.catan.util.GraphicsConfig;
+import com.gregswebserver.catan.util.Statics;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -39,6 +37,7 @@ public class RenderThread extends QueuedInputThread {
 
     private Client client;
     private CatanGame activeGame;
+    private Player localPlayer;
     private Point viewPosition;
     private ChatLog chat;
 
@@ -166,6 +165,31 @@ public class RenderThread extends QueuedInputThread {
         }
     }
 
+    public void playerRender() {
+        HashMap<Tradeable, Integer> inventory = localPlayer.getInventory();
+        ArrayList<Point> positions = new ArrayList<>();
+        for (Tradeable t : inventory.keySet()) {
+            int num = inventory.get(t);
+            Graphic graphic = Statics.nullGraphic;
+            if (t instanceof Graphical)
+                graphic = ((Graphical) t).getGraphic();
+            Point position = new Point();
+            positions.add(position);
+            Clickable clickable = new ClickableInventoryItem();
+            for (int i = 0; i < num; i++) {
+                bottom.addScreenObject(new StaticGraphic(
+                        graphic,
+                        position,
+                        0,
+                        clickable));
+            }
+        }
+        int divX = (bottomSize.width - 128) / positions.size();
+        for (int i = 0; i < positions.size(); i++) {
+            positions.get(i).setLocation(divX * (i + 1), 16);
+        }
+    }
+
     protected void execute() throws ThreadStop {
         //Process the event queue without blocking, allowing the renderer to run more than once per event.
         RenderEvent event = (RenderEvent) getEvent(false);
@@ -188,6 +212,8 @@ public class RenderThread extends QueuedInputThread {
                     actionRender((GameAction) event.data);
                     break;
                 case Player_Update:
+                    localPlayer = (Player) event.data;
+                    playerRender();
                     break;
                 case Window_Resize:
                     enabled = false;

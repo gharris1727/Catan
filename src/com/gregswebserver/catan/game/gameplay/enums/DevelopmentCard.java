@@ -1,23 +1,28 @@
 package com.gregswebserver.catan.game.gameplay.enums;
 
+import com.gregswebserver.catan.client.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.Graphical;
 import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
+import com.gregswebserver.catan.util.Statics;
 
 /**
  * Created by Greg on 8/9/2014.
  * Enum storing the different Development cards.
  */
-public enum DevelopmentCard implements Tradeable {
+public enum DevelopmentCard implements Tradeable, Graphical {
 
-    Knight("Knight", 1),
-    Progress("Progress Card", 0),
-    VictoryPoint("Victory Point Card", 1);
+    Knight("Knight", 1, Statics.knightCardTexture),
+    Progress("Progress Card", 0, Statics.progressCardTexture),
+    VictoryPoint("Victory Point Card", 1, Statics.victoryPointCardTexture);
 
     private final String name;
     private final int vp;
+    private final Graphic graphic;
 
-    DevelopmentCard(String name, int vp) {
+    DevelopmentCard(String name, int vp, Graphic graphic) {
         this.name = name;
         this.vp = vp;
+        this.graphic = graphic;
     }
 
     public String getName() {
@@ -26,5 +31,9 @@ public enum DevelopmentCard implements Tradeable {
 
     public int getVictoryPoints() {
         return vp;
+    }
+
+    public Graphic getGraphic() {
+        return graphic;
     }
 }

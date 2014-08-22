@@ -12,12 +12,8 @@ public class DiagonalMask extends RenderMask {
     private final int height;
 
     public DiagonalMask(Dimension d) {
-        this(d.width, d.height);
-    }
-
-    public DiagonalMask(int thickness, int height) {
-        this.thickness = thickness;
-        this.height = height;
+        thickness = d.width;
+        height = d.height;
     }
 
     public int getWidth() {

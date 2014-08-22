@@ -6,12 +6,15 @@ import com.gregswebserver.catan.client.masks.*;
 import com.gregswebserver.catan.game.gameplay.GameType;
 import com.gregswebserver.catan.game.gameplay.generator.RandomBoardGenerator;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/15/2014.
  * Class full of static objects that need to be loaded.
  * Everything in here should require loading outside resources and take a significant amount of time to load.
  */
 public class Statics {
+    public static Graphic nullGraphic;
 
     public static GraphicSource tileGraphicSource;
     public static GraphicSource oceanGraphicSource;
@@ -22,12 +25,18 @@ public class Statics {
     public static GraphicSource blueTeamGraphicSource;
     public static GraphicSource whiteTeamGraphicSource;
 
+    public static GraphicSource resourceCardGraphicSource;
+    public static GraphicSource developmentCardGraphicSource;
+    public static GraphicSource achievementCardGraphicSource;
+
     public static RenderMask tileRenderMask;
     public static RenderMask vertexRenderMaskLeft;
     public static RenderMask vertexRenderMaskRight;
     public static RenderMask horizontalRenderMask;
     public static RenderMask diagonalUpRenderMask;
     public static RenderMask diagonalDownRenderMask;
+    public static RenderMask resourceCardRenderMask;
+    public static RenderMask achievementCardRenderMask;
 
     public static Graphic hillTexture;
     public static Graphic forestTexture;
@@ -36,6 +45,19 @@ public class Statics {
     public static Graphic fieldTexture;
     public static Graphic desertTexture;
     public static Graphic oceanTexture;
+
+    public static Graphic brickCardTexture;
+    public static Graphic lumberCardTexture;
+    public static Graphic woolCardTexture;
+    public static Graphic grainCardTexture;
+    public static Graphic oreCardTexture;
+
+    public static Graphic knightCardTexture;
+    public static Graphic progressCardTexture;
+    public static Graphic victoryPointCardTexture;
+
+    public static Graphic longestRoadCardTexture;
+    public static Graphic largestArmyCardTexture;
 
     public static Graphic redSettlementLeft;
     public static Graphic redSettlementRight;
@@ -84,6 +106,9 @@ public class Statics {
     public static GameType BASE_GAME;
 
     public Statics() {
+        //Dummy graphic that is used to prevent a NullPointerException in some cases.
+        nullGraphic = new Graphic(new Dimension(1, 1));
+
         tileGraphicSource = GraphicSource.load(GraphicsConfig.tileGraphicSourcePath);
         oceanGraphicSource = GraphicSource.load(GraphicsConfig.oceanGraphicSourcePath);
         blankGraphicSource = GraphicSource.load(GraphicsConfig.blankGraphicSourcePath);
@@ -93,12 +118,18 @@ public class Statics {
         blueTeamGraphicSource = GraphicSource.load(GraphicsConfig.blueTeamGraphicSourcePath);
         whiteTeamGraphicSource = GraphicSource.load(GraphicsConfig.whiteTeamGraphicSourcePath);
 
+        resourceCardGraphicSource = GraphicSource.load(GraphicsConfig.resourceCardGraphicSourcePath);
+        developmentCardGraphicSource = GraphicSource.load(GraphicsConfig.developmentCardGraphicSourcePath);
+        achievementCardGraphicSource = GraphicSource.load(GraphicsConfig.achievementCardGraphicSourcePath);
+
         tileRenderMask = new HexagonalMask(GraphicsConfig.tileRenderMaskSize);
         vertexRenderMaskLeft = new TriangularMask(GraphicsConfig.vertexRenderMaskSize);
         vertexRenderMaskRight = new FlippedMask(vertexRenderMaskLeft, FlippedMask.HORIZONTAL);
         horizontalRenderMask = new RectangularMask(GraphicsConfig.horizontalRenderMaskSize);
         diagonalUpRenderMask = new DiagonalMask(GraphicsConfig.diagonalUpRenderMaskSize);
         diagonalDownRenderMask = new FlippedMask(diagonalUpRenderMask, FlippedMask.VERTICAL);
+        resourceCardRenderMask = new RoundedRectangularMask(GraphicsConfig.resourceCardRenderMaskSize, GraphicsConfig.resourceCardRenderMaskCornerSize);
+        achievementCardRenderMask = new RectangularMask(GraphicsConfig.achievementCardRenderMaskSize);
 
         hillTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.hillTextureLocation, 0);
         forestTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.forestTextureLocation, 0);
@@ -109,6 +140,19 @@ public class Statics {
         oceanTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.oceanTextureLocation, 0);
 
         //TODO: beach textures.
+
+        brickCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.brickCardTextureLocation, 0);
+        lumberCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.lumberCardTextureLocation, 0);
+        woolCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.woolCardTextureLocation, 0);
+        grainCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.grainCardTextureLocation, 0);
+        oreCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.oreCardTextureLocation, 0);
+
+        knightCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.knightCardTextureLocation, 0);
+        progressCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.progressCardTextureLocation, 0);
+        victoryPointCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.victoryPointCardTextureLocation, 0);
+
+        longestRoadCardTexture = new Graphic(achievementCardGraphicSource, achievementCardRenderMask, GraphicsConfig.longestRoadCardTextureLocation, 0);
+        largestArmyCardTexture = new Graphic(achievementCardGraphicSource, achievementCardRenderMask, GraphicsConfig.largestArmyCardTexture, 0);
 
         redSettlementLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.redSettlementLocationLeft, 0);
         redSettlementRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.redSettlementLocationRight, 0);
