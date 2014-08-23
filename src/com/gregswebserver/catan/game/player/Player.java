@@ -35,17 +35,14 @@ public class Player implements Trader {
         this.team = team;
     }
 
-    @Override
     public boolean canOffer(Trade t) {
         return false;
     }
 
-    @Override
     public boolean canFillRequest(Trade t) {
         return false;
     }
 
-    @Override
     public HashSet<Trade> getTrades() {
         return null;
     }

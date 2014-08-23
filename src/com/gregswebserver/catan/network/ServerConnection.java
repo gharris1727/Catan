@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.network;
 
 import com.gregswebserver.catan.server.Server;
+import com.gregswebserver.catan.server.ServerEvent;
+import com.gregswebserver.catan.server.ServerEventType;
 import com.gregswebserver.catan.server.lobby.Lobby;
 
 import java.net.Socket;
@@ -13,7 +15,6 @@ public class ServerConnection extends NetConnection {
 
     private Server server;
     private Lobby lobby;
-    private Identity identity;
 
     public ServerConnection(Socket socket, Server server) {
         super(server.logger);
@@ -23,15 +24,22 @@ public class ServerConnection extends NetConnection {
     }
 
     public void process(NetEvent e) {
-        server.addEvent(e.getEvent());
+        if (e.event instanceof ServerEvent) {
+            ServerEvent sEvent = (ServerEvent) e.event;
+            if (sEvent.type.equals(ServerEventType.Client_Connect) || sEvent.type.equals(ServerEventType.Client_Disconnect))
+                //If the event is a connect/disconnect message, intercept it and resend it with a reference to this connection instance.
+                //Used to move the net connection from connecting to established, and remove reference for disconnects.
+                server.addEvent(new ServerEvent(sEvent.origin, sEvent.type, this));
+        }
+        server.addEvent(e.event);
+    }
+
+    public Lobby getLobby() {
+        return lobby;
     }
 
     public void setLobby(Lobby lobby) {
         this.lobby = lobby;
-    }
-
-    public Identity getIdentity() {
-        return identity;
     }
 }
 

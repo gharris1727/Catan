@@ -20,8 +20,10 @@ public enum TradingPost implements Trader {
     Wildcard(null);
 
     private HashSet<Trade> trades;
+    private Resource resource;
 
     private TradingPost(Resource r) {
+        resource = r;
         trades = new HashSet<>();
         for (Resource a : Resource.values()) {
             if (r == null) {
@@ -52,5 +54,9 @@ public enum TradingPost implements Trader {
 
     public HashSet<Trade> getTrades() {
         return trades;
+    }
+
+    public Resource getResource() {
+        return resource;
     }
 }

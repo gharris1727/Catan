@@ -7,8 +7,6 @@ import com.gregswebserver.catan.log.LogLevel;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 /**
  * Created by Greg on 8/14/2014.
@@ -25,7 +23,7 @@ public class GraphicSource extends Graphic {
         int width = 0, height = 0;
         int[] pixelsRGBA = null, pixels = null;
         try {
-            BufferedImage image = ImageIO.read(new FileInputStream(path));
+            BufferedImage image = ImageIO.read(Main.class.getResourceAsStream(path));
             width = image.getWidth();
             height = image.getHeight();
             pixelsRGBA = new int[width * height];
@@ -38,7 +36,7 @@ public class GraphicSource extends Graphic {
                 int b = (pixelsRGBA[i] & 0xff);
                 pixels[i] = r << 16 | g << 8 | b;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Main.logger.log("Error loading image source at " + path, e, LogLevel.ERROR);
         }
         return new GraphicSource(width, height, pixels, path);

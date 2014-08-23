@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.game.board.hexarray;
 
+import java.util.HashSet;
+
 /**
  * Created by Greg on 8/13/2014.
  * Direction enum for spatial relationships in the HexagonalArray.
@@ -31,6 +33,38 @@ public enum Direction {
         this.index = index;
         this.x = a.x + b.x;
         this.y = a.y + b.y;
+    }
+
+    public static Direction getAverage(HashSet<Direction> input) {
+        int sumX = 0, sumY = 0;
+        for (Direction d : input) {
+            sumX += d.x;
+            sumY += d.y;
+        }
+        if (sumY == 0) {
+            if (sumX == 0)
+                return null;
+            if (sumX > 0)
+                return right;
+            if (sumX < 0)
+                return left;
+        } else if (sumY > 0) {
+            if (sumX == 0)
+                return up;
+            if (sumX > 0)
+                return upright;
+            if (sumX < 0)
+                return upleft;
+        } else if (sumY < 0) {
+            if (sumX == 0)
+                return down;
+            if (sumX > 0)
+                return downright;
+            if (sumX < 0)
+                return downleft;
+        }
+        //If you get here, you dun' f****d up.
+        return null;
     }
 
     public int index() {

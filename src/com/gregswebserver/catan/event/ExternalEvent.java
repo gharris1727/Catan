@@ -14,10 +14,6 @@ public abstract class ExternalEvent extends GenericEvent {
         this.origin = origin;
     }
 
-    public Identity getOrigin() {
-        return origin;
-    }
-
     public String toString() {
         return "Origin: " + origin;
     }

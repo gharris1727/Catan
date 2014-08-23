@@ -35,30 +35,40 @@ public class RenderThread extends QueuedInputThread {
 
     //TODO: clean up this class and break up parts.
 
+    private final Point viewPosition;
+    //All the position information is final because it is passed by reference, and must stay the same.
+    //Positions can be changed by using setLocation(Point);
+    //the offScreen point is set arbitrarily high so that the render method fails immediately.
+    private final Point onScreen = new Point(0, 0);
+    private final Point gamePosition = onScreen;
+    private final Point offScreen = new Point(1920, 1080);
+    private final Point serverPosition = offScreen;
+    private final Point connectPosition = offScreen;
+    private final Point lobbyPosition = offScreen;
+    private final Point sidebarPosition = new Point(256, 0);
+    private final Point bottomPosition = new Point(0, 256);
+    private final Point cornerPosition = new Point(256, 256);
     private Client client;
     private CatanGame activeGame;
     private Player localPlayer;
-    private Point viewPosition;
     private ChatLog chat;
-
     //Default values, require the real values from the Screen_Resize event.
     private Dimension screenSize = new Dimension(512, 512);
-    private Dimension gameSize = new Dimension(256, 256);
+    private Dimension focusSize = new Dimension(256, 256);
     private Dimension sidebarSize = new Dimension(256, 256);
     private Dimension bottomSize = new Dimension(256, 256);
-    private Dimension cornerSize = new Dimension(256, 256);
-
-    private Point gamePosition = new Point(0, 0);
-    private Point sidebarPosition = new Point(256, 0);
-    private Point bottomPosition = new Point(0, 256);
-    private Point cornerPosition = new Point(256, 256);
-
+    private Dimension contextSize = new Dimension(256, 256);
     private Screen screen;
     private ScreenArea area;
-    private ScreenArea game;
+
+    private ScreenArea gameScreen;
+    private ScreenArea connectScreen;
+    private ScreenArea serverScreen;
+    private ScreenArea lobbyScreen;
+
     private ScreenArea sidebar;
     private ScreenArea bottom;
-    private ScreenArea corner;
+    private ScreenArea contextMenu;
 
     private boolean enabled = false;
 
@@ -66,40 +76,47 @@ public class RenderThread extends QueuedInputThread {
         super(client.logger);
         this.client = client;
         screen = new Screen();
-        //Default size, used to create the ScreenAreas.
         viewPosition = new Point();
 
         //T1 ScreenArea
         area = new ScreenArea(screenSize, new Point(), 0);
 
         //T2 ScreenAreas
-        game = new ScreenArea(gameSize, gamePosition, 0);
-        area.addScreenObject(game);
-        sidebar = new ScreenArea(sidebarSize, sidebarPosition, 1);
+        gameScreen = new ScreenArea(focusSize, gamePosition, 0);
+        area.addScreenObject(gameScreen);
+        connectScreen = new ScreenArea(focusSize, connectPosition, 1);
+        area.addScreenObject(connectScreen);
+        serverScreen = new ScreenArea(focusSize, serverPosition, 2);
+        area.addScreenObject(serverScreen);
+        lobbyScreen = new ScreenArea(focusSize, lobbyPosition, 3);
+        area.addScreenObject(lobbyScreen);
+        sidebar = new ScreenArea(sidebarSize, sidebarPosition, 4);
         area.addScreenObject(sidebar);
-        bottom = new ScreenArea(bottomSize, bottomPosition, 2);
+        bottom = new ScreenArea(bottomSize, bottomPosition, 5);
         area.addScreenObject(bottom);
-        corner = new ScreenArea(cornerSize, cornerPosition, 3);
-        area.addScreenObject(corner);
+        contextMenu = new ScreenArea(contextSize, cornerPosition, 6);
+        area.addScreenObject(contextMenu);
 
         client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, area));
     }
 
     private void resize(Dimension screenSize) {
         this.screenSize = screenSize;
-        gameSize = new Dimension(screenSize.width - 256, screenSize.height - 256);
-        sidebarSize = new Dimension(256, gameSize.height);
-        bottomSize = new Dimension(gameSize.width, 256);
+        if (offScreen.x < screenSize.width || offScreen.y < screenSize.height)
+            //Ensure that the offscreen coordinate is truly 'off the screen'
+            offScreen.setLocation(screenSize.width, screenSize.height);
+        focusSize = new Dimension(screenSize.width - 256, screenSize.height - 256);
+        sidebarSize = new Dimension(256, focusSize.height);
+        bottomSize = new Dimension(focusSize.width, 256);
 
         //Resize the necessary ScreenAreas.
         area.resize(screenSize);
-        game.resize(gameSize);
+        gameScreen.resize(focusSize);
         sidebar.resize(sidebarSize);
         bottom.resize(bottomSize);
-        gamePosition.setLocation(0, 0);
-        sidebarPosition.setLocation(gameSize.getWidth(), 0);
-        bottomPosition.setLocation(0, gameSize.getHeight());
-        cornerPosition.setLocation(gameSize.width, gameSize.height);
+        sidebarPosition.setLocation(focusSize.getWidth(), 0);
+        bottomPosition.setLocation(0, focusSize.getHeight());
+        cornerPosition.setLocation(focusSize.width, focusSize.height);
 
         //Actually resize the screen graphic and canvas.
         screen.setSize(screenSize);
@@ -115,6 +132,10 @@ public class RenderThread extends QueuedInputThread {
     private void actionRender(GameAction action) {
         //Process the GameAction and mark that region to be re-rendered.
         //TODO: implement.
+    }
+
+    private void tradeRender() {
+        //TODO: get all of the trades and render them on the side bar.
     }
 
     private void gameRender() {
@@ -133,7 +154,7 @@ public class RenderThread extends QueuedInputThread {
             Tile tile = tiles.get(c);
             Graphic graphic = tile.getGraphic();
             Clickable clickable = new ClickableTile(c);
-            game.addScreenObject(new StaticGraphic(
+            gameScreen.addScreenObject(new StaticGraphic(
                     graphic,
                     GraphicsConfig.tileToScreen(c),
                     c.hashCode(),
@@ -145,7 +166,7 @@ public class RenderThread extends QueuedInputThread {
             if (path != null) graphic = path.getGraphic();
             if (graphic == null) graphic = Team.Blank.paths[c.x % 3];
             Clickable clickable = new ClickablePath(c);
-            game.addScreenObject(new StaticGraphic(
+            gameScreen.addScreenObject(new StaticGraphic(
                     graphic,
                     GraphicsConfig.edgeToScreen(c),
                     c.hashCode(),
@@ -157,7 +178,7 @@ public class RenderThread extends QueuedInputThread {
             if (building != null) graphic = building.getGraphic();
             if (graphic == null) graphic = Team.Blank.settlement[c.x % 2];
             Clickable clickable = new ClickableBuilding(c);
-            game.addScreenObject(new StaticGraphic(
+            gameScreen.addScreenObject(new StaticGraphic(
                     graphic,
                     GraphicsConfig.vertexToScreen(c),
                     c.hashCode(),
@@ -205,7 +226,7 @@ public class RenderThread extends QueuedInputThread {
                     gameRender();
                     break;
                 case Game_Scroll:
-                    game.changeView((Point) event.data);
+                    gameScreen.changeView((Point) event.data);
                     break;
                 case Game_Update:
                     //process the game action, find out what changed, and re-render that section of the screen.
@@ -227,13 +248,13 @@ public class RenderThread extends QueuedInputThread {
                     break;
             }
         }
-        if (enabled) {
+        //TODO: add a better frame limiter/profiling/fps tool.
+        if (event == null && enabled) {
             //Compile all of the renderings.
             render();
             //Send the rendered image to the output screen.
             screen.show();
         }
-        //TODO: implement a render limiter.
     }
 
     public String toString() {

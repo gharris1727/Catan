@@ -25,17 +25,22 @@ public class Graphic implements Renderable {
 
     public Graphic(Dimension size) {
         this(new int[size.width * size.height], new int[size.width * size.height], new RectangularMask(size));
-        name = "Blank " + size.width + "x" + size.height;
+        name = "Blank: " + size.width + "x" + size.height;
         clear();
     }
 
-    public Graphic(GraphicSource source, RenderMask mask, Point start, int hitboxColor) {
+    public Graphic(RenderMask mask) {
         this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
-        name = "Source: " + source + " Mask: " + mask + " Pixels: " + mask.getPixelCount();
-        renderFrom(source, null, start, hitboxColor);
+        name = "Masked: " + mask.toString();
     }
 
-    public Graphic(int[] pixels, int[] hitbox, RenderMask mask) {
+    public Graphic(GraphicSource source, RenderMask mask, Point start) {
+        this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
+        name = "Source: " + source + " Mask: " + mask + " Pixels: " + mask.getPixelCount();
+        renderFrom(source, null, start, 0);
+    }
+
+    protected Graphic(int[] pixels, int[] hitbox, RenderMask mask) {
         this.pixels = pixels;
         this.hitbox = hitbox;
         this.mask = mask;

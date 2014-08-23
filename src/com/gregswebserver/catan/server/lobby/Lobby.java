@@ -1,9 +1,11 @@
 package com.gregswebserver.catan.server.lobby;
 
+import com.gregswebserver.catan.event.ExternalEvent;
 import com.gregswebserver.catan.event.GenericEvent;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.game.CatanGame;
+import com.gregswebserver.catan.game.gameplay.GameType;
 import com.gregswebserver.catan.network.Identity;
 import com.gregswebserver.catan.network.ServerConnection;
 import com.gregswebserver.catan.server.Server;
@@ -20,11 +22,13 @@ public class Lobby extends QueuedInputThread {
     private Identity owner;
     private HashMap<Identity, ServerConnection> clients;
     private CatanGame activeGame;
+    private GameType gameType;
 
-    public Lobby(Server server, Identity owner) {
+    public Lobby(Server server, ServerConnection owner) {
         super(server.logger);
         this.server = server;
         clients = new HashMap<>();
+        addClient(owner);
     }
 
     public void addClient(ServerConnection client) {
@@ -38,5 +42,18 @@ public class Lobby extends QueuedInputThread {
 
     public String toString() {
         return "Lobby";
+    }
+
+    public HashMap<Identity, ServerConnection> getClients() {
+        return clients;
+    }
+
+    public void broadcastEvent(ExternalEvent event) {
+        //Sends an external event to all clients in the lobby, except for the one who sent it.
+        for (ServerConnection connection : clients.values()) {
+            if (!connection.getIdentity().equals(event.origin)) {
+                connection.sendEvent(event);
+            }
+        }
     }
 }

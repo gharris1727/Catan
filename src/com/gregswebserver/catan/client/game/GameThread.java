@@ -33,14 +33,6 @@ public class GameThread extends QueuedInputThread {
                 game = new CatanGame((GameType) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Create, game));
                 break;
-            case Player_Join:
-                game.applyAction((GameAction) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Player_Update, event.origin));
-                break;
-            case Player_Leave:
-                game.applyAction((GameAction) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Player_Update, event.origin));
-                break;
             case Player_Build_Settlement:
                 game.applyAction((GameAction) event.data);
                 client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));

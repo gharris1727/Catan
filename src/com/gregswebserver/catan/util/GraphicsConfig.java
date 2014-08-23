@@ -11,26 +11,41 @@ import java.awt.*;
  */
 public class GraphicsConfig {
 
-    public static final String tileGraphicSourcePath = "res/graphics/tiles.jpg";
-    public static final String oceanGraphicSourcePath = "res/graphics/ocean.png";
-    public static final String blankGraphicSourcePath = "res/graphics/blank.png";
+    public static final String tileGraphicSourcePath = "/graphics/tiles.jpg";
+    public static final String oceanGraphicSourcePath = "/graphics/ocean.png";
+    public static final String beachGraphicSourcePath = "/graphics/beach.png";
+    public static final String blankGraphicSourcePath = "/graphics/blank.png";
 
-    public static final String redTeamGraphicSourcePath = "res/graphics/redTeam.png";
-    public static final String orangeTeamGraphicSourcePath = "res/graphics/orangeTeam.png";
-    public static final String blueTeamGraphicSourcePath = "res/graphics/blueTeam.png";
-    public static final String whiteTeamGraphicSourcePath = "res/graphics/whiteTeam.png";
+    public static final String redTeamGraphicSourcePath = "/graphics/redTeam.png";
+    public static final String orangeTeamGraphicSourcePath = "/graphics/orangeTeam.png";
+    public static final String blueTeamGraphicSourcePath = "/graphics/blueTeam.png";
+    public static final String whiteTeamGraphicSourcePath = "/graphics/whiteTeam.png";
 
-    public static final String resourceCardGraphicSourcePath = "res/graphics/resources.png";
-    public static final String developmentCardGraphicSourcePath = "res/graphics/development.png";
-    public static final String achievementCardGraphicSourcePath = "res/graphics/achievement.png";
+    public static final String resourceCardGraphicSourcePath = "/graphics/resources.png";
+    public static final String developmentCardGraphicSourcePath = "/graphics/development.png";
+    public static final String achievementCardGraphicSourcePath = "/graphics/achievement.png";
+
+    public static final String diceRollTokenGraphicSourcePath = "/graphics/tokens.png";
+    public static final String iconGraphicSourcePath = "/graphics/icons.png";
+    public static final String dialogGraphicSourcePath = "/graphics/dialogs.png";
+    public static final String interfaceGraphicSourcePath = "/graphics/interface.png";
+    public static final String tradeGraphicSourcePath = "/graphics/trade.png";
 
     public static final Dimension tileRenderMaskSize = new Dimension(112, 96);
     public static final Dimension vertexRenderMaskSize = new Dimension(0, 16);
     public static final Dimension horizontalRenderMaskSize = new Dimension(64, 16);
     public static final Dimension diagonalUpRenderMaskSize = new Dimension(16, 54);
+
     public static final Dimension resourceCardRenderMaskSize = new Dimension(128, 192);
     public static final Dimension resourceCardRenderMaskCornerSize = new Dimension(7, 7);
     public static final Dimension achievementCardRenderMaskSize = new Dimension(192, 192);
+
+    public static final Dimension diceRollTokenRenderMaskSize = new Dimension(16, 16);
+    public static final Dimension tradeRatioRenderMaskSize = new Dimension(32, 16);
+    public static final Dimension resourceIconRenderMaskSize = new Dimension(16, 16);
+
+    public static final Dimension tradeDiagonalRenderMaskSize = new Dimension(8, 32);
+    public static final Dimension tradeHorizontalRenderMaskSize = new Dimension(28, 8);
 
     public static final Point hillTextureLocation = new Point(235, 523);
     public static final Point forestTextureLocation = new Point(586, 321);
@@ -39,6 +54,34 @@ public class GraphicsConfig {
     public static final Point fieldTextureLocation = new Point(476, 116);
     public static final Point desertTextureLocation = new Point(131, 284);
     public static final Point oceanTextureLocation = new Point(351, 333);
+
+    public static final Point beachSingleUpLocation = new Point();
+    public static final Point beachSingleUpRightLocation = new Point();
+    public static final Point beachSingleDownRightLocation = new Point();
+    public static final Point beachSingleDownLocation = new Point();
+    public static final Point beachSingleDownLeftLocation = new Point();
+    public static final Point beachSingleUpLeftLocation = new Point();
+
+    public static final Point beachDoubleUpRightLocation = new Point();
+    public static final Point beachDoubleRightLocation = new Point();
+    public static final Point beachDoubleDownRightLocation = new Point();
+    public static final Point beachDoubleDownLeftLocation = new Point();
+    public static final Point beachDoubleLeftLocation = new Point();
+    public static final Point beachDoubleUpLeftLocation = new Point();
+
+    public static final Point tradeUpRightLocation = new Point();
+    public static final Point tradeDoubleRightLocation = new Point();
+    public static final Point tradeDownRightLocation = new Point();
+    public static final Point tradeDownLeftLocation = new Point();
+    public static final Point tradeLeftLocation = new Point();
+    public static final Point tradeUpLeftLocation = new Point();
+
+    public static final Point tradeUpLeftRender = new Point();
+    public static final Point tradeUpRightRender = new Point();
+    public static final Point tradeLeftRender = new Point();
+    public static final Point tradeRightRender = new Point();
+    public static final Point tradeDownLeftRender = new Point();
+    public static final Point tradeDownRightRender = new Point();
 
     public static final Point brickCardTextureLocation = new Point();
     public static final Point lumberCardTextureLocation = new Point();
@@ -51,51 +94,41 @@ public class GraphicsConfig {
     public static final Point victoryPointCardTextureLocation = new Point();
 
     public static final Point longestRoadCardTextureLocation = new Point();
-    public static final Point largestArmyCardTexture = new Point();
+    public static final Point largestArmyCardTextureLocation = new Point();
 
-    public static final Point redSettlementLocationLeft = new Point();
-    public static final Point redSettlementLocationRight = new Point();
-    public static final Point redCityLocationLeft = new Point();
-    public static final Point redCityLocationRight = new Point();
-    public static final Point redHorizontalPathLocation = new Point();
-    public static final Point redDiagonalUpPathLocation = new Point();
-    public static final Point redDiagonalDownPathLocation = new Point();
+    public static final Point diceRollTwoLocation = new Point();
+    public static final Point diceRollThreeLocation = new Point();
+    public static final Point diceRollFourLocation = new Point();
+    public static final Point diceRollFiveLocation = new Point();
+    public static final Point diceRollSixLocation = new Point();
+    public static final Point diceRollSevenLocation = new Point();
+    public static final Point diceRollEightLocation = new Point();
+    public static final Point diceRollNineLocation = new Point();
+    public static final Point diceRollTenLocation = new Point();
+    public static final Point diceRollElevenLocation = new Point();
+    public static final Point diceRollTwelveLocation = new Point();
 
-    public static final Point orangeSettlementLocationLeft = new Point();
-    public static final Point orangeSettlementLocationRight = new Point();
-    public static final Point orangeCityLocationLeft = new Point();
-    public static final Point orangeCityLocationRight = new Point();
-    public static final Point orangeHorizontalPathLocation = new Point();
-    public static final Point orangeDiagonalUpPathLocation = new Point();
-    public static final Point orangeDiagonalDownPathLocation = new Point();
+    public static final Point tradeRatioThreeLocation = new Point();
+    public static final Point tradeRatioTwoLocation = new Point();
 
-    public static final Point blueSettlementLocationLeft = new Point();
-    public static final Point blueSettlementLocationRight = new Point();
-    public static final Point blueCityLocationLeft = new Point();
-    public static final Point blueCityLocationRight = new Point();
-    public static final Point blueHorizontalPathLocation = new Point();
-    public static final Point blueDiagonalUpPathLocation = new Point();
-    public static final Point blueDiagonalDownPathLocation = new Point();
+    public static final Point brickIconTextureLocation = new Point();
+    public static final Point lumberIconTextureLocation = new Point();
+    public static final Point woolIconTextureLocation = new Point();
+    public static final Point grainIconTextureLocation = new Point();
+    public static final Point oreIconTextureLocation = new Point();
+    public static final Point questionIconTextureLocation = new Point();
 
-    public static final Point whiteSettlementLocationLeft = new Point();
-    public static final Point whiteSettlementLocationRight = new Point();
-    public static final Point whiteCityLocationLeft = new Point();
-    public static final Point whiteCityLocationRight = new Point();
-    public static final Point whiteHorizontalPathLocation = new Point();
-    public static final Point whiteDiagonalUpPathLocation = new Point();
-    public static final Point whiteDiagonalDownPathLocation = new Point();
+    public static final Point resourceTileTokenRender = new Point();
+    public static final Point tradeTileResourceIconRender = new Point();
+    public static final Point tradeTileRatioRender = new Point();
 
-    public static final Point oceanVertexLocationLeft = new Point();
-    public static final Point oceanVertexLocationRight = new Point();
-    public static final Point oceanHorizontalPathLocation = new Point();
-    public static final Point oceanDiagonalUpPathLocation = new Point();
-    public static final Point oceanDiagonalDownPathLocation = new Point();
-
-    public static final Point blankVertexLocationLeft = new Point();
-    public static final Point blankVertexLocationRight = new Point();
-    public static final Point blankHorizontalPathLocation = new Point();
-    public static final Point blankDiagonalUpPathLocation = new Point();
-    public static final Point blankDiagonalDownPathLocation = new Point();
+    public static final Point settlementLocationLeft = new Point();
+    public static final Point settlementLocationRight = new Point();
+    public static final Point cityLocationLeft = new Point();
+    public static final Point cityLocationRight = new Point();
+    public static final Point horizontalPathLocation = new Point();
+    public static final Point diagonalUpPathLocation = new Point();
+    public static final Point diagonalDownPathLocation = new Point();
 
     public static final int boardUnitWidth = 200;
     public static final int boardUnitHeight = 112;
@@ -133,4 +166,5 @@ public class GraphicsConfig {
         outY += vertOffsets[1][c.x % 4];
         return new Point(outX, outY);
     }
+
 }

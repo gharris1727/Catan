@@ -2,6 +2,7 @@ package com.gregswebserver.catan.game;
 
 import com.gregswebserver.catan.game.board.GameBoard;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.game.board.tiles.Tile;
 import com.gregswebserver.catan.game.gameplay.DiceRoll;
 import com.gregswebserver.catan.game.gameplay.GameAction;
@@ -47,13 +48,18 @@ public class CatanGame {
     }
 
     private void moveRobber(Identity origin, Coordinate data) {
-        for (Tile tile : board.hexArray.spaces) {
-            if (tile != null && tile.hasRobber()) {
-                tile.removeRobber();
-                break;
+        Tile robbed = board.hexArray.spaces.get(data);
+        if (robbed instanceof ResourceTile) {
+            for (Tile tile : board.hexArray.spaces) {
+                if (tile != null && tile instanceof ResourceTile) {
+                    ResourceTile rTile = (ResourceTile) tile;
+                    if (rTile.hasRobber())
+                        rTile.removeRobber();
+                    break;
+                }
             }
+            ((ResourceTile) robbed).placeRobber();
         }
-        board.hexArray.spaces.get(data).placeRobber();
     }
 
     private void roll(Identity origin, DiceRoll data) {

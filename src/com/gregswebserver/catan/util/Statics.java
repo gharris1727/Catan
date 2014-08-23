@@ -12,12 +12,15 @@ import java.awt.*;
  * Created by Greg on 8/15/2014.
  * Class full of static objects that need to be loaded.
  * Everything in here should require loading outside resources and take a significant amount of time to load.
+ * This is centralized into one place so that it's possible to load this in one shot in the background.
  */
 public class Statics {
     public static Graphic nullGraphic;
 
     public static GraphicSource tileGraphicSource;
     public static GraphicSource oceanGraphicSource;
+    public static GraphicSource beachGraphicSource;
+    public static GraphicSource tradeGraphicSource;
     public static GraphicSource blankGraphicSource;
 
     public static GraphicSource redTeamGraphicSource;
@@ -29,14 +32,27 @@ public class Statics {
     public static GraphicSource developmentCardGraphicSource;
     public static GraphicSource achievementCardGraphicSource;
 
+    public static GraphicSource diceRollTokenGraphicSource;
+    public static GraphicSource iconGraphicSource;
+    public static GraphicSource dialogGraphicSource;
+    public static GraphicSource interfaceGraphicSource;
+
     public static RenderMask tileRenderMask;
     public static RenderMask vertexRenderMaskLeft;
     public static RenderMask vertexRenderMaskRight;
     public static RenderMask horizontalRenderMask;
     public static RenderMask diagonalUpRenderMask;
     public static RenderMask diagonalDownRenderMask;
+
     public static RenderMask resourceCardRenderMask;
     public static RenderMask achievementCardRenderMask;
+    public static RenderMask diceRollTokenRenderMask;
+    public static RenderMask tradeRatioRenderMask;
+    public static RenderMask resourceIconRenderMask;
+
+    public static RenderMask tradeDiagonalUpRenderMask;
+    public static RenderMask tradeHorizontalRenderMask;
+    public static RenderMask tradeDiagonalDownRenderMask;
 
     public static Graphic hillTexture;
     public static Graphic forestTexture;
@@ -45,6 +61,27 @@ public class Statics {
     public static Graphic fieldTexture;
     public static Graphic desertTexture;
     public static Graphic oceanTexture;
+
+    public static Graphic beachSingleUp;
+    public static Graphic beachSingleUpRight;
+    public static Graphic beachSingleDownRight;
+    public static Graphic beachSingleDown;
+    public static Graphic beachSingleDownLeft;
+    public static Graphic beachSingleUpLeft;
+
+    public static Graphic beachDoubleUpRight;
+    public static Graphic beachDoubleRight;
+    public static Graphic beachDoubleDownRight;
+    public static Graphic beachDoubleDownLeft;
+    public static Graphic beachDoubleLeft;
+    public static Graphic beachDoubleUpLeft;
+
+    public static Graphic tradeUpRight;
+    public static Graphic tradeRight;
+    public static Graphic tradeDownRight;
+    public static Graphic tradeDownLeft;
+    public static Graphic tradeLeft;
+    public static Graphic tradeUpLeft;
 
     public static Graphic brickCardTexture;
     public static Graphic lumberCardTexture;
@@ -58,6 +95,28 @@ public class Statics {
 
     public static Graphic longestRoadCardTexture;
     public static Graphic largestArmyCardTexture;
+
+    public static Graphic diceRollTwo;
+    public static Graphic diceRollThree;
+    public static Graphic diceRollFour;
+    public static Graphic diceRollFive;
+    public static Graphic diceRollSix;
+    public static Graphic diceRollSeven;
+    public static Graphic diceRollEight;
+    public static Graphic diceRollNine;
+    public static Graphic diceRollTen;
+    public static Graphic diceRollEleven;
+    public static Graphic diceRollTwelve;
+
+    public static Graphic tradeRatioThree;
+    public static Graphic tradeRatioTwo;
+
+    public static Graphic brickIconTexture;
+    public static Graphic lumberIconTexture;
+    public static Graphic woolIconTexture;
+    public static Graphic grainIconTexture;
+    public static Graphic oreIconTexture;
+    public static Graphic questionIconTexture;
 
     public static Graphic redSettlementLeft;
     public static Graphic redSettlementRight;
@@ -111,6 +170,7 @@ public class Statics {
 
         tileGraphicSource = GraphicSource.load(GraphicsConfig.tileGraphicSourcePath);
         oceanGraphicSource = GraphicSource.load(GraphicsConfig.oceanGraphicSourcePath);
+        beachGraphicSource = GraphicSource.load(GraphicsConfig.beachGraphicSourcePath);
         blankGraphicSource = GraphicSource.load(GraphicsConfig.blankGraphicSourcePath);
 
         redTeamGraphicSource = GraphicSource.load(GraphicsConfig.redTeamGraphicSourcePath);
@@ -122,81 +182,137 @@ public class Statics {
         developmentCardGraphicSource = GraphicSource.load(GraphicsConfig.developmentCardGraphicSourcePath);
         achievementCardGraphicSource = GraphicSource.load(GraphicsConfig.achievementCardGraphicSourcePath);
 
+        diceRollTokenGraphicSource = GraphicSource.load(GraphicsConfig.diceRollTokenGraphicSourcePath);
+        iconGraphicSource = GraphicSource.load(GraphicsConfig.iconGraphicSourcePath);
+        dialogGraphicSource = GraphicSource.load(GraphicsConfig.dialogGraphicSourcePath);
+        interfaceGraphicSource = GraphicSource.load(GraphicsConfig.interfaceGraphicSourcePath);
+        tradeGraphicSource = GraphicSource.load(GraphicsConfig.tradeGraphicSourcePath);
+
         tileRenderMask = new HexagonalMask(GraphicsConfig.tileRenderMaskSize);
         vertexRenderMaskLeft = new TriangularMask(GraphicsConfig.vertexRenderMaskSize);
         vertexRenderMaskRight = new FlippedMask(vertexRenderMaskLeft, FlippedMask.HORIZONTAL);
         horizontalRenderMask = new RectangularMask(GraphicsConfig.horizontalRenderMaskSize);
         diagonalUpRenderMask = new DiagonalMask(GraphicsConfig.diagonalUpRenderMaskSize);
         diagonalDownRenderMask = new FlippedMask(diagonalUpRenderMask, FlippedMask.VERTICAL);
+
         resourceCardRenderMask = new RoundedRectangularMask(GraphicsConfig.resourceCardRenderMaskSize, GraphicsConfig.resourceCardRenderMaskCornerSize);
         achievementCardRenderMask = new RectangularMask(GraphicsConfig.achievementCardRenderMaskSize);
 
-        hillTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.hillTextureLocation, 0);
-        forestTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.forestTextureLocation, 0);
-        pastureTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.pastureTextureLocation, 0);
-        mountainTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.mountainTextureLocation, 0);
-        fieldTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.fieldTextureLocation, 0);
-        desertTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.desertTextureLocation, 0);
-        oceanTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.oceanTextureLocation, 0);
+        diceRollTokenRenderMask = new RoundedMask(GraphicsConfig.diceRollTokenRenderMaskSize);
+        tradeRatioRenderMask = new RectangularMask(GraphicsConfig.tradeRatioRenderMaskSize);
+        resourceIconRenderMask = new RectangularMask(GraphicsConfig.resourceIconRenderMaskSize);
 
-        //TODO: beach textures.
+        tradeHorizontalRenderMask = new RectangularMask(GraphicsConfig.tradeHorizontalRenderMaskSize);
+        tradeDiagonalUpRenderMask = new DiagonalMask(GraphicsConfig.tradeDiagonalRenderMaskSize);
+        tradeDiagonalDownRenderMask = new FlippedMask(tradeDiagonalUpRenderMask, FlippedMask.VERTICAL);
 
-        brickCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.brickCardTextureLocation, 0);
-        lumberCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.lumberCardTextureLocation, 0);
-        woolCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.woolCardTextureLocation, 0);
-        grainCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.grainCardTextureLocation, 0);
-        oreCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.oreCardTextureLocation, 0);
+        hillTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.hillTextureLocation);
+        forestTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.forestTextureLocation);
+        pastureTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.pastureTextureLocation);
+        mountainTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.mountainTextureLocation);
+        fieldTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.fieldTextureLocation);
+        desertTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.desertTextureLocation);
+        oceanTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.oceanTextureLocation);
 
-        knightCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.knightCardTextureLocation, 0);
-        progressCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.progressCardTextureLocation, 0);
-        victoryPointCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.victoryPointCardTextureLocation, 0);
+        beachSingleUp = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachSingleUpLocation);
+        beachSingleUpRight = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachSingleUpRightLocation);
+        beachSingleDownRight = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachSingleDownRightLocation);
+        beachSingleDown = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachSingleDownLocation);
+        beachSingleDownLeft = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachSingleDownLeftLocation);
+        beachSingleUpLeft = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachSingleUpLeftLocation);
 
-        longestRoadCardTexture = new Graphic(achievementCardGraphicSource, achievementCardRenderMask, GraphicsConfig.longestRoadCardTextureLocation, 0);
-        largestArmyCardTexture = new Graphic(achievementCardGraphicSource, achievementCardRenderMask, GraphicsConfig.largestArmyCardTexture, 0);
+        beachDoubleUpRight = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachDoubleUpRightLocation);
+        beachDoubleRight = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachDoubleRightLocation);
+        beachDoubleDownRight = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachDoubleDownRightLocation);
+        beachDoubleDownLeft = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachDoubleDownLeftLocation);
+        beachDoubleLeft = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachDoubleLeftLocation);
+        beachDoubleUpLeft = new Graphic(beachGraphicSource, tileRenderMask, GraphicsConfig.beachDoubleUpLeftLocation);
 
-        redSettlementLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.redSettlementLocationLeft, 0);
-        redSettlementRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.redSettlementLocationRight, 0);
-        redCityLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.redCityLocationLeft, 0);
-        redCityRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.redCityLocationRight, 0);
-        redHorizontalPath = new Graphic(redTeamGraphicSource, horizontalRenderMask, GraphicsConfig.redHorizontalPathLocation, 0);
-        redDiagonalUpPath = new Graphic(redTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.redDiagonalUpPathLocation, 0);
-        redDiagonalDownPath = new Graphic(redTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.redDiagonalDownPathLocation, 0);
+        tradeUpRight = new Graphic(tradeGraphicSource, tradeDiagonalUpRenderMask, GraphicsConfig.tradeUpRightLocation);
+        tradeRight = new Graphic(tradeGraphicSource, tradeHorizontalRenderMask, GraphicsConfig.tradeDoubleRightLocation);
+        tradeDownRight = new Graphic(tradeGraphicSource, tradeDiagonalDownRenderMask, GraphicsConfig.tradeDownRightLocation);
+        tradeDownLeft = new Graphic(tradeGraphicSource, tradeDiagonalUpRenderMask, GraphicsConfig.tradeDownLeftLocation);
+        tradeLeft = new Graphic(tradeGraphicSource, tradeHorizontalRenderMask, GraphicsConfig.tradeLeftLocation);
+        tradeUpLeft = new Graphic(tradeGraphicSource, tradeDiagonalDownRenderMask, GraphicsConfig.tradeUpLeftLocation);
 
-        orangeSettlementLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.orangeSettlementLocationRight, 0);
-        orangeSettlementRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.orangeSettlementLocationLeft, 0);
-        orangeCityLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.orangeCityLocationLeft, 0);
-        orangeCityRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.orangeCityLocationRight, 0);
-        orangeHorizontalPath = new Graphic(orangeTeamGraphicSource, horizontalRenderMask, GraphicsConfig.orangeHorizontalPathLocation, 0);
-        orangeDiagonalUpPath = new Graphic(orangeTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.orangeDiagonalUpPathLocation, 0);
-        orangeDiagonalDownPath = new Graphic(orangeTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.orangeDiagonalDownPathLocation, 0);
+        brickCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.brickCardTextureLocation);
+        lumberCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.lumberCardTextureLocation);
+        woolCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.woolCardTextureLocation);
+        grainCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.grainCardTextureLocation);
+        oreCardTexture = new Graphic(resourceCardGraphicSource, resourceCardRenderMask, GraphicsConfig.oreCardTextureLocation);
 
-        blueSettlementLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.blueSettlementLocationLeft, 0);
-        blueSettlementRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.blueSettlementLocationRight, 0);
-        blueCityLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.blueCityLocationLeft, 0);
-        blueCityRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.blueCityLocationRight, 0);
-        blueHorizontalPath = new Graphic(blueTeamGraphicSource, horizontalRenderMask, GraphicsConfig.blueHorizontalPathLocation, 0);
-        blueDiagonalUpPath = new Graphic(blueTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.blueDiagonalUpPathLocation, 0);
-        blueDiagonalDownPath = new Graphic(blueTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.blueDiagonalDownPathLocation, 0);
+        knightCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.knightCardTextureLocation);
+        progressCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.progressCardTextureLocation);
+        victoryPointCardTexture = new Graphic(developmentCardGraphicSource, resourceCardRenderMask, GraphicsConfig.victoryPointCardTextureLocation);
 
-        whiteSettlementLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.whiteSettlementLocationLeft, 0);
-        whiteSettlementRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.whiteSettlementLocationRight, 0);
-        whiteCityLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.whiteCityLocationLeft, 0);
-        whiteCityRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.whiteCityLocationRight, 0);
-        whiteHorizontalPath = new Graphic(whiteTeamGraphicSource, horizontalRenderMask, GraphicsConfig.whiteHorizontalPathLocation, 0);
-        whiteDiagonalUpPath = new Graphic(whiteTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.whiteDiagonalUpPathLocation, 0);
-        whiteDiagonalDownPath = new Graphic(whiteTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.whiteDiagonalDownPathLocation, 0);
+        longestRoadCardTexture = new Graphic(achievementCardGraphicSource, achievementCardRenderMask, GraphicsConfig.longestRoadCardTextureLocation);
+        largestArmyCardTexture = new Graphic(achievementCardGraphicSource, achievementCardRenderMask, GraphicsConfig.largestArmyCardTextureLocation);
 
-        oceanVertexLeft = new Graphic(oceanGraphicSource, vertexRenderMaskLeft, GraphicsConfig.oceanVertexLocationLeft, 0);
-        oceanVertexRight = new Graphic(oceanGraphicSource, vertexRenderMaskRight, GraphicsConfig.oceanVertexLocationRight, 0);
-        oceanHorizontalPath = new Graphic(oceanGraphicSource, horizontalRenderMask, GraphicsConfig.oceanHorizontalPathLocation, 0);
-        oceanDiagonalUpPath = new Graphic(oceanGraphicSource, diagonalUpRenderMask, GraphicsConfig.oceanDiagonalUpPathLocation, 0);
-        oceanDiagonalDownPath = new Graphic(oceanGraphicSource, diagonalDownRenderMask, GraphicsConfig.oceanDiagonalDownPathLocation, 0);
+        diceRollTwo = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollTwoLocation);
+        diceRollThree = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollThreeLocation);
+        diceRollFour = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollFourLocation);
+        diceRollFive = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollFiveLocation);
+        diceRollSix = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollSixLocation);
+        diceRollSeven = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollSevenLocation);
+        diceRollEight = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollEightLocation);
+        diceRollNine = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollNineLocation);
+        diceRollTen = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollTenLocation);
+        diceRollEleven = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollElevenLocation);
+        diceRollTwelve = new Graphic(diceRollTokenGraphicSource, diceRollTokenRenderMask, GraphicsConfig.diceRollTwelveLocation);
 
-        blankVertexLeft = new Graphic(blankGraphicSource, vertexRenderMaskLeft, GraphicsConfig.blankVertexLocationLeft, 0);
-        blankVertexRight = new Graphic(blankGraphicSource, vertexRenderMaskRight, GraphicsConfig.blankVertexLocationRight, 0);
-        blankHorizontalPath = new Graphic(blankGraphicSource, horizontalRenderMask, GraphicsConfig.blankHorizontalPathLocation, 0);
-        blankDiagonalUpPath = new Graphic(blankGraphicSource, diagonalUpRenderMask, GraphicsConfig.blankDiagonalUpPathLocation, 0);
-        blankDiagonalDownPath = new Graphic(blankGraphicSource, diagonalDownRenderMask, GraphicsConfig.blankDiagonalDownPathLocation, 0);
+        tradeRatioThree = new Graphic(iconGraphicSource, tradeRatioRenderMask, GraphicsConfig.tradeRatioThreeLocation);
+        tradeRatioTwo = new Graphic(iconGraphicSource, tradeRatioRenderMask, GraphicsConfig.tradeRatioTwoLocation);
+
+        brickIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.brickIconTextureLocation);
+        lumberIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.lumberIconTextureLocation);
+        woolIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.woolIconTextureLocation);
+        grainIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.grainIconTextureLocation);
+        oreIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.oreIconTextureLocation);
+        questionIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.questionIconTextureLocation);
+
+        redSettlementLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
+        redSettlementRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        redCityLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
+        redCityRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        redHorizontalPath = new Graphic(redTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
+        redDiagonalUpPath = new Graphic(redTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
+        redDiagonalDownPath = new Graphic(redTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
+
+        orangeSettlementLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationRight);
+        orangeSettlementRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationLeft);
+        orangeCityLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
+        orangeCityRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        orangeHorizontalPath = new Graphic(orangeTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
+        orangeDiagonalUpPath = new Graphic(orangeTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
+        orangeDiagonalDownPath = new Graphic(orangeTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
+
+        blueSettlementLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
+        blueSettlementRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        blueCityLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
+        blueCityRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        blueHorizontalPath = new Graphic(blueTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
+        blueDiagonalUpPath = new Graphic(blueTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
+        blueDiagonalDownPath = new Graphic(blueTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
+
+        whiteSettlementLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
+        whiteSettlementRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        whiteCityLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
+        whiteCityRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        whiteHorizontalPath = new Graphic(whiteTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
+        whiteDiagonalUpPath = new Graphic(whiteTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
+        whiteDiagonalDownPath = new Graphic(whiteTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
+
+        oceanVertexLeft = new Graphic(oceanGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
+        oceanVertexRight = new Graphic(oceanGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        oceanHorizontalPath = new Graphic(oceanGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
+        oceanDiagonalUpPath = new Graphic(oceanGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
+        oceanDiagonalDownPath = new Graphic(oceanGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
+
+        blankVertexLeft = new Graphic(blankGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
+        blankVertexRight = new Graphic(blankGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        blankHorizontalPath = new Graphic(blankGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
+        blankDiagonalUpPath = new Graphic(blankGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
+        blankDiagonalDownPath = new Graphic(blankGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
 
         BASE_GAME = new GameType("Settlers of Catan Base");
         BASE_GAME.size(15, 11);

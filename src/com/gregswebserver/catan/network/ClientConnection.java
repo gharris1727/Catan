@@ -9,9 +9,10 @@ import com.gregswebserver.catan.client.Client;
 public class ClientConnection extends NetConnection {
     private Client client;
 
-    public ClientConnection(Client client) {
+    public ClientConnection(Client client, Identity identity) {
         super(client.logger);
         this.client = client;
+        this.identity = identity;
     }
 
     public void connectTo(NetID id) {
@@ -20,6 +21,6 @@ public class ClientConnection extends NetConnection {
     }
 
     public void process(NetEvent e) {
-        client.addEvent(e.getEvent());
+        client.addEvent(e.event);
     }
 }

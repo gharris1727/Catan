@@ -11,8 +11,8 @@ import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.event.*;
 import com.gregswebserver.catan.network.ClientConnection;
-import com.gregswebserver.catan.network.NetID;
-import com.gregswebserver.catan.util.Statics;
+import com.gregswebserver.catan.network.Identity;
+import com.gregswebserver.catan.server.ServerEvent;
 
 import java.awt.*;
 
@@ -35,14 +35,12 @@ public class Client extends QueuedInputThread {
         super(Main.logger); //TODO: REMOVE ME!
 //        super(new Logger());
 
-        new Statics(); //Just to initialize all of the values.
         window = new ClientWindow(this);
         listener = new InputListener(this);
         window.setListener(listener);
         chatThread = new ChatThread(this);
         gameThread = new GameThread(this);
         renderThread = new RenderThread(this);
-        connection = new ClientConnection(this);
 
         start();
         chatThread.start();
@@ -61,24 +59,39 @@ public class Client extends QueuedInputThread {
             if (event instanceof GameEvent) {
                 gameThread.addEvent(event);
             }
+            if (event instanceof ServerEvent) {
+                ServerEvent sEvent = (ServerEvent) event;
+                switch (sEvent.type) {
+                    case Client_Connect:
+                    case Client_Disconnect:
+                        //Neither of these events should really make it this far.
+                        break;
+                    case Lobby_Create:
+                        break;
+                    case Lobby_Delete:
+                        break;
+                    case Lobby_Join:
+                        break;
+                    case Lobby_Leave:
+                        break;
+                    case Lobby_Update:
+                        break;
+                }
+            }
         }
         if (event instanceof InternalEvent) {
             if (event instanceof RenderEvent) {
                 renderThread.addEvent(event);
             }
             if (event instanceof ClientEvent) {
-                ClientEvent clientEvent = (ClientEvent) event;
-                switch (clientEvent.type) {
+                ClientEvent cEvent = (ClientEvent) event;
+                switch (cEvent.type) {
                     case Net_Connect:
-                        connection.connect();
+                        connection = new ClientConnection(this, (Identity) cEvent.data);
+                        connection.connectTo(null);
                         break;
                     case Net_Disconnect:
                         connection.disconnect();
-                        break;
-                    case Net_Join:
-                        break;
-                    case Net_Leave:
-                        //TODO: handle server joins/leaves
                         break;
                     case Canvas_Update:
                         //The ClientWindow is not visible until this event happens.
@@ -93,13 +106,10 @@ public class Client extends QueuedInputThread {
 
     }
 
-    public void connectTo(NetID server) {
-        connection.connectTo(server);
-    }
-
     public void shutdown() {
         //Shut down the client and all running threads.
-        connection.disconnect();
+        if (connection != null)
+            connection.disconnect();
         chatThread.stop();
         gameThread.stop();
         renderThread.stop();

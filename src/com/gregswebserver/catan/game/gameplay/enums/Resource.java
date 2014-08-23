@@ -10,18 +10,20 @@ import com.gregswebserver.catan.util.Statics;
  */
 public enum Resource implements Tradeable {
 
-    Brick("Clay", Statics.brickCardTexture),
-    Lumber("Logs", Statics.lumberCardTexture),
-    Wool("Sheep", Statics.woolCardTexture),
-    Grain("Wheat", Statics.grainCardTexture),
-    Ore("Rocks", Statics.oreCardTexture);
+    Brick("Clay", Statics.brickCardTexture, Statics.brickIconTexture),
+    Lumber("Logs", Statics.lumberCardTexture, Statics.lumberIconTexture),
+    Wool("Sheep", Statics.woolCardTexture, Statics.woolIconTexture),
+    Grain("Wheat", Statics.grainCardTexture, Statics.grainIconTexture),
+    Ore("Rocks", Statics.oreCardTexture, Statics.oreIconTexture);
 
     private final String name;
     private final Graphic graphic;
+    private final Graphic icon;
 
-    Resource(String name, Graphic graphic) {
+    Resource(String name, Graphic graphic, Graphic icon) {
         this.name = name;
         this.graphic = graphic;
+        this.icon = icon;
     }
 
     public String getName() {
@@ -30,5 +32,9 @@ public enum Resource implements Tradeable {
 
     public Graphic getGraphic() {
         return graphic;
+    }
+
+    public Graphic getIcon() {
+        return icon;
     }
 }

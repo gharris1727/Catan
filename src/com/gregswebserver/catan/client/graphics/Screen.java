@@ -38,7 +38,7 @@ public class Screen extends Graphic {
         return canvas;
     }
 
-    public void setSize(Dimension size) {
+    public void setSize(final Dimension size) {
         //Configure the underlying Graphic superclass.
         GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         image = gc.createCompatibleImage(size.width, size.height);

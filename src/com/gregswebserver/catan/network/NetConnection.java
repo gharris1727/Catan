@@ -3,6 +3,8 @@ package com.gregswebserver.catan.network;
 import com.gregswebserver.catan.event.ExternalEvent;
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.log.Logger;
+import com.gregswebserver.catan.server.ServerEvent;
+import com.gregswebserver.catan.server.ServerEventType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,7 +17,8 @@ import java.net.Socket;
  */
 public abstract class NetConnection {
 
-    private NetID netID;
+    protected NetID netID;
+    protected Identity identity;
     private Socket socket;
     private Thread connect, disconnect, receive;
     private ObjectInputStream in;
@@ -23,17 +26,22 @@ public abstract class NetConnection {
     private boolean open;
     private Logger logger;
 
-    public NetConnection(Logger logger) {
+    public NetConnection(final Logger logger) {
         this.logger = logger;
         //Thread to open object buffers for transmitting data.
         connect = new Thread("Connect") {
             public void run() {
                 logger.log("Connecting...", LogLevel.INFO);
                 try {
+                    ExternalEvent handshake = null;
                     if (socket == null) {
+                        //Originating from the client.
                         socket = new Socket(netID.address, netID.port);
+                        handshake = new ServerEvent(identity, ServerEventType.Client_Connect, null);
                     }
                     out = new ObjectOutputStream(socket.getOutputStream());
+                    if (handshake != null)
+                        sendEvent(handshake);
                     out.flush();
                     in = new ObjectInputStream(socket.getInputStream());
                     open = true;
@@ -75,8 +83,20 @@ public abstract class NetConnection {
         };
     }
 
+    public NetID getNetID() {
+        return netID;
+    }
+
     public void setNetID(NetID id) {
         netID = id;
+    }
+
+    public Identity getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(Identity id) {
+        identity = id;
     }
 
     public void setSocket(Socket s) {

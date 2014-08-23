@@ -9,8 +9,6 @@ package com.gregswebserver.catan.client.game;
 public enum GameEventType {
 
     Game_Create, //GameType
-    Player_Join, //Identity
-    Player_Leave, //Identity
     Player_Build_Settlement, //Coordinate
     Player_Build_City, //Coordinate
     Player_Build_Road, //Coordinate

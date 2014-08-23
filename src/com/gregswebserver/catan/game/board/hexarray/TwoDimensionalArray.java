@@ -103,7 +103,6 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         return "X: " + x + "/" + limitX + " Y: " + y + "/" + limitY;
     }
 
-    @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
 
@@ -130,6 +129,9 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
                 } else {
                     throw new NoSuchElementException();
                 }
+            }
+
+            public void remove() {
             }
 
             private void increment() {

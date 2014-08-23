@@ -7,8 +7,7 @@ import com.gregswebserver.catan.game.board.hexarray.Direction;
 import com.gregswebserver.catan.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.game.board.paths.OceanPath;
 import com.gregswebserver.catan.game.board.paths.Path;
-import com.gregswebserver.catan.game.board.tiles.Terrain;
-import com.gregswebserver.catan.game.board.tiles.Tile;
+import com.gregswebserver.catan.game.board.tiles.*;
 import com.gregswebserver.catan.game.gameplay.DiceRoll;
 import com.gregswebserver.catan.game.gameplay.enums.TradingPost;
 
@@ -60,11 +59,12 @@ public class RandomBoardGenerator implements BoardGenerator {
         //Generate and place playable hexagons
         for (Coordinate c : validSpaces) {
             Terrain t = terrain.next();
-            Tile tile = new Tile(t);
+            ResourceTile tile = null;
             if (t.equals(Terrain.Desert)) {
+                tile = new ResourceTile(t, null);
                 tile.placeRobber();
             } else {
-                tile.setDiceRoll(tokens.next());
+                tile = new ResourceTile(t, tokens.next());
             }
             hexArray.place(c, tile);
         }
@@ -79,20 +79,24 @@ public class RandomBoardGenerator implements BoardGenerator {
                     Tile t = hexArray.spaces.get(c);
                     //IMPORTANT: this check must happen AFTER tiles have been generated
                     //and BEFORE any ocean is generated. Otherwise everything is messed up.
-                    if (t != null) {
+                    if (t != null && t instanceof ResourceTile) {
                         foundTiles.add(d);
                     }
                 } catch (Exception e) {
                     //Ignore any errors, just don't process that combination any further.
                 }
             }
-            //TODO: process directions to find beach type and face.
-            hexArray.place(c, new Tile(Terrain.SingleBeach));
+            BeachTile tile = null;
+            if (tradingPosts.contains(tile))
+                tile = new TradeTile(foundTiles.size(), Direction.getAverage(foundTiles), posts.next());
+            else
+                tile = new BeachTile(foundTiles.size(), Direction.getAverage(foundTiles));
+            hexArray.place(c, tile);
         }
 
         //Place all of the ocean features that fill the rest of the map.
         for (Coordinate c : oceanTiles) {
-            hexArray.place(c, new Tile(Terrain.Ocean));
+            hexArray.place(c, new OceanTile());
         }
         for (Coordinate c : oceanVertices) {
             hexArray.place(c, new OceanBuilding());
@@ -100,7 +104,6 @@ public class RandomBoardGenerator implements BoardGenerator {
         for (Coordinate c : oceanPaths) {
             hexArray.place(c, new OceanPath());
         }
-
 
     }
 }

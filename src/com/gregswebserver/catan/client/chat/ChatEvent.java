@@ -14,10 +14,11 @@ import java.util.Date;
  */
 public class ChatEvent extends ExternalEvent {
 
-    private final ChatEventType type;
-    private final Identity destination;
-    private final String message;
+    public final ChatEventType type;
+    public final Identity destination;
+    public final String message;
 
+    //General purpose constructor.
     public ChatEvent(Identity origin, String message) {
         super(origin);
         type = ChatEventType.Lobby; //Defaults to a lobby-only send.
@@ -25,16 +26,10 @@ public class ChatEvent extends ExternalEvent {
         this.message = format(message);
     }
 
-    public ChatEvent(String message) {
-        super(new Identity("[SERVER]"));
-        type = ChatEventType.Broadcast;
-        destination = null;
-        this.message = format(message);
-    }
-
-    public ChatEvent(Identity origin, Identity destination, String message) {
+    //Custom constructor.
+    public ChatEvent(Identity origin, ChatEventType type, Identity destination, String message) {
         super(origin);
-        this.type = ChatEventType.Private;
+        this.type = type;
         this.destination = destination;
         this.message = format(message);
     }

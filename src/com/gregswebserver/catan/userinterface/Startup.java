@@ -6,7 +6,6 @@ import com.gregswebserver.catan.client.game.GameEventType;
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.log.Logger;
 import com.gregswebserver.catan.network.Identity;
-import com.gregswebserver.catan.network.NetID;
 import com.gregswebserver.catan.server.Server;
 import com.gregswebserver.catan.util.Statics;
 
@@ -26,7 +25,7 @@ public class Startup extends GenericWindow {
     private JTextField[] fields = new JTextField[TextField.values().length];
     private JButton[] buttons = new JButton[ActionButton.values().length];
 
-    public Startup(Logger logger) {
+    public Startup(final Logger logger) {
         //TODO: rewrite this whole thing.
         super("Settlers of Catan - Startup", new Dimension(300, 500), false, logger);
         contentPane = new JPanel();
@@ -113,7 +112,6 @@ public class Startup extends GenericWindow {
 
     private void startClient(InetAddress host, int port, String username, String password) {
         Client client = new Client();
-        client.connectTo(new NetID(host, port));
         dispose();
         client.addEvent(new GameEvent(new Identity("lol"), GameEventType.Game_Create, Statics.BASE_GAME));
     }

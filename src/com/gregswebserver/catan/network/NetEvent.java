@@ -16,8 +16,4 @@ public class NetEvent extends GenericEvent {
         this.origin = origin;
         this.event = event;
     }
-
-    public ExternalEvent getEvent() {
-        return event;
-    }
 }
