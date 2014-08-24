@@ -49,6 +49,8 @@ public class TradeTile extends BeachTile {
                 directions.add(Direction.downright);
                 directions.add(Direction.right);
                 break;
+            default:
+                //uh.
         }
     }
 
@@ -98,5 +100,9 @@ public class TradeTile extends BeachTile {
             ratio.renderTo(graphic, null, GraphicsConfig.tradeTileRatioRender, 0);
         }
         return graphic;
+    }
+
+    public String toString() {
+        return "TradeTile " + tradingPost;
     }
 }

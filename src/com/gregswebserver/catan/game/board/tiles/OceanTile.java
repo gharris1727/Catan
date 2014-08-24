@@ -12,4 +12,8 @@ public class OceanTile extends Tile {
     public Graphic getGraphic() {
         return Statics.oceanTexture;
     }
+
+    public String toString() {
+        return "OceanTile";
+    }
 }

@@ -21,4 +21,8 @@ public class OceanBuilding extends Building {
     public int getResourceNumber() {
         return 0;
     }
+
+    public String toString() {
+        return "OceanBuilding";
+    }
 }

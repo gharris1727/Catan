@@ -29,7 +29,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
     }
 
     public boolean set(Coordinate c, T o) {
-        return set(c.getX(), c.getY(), o);
+        return set(c.x, c.y, o);
     }
 
     @SuppressWarnings("unchecked")
@@ -39,7 +39,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
     }
 
     public T get(Coordinate c) {
-        return get(c.getX(), c.getY());
+        return get(c.x, c.y);
     }
 
     public T remove(int x, int y) {
@@ -51,7 +51,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
     }
 
     public T remove(Coordinate c) {
-        return remove(c.getX(), c.getY());
+        return remove(c.x, c.y);
     }
 
     public HashMap<Coordinate, T> toHashMap() {
@@ -96,7 +96,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
     }
 
     public void rangeCheck(Coordinate c) {
-        rangeCheck(c.getX(), c.getY());
+        rangeCheck(c.x, c.y);
     }
 
     private String indexMessage(int x, int y, int limitX, int limitY) {

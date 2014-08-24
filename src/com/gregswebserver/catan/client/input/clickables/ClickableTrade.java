@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.client.input;
+package com.gregswebserver.catan.client.input.clickables;
 
-import com.gregswebserver.catan.event.GenericEvent;
+import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.game.gameplay.trade.Trade;
 
 /**
@@ -16,13 +16,15 @@ public class ClickableTrade implements Clickable {
         this.trade = trade;
     }
 
-    @Override
-    public GenericEvent onRightClick() {
-        return null;
+    public void onRightClick() {
+
     }
 
-    @Override
-    public GenericEvent onLeftClick() {
-        return null;
+    public void onLeftClick() {
+
+    }
+
+    public void onMiddleClick() {
+
     }
 }

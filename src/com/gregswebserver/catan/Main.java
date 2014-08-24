@@ -1,7 +1,6 @@
 package com.gregswebserver.catan;
 
 import com.gregswebserver.catan.log.Logger;
-import com.gregswebserver.catan.userinterface.Startup;
 import com.gregswebserver.catan.util.Statics;
 
 /**

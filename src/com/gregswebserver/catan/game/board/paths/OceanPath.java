@@ -16,4 +16,8 @@ public class OceanPath extends Path {
     public Graphic getGraphic() {
         return Team.Ocean.paths[getPosition().x % 3];
     }
+
+    public String toString() {
+        return "OceanPath";
+    }
 }

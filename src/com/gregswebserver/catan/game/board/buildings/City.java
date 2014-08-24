@@ -21,4 +21,8 @@ public class City extends Building implements Tradeable {
     public Graphic getGraphic() {
         return getOwner().getTeam().city[getPosition().x % 2];
     }
+
+    public String toString() {
+        return "City: " + getOwner();
+    }
 }

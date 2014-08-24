@@ -12,6 +12,14 @@ public class RoundedRectangularMask extends RenderMask {
     private int radius;
     private RoundedMask roundMask;
 
+    public RoundedRectangularMask(Dimension square) {
+        //Auto-sizes the corners to be proportional to the whole window.
+        int radius = (square.width > square.height) ? square.height / 8 : square.width / 8;
+        this.width = square.width;
+        this.height = square.height;
+        roundMask = new RoundedMask(new Dimension(radius, radius));
+    }
+
     public RoundedRectangularMask(Dimension square, Dimension round) {
         this.width = square.width;
         this.height = square.height;

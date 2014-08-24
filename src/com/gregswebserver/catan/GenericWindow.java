@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.userinterface;
+package com.gregswebserver.catan;
 
 import com.gregswebserver.catan.log.LogLevel;
 import com.gregswebserver.catan.log.Logger;

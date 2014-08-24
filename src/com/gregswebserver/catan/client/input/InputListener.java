@@ -62,7 +62,21 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        logger.debug(this, "Clicked on: " + hitbox.getClickable(e.getPoint()));
+        Clickable c = hitbox.getClickable(e.getPoint());
+        if (c != null) {
+            switch (e.getButton()) {
+                case MouseEvent.BUTTON1:
+                    c.onLeftClick();
+                    break;
+                case MouseEvent.BUTTON2:
+                    c.onRightClick();
+                    break;
+                case MouseEvent.BUTTON3:
+                    c.onMiddleClick();
+                    break;
+            }
+        }
+
     }
 
     @Override
@@ -98,5 +112,9 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
 
+    }
+
+    public String toString() {
+        return "InputListener";
     }
 }

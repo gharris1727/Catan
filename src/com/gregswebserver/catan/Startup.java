@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.userinterface;
+package com.gregswebserver.catan;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.game.GameEvent;

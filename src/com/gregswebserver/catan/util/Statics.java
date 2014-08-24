@@ -54,6 +54,10 @@ public class Statics {
     public static RenderMask tradeHorizontalRenderMask;
     public static RenderMask tradeDiagonalDownRenderMask;
 
+    public static RenderMask dialogButtonSmallRenderMask;
+    public static RenderMask dialogButtonMediumRenderMask;
+    public static RenderMask dialogButtonLargeRenderMask;
+
     public static Graphic hillTexture;
     public static Graphic forestTexture;
     public static Graphic pastureTexture;
@@ -206,6 +210,10 @@ public class Statics {
         tradeDiagonalUpRenderMask = new DiagonalMask(GraphicsConfig.tradeDiagonalRenderMaskSize);
         tradeDiagonalDownRenderMask = new FlippedMask(tradeDiagonalUpRenderMask, FlippedMask.VERTICAL);
 
+        dialogButtonSmallRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonSmallRenderMaskSize);
+        dialogButtonMediumRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonMediumRenderMaskSize);
+        dialogButtonLargeRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonLargeRenderMaskSize);
+
         hillTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.hillTextureLocation);
         forestTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.forestTextureLocation);
         pastureTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.pastureTextureLocation);
@@ -270,46 +278,46 @@ public class Statics {
         oreIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.oreIconTextureLocation);
         questionIconTexture = new Graphic(iconGraphicSource, resourceIconRenderMask, GraphicsConfig.questionIconTextureLocation);
 
-        redSettlementLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
-        redSettlementRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
-        redCityLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
-        redCityRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        redSettlementLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLeftLocation);
+        redSettlementRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementRightLocation);
+        redCityLeft = new Graphic(redTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLeftLocation);
+        redCityRight = new Graphic(redTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityRightLocation);
         redHorizontalPath = new Graphic(redTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         redDiagonalUpPath = new Graphic(redTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         redDiagonalDownPath = new Graphic(redTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
 
-        orangeSettlementLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationRight);
-        orangeSettlementRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationLeft);
-        orangeCityLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
-        orangeCityRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        orangeSettlementLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementRightLocation);
+        orangeSettlementRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLeftLocation);
+        orangeCityLeft = new Graphic(orangeTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLeftLocation);
+        orangeCityRight = new Graphic(orangeTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityRightLocation);
         orangeHorizontalPath = new Graphic(orangeTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         orangeDiagonalUpPath = new Graphic(orangeTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         orangeDiagonalDownPath = new Graphic(orangeTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
 
-        blueSettlementLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
-        blueSettlementRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
-        blueCityLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
-        blueCityRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        blueSettlementLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLeftLocation);
+        blueSettlementRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementRightLocation);
+        blueCityLeft = new Graphic(blueTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLeftLocation);
+        blueCityRight = new Graphic(blueTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityRightLocation);
         blueHorizontalPath = new Graphic(blueTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         blueDiagonalUpPath = new Graphic(blueTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         blueDiagonalDownPath = new Graphic(blueTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
 
-        whiteSettlementLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
-        whiteSettlementRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
-        whiteCityLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLocationLeft);
-        whiteCityRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityLocationRight);
+        whiteSettlementLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLeftLocation);
+        whiteSettlementRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementRightLocation);
+        whiteCityLeft = new Graphic(whiteTeamGraphicSource, vertexRenderMaskLeft, GraphicsConfig.cityLeftLocation);
+        whiteCityRight = new Graphic(whiteTeamGraphicSource, vertexRenderMaskRight, GraphicsConfig.cityRightLocation);
         whiteHorizontalPath = new Graphic(whiteTeamGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         whiteDiagonalUpPath = new Graphic(whiteTeamGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         whiteDiagonalDownPath = new Graphic(whiteTeamGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
 
-        oceanVertexLeft = new Graphic(oceanGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
-        oceanVertexRight = new Graphic(oceanGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        oceanVertexLeft = new Graphic(oceanGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLeftLocation);
+        oceanVertexRight = new Graphic(oceanGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementRightLocation);
         oceanHorizontalPath = new Graphic(oceanGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         oceanDiagonalUpPath = new Graphic(oceanGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         oceanDiagonalDownPath = new Graphic(oceanGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
 
-        blankVertexLeft = new Graphic(blankGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLocationLeft);
-        blankVertexRight = new Graphic(blankGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementLocationRight);
+        blankVertexLeft = new Graphic(blankGraphicSource, vertexRenderMaskLeft, GraphicsConfig.settlementLeftLocation);
+        blankVertexRight = new Graphic(blankGraphicSource, vertexRenderMaskRight, GraphicsConfig.settlementRightLocation);
         blankHorizontalPath = new Graphic(blankGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         blankDiagonalUpPath = new Graphic(blankGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         blankDiagonalDownPath = new Graphic(blankGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
@@ -321,7 +329,7 @@ public class Statics {
         BASE_GAME.tile(5, 4).tile(6, 4).tile(7, 4).tile(8, 4).tile(9, 4);
         BASE_GAME.post(4, 5).tile(5, 5).tile(6, 5).tile(7, 5).tile(8, 5).tile(9, 5).post(10, 5);
         BASE_GAME.tile(5, 6).tile(6, 6).tile(7, 6).tile(8, 6).tile(9, 6);
-        BASE_GAME.post(4, 7).tile(6, 7).tile(7, 7).tile(8, 7).post(9, 7);
+        BASE_GAME.post(4, 7).tile(6, 7).tile(7, 7).tile(8, 7).post(10, 7);
         BASE_GAME.post(6, 8).post(8, 8);
         BASE_GAME.gen(new RandomBoardGenerator());
         BASE_GAME.players(3);

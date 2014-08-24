@@ -54,4 +54,8 @@ public class ResourceTile extends Tile {
         }
         return graphic;
     }
+
+    public String toString() {
+        return "ResourceTile " + terrain;
+    }
 }

@@ -37,34 +37,34 @@ public enum Direction {
 
     public static Direction getAverage(HashSet<Direction> input) {
         int sumX = 0, sumY = 0;
+        Direction out = null;
         for (Direction d : input) {
             sumX += d.x;
             sumY += d.y;
         }
         if (sumY == 0) {
             if (sumX == 0)
-                return null;
+                out = null;
             if (sumX > 0)
-                return right;
+                out = right;
             if (sumX < 0)
-                return left;
+                out = left;
         } else if (sumY > 0) {
             if (sumX == 0)
-                return up;
+                out = up;
             if (sumX > 0)
-                return upright;
+                out = upright;
             if (sumX < 0)
-                return upleft;
+                out = upleft;
         } else if (sumY < 0) {
             if (sumX == 0)
-                return down;
+                out = down;
             if (sumX > 0)
-                return downright;
+                out = downright;
             if (sumX < 0)
-                return downleft;
+                out = downleft;
         }
-        //If you get here, you dun' f****d up.
-        return null;
+        return out;
     }
 
     public int index() {

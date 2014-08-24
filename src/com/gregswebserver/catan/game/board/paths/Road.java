@@ -17,4 +17,8 @@ public class Road extends Path implements Tradeable {
     public Graphic getGraphic() {
         return getOwner().getTeam().paths[getPosition().x % 3];
     }
+
+    public String toString() {
+        return "Road: " + getOwner();
+    }
 }

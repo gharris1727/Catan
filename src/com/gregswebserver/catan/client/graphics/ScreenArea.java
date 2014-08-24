@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.graphics;
 
-import com.gregswebserver.catan.util.UniqueColor;
+import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -11,39 +11,26 @@ import java.util.TreeMap;
  * Created by Greg on 8/19/2014.
  * A screen object consisting of other screen objects with HitboxColors to differentiate them.
  */
-public class ScreenArea implements ScreenObject {
+public class ScreenArea extends ScreenObject {
 
-    private HashMap<Integer, ScreenObject> subObjects;
-    //TODO: evaluate TreeMap's effectiveness as a render priority manager.
-    private TreeMap<Integer, ArrayList<ScreenObject>> renderPriority;
-    private Graphic graphic;
-    private boolean needsRendering;
-    private Point position;
+    protected Dimension size;
     private Point viewPoint;
-    private int color;
-    private int priority;
+    private HashMap<Integer, ScreenObject> subObjects;
+    private TreeMap<Integer, ArrayList<ScreenObject>> renderPriority;
 
-    public ScreenArea(Dimension size, Point position, int priority) {
+    public ScreenArea(Dimension size, Point position, Point viewPoint, int priority) {
+        super(position, priority);
+        this.viewPoint = viewPoint;
         clear();
-        this.position = position;
-        this.viewPoint = new Point();
-        this.color = UniqueColor.getNext();
-        this.priority = priority;
-        this.needsRendering = false;
-        this.graphic = new Graphic(size);
+        resize(size);
     }
 
-    public Object getClickable(Point p) {
+    public Clickable getClickable(Point p) {
         Point subPosition = new Point(p.x - position.x, p.y - position.y);
         int color = getGraphic().getHitboxColor(subPosition);
         ScreenObject object = subObjects.get(color);
-        if (object instanceof ScreenArea)
-            return object.getClickable(p);
-        return object;
-    }
-
-    public int getRenderPriority() {
-        return priority;
+        if (object == null) return null;
+        return object.getClickable(p);
     }
 
     public boolean needsRendering() {
@@ -54,29 +41,17 @@ public class ScreenArea implements ScreenObject {
         return false;
     }
 
-    public Point getPosition() {
-        return position;
-    }
-
-    public int getHitboxColor() {
-        return color;
-    }
-
-    public Graphic getGraphic() {
-        if (needsRendering()) {
-            render();
+    public void render() {
+        if (graphic == null) {
+            graphic = new Graphic(size);
+        } else {
+            graphic.clear();
         }
-        return graphic;
-    }
-
-    private void render() {
-        graphic.clear();
         for (ScreenObject object : subObjects.values()) {
             Point position = object.getPosition();
             Point renderPosition = new Point(position.x - viewPoint.x, position.y - viewPoint.y);
             object.getGraphic().renderTo(graphic, null, renderPosition, object.getHitboxColor());
         }
-        needsRendering = false;
     }
 
     public void addScreenObject(ScreenObject object) {
@@ -96,12 +71,17 @@ public class ScreenArea implements ScreenObject {
     }
 
     public void resize(Dimension d) {
-        graphic = new Graphic(d);
+        this.size = d;
+        graphic = null;
         needsRendering = true;
     }
 
     public void changeView(Point p) {
         this.viewPoint.translate(p.x, p.y);
         needsRendering = true;
+    }
+
+    public Dimension getSize() {
+        return size;
     }
 }

@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.client.input;
 
-import com.gregswebserver.catan.event.GenericEvent;
-
 /**
  * Created by Greg on 8/14/2014.
  * An object that can be clicked on.
@@ -11,7 +9,9 @@ public interface Clickable {
 
     //TODO: implement user input via this interface.
 
-    public GenericEvent onRightClick();
+    public void onRightClick();
 
-    public GenericEvent onLeftClick();
+    public void onLeftClick();
+
+    public void onMiddleClick();
 }

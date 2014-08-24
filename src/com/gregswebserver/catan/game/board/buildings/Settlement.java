@@ -21,4 +21,8 @@ public class Settlement extends Building implements Tradeable {
     public Graphic getGraphic() {
         return getOwner().getTeam().settlement[getPosition().x % 2];
     }
+
+    public String toString() {
+        return "Settlement: " + getOwner();
+    }
 }

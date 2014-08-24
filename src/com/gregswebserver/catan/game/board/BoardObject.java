@@ -41,4 +41,6 @@ public abstract class BoardObject implements Graphical {
     public void setHexArray(HexagonalArray hexArray) {
         this.hexArray = hexArray;
     }
+
+    public abstract String toString();
 }

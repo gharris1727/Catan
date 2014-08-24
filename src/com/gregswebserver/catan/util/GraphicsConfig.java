@@ -44,8 +44,23 @@ public class GraphicsConfig {
     public static final Dimension tradeRatioRenderMaskSize = new Dimension(32, 16);
     public static final Dimension resourceIconRenderMaskSize = new Dimension(16, 16);
 
-    public static final Dimension tradeDiagonalRenderMaskSize = new Dimension(8, 32);
-    public static final Dimension tradeHorizontalRenderMaskSize = new Dimension(28, 8);
+    public static final Dimension tradeDiagonalRenderMaskSize = new Dimension(10, 32);
+    public static final Dimension tradeHorizontalRenderMaskSize = new Dimension(32, 10);
+
+    public static final Dimension dialogButtonSmallRenderMaskSize = new Dimension(64, 32);
+    public static final Dimension dialogButtonMediumRenderMaskSize = new Dimension(128, 32);
+    public static final Dimension dialogButtonLargeRenderMaskSize = new Dimension(256, 32);
+
+    public static final Point resourceTileTokenRender = new Point(tileRenderMaskSize.width / 2 - diceRollTokenRenderMaskSize.width, tileRenderMaskSize.height / 2 - diceRollTokenRenderMaskSize.height);
+    public static final Point tradeTileResourceIconRender = new Point(tileRenderMaskSize.width / 2 - resourceIconRenderMaskSize.width / 2, tileRenderMaskSize.height / 2 - resourceIconRenderMaskSize.height / 2 + 12);
+    public static final Point tradeTileRatioRender = new Point(tileRenderMaskSize.width / 2 - tradeRatioRenderMaskSize.width / 2, tileRenderMaskSize.height / 2 - tradeRatioRenderMaskSize.height / 2 - 12);
+
+    public static final Point tradeUpLeftRender = new Point(tileRenderMaskSize.height / 4, -tradeDiagonalRenderMaskSize.width / 2);
+    public static final Point tradeUpRightRender = new Point(tileRenderMaskSize.height * 3 / 4, 0);
+    public static final Point tradeLeftRender = new Point(0, tileRenderMaskSize.height / 2 - tradeHorizontalRenderMaskSize.height / 2);
+    public static final Point tradeRightRender = new Point(tileRenderMaskSize.width - tradeHorizontalRenderMaskSize.width, tileRenderMaskSize.height / 2 - tradeHorizontalRenderMaskSize.height / 2);
+    public static final Point tradeDownLeftRender = new Point(tileRenderMaskSize.height / 4, tileRenderMaskSize.height - tradeDiagonalRenderMaskSize.height + tradeDiagonalRenderMaskSize.width / 2);
+    public static final Point tradeDownRightRender = new Point(tileRenderMaskSize.height * 3 / 4, tileRenderMaskSize.height - tradeDiagonalRenderMaskSize.height);
 
     public static final Point hillTextureLocation = new Point(235, 523);
     public static final Point forestTextureLocation = new Point(586, 321);
@@ -75,13 +90,6 @@ public class GraphicsConfig {
     public static final Point tradeDownLeftLocation = new Point();
     public static final Point tradeLeftLocation = new Point();
     public static final Point tradeUpLeftLocation = new Point();
-
-    public static final Point tradeUpLeftRender = new Point();
-    public static final Point tradeUpRightRender = new Point();
-    public static final Point tradeLeftRender = new Point();
-    public static final Point tradeRightRender = new Point();
-    public static final Point tradeDownLeftRender = new Point();
-    public static final Point tradeDownRightRender = new Point();
 
     public static final Point brickCardTextureLocation = new Point();
     public static final Point lumberCardTextureLocation = new Point();
@@ -118,14 +126,10 @@ public class GraphicsConfig {
     public static final Point oreIconTextureLocation = new Point();
     public static final Point questionIconTextureLocation = new Point();
 
-    public static final Point resourceTileTokenRender = new Point();
-    public static final Point tradeTileResourceIconRender = new Point();
-    public static final Point tradeTileRatioRender = new Point();
-
-    public static final Point settlementLocationLeft = new Point();
-    public static final Point settlementLocationRight = new Point();
-    public static final Point cityLocationLeft = new Point();
-    public static final Point cityLocationRight = new Point();
+    public static final Point settlementLeftLocation = new Point();
+    public static final Point settlementRightLocation = new Point();
+    public static final Point cityLeftLocation = new Point();
+    public static final Point cityRightLocation = new Point();
     public static final Point horizontalPathLocation = new Point();
     public static final Point diagonalUpPathLocation = new Point();
     public static final Point diagonalDownPathLocation = new Point();

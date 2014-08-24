@@ -32,7 +32,6 @@ public class RandomBoardGenerator implements BoardGenerator {
         Iterator<Terrain> terrain = terrainGenerator.iterator();
         Iterator<DiceRoll> tokens = tokenGenerator.iterator();
         Iterator<TradingPost> posts = tradeGenerator.iterator();
-        //TODO: do something with the trading posts, i forget.
 
         //Use the valid hexagons to find all valid vertices and edges, as well as adjacent tiles that are beaches.
         HashSet<Coordinate> validVertices = new HashSet<>();
@@ -69,14 +68,25 @@ public class RandomBoardGenerator implements BoardGenerator {
             hexArray.place(c, tile);
         }
 
+        //Place all of the ocean features that fill the rest of the map.
+        for (Coordinate c : oceanTiles) {
+            hexArray.place(c, new OceanTile());
+        }
+        for (Coordinate c : oceanVertices) {
+            hexArray.place(c, new OceanBuilding());
+        }
+        for (Coordinate c : oceanPaths) {
+            hexArray.place(c, new OceanPath());
+        }
+
         // Place all beaches, checking for surrounding tiles.
         for (Coordinate c : beachTiles) {
             //Find surrounding tiles and save the directions.
             HashSet<Direction> foundTiles = new HashSet<>();
             for (Direction d : Direction.values()) {
                 try {
-                    hexArray.getSpaceCoordinateFromSpace(c, d);
-                    Tile t = hexArray.spaces.get(c);
+                    Coordinate found = hexArray.getSpaceCoordinateFromSpace(c, d);
+                    Tile t = hexArray.spaces.get(found);
                     //IMPORTANT: this check must happen AFTER tiles have been generated
                     //and BEFORE any ocean is generated. Otherwise everything is messed up.
                     if (t != null && t instanceof ResourceTile) {
@@ -87,22 +97,11 @@ public class RandomBoardGenerator implements BoardGenerator {
                 }
             }
             BeachTile tile = null;
-            if (tradingPosts.contains(tile))
+            if (tradingPosts.contains(c))
                 tile = new TradeTile(foundTiles.size(), Direction.getAverage(foundTiles), posts.next());
             else
                 tile = new BeachTile(foundTiles.size(), Direction.getAverage(foundTiles));
             hexArray.place(c, tile);
-        }
-
-        //Place all of the ocean features that fill the rest of the map.
-        for (Coordinate c : oceanTiles) {
-            hexArray.place(c, new OceanTile());
-        }
-        for (Coordinate c : oceanVertices) {
-            hexArray.place(c, new OceanBuilding());
-        }
-        for (Coordinate c : oceanPaths) {
-            hexArray.place(c, new OceanPath());
         }
 
     }

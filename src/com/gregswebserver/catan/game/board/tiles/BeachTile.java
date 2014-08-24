@@ -62,10 +62,17 @@ public class BeachTile extends DirectionalTile {
                         break;
                 }
                 break;
+            default:
+                graphic = Statics.desertTexture;
+                break;
         }
     }
 
     public Graphic getGraphic() {
         return graphic;
+    }
+
+    public String toString() {
+        return "BeachTile n/" + sides + " d/" + getDirection();
     }
 }

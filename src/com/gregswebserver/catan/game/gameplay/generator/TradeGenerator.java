@@ -49,6 +49,6 @@ public class TradeGenerator implements FeatureGenerator<TradingPost> {
     }
 
     public Iterator<TradingPost> iterator() {
-        return null;
+        return posts.iterator();
     }
 }

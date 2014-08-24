@@ -11,9 +11,13 @@ import java.util.HashMap;
 public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z extends BoardObject> {
 
     // additions[<x or y>][<direction>] = translation
-    private static final int[][] spaceToSpace = {
-            {0, 0, 0, 0, -1, -1, 1, 1}, //X
-            {-1, 1, 0, 0, 0, 1, 0, 1}}; //Y
+    private static final int[][][] spaceToSpace = {
+            { //EVEN
+                    {0, 0, 0, 0, -1, -1, 1, 1}, //X
+                    {-1, 1, 0, 0, -1, 0, -1, 0}}, //Y
+            { //ODD
+                    {0, 0, 0, 0, -1, -1, 1, 1,}, //X
+                    {-1, 1, 0, 0, 0, 1, 0, 1}}}; //Y
     private static final int[][][] edgeToEdge = {
             { //ZERO
                     {1, 1, -1, 2, 0, 0, 0, 0}, //X
@@ -295,8 +299,8 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
     //Single translation functions
 
     public Coordinate getSpaceCoordinateFromSpace(Coordinate c, Direction d) throws IllegalDirectionException {
-        checkDirection(d, spaceToSpace);
-        Coordinate out = convert(c, d, spaceToSpace);
+        checkDirection(d, spaceToSpace[c.x % 2]);
+        Coordinate out = convert(c, d, spaceToSpace[c.x % 2]);
         spaces.rangeCheck(out);
         return out;
     }

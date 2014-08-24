@@ -5,7 +5,11 @@ import com.gregswebserver.catan.client.ClientEvent;
 import com.gregswebserver.catan.client.ClientEventType;
 import com.gregswebserver.catan.client.chat.ChatLog;
 import com.gregswebserver.catan.client.graphics.*;
-import com.gregswebserver.catan.client.input.*;
+import com.gregswebserver.catan.client.input.Clickable;
+import com.gregswebserver.catan.client.input.clickables.ClickableBuilding;
+import com.gregswebserver.catan.client.input.clickables.ClickableInventoryItem;
+import com.gregswebserver.catan.client.input.clickables.ClickablePath;
+import com.gregswebserver.catan.client.input.clickables.ClickableTile;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.game.CatanGame;
@@ -62,9 +66,15 @@ public class RenderThread extends QueuedInputThread {
     private ScreenArea area;
 
     private ScreenArea gameScreen;
+
     private ScreenArea connectScreen;
+    private Dialog connectDialog;
+
     private ScreenArea serverScreen;
+    private Dialog serverDialog;
+
     private ScreenArea lobbyScreen;
+    private Dialog lobbyDialog;
 
     private ScreenArea sidebar;
     private ScreenArea bottom;
@@ -79,22 +89,22 @@ public class RenderThread extends QueuedInputThread {
         viewPosition = new Point();
 
         //T1 ScreenArea
-        area = new ScreenArea(screenSize, new Point(), 0);
+        area = new ScreenArea(screenSize, new Point(), new Point(), 0);
 
         //T2 ScreenAreas
-        gameScreen = new ScreenArea(focusSize, gamePosition, 0);
+        gameScreen = new ScreenArea(focusSize, gamePosition, viewPosition, 0);
         area.addScreenObject(gameScreen);
-        connectScreen = new ScreenArea(focusSize, connectPosition, 1);
+        connectScreen = new ScreenArea(focusSize, connectPosition, new Point(), 1);
         area.addScreenObject(connectScreen);
-        serverScreen = new ScreenArea(focusSize, serverPosition, 2);
+        serverScreen = new ScreenArea(focusSize, serverPosition, new Point(), 2);
         area.addScreenObject(serverScreen);
-        lobbyScreen = new ScreenArea(focusSize, lobbyPosition, 3);
+        lobbyScreen = new ScreenArea(focusSize, lobbyPosition, new Point(), 3);
         area.addScreenObject(lobbyScreen);
-        sidebar = new ScreenArea(sidebarSize, sidebarPosition, 4);
+        sidebar = new ScreenArea(sidebarSize, sidebarPosition, new Point(), 4);
         area.addScreenObject(sidebar);
-        bottom = new ScreenArea(bottomSize, bottomPosition, 5);
+        bottom = new ScreenArea(bottomSize, bottomPosition, new Point(), 5);
         area.addScreenObject(bottom);
-        contextMenu = new ScreenArea(contextSize, cornerPosition, 6);
+        contextMenu = new ScreenArea(contextSize, cornerPosition, new Point(), 6);
         area.addScreenObject(contextMenu);
 
         client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, area));
@@ -103,7 +113,7 @@ public class RenderThread extends QueuedInputThread {
     private void resize(Dimension screenSize) {
         this.screenSize = screenSize;
         if (offScreen.x < screenSize.width || offScreen.y < screenSize.height)
-            //Ensure that the offscreen coordinate is truly 'off the screen'
+            //Ensure that the off-screen coordinate is truly 'off the screen'
             offScreen.setLocation(screenSize.width, screenSize.height);
         focusSize = new Dimension(screenSize.width - 256, screenSize.height - 256);
         sidebarSize = new Dimension(256, focusSize.height);
@@ -153,7 +163,7 @@ public class RenderThread extends QueuedInputThread {
         for (Coordinate c : spaces) {
             Tile tile = tiles.get(c);
             Graphic graphic = tile.getGraphic();
-            Clickable clickable = new ClickableTile(c);
+            Clickable clickable = new ClickableTile(c, tile);
             gameScreen.addScreenObject(new StaticGraphic(
                     graphic,
                     GraphicsConfig.tileToScreen(c),
@@ -165,7 +175,7 @@ public class RenderThread extends QueuedInputThread {
             Graphic graphic = null;
             if (path != null) graphic = path.getGraphic();
             if (graphic == null) graphic = Team.Blank.paths[c.x % 3];
-            Clickable clickable = new ClickablePath(c);
+            Clickable clickable = new ClickablePath(c, path);
             gameScreen.addScreenObject(new StaticGraphic(
                     graphic,
                     GraphicsConfig.edgeToScreen(c),
@@ -177,7 +187,7 @@ public class RenderThread extends QueuedInputThread {
             Graphic graphic = null;
             if (building != null) graphic = building.getGraphic();
             if (graphic == null) graphic = Team.Blank.settlement[c.x % 2];
-            Clickable clickable = new ClickableBuilding(c);
+            Clickable clickable = new ClickableBuilding(c, building);
             gameScreen.addScreenObject(new StaticGraphic(
                     graphic,
                     GraphicsConfig.vertexToScreen(c),
