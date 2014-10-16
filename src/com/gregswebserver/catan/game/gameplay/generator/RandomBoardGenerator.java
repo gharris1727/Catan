@@ -1,12 +1,11 @@
 package com.gregswebserver.catan.game.gameplay.generator;
 
-import com.gregswebserver.catan.game.board.buildings.Building;
+import com.gregswebserver.catan.game.board.GameBoard;
 import com.gregswebserver.catan.game.board.buildings.OceanBuilding;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.game.board.hexarray.Direction;
-import com.gregswebserver.catan.game.board.hexarray.HexagonalArray;
+import com.gregswebserver.catan.game.board.hexarray.IllegalDirectionException;
 import com.gregswebserver.catan.game.board.paths.OceanPath;
-import com.gregswebserver.catan.game.board.paths.Path;
 import com.gregswebserver.catan.game.board.tiles.*;
 import com.gregswebserver.catan.game.gameplay.DiceRoll;
 import com.gregswebserver.catan.game.gameplay.enums.TradingPost;
@@ -20,8 +19,7 @@ import java.util.Iterator;
  */
 public class RandomBoardGenerator implements BoardGenerator {
 
-    public void run(HexagonalArray<Tile, Path, Building> hexArray, HashSet<Coordinate> validSpaces, HashSet<Coordinate> tradingPosts) {
-
+    public void run(GameBoard board, HashSet<Coordinate> validSpaces, HashSet<Coordinate> tradingPosts) {
         //Prep all of the helper classes to generate map features.
         TerrainGenerator terrainGenerator = new TerrainGenerator(validSpaces.size());
         TokenGenerator tokenGenerator = new TokenGenerator(validSpaces.size() - 1); //Don't generate a token for the desert.
@@ -38,21 +36,21 @@ public class RandomBoardGenerator implements BoardGenerator {
         HashSet<Coordinate> validEdges = new HashSet<>();
         HashSet<Coordinate> beachTiles = new HashSet<>();
         for (Coordinate spaceCoordinate : validSpaces) {
-            validVertices.addAll(hexArray.getAdjacentVerticesFromSpace(spaceCoordinate).values());
-            validEdges.addAll(hexArray.getAdjacentEdgesFromSpace(spaceCoordinate).values());
-            beachTiles.addAll(hexArray.getAdjacentSpacesFromSpace(spaceCoordinate).values());
+            validVertices.addAll(board.hexArray.getAdjacentVerticesFromSpace(spaceCoordinate).values());
+            validEdges.addAll(board.hexArray.getAdjacentEdgesFromSpace(spaceCoordinate).values());
+            beachTiles.addAll(board.hexArray.getAdjacentSpacesFromSpace(spaceCoordinate).values());
         }
 
         //Remove any beachTiles that are actually resourceTiles.
         beachTiles.removeAll(validSpaces);
 
         //Remove the valid/beach coordinates from all to find the ocean coordinates;
-        HashSet<Coordinate> oceanTiles = hexArray.spaces.getAllCoordinates();
+        HashSet<Coordinate> oceanTiles = board.hexArray.spaces.getAllCoordinates();
         oceanTiles.removeAll(validSpaces);
         oceanTiles.removeAll(beachTiles);
-        HashSet<Coordinate> oceanVertices = hexArray.vertices.getAllCoordinates();
+        HashSet<Coordinate> oceanVertices = board.hexArray.vertices.getAllCoordinates();
         oceanVertices.removeAll(validVertices);
-        HashSet<Coordinate> oceanPaths = hexArray.edges.getAllCoordinates();
+        HashSet<Coordinate> oceanPaths = board.hexArray.edges.getAllCoordinates();
         oceanPaths.removeAll(validEdges);
 
         //Generate and place playable hexagons
@@ -64,19 +62,20 @@ public class RandomBoardGenerator implements BoardGenerator {
                 tile.placeRobber();
             } else {
                 tile = new ResourceTile(t, tokens.next());
+                board.setDiceRollCoordinate(tile.getDiceRoll(), c);
             }
-            hexArray.place(c, tile);
+            board.hexArray.place(c, tile);
         }
 
         //Place all of the ocean features that fill the rest of the map.
         for (Coordinate c : oceanTiles) {
-            hexArray.place(c, new OceanTile());
+            board.hexArray.place(c, new OceanTile());
         }
         for (Coordinate c : oceanVertices) {
-            hexArray.place(c, new OceanBuilding());
+            board.hexArray.place(c, new OceanBuilding());
         }
         for (Coordinate c : oceanPaths) {
-            hexArray.place(c, new OceanPath());
+            board.hexArray.place(c, new OceanPath());
         }
 
         // Place all beaches, checking for surrounding tiles.
@@ -85,8 +84,8 @@ public class RandomBoardGenerator implements BoardGenerator {
             HashSet<Direction> foundTiles = new HashSet<>();
             for (Direction d : Direction.values()) {
                 try {
-                    Coordinate found = hexArray.getSpaceCoordinateFromSpace(c, d);
-                    Tile t = hexArray.spaces.get(found);
+                    Coordinate found = board.hexArray.getSpaceCoordinateFromSpace(c, d);
+                    Tile t = board.hexArray.spaces.get(found);
                     //IMPORTANT: this check must happen AFTER tiles have been generated
                     //and BEFORE any ocean is generated. Otherwise everything is messed up.
                     if (t != null && t instanceof ResourceTile) {
@@ -97,11 +96,20 @@ public class RandomBoardGenerator implements BoardGenerator {
                 }
             }
             BeachTile tile = null;
-            if (tradingPosts.contains(c))
-                tile = new TradeTile(foundTiles.size(), Direction.getAverage(foundTiles), posts.next());
-            else
+            if (tradingPosts.contains(c)) {
+                TradeTile trade = new TradeTile(foundTiles.size(), Direction.getAverage(foundTiles), posts.next());
+                HashSet<Direction> directions = trade.getTradingPostDirections();
+                for (Direction d : directions) {
+                    try {
+                        board.setTradingPostCoordinate(board.hexArray.getVertexCoordinateFromSpace(c, d), trade.getTradingPost());
+                    } catch (IllegalDirectionException e) {
+                        //uh.
+                    }
+                }
+                tile = trade;
+            } else
                 tile = new BeachTile(foundTiles.size(), Direction.getAverage(foundTiles));
-            hexArray.place(c, tile);
+            board.hexArray.place(c, tile);
         }
 
     }

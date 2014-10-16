@@ -18,7 +18,6 @@ import com.gregswebserver.catan.game.board.buildings.Building;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.game.board.paths.Path;
 import com.gregswebserver.catan.game.board.tiles.Tile;
-import com.gregswebserver.catan.game.gameplay.GameAction;
 import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.game.player.Player;
 import com.gregswebserver.catan.game.player.Team;
@@ -139,9 +138,12 @@ public class RenderThread extends QueuedInputThread {
         area.getGraphic().renderTo(screen, null, new Point(), 0);
     }
 
-    private void actionRender(GameAction action) {
-        //Process the GameAction and mark that region to be re-rendered.
-        //TODO: implement.
+    private void chatRender() {
+        //TODO: render the chat log onscreen
+    }
+
+    private void menuRender() {
+        //TODO: implement context menus.
     }
 
     private void tradeRender() {
@@ -230,6 +232,7 @@ public class RenderThread extends QueuedInputThread {
                     this.chat = (ChatLog) event.data;
                     break;
                 case Chat_Update:
+                    chatRender();
                     break;
                 case Game_Create:
                     this.activeGame = (CatanGame) event.data;
@@ -239,8 +242,7 @@ public class RenderThread extends QueuedInputThread {
                     gameScreen.changeView((Point) event.data);
                     break;
                 case Game_Update:
-                    //process the game action, find out what changed, and re-render that section of the screen.
-                    actionRender((GameAction) event.data);
+                    gameRender();
                     break;
                 case Player_Update:
                     localPlayer = (Player) event.data;

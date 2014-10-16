@@ -16,9 +16,9 @@ public class GameType {
 
     private HashSet<Coordinate> resourceTiles;
     private HashSet<Coordinate> tradingPosts;
+    private HashSet<Integer> players;
     private int sizeX, sizeY;
     private BoardGenerator boardGenerator;
-    private int players;
 
     public GameType(String name) {
         this.name = name;
@@ -47,8 +47,7 @@ public class GameType {
     }
 
     public GameType players(int n) {
-        //TODO: redo player counting.
-        players = n;
+        players.add(n);
         return this;
     }
 
@@ -57,9 +56,9 @@ public class GameType {
         return this;
     }
 
-    public void LoadSettingsTo(GameBoard board) {
+    public void generate(GameBoard board) {
         board.init(sizeX, sizeY);
-        boardGenerator.run(board.hexArray, resourceTiles, tradingPosts);
+        boardGenerator.run(board, resourceTiles, tradingPosts);
     }
 
     public String toString() {

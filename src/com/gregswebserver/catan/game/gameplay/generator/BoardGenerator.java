@@ -1,10 +1,7 @@
 package com.gregswebserver.catan.game.gameplay.generator;
 
-import com.gregswebserver.catan.game.board.buildings.Building;
+import com.gregswebserver.catan.game.board.GameBoard;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.game.board.hexarray.HexagonalArray;
-import com.gregswebserver.catan.game.board.paths.Path;
-import com.gregswebserver.catan.game.board.tiles.Tile;
 
 import java.util.HashSet;
 
@@ -14,5 +11,5 @@ import java.util.HashSet;
  */
 public interface BoardGenerator {
 
-    public abstract void run(HexagonalArray<Tile, Path, Building> hexArray, HashSet<Coordinate> tilePositions, HashSet<Coordinate> tradingPosts);
+    public abstract void run(GameBoard board, HashSet<Coordinate> tilePositions, HashSet<Coordinate> tradingPosts);
 }

@@ -4,11 +4,13 @@ import com.gregswebserver.catan.client.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.Graphical;
 import com.gregswebserver.catan.util.Statics;
 
+import java.io.Serializable;
+
 /**
  * Created by Greg on 8/10/2014.
  * All of the combinations of dice rolls and their ranks.
  */
-public enum DiceRoll implements Graphical {
+public enum DiceRoll implements Graphical, Serializable {
 
     Two(2, 1, Statics.diceRollTwo),
     Three(3, 2, Statics.diceRollThree),

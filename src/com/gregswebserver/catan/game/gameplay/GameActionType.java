@@ -6,11 +6,13 @@ package com.gregswebserver.catan.game.gameplay;
  */
 public enum GameActionType {
 
-    Player_Build_Settlement, //Coordinate
-    Player_Build_City, //Coordinate
-    Player_Build_Road, //Coordinate
+    Build_Settlement, //Coordinate
+    Build_City, //Coordinate
+    Build_Road, //Coordinate
+    Trade_Offer, //PlayerTrade
+    Trade_Accept, //PlayerTrade
+    Trade_Bank, //ResourceTrade
+    Player_Select_Location, //Coordinate
     Player_Move_Robber, //Coordinate
     Player_Roll_Dice, //DiceRoll
-    Player_Accept_Trade, //PlayerTrade
-    Player_Make_Trade, //ResourceTrade
 }

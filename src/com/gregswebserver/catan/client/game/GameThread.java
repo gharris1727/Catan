@@ -6,7 +6,6 @@ import com.gregswebserver.catan.client.renderer.RenderEventType;
 import com.gregswebserver.catan.event.QueuedInputThread;
 import com.gregswebserver.catan.event.ThreadStop;
 import com.gregswebserver.catan.game.CatanGame;
-import com.gregswebserver.catan.game.gameplay.GameAction;
 import com.gregswebserver.catan.game.gameplay.GameType;
 
 /**
@@ -29,39 +28,18 @@ public class GameThread extends QueuedInputThread {
         GameEvent event = (GameEvent) getEvent(true);
         switch (event.type) {
             case Game_Create:
-                //Create a new game, load the GameType data, and preform a first time rendering.
+                break;
+            case Game_Join:
+                break;
+            case Game_Leave:
+                break;
+            case Game_Start:
                 game = new CatanGame((GameType) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Game_Create, game));
                 break;
-            case Player_Build_Settlement:
-                game.applyAction((GameAction) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
-                break;
-            case Player_Build_City:
-                game.applyAction((GameAction) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
-                break;
-            case Player_Build_Road:
-                game.applyAction((GameAction) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
-                break;
-            case Player_Move_Robber:
-                game.applyAction((GameAction) event.data);
-                client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, game));
-                break;
-            case Player_Roll_Dice:
-                game.applyAction((GameAction) event.data);
-                //TODO: start dice animation
-                break;
-            case Player_Offer_Trade:
-                break;
-            case Player_Accept_Trade:
-                //TODO: finish player trading.
-                break;
-            case Player_Make_Trade:
-                game.applyAction((GameAction) event.data);
+            case Game_End:
                 break;
         }
+        client.addEvent(new RenderEvent(this, RenderEventType.Game_Update, null));
     }
 
     public String toString() {

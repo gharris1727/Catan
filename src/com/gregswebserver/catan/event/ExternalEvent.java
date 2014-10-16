@@ -2,11 +2,13 @@ package com.gregswebserver.catan.event;
 
 import com.gregswebserver.catan.network.Identity;
 
+import java.io.Serializable;
+
 /**
  * Created by Greg on 8/12/2014.
  * Event that is capable of being sent across the network, carries origin identity information.
  */
-public abstract class ExternalEvent extends GenericEvent {
+public abstract class ExternalEvent extends GenericEvent implements Serializable {
 
     public final Identity origin;
 

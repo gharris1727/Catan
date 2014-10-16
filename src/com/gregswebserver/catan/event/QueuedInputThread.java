@@ -72,7 +72,6 @@ public abstract class QueuedInputThread {
             running = false;
             throw new ThreadStop();
         }
-//        if (obj != null) logger.debug(this, " " + obj);
         return obj;
     }
 
