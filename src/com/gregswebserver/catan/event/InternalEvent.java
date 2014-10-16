@@ -6,13 +6,11 @@ package com.gregswebserver.catan.event;
  */
 public abstract class InternalEvent extends GenericEvent {
 
-    public final Object origin;
-
-    public InternalEvent(Object origin) {
-        this.origin = origin;
+    public InternalEvent(Object origin, EventType type, Object payload) {
+        super(origin, type, payload);
     }
 
-    public String toString() {
-        return "Origin: " + origin;
+    public Object getOrigin() {
+        return origin;
     }
 }

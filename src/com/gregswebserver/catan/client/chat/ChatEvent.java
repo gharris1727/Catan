@@ -14,29 +14,23 @@ import java.util.Date;
  */
 public class ChatEvent extends ExternalEvent {
 
-    public final ChatEventType type;
-    public final Identity destination;
     public final String message;
 
     //General purpose constructor.
     public ChatEvent(Identity origin, String message) {
-        super(origin);
-        type = ChatEventType.Lobby; //Defaults to a lobby-only send.
-        destination = null;
+        super(origin, ChatEventType.Lobby, null);
         this.message = format(message);
     }
 
     //Custom constructor.
     public ChatEvent(Identity origin, ChatEventType type, Identity destination, String message) {
-        super(origin);
-        this.type = type;
-        this.destination = destination;
+        super(origin, type, destination);
         this.message = format(message);
     }
 
     private String format(String message) {
         String timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
-        String username = origin.username;
+        String username = getOrigin().username;
         return "<" + timestamp + "> \"" + username + "\" " + message;
     }
 
@@ -44,7 +38,7 @@ public class ChatEvent extends ExternalEvent {
         return message;
     }
 
-    public String toString() {
-        return "ChatEvent " + super.toString() + " Type: " + type + " Data: " + message;
+    public ChatEventType getType() {
+        return (ChatEventType) type;
     }
 }

@@ -10,13 +10,13 @@ import java.io.Serializable;
  */
 public abstract class ExternalEvent extends GenericEvent implements Serializable {
 
-    public final Identity origin;
-
-    protected ExternalEvent(Identity origin) {
-        this.origin = origin;
+    protected ExternalEvent(Identity origin, EventType type, Object payload) {
+        super(origin, type, payload);
+        if (!(payload instanceof Serializable))
+            throw new EventPayloadException(payload, Serializable.class);
     }
 
-    public String toString() {
-        return "Origin: " + origin;
+    public Identity getOrigin() {
+        return (Identity) origin;
     }
 }

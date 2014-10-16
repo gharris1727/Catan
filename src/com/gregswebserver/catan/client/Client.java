@@ -61,20 +61,28 @@ public class Client extends QueuedInputThread {
             }
             if (event instanceof ServerEvent) {
                 ServerEvent sEvent = (ServerEvent) event;
-                switch (sEvent.type) {
+                switch (sEvent.getType()) {
                     case Client_Connect:
                     case Client_Disconnect:
-                        //Neither of these events should really make it this far.
                         break;
                     case Lobby_Create:
                         break;
                     case Lobby_Delete:
                         break;
                     case Lobby_Join:
+                        //addPlayer((Identity) event.getPayload());
                         break;
                     case Lobby_Leave:
+                        //removePlayer((Identity) event.getPayload());
                         break;
                     case Lobby_Update:
+                        break;
+                    case Game_Start:
+                        //gameThread.createNewGame((GameType) event.getPayload());
+                        gameThread.start();
+                        break;
+                    case Game_End:
+                        gameThread.stop();
                         break;
                 }
             }
@@ -85,9 +93,9 @@ public class Client extends QueuedInputThread {
             }
             if (event instanceof ClientEvent) {
                 ClientEvent cEvent = (ClientEvent) event;
-                switch (cEvent.type) {
+                switch (cEvent.getType()) {
                     case Net_Connect:
-                        connection = new ClientConnection(this, (Identity) cEvent.data);
+                        connection = new ClientConnection(this, (Identity) cEvent.getPayload());
                         connection.connectTo(null);
                         break;
                     case Net_Disconnect:
@@ -95,10 +103,10 @@ public class Client extends QueuedInputThread {
                         break;
                     case Canvas_Update:
                         //The ClientWindow is not visible until this event happens.
-                        window.setCanvas((Canvas) ((ClientEvent) event).data);
+                        window.setCanvas((Canvas) ((ClientEvent) event).getPayload());
                         break;
                     case Hitbox_Update:
-                        listener.setHitbox((ScreenArea) ((ClientEvent) event).data);
+                        listener.setHitbox((ScreenArea) ((ClientEvent) event).getPayload());
                         break;
                 }
             }

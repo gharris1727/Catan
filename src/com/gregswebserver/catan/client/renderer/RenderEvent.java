@@ -9,16 +9,11 @@ import com.gregswebserver.catan.event.InternalEvent;
  */
 public class RenderEvent extends InternalEvent {
 
-    public final RenderEventType type;
-    public final Object data;
-
-    public RenderEvent(Object origin, RenderEventType type, Object data) {
-        super(origin);
-        this.type = type;
-        this.data = data;
+    public RenderEvent(Object origin, RenderEventType type, Object payload) {
+        super(origin, type, payload);
     }
 
-    public String toString() {
-        return "RenderEvent " + super.toString() + " Type: " + type + " Data: " + data;
+    public RenderEventType getType() {
+        return (RenderEventType) type;
     }
 }

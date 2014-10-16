@@ -14,16 +14,11 @@ import java.io.Serializable;
  */
 public class GameEvent extends ExternalEvent {
 
-    public final GameEventType type;
-    public final Serializable data;
-
-    public GameEvent(Identity origin, GameEventType type, Serializable data) {
-        super(origin);
-        this.type = type;
-        this.data = data;
+    public GameEvent(Identity origin, GameEventType type, Serializable payload) {
+        super(origin, type, payload);
     }
 
-    public String toString() {
-        return "GameEvent " + super.toString() + " Type: " + type + " Data: " + data;
+    public GameEventType getType() {
+        return (GameEventType) type;
     }
 }

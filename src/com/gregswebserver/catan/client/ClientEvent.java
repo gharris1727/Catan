@@ -10,16 +10,11 @@ import com.gregswebserver.catan.event.InternalEvent;
  */
 public class ClientEvent extends InternalEvent {
 
-    public final ClientEventType type;
-    public final Object data;
-
-    public ClientEvent(Object origin, ClientEventType type, Object data) {
-        super(origin);
-        this.type = type;
-        this.data = data;
+    public ClientEvent(Object origin, ClientEventType type, Object payload) {
+        super(origin, type, payload);
     }
 
-    public String toString() {
-        return "ClientEvent " + super.toString() + " Type: " + type + " Data: " + data;
+    public ClientEventType getType() {
+        return (ClientEventType) type;
     }
 }

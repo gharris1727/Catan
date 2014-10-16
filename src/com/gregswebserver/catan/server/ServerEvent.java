@@ -11,12 +11,11 @@ import java.io.Serializable;
  */
 public class ServerEvent extends ExternalEvent {
 
-    public final ServerEventType type;
-    public final Serializable data;
+    public ServerEvent(Identity origin, ServerEventType type, Serializable payload) {
+        super(origin, type, payload);
+    }
 
-    public ServerEvent(Identity origin, ServerEventType type, Serializable data) {
-        super(origin);
-        this.type = type;
-        this.data = data;
+    public ServerEventType getType() {
+        return (ServerEventType) type;
     }
 }

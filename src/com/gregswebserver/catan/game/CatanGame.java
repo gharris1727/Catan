@@ -2,6 +2,7 @@ package com.gregswebserver.catan.game;
 
 import com.gregswebserver.catan.client.game.GameEvent;
 import com.gregswebserver.catan.game.board.GameBoard;
+import com.gregswebserver.catan.game.board.buildings.Building;
 import com.gregswebserver.catan.game.board.buildings.City;
 import com.gregswebserver.catan.game.board.buildings.Settlement;
 import com.gregswebserver.catan.game.board.hexarray.Coordinate;
@@ -22,12 +23,12 @@ import java.util.HashMap;
  */
 public class CatanGame {
 
-    //TODO: implement me
-
     private GameBoard board;
     private ArrayList<GameEvent> history;
     private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
     private HashMap<Identity, Player> players;
+    private HashMap<Identity, Coordinate> selected;
+    private Coordinate robberLocation;
 
     public CatanGame(GameType type) {
         //Create a new board
@@ -59,53 +60,41 @@ public class CatanGame {
         board.hexArray.place(coordinate, road);
     }
 
-    private void moveRobber(Coordinate data) {
-        Tile robbed = board.hexArray.spaces.get(data);
-        if (robbed instanceof ResourceTile) {
-            for (Tile tile : board.hexArray.spaces) {
-                if (tile != null && tile instanceof ResourceTile) {
-                    ResourceTile rTile = (ResourceTile) tile;
-                    if (rTile.hasRobber())
-                        rTile.removeRobber();
-                    break;
-                }
-            }
-            ((ResourceTile) robbed).placeRobber();
-        }
+    private void moveRobber(Coordinate coordinate) {
+        ResourceTile newTile = (ResourceTile) board.hexArray.spaces.get(coordinate);
+        ResourceTile oldTile = (ResourceTile) board.hexArray.spaces.get(robberLocation);
+        oldTile.removeRobber();
+        newTile.placeRobber();
+        robberLocation = coordinate;
     }
 
-    private void roll(DiceRoll data) {
+    private void roll(DiceRoll diceRoll) {
     }
 
-    private void selectLocation(Coordinate data) {
+    private void selectLocation(Identity identity, Coordinate coordinate) {
+        selected.put(identity, coordinate);
     }
 
     public void process(GameEvent event) {
         history.add(event);
-        switch (event.type) {
-            case Game_Join:
-                addPlayer((Identity) event.data);
-                break;
-            case Game_Leave:
-                removePlayer((Identity) event.data);
-                break;
+        switch (event.getType()) {
             case Build_Settlement:
-                buildSettlement(event.origin, (Coordinate) event.data);
+                buildSettlement(event.getOrigin(), (Coordinate) event.getPayload());
                 break;
             case Build_City:
-                buildCity(event.origin, (Coordinate) event.data);
+                buildCity(event.getOrigin(), (Coordinate) event.getPayload());
                 break;
             case Build_Road:
-                buildRoad(event.origin, (Coordinate) event.data);
+                buildRoad(event.getOrigin(), (Coordinate) event.getPayload());
                 break;
             case Player_Select_Location:
-                selectLocation((Coordinate) event.data);
+                selectLocation(event.getOrigin(), (Coordinate) event.getPayload());
                 break;
             case Player_Move_Robber:
-                moveRobber((Coordinate) event.data);
+                moveRobber((Coordinate) event.getPayload());
                 break;
             case Player_Roll_Dice:
-                roll((DiceRoll) event.data);
+                roll((DiceRoll) event.getPayload());
                 break;
             case Trade_Bank:
                 break;
@@ -114,6 +103,35 @@ public class CatanGame {
             case Trade_Accept:
                 break;
         }
+    }
+
+    public boolean test(GameEvent event) {
+        switch (event.getType()) {
+            //TODO: turn checks
+            case Build_Settlement:
+                return board.hexArray.vertices.get((Coordinate) event.getPayload()) == null;
+            case Build_City:
+                Building b = board.hexArray.vertices.get((Coordinate) event.getPayload());
+                return (b instanceof Settlement && b.getOwner().getIdentity().equals(event.getOrigin()));
+            case Build_Road:
+                return board.hexArray.edges.get((Coordinate) event.getPayload()) == null;
+            case Player_Select_Location:
+                return true;
+            case Player_Move_Robber:
+                Tile tile = board.hexArray.spaces.get((Coordinate) event.getPayload());
+                return (tile instanceof ResourceTile);
+            case Player_Roll_Dice:
+                //TODO: turn checks
+                return true;
+            case Trade_Bank:
+                //TODO: trading
+                break;
+            case Trade_Offer:
+                break;
+            case Trade_Accept:
+                break;
+        }
+        return false;
     }
 
     public GameBoard getBoard() {

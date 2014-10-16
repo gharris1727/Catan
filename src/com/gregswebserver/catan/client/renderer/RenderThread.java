@@ -227,30 +227,30 @@ public class RenderThread extends QueuedInputThread {
         //Process the event queue without blocking, allowing the renderer to run more than once per event.
         RenderEvent event = (RenderEvent) getEvent(false);
         if (event != null) {
-            switch (event.type) {
+            switch (event.getType()) {
                 case Chat_Create:
-                    this.chat = (ChatLog) event.data;
+                    this.chat = (ChatLog) event.getPayload();
                     break;
                 case Chat_Update:
                     chatRender();
                     break;
                 case Game_Create:
-                    this.activeGame = (CatanGame) event.data;
+                    this.activeGame = (CatanGame) event.getPayload();
                     gameRender();
                     break;
                 case Game_Scroll:
-                    gameScreen.changeView((Point) event.data);
+                    gameScreen.changeView((Point) event.getPayload());
                     break;
                 case Game_Update:
                     gameRender();
                     break;
                 case Player_Update:
-                    localPlayer = (Player) event.data;
+                    localPlayer = (Player) event.getPayload();
                     playerRender();
                     break;
                 case Window_Resize:
                     enabled = false;
-                    resize((Dimension) event.data);
+                    resize((Dimension) event.getPayload());
                     break;
                 case Render_Disable:
                     enabled = false;
