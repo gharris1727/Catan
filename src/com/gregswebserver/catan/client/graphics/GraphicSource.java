@@ -2,7 +2,7 @@ package com.gregswebserver.catan.client.graphics;
 
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.masks.RectangularMask;
-import com.gregswebserver.catan.log.LogLevel;
+import com.gregswebserver.catan.common.log.LogLevel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

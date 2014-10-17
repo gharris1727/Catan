@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.input.clickables;
 
 import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.game.gameplay.trade.Trade;
+import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 
 /**
  * Created by Greg on 8/21/2014.

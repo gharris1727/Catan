@@ -3,16 +3,19 @@ package com.gregswebserver.catan.client;
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.chat.ChatEvent;
 import com.gregswebserver.catan.client.chat.ChatThread;
-import com.gregswebserver.catan.client.game.GameEvent;
-import com.gregswebserver.catan.client.game.GameThread;
+import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderThread;
-import com.gregswebserver.catan.event.*;
-import com.gregswebserver.catan.network.ClientConnection;
-import com.gregswebserver.catan.network.Identity;
-import com.gregswebserver.catan.server.ServerEvent;
+import com.gregswebserver.catan.client.state.ClientState;
+import com.gregswebserver.catan.common.event.*;
+import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameThread;
+import com.gregswebserver.catan.common.network.ClientConnection;
+import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.network.NetID;
+import com.gregswebserver.catan.server.event.ControlEvent;
 
 import java.awt.*;
 
@@ -22,10 +25,13 @@ import java.awt.*;
  * Everything is handled by a main event queue, which them distributes the events to where they need to go.
  * Client events are intercepted and acted upon.
  */
-public class Client extends QueuedInputThread {
+public class Client extends QueuedInputThread<GenericEvent> {
 
     private ClientWindow window;
     private InputListener listener;
+    //TODO: fully implement client states.
+    private ClientState state;
+    //Other sub-QueuedInputThreads
     private ChatThread chatThread;
     private GameThread gameThread;
     private RenderThread renderThread;
@@ -38,75 +44,93 @@ public class Client extends QueuedInputThread {
         window = new ClientWindow(this);
         listener = new InputListener(this);
         window.setListener(listener);
-        chatThread = new ChatThread(this);
+        chatThread = new ChatThread(logger);
         gameThread = new GameThread(this);
         renderThread = new RenderThread(this);
 
+        state = ClientState.Disconnected;
         start();
-        chatThread.start();
-        gameThread.start();
-        renderThread.start();
     }
 
 
     public void execute() throws ThreadStop {
-        //Process events from the input queue.
         GenericEvent event = getEvent(true);
         if (event instanceof ExternalEvent) {
             if (event instanceof ChatEvent) {
-                chatThread.addEvent(event);
+                chatThread.addEvent((ChatEvent) event);
             }
             if (event instanceof GameEvent) {
-                gameThread.addEvent(event);
+                gameThread.addEvent((GameEvent) event);
             }
-            if (event instanceof ServerEvent) {
-                ServerEvent sEvent = (ServerEvent) event;
-                switch (sEvent.getType()) {
-                    case Client_Connect:
-                    case Client_Disconnect:
-                        break;
+            if (event instanceof ControlEvent) {
+                switch (((ControlEvent) event).getType()) {
                     case Lobby_Create:
                         break;
                     case Lobby_Delete:
                         break;
                     case Lobby_Join:
-                        //addPlayer((Identity) event.getPayload());
                         break;
                     case Lobby_Leave:
-                        //removePlayer((Identity) event.getPayload());
                         break;
                     case Lobby_Update:
                         break;
                     case Game_Start:
-                        //gameThread.createNewGame((GameType) event.getPayload());
-                        gameThread.start();
+                        state = ClientState.Starting;
+                        break;
+                    case Game_Quit:
+                        state = ClientState.Quitting;
                         break;
                     case Game_End:
-                        gameThread.stop();
+                        state = ClientState.Finishing;
+                        break;
+                    case Game_Replay:
+                        state = ClientState.Joining;
+                        break;
+                    case Replay_Start:
+                        state = ClientState.Spectating;
+                        break;
+                    case Replay_Quit:
+                        state = ClientState.Quitting;
+                        break;
+                    case Spectate_Start:
+                        state = ClientState.Spectating;
+                        break;
+                    case Spectate_Quit:
+                        state = ClientState.Quitting;
                         break;
                 }
             }
         }
         if (event instanceof InternalEvent) {
             if (event instanceof RenderEvent) {
-                renderThread.addEvent(event);
+                renderThread.addEvent((RenderEvent) event);
             }
             if (event instanceof ClientEvent) {
-                ClientEvent cEvent = (ClientEvent) event;
-                switch (cEvent.getType()) {
+                switch (((ClientEvent) event).getType()) {
+                    case Quit_All:
+                        shutdown();
+                        break;
                     case Net_Connect:
-                        connection = new ClientConnection(this, (Identity) cEvent.getPayload());
-                        connection.connectTo(null);
+                        state = ClientState.Connecting;
+                        connection = new ClientConnection(this, (Identity) event.getOrigin());
+                        connection.connectTo((NetID) event.getPayload());
+                        break;
+                    case Net_Connected:
+                        state = ClientState.Connected;
                         break;
                     case Net_Disconnect:
+                        state = ClientState.Disconnecting;
                         connection.disconnect();
+                        break;
+                    case Net_Disconnected:
+                        state = ClientState.Disconnected;
                         break;
                     case Canvas_Update:
                         //The ClientWindow is not visible until this event happens.
-                        window.setCanvas((Canvas) ((ClientEvent) event).getPayload());
+                        window.setCanvas((Canvas) event.getPayload());
                         break;
                     case Hitbox_Update:
-                        listener.setHitbox((ScreenArea) ((ClientEvent) event).getPayload());
+                        listener.setHitbox((ScreenArea) event.getPayload());
                         break;
                 }
             }

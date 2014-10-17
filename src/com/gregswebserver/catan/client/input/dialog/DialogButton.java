@@ -3,7 +3,7 @@ package com.gregswebserver.catan.client.input.dialog;
 import com.gregswebserver.catan.client.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.ScreenObject;
 import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.util.Statics;
+import com.gregswebserver.catan.common.util.Statics;
 
 import java.awt.*;
 

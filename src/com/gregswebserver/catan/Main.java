@@ -1,7 +1,8 @@
 package com.gregswebserver.catan;
 
-import com.gregswebserver.catan.log.Logger;
-import com.gregswebserver.catan.util.Statics;
+import com.gregswebserver.catan.common.Startup;
+import com.gregswebserver.catan.common.log.Logger;
+import com.gregswebserver.catan.common.util.Statics;
 
 /**
  * Created by Greg on 8/8/2014.

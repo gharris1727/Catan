@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.server;
 
-import com.gregswebserver.catan.GenericWindow;
+import com.gregswebserver.catan.common.GenericWindow;
 import com.gregswebserver.catan.server.console.Console;
 
 import java.awt.*;

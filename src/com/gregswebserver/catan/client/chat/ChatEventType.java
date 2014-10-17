@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.client.chat;
 
-import com.gregswebserver.catan.event.EventPayloadException;
-import com.gregswebserver.catan.event.EventType;
-import com.gregswebserver.catan.network.Identity;
+import com.gregswebserver.catan.common.event.EventPayloadException;
+import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.network.Identity;
 
 /**
  * Created by Greg on 8/13/2014.

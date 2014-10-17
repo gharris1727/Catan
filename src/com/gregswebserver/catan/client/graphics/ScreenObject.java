@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics;
 
 import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.util.UniqueColor;
+import com.gregswebserver.catan.common.util.UniqueColor;
 
 import java.awt.*;
 

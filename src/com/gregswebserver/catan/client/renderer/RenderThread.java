@@ -1,28 +1,28 @@
 package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.ClientEvent;
-import com.gregswebserver.catan.client.ClientEventType;
 import com.gregswebserver.catan.client.chat.ChatLog;
+import com.gregswebserver.catan.client.event.ClientEvent;
+import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.graphics.*;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.input.clickables.ClickableBuilding;
 import com.gregswebserver.catan.client.input.clickables.ClickableInventoryItem;
 import com.gregswebserver.catan.client.input.clickables.ClickablePath;
 import com.gregswebserver.catan.client.input.clickables.ClickableTile;
-import com.gregswebserver.catan.event.QueuedInputThread;
-import com.gregswebserver.catan.event.ThreadStop;
-import com.gregswebserver.catan.game.CatanGame;
-import com.gregswebserver.catan.game.board.GameBoard;
-import com.gregswebserver.catan.game.board.buildings.Building;
-import com.gregswebserver.catan.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.game.board.paths.Path;
-import com.gregswebserver.catan.game.board.tiles.Tile;
-import com.gregswebserver.catan.game.gameplay.trade.Tradeable;
-import com.gregswebserver.catan.game.player.Player;
-import com.gregswebserver.catan.game.player.Team;
-import com.gregswebserver.catan.util.GraphicsConfig;
-import com.gregswebserver.catan.util.Statics;
+import com.gregswebserver.catan.common.event.QueuedInputThread;
+import com.gregswebserver.catan.common.event.ThreadStop;
+import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.board.GameBoard;
+import com.gregswebserver.catan.common.game.board.buildings.Building;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.board.paths.Path;
+import com.gregswebserver.catan.common.game.board.tiles.Tile;
+import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
+import com.gregswebserver.catan.common.game.player.Player;
+import com.gregswebserver.catan.common.game.player.Team;
+import com.gregswebserver.catan.common.util.GraphicsConfig;
+import com.gregswebserver.catan.common.util.Statics;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.HashSet;
  * Render engine with a event queue on the front for data input.
  * Stores the hitbox information for the InputListener to use.
  */
-public class RenderThread extends QueuedInputThread {
+public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     //TODO: clean up this class and break up parts.
 
@@ -225,7 +225,7 @@ public class RenderThread extends QueuedInputThread {
 
     protected void execute() throws ThreadStop {
         //Process the event queue without blocking, allowing the renderer to run more than once per event.
-        RenderEvent event = (RenderEvent) getEvent(false);
+        RenderEvent event = getEvent(false);
         if (event != null) {
             switch (event.getType()) {
                 case Chat_Create:

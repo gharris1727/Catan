@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.chat;
 
-import com.gregswebserver.catan.event.ExternalEvent;
-import com.gregswebserver.catan.network.Identity;
+import com.gregswebserver.catan.common.event.ExternalEvent;
+import com.gregswebserver.catan.common.network.Identity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.Date;
  * Sent to the Client, which relays to the server and a local ChatLog.
  * Terminates in a ChatLog hosted on all of the receiving clients.
  */
-public class ChatEvent extends ExternalEvent {
+public class ChatEvent extends ExternalEvent<ChatEventType> {
 
     public final String message;
 
@@ -36,9 +36,5 @@ public class ChatEvent extends ExternalEvent {
 
     public String getMessage() {
         return message;
-    }
-
-    public ChatEventType getType() {
-        return (ChatEventType) type;
     }
 }

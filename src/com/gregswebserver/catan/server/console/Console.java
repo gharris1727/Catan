@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.server.console;
 
-import com.gregswebserver.catan.log.LogEvent;
-import com.gregswebserver.catan.log.LogLevel;
-import com.gregswebserver.catan.log.LogListener;
-import com.gregswebserver.catan.log.Logger;
+import com.gregswebserver.catan.common.log.LogEvent;
+import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.log.LogListener;
+import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;

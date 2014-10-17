@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.chat.ChatLog;
-import com.gregswebserver.catan.event.EventPayloadException;
-import com.gregswebserver.catan.event.EventType;
-import com.gregswebserver.catan.game.board.GameBoard;
+import com.gregswebserver.catan.common.event.EventPayloadException;
+import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.game.board.GameBoard;
 
 /**
  * Created by Greg on 8/13/2014.

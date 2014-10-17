@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.input.clickables;
 
-import com.gregswebserver.catan.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.game.board.tiles.Tile;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.board.tiles.Tile;
 
 /**
  * Created by Greg on 8/21/2014.

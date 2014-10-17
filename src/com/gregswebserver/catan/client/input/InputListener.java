@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderEventType;
-import com.gregswebserver.catan.log.Logger;
+import com.gregswebserver.catan.common.log.Logger;
 
 import java.awt.*;
 import java.awt.event.*;
