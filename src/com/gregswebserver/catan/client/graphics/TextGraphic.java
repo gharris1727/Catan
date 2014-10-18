@@ -6,12 +6,16 @@ package com.gregswebserver.catan.client.graphics;
  */
 public class TextGraphic extends Graphic {
 
+    private String text;
+    private GraphicFont font;
+
     public TextGraphic(String text, GraphicFont font) {
         super();
+        this.text = text;
+        this.font = font;
     }
 
-    @Override
     public String toString() {
-        return super.toString();
+        return super.toString() + "Text: " + text;
     }
 }

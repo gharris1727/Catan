@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.renderer;
 
-import com.gregswebserver.catan.client.chat.ChatLog;
-import com.gregswebserver.catan.common.event.EventPayloadException;
+import com.gregswebserver.catan.common.chat.ChatLog;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 
@@ -27,11 +26,6 @@ public enum RenderEventType implements EventType {
 
     RenderEventType(Class payloadType) {
         this.payloadType = payloadType;
-    }
-
-    public void checkPayload(Object o) {
-        if (payloadType != null && o != null && o.getClass().isAssignableFrom(payloadType))
-            throw new EventPayloadException(o, payloadType);
     }
 
     public Class getType() {

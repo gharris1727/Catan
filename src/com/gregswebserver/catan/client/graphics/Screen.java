@@ -38,22 +38,14 @@ public class Screen extends Graphic {
         return canvas;
     }
 
-    public void setSize(final Dimension size) {
+    public void setSize(Dimension size) {
         //Configure the underlying Graphic superclass.
         GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         image = gc.createCompatibleImage(size.width, size.height);
         setPixels(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
         setMask(new RectangularMask(size));
         buffer = null; //MUST INVALIDATE THE OLD BUFFER.
-        canvas = new Canvas() {
-            public int getWidth() {
-                return size.width;
-            }
-
-            public int getHeight() {
-                return size.height;
-            }
-        };
+        canvas = new ScreenCanvas(size);
     }
 
     public void clear() {
@@ -61,5 +53,23 @@ public class Screen extends Graphic {
             pixels[i] = 0;
             hitbox[i] = 0;
         }
+    }
+
+    public class ScreenCanvas extends Canvas {
+
+        private final Dimension size;
+
+        public ScreenCanvas(Dimension size) {
+            this.size = size;
+        }
+
+        public int getWidth() {
+            return size.width;
+        }
+
+        public int getHeight() {
+            return size.height;
+        }
+
     }
 }

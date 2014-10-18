@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.chat;
+package com.gregswebserver.catan.common.chat;
 
 import java.util.Iterator;
 import java.util.LinkedList;

@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.event;
 
 import com.gregswebserver.catan.client.graphics.ScreenArea;
-import com.gregswebserver.catan.common.event.EventPayloadException;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.common.network.NetID;
@@ -28,11 +27,6 @@ public enum ClientEventType implements EventType {
 
     ClientEventType(Class payloadType) {
         this.payloadType = payloadType;
-    }
-
-    public void checkPayload(Object o) {
-        if (payloadType != null && o != null && o.getClass().isAssignableFrom(payloadType))
-            throw new EventPayloadException(o, payloadType);
     }
 
     public Class getType() {

@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.chat.ChatLog;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.graphics.*;
@@ -10,6 +9,7 @@ import com.gregswebserver.catan.client.input.clickables.ClickableBuilding;
 import com.gregswebserver.catan.client.input.clickables.ClickableInventoryItem;
 import com.gregswebserver.catan.client.input.clickables.ClickablePath;
 import com.gregswebserver.catan.client.input.clickables.ClickableTile;
+import com.gregswebserver.catan.common.chat.ChatLog;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.game.CatanGame;
@@ -135,6 +135,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     public void render() {
         screen.clear();
+        area.getGraphic().displayHitbox();
         area.getGraphic().renderTo(screen, null, new Point(), 0);
     }
 

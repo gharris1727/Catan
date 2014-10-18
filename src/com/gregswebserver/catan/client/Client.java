@@ -1,20 +1,20 @@
 package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.client.chat.ChatEvent;
-import com.gregswebserver.catan.client.chat.ChatThread;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
+import com.gregswebserver.catan.common.chat.ChatEvent;
+import com.gregswebserver.catan.common.chat.ChatThread;
+import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
+import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.network.ClientConnection;
-import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.network.NetID;
 import com.gregswebserver.catan.server.event.ControlEvent;
 
 import java.awt.*;
@@ -76,6 +76,10 @@ public class Client extends QueuedInputThread<GenericEvent> {
                         break;
                     case Game_Start:
                         state = ClientState.Starting;
+                        gameThread.init((GameType) event.getPayload());
+                        gameThread.start();
+                        renderThread.start(); //TEMP
+                        chatThread.start(); //TEMP
                         break;
                     case Game_Quit:
                         state = ClientState.Quitting;
@@ -112,8 +116,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                         break;
                     case Net_Connect:
                         state = ClientState.Connecting;
-                        connection = new ClientConnection(this, (Identity) event.getOrigin());
-                        connection.connectTo((NetID) event.getPayload());
+                        connection = new ClientConnection(this, (ConnectionInfo) event.getPayload());
                         break;
                     case Net_Connected:
                         state = ClientState.Connected;

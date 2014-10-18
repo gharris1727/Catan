@@ -1,6 +1,5 @@
-package com.gregswebserver.catan.client.chat;
+package com.gregswebserver.catan.common.chat;
 
-import com.gregswebserver.catan.common.event.EventPayloadException;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.network.Identity;
 
@@ -19,11 +18,6 @@ public enum ChatEventType implements EventType {
 
     ChatEventType(Class payloadType) {
         this.payloadType = payloadType;
-    }
-
-    public void checkPayload(Object o) {
-        if (payloadType != null && o != null && o.getClass().isAssignableFrom(payloadType))
-            throw new EventPayloadException(o, payloadType);
     }
 
     public Class getType() {

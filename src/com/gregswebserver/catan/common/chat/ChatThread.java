@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.chat;
+package com.gregswebserver.catan.common.chat;
 
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;

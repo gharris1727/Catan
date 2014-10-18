@@ -7,6 +7,13 @@ package com.gregswebserver.catan.common.event;
 public class ThreadStopEvent extends GenericEvent<Object, EventType> {
 
     public ThreadStopEvent() {
-        super(null, null, null);
+        super(null, new ThreadStopEventType(), null);
+    }
+
+    private static class ThreadStopEventType implements EventType {
+
+        public Class getType() {
+            return null;
+        }
     }
 }

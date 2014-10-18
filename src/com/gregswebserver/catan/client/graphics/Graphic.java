@@ -173,4 +173,8 @@ public class Graphic implements Renderable {
     public String toString() {
         return name;
     }
+
+    public void displayHitbox() {
+        pixels = hitbox;
+    }
 }

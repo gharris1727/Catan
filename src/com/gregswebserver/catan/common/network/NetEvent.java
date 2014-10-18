@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.network;
 
-import com.gregswebserver.catan.common.event.EventPayloadException;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.GenericEvent;
@@ -21,12 +20,6 @@ public class NetEvent extends GenericEvent<NetID, NetEvent.NetEventType> {
     }
 
     public class NetEventType implements EventType {
-
-        public void checkPayload(Object o) {
-            if (ExternalEvent.class != null && o != null && o.getClass().isAssignableFrom(ExternalEvent.class))
-                throw new EventPayloadException(o, ExternalEvent.class);
-        }
-
         public Class getType() {
             return ExternalEvent.class;
         }

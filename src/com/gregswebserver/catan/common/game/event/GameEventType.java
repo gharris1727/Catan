@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.event;
 
-import com.gregswebserver.catan.common.event.EventPayloadException;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
@@ -27,11 +26,6 @@ public enum GameEventType implements EventType {
 
     GameEventType(Class payloadType) {
         this.payloadType = payloadType;
-    }
-
-    public void checkPayload(Object o) {
-        if (o != null && o.getClass().isAssignableFrom(payloadType))
-            throw new EventPayloadException(o, payloadType);
     }
 
     public Class getType() {

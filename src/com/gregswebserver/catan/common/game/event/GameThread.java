@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.event.GenericEvent;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.gameplay.GameType;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -46,6 +47,10 @@ public class GameThread extends QueuedInputThread<GameEvent> {
                 break;
         }
         host.addEvent(new RenderEvent(this, RenderEventType.Game_Update, null));
+    }
+
+    public void init(GameType type) {
+        game = new CatanGame(type);
     }
 
     public String toString() {

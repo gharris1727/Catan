@@ -6,7 +6,10 @@ package com.gregswebserver.catan.common.event;
  */
 public interface EventType {
 
-    public void checkPayload(Object o);
+    default void checkPayload(Object o) {
+        if (getType() != null && o != null && !getType().isInstance(o))
+            throw new EventPayloadException(o, getType());
+    }
 
     public Class getType();
 }

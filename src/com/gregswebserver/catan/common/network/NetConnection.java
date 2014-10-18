@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.network;
 
+import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.GenericEvent;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
@@ -20,40 +21,42 @@ import java.net.Socket;
 public abstract class NetConnection<H extends QueuedInputThread<GenericEvent>> {
 
     private final H host;
-    private Logger logger;
-    private Identity identity;
+    private final Logger logger;
+    private final ConnectionInfo info;
 
-    private NetID netID;
     private Socket socket;
     private Thread connect, disconnect, receive;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private boolean open;
 
-    public NetConnection(H owner, Identity id) {
+    public NetConnection(H owner, ConnectionInfo remote) {
         host = owner;
         logger = owner.logger;
-        identity = id;
+        this.info = remote;
         //Thread to open object buffers for transmitting data.
         connect = new Thread("Connect") {
             public void run() {
                 logger.log("Connecting...", LogLevel.INFO);
                 try {
-                    ExternalEvent handshake = null;
+                    open = true;
+                    ExternalEvent handshake;
                     if (socket == null) {
                         //Originating from the client.
-                        socket = new Socket(netID.address, netID.port);
-                        handshake = new ControlEvent(identity, ControlEventType.Client_Connect, null);
+                        socket = new Socket(info.remote.address, info.remote.port);
+                        handshake = new ControlEvent(info.identity, ControlEventType.Client_Connect, info);
+                    } else {
+                        //Originating from the server.
+                        handshake = new ControlEvent(info.identity, ControlEventType.Client_Connected, null);
                     }
                     out = new ObjectOutputStream(socket.getOutputStream());
-                    if (handshake != null)
-                        sendEvent(handshake);
+                    sendEvent(handshake);
                     out.flush();
                     in = new ObjectInputStream(socket.getInputStream());
-                    open = true;
                     logger.log("Connected.", LogLevel.INFO);
                     receive.start(); //Start processing objects after the connection is established.
                 } catch (Exception e) {
+                    open = false;
                     logger.log("Connect Failure", e, LogLevel.ERROR);
                 }
             }
@@ -90,42 +93,25 @@ public abstract class NetConnection<H extends QueuedInputThread<GenericEvent>> {
         };
     }
 
-    public NetID getNetID() {
-        return netID;
-    }
-
-    public void setNetID(NetID id) {
-        netID = id;
+    public void sendEvent(ExternalEvent event) {
+        try {
+            if (!open) throw new IOException("Connection is closed");
+            out.writeObject(new NetEvent(info.remote, event));
+        } catch (Exception e) {
+            logger.log("Send Failure", e, LogLevel.WARN);
+        }
     }
 
     public Identity getIdentity() {
-        return identity;
+        return info.identity;
     }
 
-    public void setIdentity(Identity id) {
-        identity = id;
-    }
-
-    public void setSocket(Socket s) {
-        socket = s;
-        netID = new NetID(s);
-    }
-
-    public void connect() {
+    protected void connect() {
         connect.start();
     }
 
     public void disconnect() {
         disconnect.start();
-    }
-
-    public void sendEvent(ExternalEvent event) {
-        try {
-            if (!open) throw new IOException("Connection is closed");
-            out.writeObject(new NetEvent(netID, event));
-        } catch (Exception e) {
-            logger.log("Send Failure", e, LogLevel.WARN);
-        }
     }
 
     public boolean isOpen() {

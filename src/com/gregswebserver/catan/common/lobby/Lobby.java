@@ -4,7 +4,7 @@ import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.network.ServerConnection;
+import com.gregswebserver.catan.server.client.ServerClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,20 +16,20 @@ import java.util.HashMap;
 public class Lobby {
 
     //Client-side tracking
-    ArrayList<Identity> identities;
+    private ArrayList<Identity> identities;
     private Identity owner;
     //Server-side tracking
-    private HashMap<Identity, ServerConnection> clients;
+    private HashMap<Identity, ServerClient> clients;
     private GameThread gameThread;
     private GameType gameType;
 
-    public Lobby(ServerConnection owner) {
+    public Lobby(ServerClient owner) {
         identities = new ArrayList<>();
         clients = new HashMap<>();
         addClient(owner);
     }
 
-    public void addClient(ServerConnection client) {
+    public void addClient(ServerClient client) {
         clients.put(client.getIdentity(), client);
         client.setLobby(this);
     }
@@ -38,16 +38,10 @@ public class Lobby {
         return owner + "'s Lobby";
     }
 
-    public HashMap<Identity, ServerConnection> getClients() {
-        return clients;
-    }
-
-    public void broadcastEvent(ExternalEvent event) {
-        //Sends an external event to all clients in the lobby, except for the one who sent it.
-        for (ServerConnection connection : clients.values()) {
-            if (!connection.getIdentity().equals(event.getOrigin())) {
-                connection.sendEvent(event);
-            }
+    public void rebroadcast(ExternalEvent event) {
+        for (ServerClient client : clients.values()) {
+            if (!client.getIdentity().equals(event.getOrigin()))
+                client.getConnection().sendEvent(event);
         }
     }
 }

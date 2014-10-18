@@ -4,13 +4,14 @@ import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 /**
  * Created by Greg on 8/9/2014.
  * Static data in order to create a game of Catan.
  */
-public class GameType {
+public class GameType implements Serializable {
 
     private String name;
 
@@ -24,6 +25,7 @@ public class GameType {
         this.name = name;
         resourceTiles = new HashSet<>();
         tradingPosts = new HashSet<>();
+        players = new HashSet<>();
     }
 
     public String getName() {

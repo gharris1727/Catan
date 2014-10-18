@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.server.event;
 
-import com.gregswebserver.catan.common.event.EventPayloadException;
+import com.gregswebserver.catan.common.crypto.ConnectionInfo;
+import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.network.Identity;
@@ -11,13 +12,16 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public enum ControlEventType implements EventType {
 
-    Client_Connect(null), //Fired when a client connects with Identity information.
-    Client_Disconnect(null), //Fired when a client disconnects.
-    Lobby_Create(Identity.class), //Fired when a lobby is created.
-    Lobby_Delete(null), //Fired when a lobby is deleted.
-    Lobby_Join(Identity.class), //Fired when a client joins a lobby.
-    Lobby_Leave(null), //Fired when a client leaves a lobby, or is removed.
-    Lobby_Update(null),
+    Client_Connect(ConnectionInfo.class),
+    Client_Connected(Identity.class),
+    Client_Disconnect(null),
+    Client_Disconnected(null),
+    Pass_Change(Password.class),
+    Lobby_Create(Identity.class),
+    Lobby_Delete(null),
+    Lobby_Join(Identity.class),
+    Lobby_Leave(null),
+    Lobby_Update(GameType.class),
     Game_Start(GameType.class),
     Game_Quit(null),
     Game_End(null),
@@ -31,11 +35,6 @@ public enum ControlEventType implements EventType {
 
     ControlEventType(Class payloadType) {
         this.payloadType = payloadType;
-    }
-
-    public void checkPayload(Object o) {
-        if (payloadType != null && o != null && o.getClass().isAssignableFrom(payloadType))
-            throw new EventPayloadException(o, payloadType);
     }
 
     public Class getType() {

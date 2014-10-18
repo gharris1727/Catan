@@ -22,6 +22,8 @@ public class GameBoard {
     private HashMap<Coordinate, TradingPost> tradingPosts;
 
     public GameBoard() {
+        diceRollCoordinates = new HashMap<>();
+        tradingPosts = new HashMap<>();
     }
 
     public void init(int x, int y) {

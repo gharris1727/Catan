@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.server.event;
 
 import com.gregswebserver.catan.common.event.InternalEvent;
-import com.gregswebserver.catan.common.network.Identity;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -9,7 +8,7 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public class ServerEvent extends InternalEvent<ServerEventType> {
 
-    public ServerEvent(Identity origin, ServerEventType type, Object payload) {
+    public ServerEvent(Object origin, ServerEventType type, Object payload) {
         super(origin, type, payload);
     }
 }

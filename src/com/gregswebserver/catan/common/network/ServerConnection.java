@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.network;
 
-import com.gregswebserver.catan.common.lobby.Lobby;
+import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.server.Server;
 
 import java.net.Socket;
@@ -11,23 +11,8 @@ import java.net.Socket;
  */
 public class ServerConnection extends NetConnection<Server> {
 
-    private Server server;
-    private Lobby lobby;
-
     public ServerConnection(Server server, Socket socket) {
-        super(server, server.getIdentity());
-        this.server = server;
-        setSocket(socket);
-        connect();
+        super(server, new ConnectionInfo(server.getIdentity(), null, new NetID(socket)));
     }
-
-    public Lobby getLobby() {
-        return lobby;
-    }
-
-    public void setLobby(Lobby lobby) {
-        this.lobby = lobby;
-    }
-
 }
 

@@ -2,8 +2,9 @@ package com.gregswebserver.catan.server;
 
 
 import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.client.chat.ChatEvent;
-import com.gregswebserver.catan.client.chat.ChatThread;
+import com.gregswebserver.catan.common.chat.ChatEvent;
+import com.gregswebserver.catan.common.chat.ChatThread;
+import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.GenericEvent;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
@@ -12,6 +13,7 @@ import com.gregswebserver.catan.common.lobby.Lobby;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.common.network.ServerConnection;
+import com.gregswebserver.catan.server.client.ServerClient;
 import com.gregswebserver.catan.server.event.ControlEvent;
 import com.gregswebserver.catan.server.event.ControlEventType;
 import com.gregswebserver.catan.server.event.ServerEvent;
@@ -30,7 +32,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
 
     private final Identity identity;
     private final ArrayList<ServerConnection> connecting;
-    private final HashMap<Identity, ServerConnection> established;
+    private final HashMap<Identity, ServerClient> connected;
     private final HashMap<Identity, Lobby> lobbies;
     private final ServerWindow window;
     private final Thread listen;
@@ -44,7 +46,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
 //        super(new Logger());
         identity = new Identity("[SERVER]");
         connecting = new ArrayList<>();
-        established = new HashMap<>();
+        connected = new HashMap<>();
         lobbies = new HashMap<>();
         window = new ServerWindow(this);
         listen = new Thread("Listen") {
@@ -83,55 +85,53 @@ public class Server extends QueuedInputThread<GenericEvent> {
             ChatEvent cEvent = (ChatEvent) event;
             switch (cEvent.getType()) {
                 case Broadcast:
-                    for (ServerConnection chatConnection : established.values()) {
-                        chatConnection.sendEvent(cEvent);
+                    for (ServerClient client : connected.values()) {
+                        client.getConnection().sendEvent(cEvent);
                     }
                     break;
                 case Lobby:
-                    Lobby lobby = established.get(cEvent.getOrigin()).getLobby();
+                    Lobby lobby = connected.get(cEvent.getOrigin()).getLobby();
                     if (lobby != null)
-                        lobby.broadcastEvent(cEvent);
+                        lobby.rebroadcast(cEvent);
                     //Ignore the event if the player is not in a lobby.
                     break;
                 case Private:
-                    ServerConnection otherClient = established.get(cEvent.getPayload());
+                    ServerClient otherClient = connected.get(cEvent.getOrigin());
                     if (otherClient != null)
-                        otherClient.sendEvent(cEvent);
+                        otherClient.getConnection().sendEvent(cEvent);
                     //Ignore the event if the destination client does not exist.
                     break;
             }
         }
         if (event instanceof GameEvent) {
             GameEvent gEvent = (GameEvent) event;
-            Lobby lobby = established.get(gEvent.getOrigin()).getLobby();
+            Lobby lobby = connected.get(gEvent.getOrigin()).getLobby();
             if (lobby != null)
-                lobby.broadcastEvent(gEvent);
+                lobby.rebroadcast(gEvent);
             //Ignore the event if the client is not in a game lobby.
         }
         if (event instanceof ServerEvent) {
             ServerEvent sEvent = (ServerEvent) event;
             switch (sEvent.getType()) {
+                //TODO: add connecting new clients and authenticating.
                 case Client_Connection:
-                    Identity id = (Identity) sEvent.getOrigin();
-                    ServerConnection clientConnect = (ServerConnection) sEvent.getPayload();
-                    //If the connection exists, move it. (should always happen...)
-                    //If it doesn't exist, then we wont lose the reference.
-                    //Also prevents null pointers.
-                    if (connecting.remove(clientConnect))
-                        established.put(id, clientConnect);
                     break;
                 case Client_Disconnection:
-                    ServerConnection clientDisconnect = (ServerConnection) sEvent.getPayload();
-                    clientDisconnect.disconnect();
-                    //Checks each list for removing clients.
-                    if (!connecting.remove(clientDisconnect))
-                        established.remove(sEvent.getOrigin());
                     break;
             }
         }
         if (event instanceof ControlEvent) {
             ControlEvent cEvent = (ControlEvent) event;
             switch (cEvent.getType()) {
+                case Client_Connect:
+                    rebroadcast(cEvent);
+                    break;
+                case Client_Connected:
+                    break;
+                case Client_Disconnect:
+                    break;
+                case Client_Disconnected:
+                    break;
                 case Lobby_Create:
                     createLobby(cEvent.getOrigin());
                     break;
@@ -144,6 +144,24 @@ public class Server extends QueuedInputThread<GenericEvent> {
                 case Lobby_Leave:
                     leaveLobby(cEvent.getOrigin(), (Identity) cEvent.getPayload());
                     break;
+                case Lobby_Update:
+                    break;
+                case Game_Start:
+                    break;
+                case Game_Quit:
+                    break;
+                case Game_End:
+                    break;
+                case Game_Replay:
+                    break;
+                case Replay_Start:
+                    break;
+                case Replay_Quit:
+                    break;
+                case Spectate_Start:
+                    break;
+                case Spectate_Quit:
+                    break;
             }
         }
     }
@@ -151,35 +169,35 @@ public class Server extends QueuedInputThread<GenericEvent> {
     private void createLobby(Identity owner) {
         //If this person already owns a lobby (somehow?) then delete it.
         deleteLobby(owner);
-        ServerConnection ownerConnection = established.get(owner);
-        Lobby lobby = new Lobby(ownerConnection);
+        ServerClient client = connected.get(owner);
+        Lobby lobby = new Lobby(client);
         lobbies.put(owner, lobby);
     }
 
     private void deleteLobby(Identity owner) {
         Lobby lobby = lobbies.remove(owner);
         if (lobby != null)
-            lobby.broadcastEvent(new ControlEvent(owner, ControlEventType.Lobby_Delete, null));
+            lobby.rebroadcast(new ControlEvent(owner, ControlEventType.Lobby_Delete, null));
     }
 
     private void joinLobby(Identity client, Identity owner) {
-        ServerConnection clientConnection = established.get(client);
+        ServerClient clientConnection = connected.get(client);
         Lobby lobby = lobbies.get(owner);
         lobby.addClient(clientConnection);
-        lobby.broadcastEvent(new ControlEvent(identity, ControlEventType.Lobby_Update, null));
+        lobby.rebroadcast(new ControlEvent(identity, ControlEventType.Lobby_Update, null));
     }
 
     private void leaveLobby(Identity client, Identity owner) {
-        ServerConnection clientConnection = established.get(client);
+        ServerClient clientConnection = connected.get(client);
         Lobby lobby = lobbies.get(owner);
         lobby.addClient(clientConnection);
-        lobby.broadcastEvent(new ControlEvent(client, ControlEventType.Lobby_Leave, null));
+        lobby.rebroadcast(new ControlEvent(client, ControlEventType.Lobby_Leave, null));
     }
 
 
     public void shutdown() {
-        for (ServerConnection connection : established.values()) {
-            connection.disconnect();
+        for (ServerClient client : connected.values()) {
+            client.getConnection().disconnect();
         }
         window.dispose();
         listening = false;
@@ -189,6 +207,13 @@ public class Server extends QueuedInputThread<GenericEvent> {
             logger.log("ServerSocket Close error", e, LogLevel.WARN);
         }
         stop();
+    }
+
+    public void rebroadcast(ExternalEvent event) {
+        for (ServerClient client : connected.values()) {
+            if (!client.getIdentity().equals(event.getOrigin()))
+                client.getConnection().sendEvent(event);
+        }
     }
 
     public Identity getIdentity() {
