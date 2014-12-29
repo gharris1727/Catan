@@ -33,17 +33,13 @@ public class Animation implements Renderable {
         currentFrame++;
     }
 
-    public boolean done() {
-        return (!loop && currentFrame >= graphics.size());
-    }
-
     public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color) {
-        Graphic g = graphics.get(currentFrame);
-        step();
         if (currentFrame >= graphics.size()) {
             if (loop) reset();
             else return; //Animation is done, don't print to the screen anymore.
         }
+        Graphic g = graphics.get(currentFrame);
+        step();
         g.renderTo(to, toMask, toPos, color);
     }
 }

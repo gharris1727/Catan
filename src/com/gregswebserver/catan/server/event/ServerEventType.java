@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.server.event;
 
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.network.ServerConnection;
+import com.gregswebserver.catan.server.client.ServerClient;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -10,8 +10,7 @@ import com.gregswebserver.catan.common.network.ServerConnection;
 public enum ServerEventType implements EventType {
 
     Quit_All(null),
-    Client_Connection(ServerConnection.class), //Fired when a client connects with Identity information.
-    Client_Disconnection(ServerConnection.class); //Fired when a client disconnects.
+    Client_Login(ServerClient.class);
 
     private Class payloadType;
 

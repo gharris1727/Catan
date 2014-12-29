@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.server.client;
 
-import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.lobby.Lobby;
 import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.common.network.ServerConnection;
@@ -10,7 +9,6 @@ import com.gregswebserver.catan.common.network.ServerConnection;
  * An object that exists to represent a client on the server side.
  */
 public class ServerClient {
-    private ClientState state;
     private Identity identity;
     private ServerConnection connection;
     private Lobby lobby;
@@ -18,6 +16,10 @@ public class ServerClient {
     public ServerClient(ServerConnection connection, Identity identity) {
         this.connection = connection;
         this.identity = identity;
+    }
+
+    public Identity getIdentity() {
+        return identity;
     }
 
     public ServerConnection getConnection() {
@@ -30,9 +32,5 @@ public class ServerClient {
 
     public void setLobby(Lobby lobby) {
         this.lobby = lobby;
-    }
-
-    public Identity getIdentity() {
-        return identity;
     }
 }

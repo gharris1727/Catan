@@ -1,13 +1,12 @@
 package com.gregswebserver.catan.common;
 
 import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.client.event.ClientEvent;
+import com.gregswebserver.catan.client.event.ClientEventType;
+import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
-import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.util.Statics;
 import com.gregswebserver.catan.server.Server;
-import com.gregswebserver.catan.server.event.ControlEvent;
-import com.gregswebserver.catan.server.event.ControlEventType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -113,12 +112,12 @@ public class Startup extends GenericWindow {
     private void startClient(InetAddress host, int port, String username, String password) {
         Client client = new Client();
         dispose();
-        client.addEvent(new ControlEvent(new Identity("lol"), ControlEventType.Game_Start, Statics.BASE_GAME));
+        client.addEvent(new ClientEvent(this, ClientEventType.Net_Connect, new ServerLogin("localhost", 25000, "greg", "a")));
     }
 
     private void startServer(int port, String password) {
         Server server = new Server();
-        server.start(port);
+        server.start(25000);
     }
 
     protected void onClose() {

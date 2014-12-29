@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.network;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -15,11 +15,11 @@ public class NetID implements Serializable {
     public final int port;
 
     public NetID(Socket socket) {
-        this(socket.getInetAddress(), socket.getLocalPort());
+        this(socket.getLocalAddress(), socket.getLocalPort());
     }
 
-    public NetID(ServerSocket socket) {
-        this(socket.getInetAddress(), socket.getLocalPort());
+    public NetID(InetSocketAddress socket) {
+        this(socket.getAddress(), socket.getPort());
     }
 
     public NetID(InetAddress address, int port) {

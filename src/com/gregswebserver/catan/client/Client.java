@@ -9,11 +9,12 @@ import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
-import com.gregswebserver.catan.common.crypto.ConnectionInfo;
+import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
+import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ClientConnection;
 import com.gregswebserver.catan.server.event.ControlEvent;
 
@@ -38,8 +39,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
     private ClientConnection connection;
 
     public Client() {
-        super(Main.logger); //TODO: REMOVE ME!
-//        super(new Logger());
+        super(Main.logger); //TODO: Create a separate logger for the client.
 
         window = new ClientWindow(this);
         listener = new InputListener(this);
@@ -50,6 +50,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
         state = ClientState.Disconnected;
         start();
+        renderThread.start();
     }
 
 
@@ -63,46 +64,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 gameThread.addEvent((GameEvent) event);
             }
             if (event instanceof ControlEvent) {
-                switch (((ControlEvent) event).getType()) {
-                    case Lobby_Create:
-                        break;
-                    case Lobby_Delete:
-                        break;
-                    case Lobby_Join:
-                        break;
-                    case Lobby_Leave:
-                        break;
-                    case Lobby_Update:
-                        break;
-                    case Game_Start:
-                        state = ClientState.Starting;
-                        gameThread.init((GameType) event.getPayload());
-                        gameThread.start();
-                        renderThread.start(); //TEMP
-                        chatThread.start(); //TEMP
-                        break;
-                    case Game_Quit:
-                        state = ClientState.Quitting;
-                        break;
-                    case Game_End:
-                        state = ClientState.Finishing;
-                        break;
-                    case Game_Replay:
-                        state = ClientState.Joining;
-                        break;
-                    case Replay_Start:
-                        state = ClientState.Spectating;
-                        break;
-                    case Replay_Quit:
-                        state = ClientState.Quitting;
-                        break;
-                    case Spectate_Start:
-                        state = ClientState.Spectating;
-                        break;
-                    case Spectate_Quit:
-                        state = ClientState.Quitting;
-                        break;
-                }
+                controlEvent((ControlEvent) event);
             }
         }
         if (event instanceof InternalEvent) {
@@ -110,35 +72,97 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 renderThread.addEvent((RenderEvent) event);
             }
             if (event instanceof ClientEvent) {
-                switch (((ClientEvent) event).getType()) {
-                    case Quit_All:
-                        shutdown();
-                        break;
-                    case Net_Connect:
-                        state = ClientState.Connecting;
-                        connection = new ClientConnection(this, (ConnectionInfo) event.getPayload());
-                        break;
-                    case Net_Connected:
-                        state = ClientState.Connected;
-                        break;
-                    case Net_Disconnect:
-                        state = ClientState.Disconnecting;
-                        connection.disconnect();
-                        break;
-                    case Net_Disconnected:
-                        state = ClientState.Disconnected;
-                        break;
-                    case Canvas_Update:
-                        //The ClientWindow is not visible until this event happens.
-                        window.setCanvas((Canvas) event.getPayload());
-                        break;
-                    case Hitbox_Update:
-                        listener.setHitbox((ScreenArea) event.getPayload());
-                        break;
-                }
+                clientEvent((ClientEvent) event);
             }
         }
 
+    }
+
+    private void clientEvent(ClientEvent event) {
+        switch (event.getType()) {
+            case Quit_All:
+                shutdown();
+                break;
+            case Net_Connect:
+                state = ClientState.Connecting;
+                ServerLogin serverLogin = (ServerLogin) event.getPayload();
+                connection = new ClientConnection(this, serverLogin.remote, serverLogin.login);
+                connection.connect();
+                break;
+            case Net_Connected:
+                state = ClientState.Connected;
+                int uniqueID = (int) event.getPayload();
+                logger.log("Connected as user#" + uniqueID, LogLevel.DEBUG);
+                break;
+            case Net_Disconnect:
+                state = ClientState.Disconnecting;
+                connection.disconnect();
+                break;
+            case Net_Disconnected:
+                state = ClientState.Disconnected;
+                break;
+            case Canvas_Update:
+                //The ClientWindow is not visible until this event happens.
+                window.setCanvas((Canvas) event.getPayload());
+                break;
+            case Hitbox_Update:
+                listener.setHitbox((ScreenArea) event.getPayload());
+                break;
+        }
+    }
+
+    private void controlEvent(ControlEvent event) {
+        switch (event.getType()) {
+            case Client_Connect:
+                break;
+            case Client_Connected:
+                logger.log("Connected as client #" + event.getPayload(), LogLevel.DEBUG);
+                break;
+            case Client_Disconnect:
+                break;
+            case Client_Disconnected:
+                break;
+            case Pass_Change:
+                break;
+            case Lobby_Create:
+                break;
+            case Lobby_Delete:
+                break;
+            case Lobby_Join:
+                break;
+            case Lobby_Leave:
+                break;
+            case Lobby_Update:
+                break;
+            case Game_Start:
+                state = ClientState.Starting;
+                gameThread.init((GameType) event.getPayload());
+                gameThread.start();
+                renderThread.start(); //TEMP
+                chatThread.start(); //TEMP
+                break;
+            case Game_Quit:
+                state = ClientState.Quitting;
+                break;
+            case Game_End:
+                state = ClientState.Finishing;
+                break;
+            case Game_Replay:
+                state = ClientState.Joining;
+                break;
+            case Replay_Start:
+                state = ClientState.Spectating;
+                break;
+            case Replay_Quit:
+                state = ClientState.Quitting;
+                break;
+            case Spectate_Start:
+                state = ClientState.Spectating;
+                break;
+            case Spectate_Quit:
+                state = ClientState.Quitting;
+                break;
+        }
     }
 
     public void shutdown() {

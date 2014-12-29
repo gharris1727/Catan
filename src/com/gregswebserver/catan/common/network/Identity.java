@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.common.network;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -10,11 +9,9 @@ import java.util.UUID;
 public class Identity implements Serializable {
 
     public final String username;
-    public final UUID uuid;
 
     public Identity(String username) {
         this.username = username;
-        uuid = UUID.randomUUID();
     }
 
     public String toString() {

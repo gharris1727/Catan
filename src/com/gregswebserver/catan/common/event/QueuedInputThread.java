@@ -26,8 +26,11 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
                 while (running) {
                     try {
                         execute();
-                    } catch (ThreadStop threadStop) {
-                        running = false;
+                    } catch (Throwable t) {
+                        if (t instanceof ThreadStop)
+                            running = false;
+                        else
+                            logger.log(t, LogLevel.ERROR);
                     }
                 }
             }

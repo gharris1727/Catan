@@ -8,6 +8,7 @@ import com.gregswebserver.catan.client.renderer.Renderable;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Greg on 8/15/2014.
@@ -97,11 +98,11 @@ public class Graphic implements Renderable {
             if (length < 1) continue;
             //Copy
             try {
-                pixelCopy(from.pixels, from.mask.getIndex(currX, currY), to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), length);
+                pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length);
                 if (color > 0)
-                    colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), color, length);
+                    colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
                 else
-                    pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), length);
+                    pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), 1, to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, length);
             } catch (Exception e) {
                 Main.logger.debug(null, e.toString());
                 Main.logger.debug(null, "X/" + startX + "/" + currX + "/" + endX + " Y/" + startY + "/" + currY + "/" + endY + " L/" + length);
@@ -110,33 +111,27 @@ public class Graphic implements Renderable {
     }
 
     private static void pixelCopy(int[] src, int srcPos, int srcStep, int[] dst, int dstPos, int dstStep, int length) {
-        for (int i = 0; i < length; i++) {
-            int srcCurr = i * srcStep + srcPos;
-            int dstCurr = i * dstStep + dstPos;
-            int color = src[srcCurr];
-            if (color != transColor)
-                dst[dstCurr] = color;
-        }
-    }
-
-    private static void pixelCopy(int[] src, int srcPos, int[] dst, int dstPos, int length) {
-        for (int i = 0; i < length; i++) {
-            int color = src[i + srcPos];
-            if (color != transColor)
-                dst[i + dstPos] = color;
+        if (srcStep == 1 && dstStep == 1)
+            System.arraycopy(src, srcPos, dst, dstPos, length);
+        else {
+            for (int i = 0; i < length; i++) {
+                int srcCurr = i * srcStep + srcPos;
+                int dstCurr = i * dstStep + dstPos;
+                int color = src[srcCurr];
+                if (color != transColor)
+                    dst[dstCurr] = color;
+            }
         }
     }
 
     private static void colorCopy(int[] dst, int dstPos, int dstStep, int color, int length) {
-        for (int i = 0; i < length; i++) {
-            int dstCurr = i * dstStep + dstPos;
-            dst[dstCurr] = color;
-        }
-    }
-
-    private static void colorCopy(int[] dst, int dstPos, int color, int length) {
-        for (int i = 0; i < length; i++) {
-            dst[i + dstPos] = color;
+        if (dstStep == 1)
+            Arrays.fill(dst, dstPos, dstPos + length, color);
+        else {
+            for (int i = 0; i < length; i++) {
+                int dstCurr = i * dstStep + dstPos;
+                dst[dstCurr] = color;
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.server.event;
 
-import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.Password;
+import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.network.Identity;
@@ -12,10 +12,10 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public enum ControlEventType implements EventType {
 
-    Client_Connect(ConnectionInfo.class),
-    Client_Connected(Identity.class),
+    Client_Connect(UserLogin.class),
+    Client_Connected(Integer.class),
     Client_Disconnect(null),
-    Client_Disconnected(null),
+    Client_Disconnected(Integer.class),
     Pass_Change(Password.class),
     Lobby_Create(Identity.class),
     Lobby_Delete(null),

@@ -1,9 +1,8 @@
 package com.gregswebserver.catan.client.event;
 
 import com.gregswebserver.catan.client.graphics.ScreenArea;
+import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.network.NetID;
 
 import java.awt.*;
 
@@ -15,8 +14,7 @@ import java.awt.*;
 public enum ClientEventType implements EventType {
 
     Quit_All(null), //Kills all client processes and exits the game.
-    Net_Identity(Identity.class), //Set this client's identity.
-    Net_Connect(NetID.class), //Begin connecting to a remote server given by netID.
+    Net_Connect(ServerLogin.class), //Begin connecting to a remote server given by netID.
     Net_Connected(null), //Connection established.
     Net_Disconnect(null), //Disconnects from a remote server.
     Net_Disconnected(null), // Connection is finished.
