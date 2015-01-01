@@ -1,12 +1,12 @@
 package com.gregswebserver.catan.common.network;
 
-import java.io.Serializable;
+import com.gregswebserver.catan.common.event.EventPayload;
 
 /**
  * Created by Greg on 8/12/2014.
  * An identity, containing a username. Used to connect to a server and to route ExternalEvents.
  */
-public class Identity implements Serializable {
+public class Identity extends EventPayload {
 
     public final String username;
 

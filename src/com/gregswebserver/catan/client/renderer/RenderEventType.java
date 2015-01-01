@@ -2,7 +2,7 @@ package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.common.chat.ChatLog;
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.game.board.GameBoard;
+import com.gregswebserver.catan.common.game.CatanGame;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -13,7 +13,7 @@ import com.gregswebserver.catan.common.game.board.GameBoard;
 public enum RenderEventType implements EventType {
 
     Chat_Update(null),
-    Game_Create(GameBoard.class),
+    Game_Create(CatanGame.class),
     Game_Update(null),
     Player_Update(null),
     Window_Resize(null),

@@ -51,6 +51,7 @@ public class GameThread extends QueuedInputThread<GameEvent> {
 
     public void init(GameType type) {
         game = new CatanGame(type);
+        host.addEvent(new RenderEvent(this, RenderEventType.Game_Create, game));
     }
 
     public String toString() {

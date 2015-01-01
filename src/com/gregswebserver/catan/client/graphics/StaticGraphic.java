@@ -22,8 +22,13 @@ public class StaticGraphic extends ScreenObject {
         return clickable;
     }
 
-    public void render() {
+    protected void render() {
         //Don't do anything, graphic is already rendered.
+    }
+
+    public boolean needsRendering() {
+        //Object never needs re-rendering.
+        return false;
     }
 
     public String toString() {

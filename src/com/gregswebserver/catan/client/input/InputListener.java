@@ -22,6 +22,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     private Client client;
     private Logger logger;
     private ScreenArea hitbox;
+    private Point dragStart;
 
     public InputListener(Client client) {
         logger = client.logger;
@@ -69,10 +70,10 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
                     c.onLeftClick();
                     break;
                 case MouseEvent.BUTTON2:
-                    c.onRightClick();
+                    c.onMiddleClick();
                     break;
                 case MouseEvent.BUTTON3:
-                    c.onMiddleClick();
+                    c.onRightClick();
                     break;
             }
         }
@@ -81,12 +82,11 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        dragStart = e.getPoint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
     }
 
     @Override
@@ -101,7 +101,11 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        Point dragEnd = e.getPoint();
+        dragEnd.translate(-dragStart.x, -dragStart.y);
+        dragEnd = new Point(dragEnd.x / 2, dragEnd.y / 2);
+        dragStart = e.getPoint();
+        client.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, dragEnd));
     }
 
     @Override

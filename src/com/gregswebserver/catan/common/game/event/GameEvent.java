@@ -3,8 +3,6 @@ package com.gregswebserver.catan.common.game.event;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.network.Identity;
 
-import java.io.Serializable;
-
 /**
  * Created by Greg on 8/12/2014.
  * Created when a player makes a move in a Catan Game.
@@ -14,7 +12,7 @@ import java.io.Serializable;
  */
 public class GameEvent extends ExternalEvent<GameEventType> {
 
-    public GameEvent(Identity origin, GameEventType type, Serializable payload) {
+    public GameEvent(Identity origin, GameEventType type, Object payload) {
         super(origin, type, payload);
     }
 }

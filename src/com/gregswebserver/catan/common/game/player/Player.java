@@ -1,8 +1,10 @@
 package com.gregswebserver.catan.common.game.player;
 
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trader;
+import com.gregswebserver.catan.common.lobby.ServerClient;
 import com.gregswebserver.catan.common.network.Identity;
 
 import java.util.HashMap;
@@ -14,13 +16,16 @@ import java.util.HashSet;
  */
 public class Player implements Trader {
 
-    private Identity identity;
-    private Team team;
+    private final Identity identity;
+    private final String name;
+    private final Team team;
     private HashMap<Tradeable, Integer> inventory;
+    private Coordinate selected;
 
-    public Player(Identity identity) {
-        this.identity = identity;
-        //TODO: store user data here.
+    public Player(ServerClient client, Team team) {
+        this.identity = client.getIdentity();
+        this.name = client.getDisplayName();
+        this.team = team;
     }
 
     public Identity getIdentity() {
@@ -29,10 +34,6 @@ public class Player implements Trader {
 
     public Team getTeam() {
         return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
     }
 
     public boolean canOffer(Trade t) {
@@ -49,5 +50,13 @@ public class Player implements Trader {
 
     public HashMap<Tradeable, Integer> getInventory() {
         return inventory;
+    }
+
+    public Coordinate getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Coordinate selected) {
+        this.selected = selected;
     }
 }

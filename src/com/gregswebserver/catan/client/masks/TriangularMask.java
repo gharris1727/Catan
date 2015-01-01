@@ -9,7 +9,6 @@ import java.awt.*;
  */
 public class TriangularMask extends RenderMask {
 
-    private final int height;
     private final int triGroup;
 
     public TriangularMask(Dimension d) {
@@ -17,27 +16,26 @@ public class TriangularMask extends RenderMask {
     }
 
     public TriangularMask(int height) {
-        this.height = height;
         this.triGroup = (height - 1) % 4;
+        this.height = height;
+        this.width = (height == 0) ? height : ((height - 1) / 4) * 3 + 2 + triGroup / 2;
+        padding = new int[height];
+        widths = new int[height];
+        for (int i = 0; i < height; i++) {
+            padding[i] = getLeftPadding(i);
+            widths[i] = getLineWidth(i);
+        }
+        init();
     }
 
-    public int getWidth() {
-        if (height == 0) return 0;
-        return ((height - 1) / 4) * 3 + 2 + triGroup / 2;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getLeftPadding(int lineNumber) {
+    private int getLeftPadding(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
             return getWidth() - getLineWidth(lineNumber);
         }
         return getLeftPadding(getHeight() - 1 - lineNumber);
     }
 
-    public int getLineWidth(int lineNumber) {
+    private int getLineWidth(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
             switch (triGroup) {
                 case 0:

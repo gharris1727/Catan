@@ -8,30 +8,31 @@ import java.awt.*;
  */
 public class DiagonalMask extends RenderMask {
 
-    private final int thickness;
-    private final int height;
+    //TODO: Re-implement.
+
+    private int thickness;
 
     public DiagonalMask(Dimension d) {
         thickness = d.width;
+        width = height / 2 + thickness - 2 - thickness / 3;
         height = d.height;
+        padding = new int[height];
+        widths = new int[height];
+        for (int i = 0; i < height; i++) {
+            padding[i] = getLeftPadding(i);
+            widths[i] = getLineWidth(i);
+        }
+        init();
     }
 
-    public int getWidth() {
-        return height / 2 + thickness - 2 - thickness / 3;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getLeftPadding(int lineNumber) {
+    private int getLeftPadding(int lineNumber) {
         if (lineNumber < getCenter()) {
             return ((getCenter() - lineNumber + 1) / 2);
         }
         return (lineNumber - getCenter()) + (lineNumber - getCenter()) / 2;
     }
 
-    public int getLineWidth(int lineNumber) {
+    private int getLineWidth(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
             int n = 3 + lineNumber + 2 * (lineNumber / 2);
             if (n > thickness) return thickness;
@@ -40,7 +41,7 @@ public class DiagonalMask extends RenderMask {
         return getLineWidth(getHeight() - 1 - lineNumber);
     }
 
-    public int getCenter() {
+    private int getCenter() {
         return height - thickness / 3 - 3;
     }
 }

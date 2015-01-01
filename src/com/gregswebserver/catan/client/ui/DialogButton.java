@@ -19,6 +19,6 @@ public abstract class DialogButton extends ScreenObject implements Clickable {
 
     public abstract void onMiddleClick();
 
-    public abstract void render();
+    protected abstract void render();
 
 }

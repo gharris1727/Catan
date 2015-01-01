@@ -71,5 +71,9 @@ public class Screen extends Graphic {
             return size.height;
         }
 
+        public String toString() {
+            return "ScreenCanvas";
+        }
+
     }
 }

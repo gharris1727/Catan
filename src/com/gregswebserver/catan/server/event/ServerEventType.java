@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.server.event;
 
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.server.client.ServerClient;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -9,8 +8,8 @@ import com.gregswebserver.catan.server.client.ServerClient;
  */
 public enum ServerEventType implements EventType {
 
-    Quit_All(null),
-    Client_Login(ServerClient.class);
+    Quit_All(null),//Kill all processes in the running server.
+    Client_Disconnect(Integer.class); //Removes a connection from the server after a disconnect.
 
     private Class payloadType;
 

@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class Authenticator {
 
     private final Logger logger;
-    HashMap<Identity, String> passwords;
+    private HashMap<Identity, String> passwords;
 
     public Authenticator(Server server) {
         logger = server.logger;
@@ -24,9 +24,10 @@ public class Authenticator {
 
     public boolean authLogin(UserLogin login) {
         return true;
-//        String correctHash = passwords.get(login.identity);
+        //TODO: actually authenticate passwords properly.
+//        String correctHash = passwords.get(userLogin.identity);
 //        try {
-//            return PasswordHash.validatePassword(login.password.getPassword(), correctHash);
+//            return PasswordHash.validatePassword(userLogin.password.getPassword(), correctHash);
 //        } catch (Exception e) {
 //            logger.log(e, LogLevel.ERROR);
 //            return false;
@@ -44,15 +45,8 @@ public class Authenticator {
         }
     }
 
-    public boolean changeLogin(UserLogin login, Password pass) {
-        if (authLogin(login)) {
-            if (!removeLogin(login.identity))
-                return false;
-            if (!registerLogin(login))
-                return false;
-            return true;
-        }
-        return false;
+    public boolean changeLogin(UserLogin login) {
+        return removeLogin(login.identity) && registerLogin(login);
     }
 
     public boolean removeLogin(Identity user) {

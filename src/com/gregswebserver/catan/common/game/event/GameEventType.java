@@ -20,7 +20,8 @@ public enum GameEventType implements EventType {
     Trade_Bank(Trade.class),
     Player_Select_Location(Coordinate.class),
     Player_Move_Robber(Coordinate.class),
-    Player_Roll_Dice(Coordinate.class);
+    Player_Roll_Dice(Coordinate.class),
+    Player_Turn_Advance(null);
 
     private Class payloadType;
 

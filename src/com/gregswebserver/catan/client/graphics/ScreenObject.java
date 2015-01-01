@@ -38,7 +38,7 @@ public abstract class ScreenObject implements Graphical {
     public abstract Clickable getClickable(Point p);
 
     //Renders the graphic, and ensures that graphic is not null.
-    public abstract void render();
+    protected abstract void render();
 
     //Returns the render priority of this object. Used for layering.
     public int getRenderPriority() {
@@ -48,6 +48,10 @@ public abstract class ScreenObject implements Graphical {
     //Recursively searches through children to determine if it needs to be resized.
     public boolean needsRendering() {
         return needsRendering;
+    }
+
+    public void forceRender() {
+        needsRendering = true;
     }
 
     public Graphic getGraphic() {

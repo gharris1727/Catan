@@ -23,7 +23,7 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
         //Check to make sure the payload is valid.
         //Prevents ClassCastExceptions later.
         type.checkPayload(payload);
-        if (!(payload instanceof Serializable))
+        if (payload != null && !(payload instanceof Serializable))
             throw new EventPayloadException(payload, Serializable.class);
     }
 

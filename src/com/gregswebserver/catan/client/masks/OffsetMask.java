@@ -8,27 +8,22 @@ import java.awt.*;
  */
 public class OffsetMask extends RenderMask {
 
-    private final RenderMask other;
-    private final Point offset;
-
     public OffsetMask(RenderMask other, Point offset) {
-        this.other = other;
-        this.offset = offset;
-    }
-
-    public int getWidth() {
-        return other.getWidth() + offset.x;
-    }
-
-    public int getHeight() {
-        return other.getHeight() + offset.y;
-    }
-
-    public int getLeftPadding(int lineNumber) {
-        return other.getLeftPadding(lineNumber) + offset.x;
-    }
-
-    public int getLineWidth(int lineNumber) {
-        return other.getLineWidth(lineNumber);
+        width = other.width + offset.x;
+        height = other.height + offset.y;
+        padding = new int[height];
+        widths = new int[height];
+        for (int i = 0; i < height; i++) {
+            int pad = other.padding[i];
+            int wid = other.widths[i];
+            if (pad < offset.x) {
+                padding[i] = 0;
+                widths[i] = wid + pad - offset.x;
+            } else {
+                padding[i] = pad - offset.x;
+                widths[i] = wid;
+            }
+        }
+        init();
     }
 }

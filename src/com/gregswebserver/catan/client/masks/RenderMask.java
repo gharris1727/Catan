@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.client.masks;
 
-import java.util.ArrayList;
-
 /**
  * Created by Greg on 8/14/2014.
  * Mask for rendering complex shapes to the screen.
@@ -10,55 +8,51 @@ import java.util.ArrayList;
  */
 public abstract class RenderMask {
 
-    private ArrayList<Integer> cumulativePixels;
+    protected int width, height;
+    protected int[] padding, widths, cumulative;
 
-    public abstract int getWidth();
-
-    public abstract int getHeight();
-
-    public abstract int getLeftPadding(int lineNumber);
-
-    public abstract int getLineWidth(int lineNumber);
-
-    public int getIndex(int x, int y) {
-        int maxX = getLeftPadding(y) + getLineWidth(y);
-        int maxY = getHeight();
-        int minX = getLeftPadding(y);
-        int minY = 0;
-        String msg = "X/" + minX + "/" + x + "/" + maxX + " Y/" + minY + "/" + y + "/" + maxY;
-        if (x < minX || y < minY || x > maxX || y > maxY)
-            throw new IllegalArgumentException(msg);
-        getPixelCount();
-        int index = x - getLeftPadding(y);
-        if (y > 0) index += cumulativePixels.get(y - 1);
-        return index;
+    protected void init() {
+        if (padding == null || widths == null)
+            throw new IllegalStateException("Mask arrays not instantiated.");
+        if (height != padding.length || height != widths.length)
+            throw new IllegalStateException("Mask height inconsistent");
+        cumulative = new int[height];
+        int sum = 0;
+        for (int i = 0; i < height; i++) {
+            sum += padding[i] + widths[i];
+            cumulative[i] = sum;
+        }
     }
 
-    public ArrayList<Integer> getLeftPadding() {
-        ArrayList<Integer> padding = new ArrayList<>(getHeight());
-        for (int i = 0; i < getHeight(); i++) {
-            padding.add(getLeftPadding(i));
-        }
-        return padding;
-    }
-
-    public ArrayList<Integer> getLineWidth() {
-        ArrayList<Integer> width = new ArrayList<>(getHeight());
-        for (int i = 0; i < getHeight(); i++) {
-            width.add(getLineWidth(i));
-        }
+    public int getWidth() {
         return width;
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    public int[] getPadding() {
+        return padding;
+    }
+
+    public int[] getWidths() {
+        return widths;
+    }
+
+    public int getIndex(int x, int y) {
+        if (y < 0 || y >= height)
+            throw new IllegalArgumentException("Y Coordinate out of bounds.");
+        int minX = padding[y];
+        int maxX = minX + widths[y];
+        if (x < minX || x >= maxX)
+            throw new IllegalArgumentException("X Coordinate out of bounds.");
+        int index = x - padding[y];
+        if (y > 0) index += cumulative[y - 1];
+        return index;
+    }
+
     public int getPixelCount() {
-        if (cumulativePixels == null) {
-            cumulativePixels = new ArrayList<>(getHeight());
-            int sum = 0;
-            for (int i = 0; i < getHeight(); i++) {
-                sum += getLineWidth(i);
-                cumulativePixels.add(sum);
-            }
-        }
-        return cumulativePixels.get(cumulativePixels.size() - 1);
+        return cumulative[height - 1];
     }
 }

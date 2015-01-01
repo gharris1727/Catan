@@ -6,42 +6,31 @@ package com.gregswebserver.catan.client.masks;
  */
 public class FlippedMask extends RenderMask {
 
-    public static final int VERTICAL = 1;
-    public static final int HORIZONTAL = 2;
-
-    private RenderMask other;
-    private int direction;
-
-    public FlippedMask(RenderMask other, int direction) {
-        this.other = other;
-        this.direction = direction;
-    }
-
-    public int getWidth() {
-        return other.getWidth();
-    }
-
-    public int getHeight() {
-        return other.getHeight();
-    }
-
-    public int getLeftPadding(int lineNumber) {
+    public FlippedMask(RenderMask other, Direction direction) {
+        width = other.width;
+        height = other.height;
         switch (direction) {
             case VERTICAL:
-                return other.getLeftPadding(getHeight() - 1 - lineNumber);
+                padding = new int[height];
+                widths = new int[height];
+                for (int i = 0; i < height; i++) {
+                    padding[i] = other.padding[height - 1 - i];
+                    widths[i] = other.widths[height - 1 - i];
+                }
+                break;
             case HORIZONTAL:
             default:
-                return getWidth() - getLineWidth(lineNumber) - other.getLeftPadding(lineNumber);
+                padding = new int[height];
+                widths = other.widths;
+                for (int i = 0; i < height; i++) {
+                    padding[i] = width - other.padding[i] - other.widths[i];
+                }
+                break;
         }
+        init();
     }
 
-    public int getLineWidth(int lineNumber) {
-        switch (direction) {
-            case VERTICAL:
-                return other.getLineWidth(getHeight() - 1 - lineNumber);
-            case HORIZONTAL:
-            default:
-                return other.getLineWidth(lineNumber);
-        }
+    public enum Direction {
+        VERTICAL, HORIZONTAL
     }
 }

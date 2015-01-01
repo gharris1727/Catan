@@ -8,41 +8,32 @@ import java.awt.*;
  */
 public class RoundedRectangularMask extends RenderMask {
 
-    private int width, height;
-    private int radius;
-    private RoundedMask roundMask;
+    RenderMask corner;
 
     public RoundedRectangularMask(Dimension square) {
         //Auto-sizes the corners to be proportional to the whole window.
         int radius = (square.width > square.height) ? square.height / 8 : square.width / 8;
         this.width = square.width;
         this.height = square.height;
-        roundMask = new RoundedMask(new Dimension(radius, radius));
+        corner = new RoundedMask(new Dimension(radius, radius));
+        padding = new int[height];
+        widths = new int[height];
+        for (int i = 1; i < height; i++) {
+            padding[i] = getPadding(i);
+            widths[i] = getWidth(i);
+        }
+        init();
     }
 
-    public RoundedRectangularMask(Dimension square, Dimension round) {
-        this.width = square.width;
-        this.height = square.height;
-        roundMask = new RoundedMask(round);
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getLeftPadding(int lineNumber) {
-        if (lineNumber < radius)
-            return roundMask.getLeftPadding(lineNumber);
-        if (getHeight() - 1 - lineNumber < radius)
-            return getLeftPadding(getHeight() - 1 - lineNumber);
+    private int getPadding(int lineNumber) {
+        if (lineNumber < corner.getWidth() / 2)
+            return corner.padding[lineNumber];
+        if (getHeight() - 1 - lineNumber < corner.getHeight() / 2)
+            return getPadding(getHeight() - 1 - lineNumber);
         return 0;
     }
 
-    public int getLineWidth(int lineNumber) {
-        return width - (2 * getLeftPadding(lineNumber));
+    private int getWidth(int lineNumber) {
+        return width - (2 * getPadding(lineNumber));
     }
 }

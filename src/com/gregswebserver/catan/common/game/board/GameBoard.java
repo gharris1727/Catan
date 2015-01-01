@@ -8,6 +8,7 @@ import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.gameplay.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,17 +18,16 @@ import java.util.HashMap;
  */
 public class GameBoard {
 
-    public HexagonalArray<Tile, Path, Building> hexArray;
+    public final Dimension size;
+    public final HexagonalArray<Tile, Path, Building> hexArray;
     private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
     private HashMap<Coordinate, TradingPost> tradingPosts;
 
-    public GameBoard() {
+    public GameBoard(Dimension size) {
+        this.size = size;
+        hexArray = new HexagonalArray<>(Tile.class, Path.class, Building.class, size.width, size.height);
         diceRollCoordinates = new HashMap<>();
         tradingPosts = new HashMap<>();
-    }
-
-    public void init(int x, int y) {
-        hexArray = new HexagonalArray<>(Tile.class, Path.class, Building.class, x, y);
     }
 
     public void setDiceRollCoordinate(DiceRoll diceRoll, Coordinate c) {

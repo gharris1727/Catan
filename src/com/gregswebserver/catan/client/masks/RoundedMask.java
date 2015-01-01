@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.masks;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * Created by Greg on 8/21/2014.
@@ -11,31 +10,16 @@ import java.util.ArrayList;
  */
 public class RoundedMask extends RenderMask {
 
-    private ArrayList<Integer> padding, lengths;
-
     public RoundedMask(Dimension size) {
-        padding = new ArrayList<>();
-        lengths = new ArrayList<>();
-        generate(size.width, size.height, size.width, size.height);
+        width = size.width;
+        height = size.height;
+        padding = new int[height];
+        widths = new int[height];
+        generate((width - 1) / 2, (height - 1) / 2, (width - 1) / 2, (height - 1) / 2);
+        init();
     }
 
-    public int getWidth() {
-        return lengths.get(lengths.size() / 2);
-    }
-
-    public int getHeight() {
-        return lengths.size();
-    }
-
-    public int getLeftPadding(int lineNumber) {
-        return padding.get(lineNumber);
-    }
-
-    public int getLineWidth(int lineNumber) {
-        return lengths.get(lineNumber);
-    }
-
-    public void generate(int xc, int yc, int a, int b) {
+    private void generate(int xc, int yc, int a, int b) {
         //TODO: parse this function.
         int x = 0, y = b;
         int width = 1;
@@ -79,19 +63,7 @@ public class RoundedMask extends RenderMask {
     }
 
     private void row(int x, int y, int len) {
-        while (padding.size() <= y || lengths.size() <= y) {
-            padding.add(0);
-            lengths.add(0);
-        }
-        padding.set(y, x);
-        lengths.set(y, len);
-    }
-
-    public ArrayList<Integer> getLeftPadding() {
-        return padding;
-    }
-
-    public ArrayList<Integer> getLineWidth() {
-        return lengths;
+        padding[y] = x;
+        widths[y] = len;
     }
 }

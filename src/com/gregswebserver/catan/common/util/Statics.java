@@ -194,12 +194,12 @@ public class Statics {
 
         tileRenderMask = new HexagonalMask(GraphicsConfig.tileRenderMaskSize);
         vertexRenderMaskLeft = new TriangularMask(GraphicsConfig.vertexRenderMaskSize);
-        vertexRenderMaskRight = new FlippedMask(vertexRenderMaskLeft, FlippedMask.HORIZONTAL);
+        vertexRenderMaskRight = new FlippedMask(vertexRenderMaskLeft, FlippedMask.Direction.HORIZONTAL);
         horizontalRenderMask = new RectangularMask(GraphicsConfig.horizontalRenderMaskSize);
         diagonalUpRenderMask = new DiagonalMask(GraphicsConfig.diagonalUpRenderMaskSize);
-        diagonalDownRenderMask = new FlippedMask(diagonalUpRenderMask, FlippedMask.VERTICAL);
+        diagonalDownRenderMask = new FlippedMask(diagonalUpRenderMask, FlippedMask.Direction.VERTICAL);
 
-        resourceCardRenderMask = new RoundedRectangularMask(GraphicsConfig.resourceCardRenderMaskSize, GraphicsConfig.resourceCardRenderMaskCornerSize);
+        resourceCardRenderMask = new RoundedRectangularMask(GraphicsConfig.resourceCardRenderMaskSize);
         achievementCardRenderMask = new RectangularMask(GraphicsConfig.achievementCardRenderMaskSize);
 
         diceRollTokenRenderMask = new RoundedMask(GraphicsConfig.diceRollTokenRenderMaskSize);
@@ -208,7 +208,7 @@ public class Statics {
 
         tradeHorizontalRenderMask = new RectangularMask(GraphicsConfig.tradeHorizontalRenderMaskSize);
         tradeDiagonalUpRenderMask = new DiagonalMask(GraphicsConfig.tradeDiagonalRenderMaskSize);
-        tradeDiagonalDownRenderMask = new FlippedMask(tradeDiagonalUpRenderMask, FlippedMask.VERTICAL);
+        tradeDiagonalDownRenderMask = new FlippedMask(tradeDiagonalUpRenderMask, FlippedMask.Direction.VERTICAL);
 
         dialogButtonSmallRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonSmallRenderMaskSize);
         dialogButtonMediumRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonMediumRenderMaskSize);

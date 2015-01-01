@@ -3,6 +3,8 @@ package com.gregswebserver.catan.client.event;
 import com.gregswebserver.catan.client.graphics.ScreenArea;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.lobby.LobbyConfig;
+import com.gregswebserver.catan.common.network.Identity;
 
 import java.awt.*;
 
@@ -15,11 +17,14 @@ public enum ClientEventType implements EventType {
 
     Quit_All(null), //Kills all client processes and exits the game.
     Net_Connect(ServerLogin.class), //Begin connecting to a remote server given by netID.
-    Net_Connected(null), //Connection established.
     Net_Disconnect(null), //Disconnects from a remote server.
-    Net_Disconnected(null), // Connection is finished.
     Canvas_Update(Canvas.class), //Event sent from the renderThread which updates the Canvas object kept in the ClientWindow.
-    Hitbox_Update(ScreenArea.class); //Event sent from the renderThread that updates the hitbox information in ClientListener.
+    Hitbox_Update(ScreenArea.class), //Event sent from the renderThread that updates the hitbox information in ClientListener.
+    Lobby_Create(null),
+    Lobby_Join(Identity.class),
+    Lobby_Leave(null),
+    Lobby_Modify(LobbyConfig.class),
+    Lobby_Start(null);
 
     private Class payloadType;
 

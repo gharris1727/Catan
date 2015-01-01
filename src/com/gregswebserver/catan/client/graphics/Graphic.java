@@ -7,7 +7,6 @@ import com.gregswebserver.catan.client.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.Renderable;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -58,10 +57,10 @@ public class Graphic implements Renderable {
         if (fromStart.x >= fromMask.getWidth()) return;
         if (fromStart.y >= fromMask.getHeight()) return;
         //Pull in the masks
-        ArrayList<Integer> toPadding = toMask.getLeftPadding();
-        ArrayList<Integer> toLength = toMask.getLineWidth();
-        ArrayList<Integer> fromPadding = fromMask.getLeftPadding();
-        ArrayList<Integer> fromLength = fromMask.getLineWidth();
+        int[] toPadding = toMask.getPadding();
+        int[] toLength = toMask.getWidths();
+        int[] fromPadding = fromMask.getPadding();
+        int[] fromLength = fromMask.getWidths();
         //These are the differences between the from coordinates and the toCoordinates.
         //These must stay the same throughout execution.
         final int diffX = toStart.x - fromStart.x;
@@ -82,10 +81,10 @@ public class Graphic implements Renderable {
         if (endY + diffY > toMask.getHeight()) endY = toMask.getHeight() - diffY;
 
         for (int currY = startY; currY < endY; currY++) {
-            int fromPad = fromPadding.get(currY);
-            int fromLen = fromLength.get(currY);
-            int toPad = toPadding.get(currY + diffY);
-            int toLen = toLength.get(currY + diffY);
+            int fromPad = fromPadding[currY];
+            int fromLen = fromLength[currY];
+            int toPad = toPadding[currY + diffY];
+            int toLen = toLength[currY + diffY];
             //Start at one extreme and work inward.
             int currX = startX;
             if (currX < fromPad) currX = fromPad;

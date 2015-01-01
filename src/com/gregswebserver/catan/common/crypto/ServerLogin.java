@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 public class ServerLogin {
 
     public final NetID remote;
-    public final UserLogin login;
+    public final UserLogin userLogin;
 
     public ServerLogin(String host, int port, String user, String pass) {
         NetID tempRemote = null;
@@ -23,6 +23,10 @@ public class ServerLogin {
             e.printStackTrace();
         }
         remote = tempRemote;
-        login = new UserLogin(new Identity(user), pass);
+        userLogin = new UserLogin(new Identity(user), pass);
+    }
+
+    public String toString() {
+        return "ServerLogin " + userLogin;
     }
 }

@@ -6,14 +6,7 @@ package com.gregswebserver.catan.common.game.board.hexarray;
  */
 public class IllegalDirectionException extends Exception {
 
-    private final Direction direction;
-
     public IllegalDirectionException(Direction direction) {
-        this.direction = direction;
-    }
-
-    @Override
-    public String getMessage() {
-        return "Direction " + direction + " is invalid in this context.";
+        super("Direction " + direction + " is invalid in this context.");
     }
 }

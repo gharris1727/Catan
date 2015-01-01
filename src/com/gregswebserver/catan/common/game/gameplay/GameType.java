@@ -4,21 +4,21 @@ import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 
-import java.io.Serializable;
+import java.awt.*;
 import java.util.HashSet;
 
 /**
  * Created by Greg on 8/9/2014.
  * Static data in order to create a game of Catan.
  */
-public class GameType implements Serializable {
+public class GameType {
 
     private String name;
 
     private HashSet<Coordinate> resourceTiles;
     private HashSet<Coordinate> tradingPosts;
     private HashSet<Integer> players;
-    private int sizeX, sizeY;
+    private Dimension size;
     private BoardGenerator boardGenerator;
 
     public GameType(String name) {
@@ -43,8 +43,7 @@ public class GameType implements Serializable {
     }
 
     public GameType size(int x, int y) {
-        sizeX = x;
-        sizeY = y;
+        size = new Dimension(x, y);
         return this;
     }
 
@@ -58,9 +57,10 @@ public class GameType implements Serializable {
         return this;
     }
 
-    public void generate(GameBoard board) {
-        board.init(sizeX, sizeY);
+    public GameBoard generate() {
+        GameBoard board = new GameBoard(size);
         boardGenerator.run(board, resourceTiles, tradingPosts);
+        return board;
     }
 
     public String toString() {

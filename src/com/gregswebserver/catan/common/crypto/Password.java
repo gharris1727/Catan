@@ -1,12 +1,12 @@
 package com.gregswebserver.catan.common.crypto;
 
-import java.io.Serializable;
+import com.gregswebserver.catan.common.event.EventPayload;
 
 /**
  * Created by Greg on 10/17/2014.
- * A password that is passed over the network to login to a server.
+ * A password that is passed over the network to userLogin to a server.
  */
-public class Password implements Serializable {
+public class Password extends EventPayload {
 
     private String password;
 

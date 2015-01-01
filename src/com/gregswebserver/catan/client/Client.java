@@ -13,10 +13,14 @@ import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
-import com.gregswebserver.catan.common.game.gameplay.GameType;
+import com.gregswebserver.catan.common.lobby.ClientPool;
+import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ClientConnection;
-import com.gregswebserver.catan.server.event.ControlEvent;
+import com.gregswebserver.catan.common.network.ControlEvent;
+import com.gregswebserver.catan.common.network.ControlEventType;
+import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.util.Statics;
 
 import java.awt.*;
 
@@ -37,6 +41,8 @@ public class Client extends QueuedInputThread<GenericEvent> {
     private GameThread gameThread;
     private RenderThread renderThread;
     private ClientConnection connection;
+    private Identity identity;
+    private ClientPool clientPool;
 
     public Client() {
         super(Main.logger); //TODO: Create a separate logger for the client.
@@ -56,6 +62,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
     public void execute() throws ThreadStop {
         GenericEvent event = getEvent(true);
+//        logger.log("Client received event: " + event, LogLevel.DEBUG);
         if (event instanceof ExternalEvent) {
             if (event instanceof ChatEvent) {
                 chatThread.addEvent((ChatEvent) event);
@@ -79,67 +86,96 @@ public class Client extends QueuedInputThread<GenericEvent> {
     }
 
     private void clientEvent(ClientEvent event) {
+        ExternalEvent outgoing;
         switch (event.getType()) {
             case Quit_All:
                 shutdown();
                 break;
             case Net_Connect:
+                //Connect to remote server
                 state = ClientState.Connecting;
                 ServerLogin serverLogin = (ServerLogin) event.getPayload();
-                connection = new ClientConnection(this, serverLogin.remote, serverLogin.login);
+                identity = serverLogin.userLogin.identity;
+                connection = new ClientConnection(this, serverLogin);
                 connection.connect();
-                break;
-            case Net_Connected:
-                state = ClientState.Connected;
-                int uniqueID = (int) event.getPayload();
-                logger.log("Connected as user#" + uniqueID, LogLevel.DEBUG);
                 break;
             case Net_Disconnect:
                 state = ClientState.Disconnecting;
-                connection.disconnect();
-                break;
-            case Net_Disconnected:
-                state = ClientState.Disconnected;
+                disconnect("Quitting");
                 break;
             case Canvas_Update:
-                //The ClientWindow is not visible until this event happens.
                 window.setCanvas((Canvas) event.getPayload());
                 break;
             case Hitbox_Update:
                 listener.setHitbox((ScreenArea) event.getPayload());
+                break;
+            case Lobby_Create:
+                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Create, new LobbyConfig(identity));
+                connection.sendEvent(outgoing);
+                break;
+            case Lobby_Join:
+                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Join, event.getPayload());
+                connection.sendEvent(outgoing);
+                break;
+            case Lobby_Leave:
+                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Leave, null);
+                connection.sendEvent(outgoing);
+                break;
+            case Lobby_Modify:
+                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Change_Config, event.getPayload());
+                connection.sendEvent(outgoing);
+                break;
+            case Lobby_Start:
+                outgoing = new ControlEvent(identity, ControlEventType.Game_Start, null);
+                connection.sendEvent(outgoing);
                 break;
         }
     }
 
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
-            case Client_Connect:
+            case Handshake_Client_Connect:
+                //Should never get here, this event should die in the server.
                 break;
-            case Client_Connected:
-                logger.log("Connected as client #" + event.getPayload(), LogLevel.DEBUG);
+            case Handshake_Client_Connect_Success:
+                state = ClientState.Connected;
+                clientPool = (ClientPool) event.getPayload();
+                logger.log("Connected to remote server", LogLevel.DEBUG);
                 break;
-            case Client_Disconnect:
+            case Handshake_Client_Connect_Failure:
+                state = ClientState.Disconnected;
+                logger.log("Unable to connect to remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
-            case Client_Disconnected:
+            case Server_Disconnect:
+                state = ClientState.Disconnected;
+                logger.log("Disconnected from remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case Pass_Change:
+                //Should never get here, this event should die in the server.
                 break;
+            case Pass_Change_Success:
+                break;
+            case Pass_Change_Failure:
+                break;
+            case Name_Change:
+            case Client_Connect:
+            case Client_Disconnect:
             case Lobby_Create:
-                break;
+            case Lobby_Change_Config:
             case Lobby_Delete:
-                break;
             case Lobby_Join:
-                break;
             case Lobby_Leave:
-                break;
-            case Lobby_Update:
+                try {
+                    if (clientPool.test(event))
+                        clientPool.execute(event);
+                } catch (EventConsumerException e) {
+                    logger.log(e, LogLevel.ERROR);
+                }
                 break;
             case Game_Start:
                 state = ClientState.Starting;
-                gameThread.init((GameType) event.getPayload());
+                gameThread.init(Statics.BASE_GAME);
                 gameThread.start();
-                renderThread.start(); //TEMP
-                chatThread.start(); //TEMP
                 break;
             case Game_Quit:
                 state = ClientState.Quitting;
@@ -165,14 +201,24 @@ public class Client extends QueuedInputThread<GenericEvent> {
         }
     }
 
+    public void disconnect(String reason) {
+        if (connection != null && connection.isOpen()) {
+            connection.sendEvent(new ControlEvent(identity, ControlEventType.Client_Disconnect, reason));
+            connection.disconnect();
+        }
+    }
+
     public void shutdown() {
         //Shut down the client and all running threads.
-        if (connection != null)
-            connection.disconnect();
+        disconnect("Game Quitting");
         chatThread.stop();
         gameThread.stop();
         renderThread.stop();
         stop();
+    }
+
+    public Identity getIdentity() {
+        return identity;
     }
 
     public String toString() {

@@ -1,47 +1,40 @@
 package com.gregswebserver.catan.common.lobby;
 
-import com.gregswebserver.catan.common.event.ExternalEvent;
-import com.gregswebserver.catan.common.game.event.GameThread;
-import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.server.client.ServerClient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Greg on 8/22/2014.
  * A serializable set of lobbies that can be sent over the network.
  */
-public class Lobby {
+public class Lobby extends HashSet<Identity> {
 
-    //Client-side tracking
-    private ArrayList<Identity> identities;
     private Identity owner;
-    //Server-side tracking
-    private HashMap<Identity, ServerClient> clients;
-    private GameThread gameThread;
-    private GameType gameType;
+    private LobbyConfig config;
 
-    public Lobby(ServerClient owner) {
-        identities = new ArrayList<>();
-        clients = new HashMap<>();
-        addClient(owner);
+    public Lobby(Identity owner) {
+        setOwner(owner);
     }
 
-    public void addClient(ServerClient client) {
-        clients.put(client.getIdentity(), client);
-        client.setLobby(this);
+    public Identity getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Identity owner) {
+        this.owner = owner;
+        add(owner);
+    }
+
+    public LobbyConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(LobbyConfig config) {
+        this.config = config;
     }
 
     public String toString() {
-        return owner + "'s Lobby";
-    }
-
-    public void rebroadcast(ExternalEvent event) {
-        for (ServerClient client : clients.values()) {
-            if (!client.getIdentity().equals(event.getOrigin()))
-                client.getConnection().sendEvent(event);
-        }
+        return config.getOwner().username + "'s Lobby: " + config.getLobbyName();
     }
 }

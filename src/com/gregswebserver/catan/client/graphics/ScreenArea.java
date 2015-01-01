@@ -3,9 +3,8 @@ package com.gregswebserver.catan.client.graphics;
 import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by Greg on 8/19/2014.
@@ -14,13 +13,11 @@ import java.util.TreeMap;
 public class ScreenArea extends ScreenObject {
 
     protected Dimension size;
-    private Point viewPoint;
-    private HashMap<Integer, ScreenObject> subObjects;
-    private TreeMap<Integer, ArrayList<ScreenObject>> renderPriority;
+    protected Map<Integer, ScreenObject> hitboxMap;
+    protected Map<Integer, List<ScreenObject>> priorityMap;
 
-    public ScreenArea(Dimension size, Point position, Point viewPoint, int priority) {
+    public ScreenArea(Dimension size, Point position, int priority) {
         super(position, priority);
-        this.viewPoint = viewPoint;
         clear();
         resize(size);
     }
@@ -28,46 +25,54 @@ public class ScreenArea extends ScreenObject {
     public Clickable getClickable(Point p) {
         Point subPosition = new Point(p.x - position.x, p.y - position.y);
         int color = getGraphic().getHitboxColor(subPosition);
-        ScreenObject object = subObjects.get(color);
+        ScreenObject object = hitboxMap.get(color);
         if (object == null) return null;
         return object.getClickable(p);
     }
 
     public boolean needsRendering() {
         if (needsRendering) return true;
-        for (ScreenObject object : subObjects.values()) {
+        for (ScreenObject object : hitboxMap.values()) {
             if (object.needsRendering()) return true;
         }
         return false;
     }
 
-    public void render() {
+    protected void preRender() {
         if (graphic == null) {
             graphic = new Graphic(size);
         } else {
             graphic.clear();
         }
-        for (ScreenObject object : subObjects.values()) {
-            Point position = object.getPosition();
-            Point renderPosition = new Point(position.x - viewPoint.x, position.y - viewPoint.y);
-            object.getGraphic().renderTo(graphic, null, renderPosition, object.getHitboxColor());
+    }
+
+    protected void render() {
+        preRender();
+        postRender();
+    }
+
+    protected void postRender() {
+        for (List<ScreenObject> objects : priorityMap.values()) {
+            for (ScreenObject object : objects) {
+                object.getGraphic().renderTo(graphic, null, object.getPosition(), object.getHitboxColor());
+            }
         }
     }
 
     public void addScreenObject(ScreenObject object) {
-        subObjects.put(object.getHitboxColor(), object);
-        ArrayList<ScreenObject> objects = renderPriority.get(object.getRenderPriority());
+        hitboxMap.put(object.getHitboxColor(), object);
+        List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
         if (objects == null) {
-            objects = new ArrayList<>();
-            renderPriority.put(object.getRenderPriority(), objects);
+            objects = new LinkedList<>();
+            priorityMap.put(object.getRenderPriority(), objects);
         }
         objects.add(object);
         needsRendering = true;
     }
 
     public void clear() {
-        subObjects = new HashMap<>();
-        renderPriority = new TreeMap<>();
+        hitboxMap = new HashMap<>();
+        priorityMap = new TreeMap<>();
     }
 
     public void resize(Dimension d) {
@@ -76,12 +81,11 @@ public class ScreenArea extends ScreenObject {
         needsRendering = true;
     }
 
-    public void changeView(Point p) {
-        this.viewPoint.translate(p.x, p.y);
-        needsRendering = true;
-    }
-
     public Dimension getSize() {
         return size;
+    }
+
+    public String toString() {
+        return "ScreenArea";
     }
 }

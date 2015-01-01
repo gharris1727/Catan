@@ -37,10 +37,9 @@ public class GraphicsConfig {
     public static final Dimension diagonalUpRenderMaskSize = new Dimension(16, 54);
 
     public static final Dimension resourceCardRenderMaskSize = new Dimension(128, 192);
-    public static final Dimension resourceCardRenderMaskCornerSize = new Dimension(7, 7);
     public static final Dimension achievementCardRenderMaskSize = new Dimension(192, 192);
 
-    public static final Dimension diceRollTokenRenderMaskSize = new Dimension(16, 16);
+    public static final Dimension diceRollTokenRenderMaskSize = new Dimension(32, 32);
     public static final Dimension tradeRatioRenderMaskSize = new Dimension(32, 16);
     public static final Dimension resourceIconRenderMaskSize = new Dimension(16, 16);
 
@@ -51,7 +50,9 @@ public class GraphicsConfig {
     public static final Dimension dialogButtonMediumRenderMaskSize = new Dimension(128, 32);
     public static final Dimension dialogButtonLargeRenderMaskSize = new Dimension(256, 32);
 
-    public static final Point resourceTileTokenRender = new Point(tileRenderMaskSize.width / 2 - diceRollTokenRenderMaskSize.width, tileRenderMaskSize.height / 2 - diceRollTokenRenderMaskSize.height);
+    public static final Dimension mapEdgeBufferSize = new Dimension(64, 64);
+
+    public static final Point resourceTileTokenRender = new Point(tileRenderMaskSize.width / 2 - diceRollTokenRenderMaskSize.width / 2, tileRenderMaskSize.height / 2 - diceRollTokenRenderMaskSize.height / 2);
     public static final Point tradeTileResourceIconRender = new Point(tileRenderMaskSize.width / 2 - resourceIconRenderMaskSize.width / 2, tileRenderMaskSize.height / 2 - resourceIconRenderMaskSize.height / 2 + 12);
     public static final Point tradeTileRatioRender = new Point(tileRenderMaskSize.width / 2 - tradeRatioRenderMaskSize.width / 2, tileRenderMaskSize.height / 2 - tradeRatioRenderMaskSize.height / 2 - 12);
 
@@ -146,6 +147,12 @@ public class GraphicsConfig {
     public static final int[][] vertOffsets = {
             {0, 24, 100, 124}, //Horizontal
             {56, 0, 0, 56}}; //Vertical
+
+    public static Dimension boardToScreen(Dimension size) {
+        int outW = ((size.width + 1) / 2) * boardUnitWidth;
+        int outH = (size.height + 1) * boardUnitHeight;
+        return new Dimension(outW, outH);
+    }
 
     public static Point tileToScreen(Coordinate c) {
         int outX = (c.x / 2) * boardUnitWidth;

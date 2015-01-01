@@ -17,7 +17,7 @@ public class DialogBox extends ScreenArea {
     private ArrayList<DialogItem> items;
 
     public DialogBox(Dimension size, ScreenArea container) {
-        super(size, new Point(), new Point(), 0);
+        super(size, new Point(), 0);
         this.container = container;
     }
 
@@ -28,9 +28,7 @@ public class DialogBox extends ScreenArea {
 
     public void resize(Dimension size) {
         this.size = size;
-        int smallerSide = (size.width > size.height) ? size.width : size.height;
-        Dimension cornerSize = new Dimension(smallerSide / 5, smallerSide / 5);
-        this.graphic = new Graphic(new RoundedRectangularMask(size, cornerSize));
+        this.graphic = new Graphic(new RoundedRectangularMask(size));
         this.needsRendering = true;
     }
 }

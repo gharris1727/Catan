@@ -9,30 +9,27 @@ import java.awt.*;
  */
 public class HexagonalMask extends RenderMask {
 
-    private final int height;
-    private final int width;
 
     public HexagonalMask(Dimension size) {
-        this.width = size.width;
-        this.height = size.height;
+        width = size.width;
+        height = size.height;
+        padding = new int[height];
+        widths = new int[height];
+        for (int i = 0; i < height; i++) {
+            padding[i] = getLeftPadding(i);
+            widths[i] = getLineWidth(i);
+        }
+        init();
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getLeftPadding(int lineNumber) {
+    private int getLeftPadding(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
             return (width - getLineWidth(lineNumber)) / 2;
         }
         return getLeftPadding(getHeight() - 1 - lineNumber);
     }
 
-    public int getLineWidth(int lineNumber) {
+    private int getLineWidth(int lineNumber) {
         if (lineNumber * 2 < getHeight()) {
             return width - 2 * (getCenter(lineNumber) / 2);
         }
