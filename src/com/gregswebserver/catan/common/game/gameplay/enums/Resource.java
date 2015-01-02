@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
-import com.gregswebserver.catan.client.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.util.Statics;
 
@@ -8,7 +9,7 @@ import com.gregswebserver.catan.common.util.Statics;
  * Created by Greg on 8/9/2014.
  * Enum for storing the different resources.
  */
-public enum Resource implements Tradeable {
+public enum Resource implements Tradeable, Graphical {
 
     Brick("Clay", Statics.brickCardTexture, Statics.brickIconTexture),
     Lumber("Logs", Statics.lumberCardTexture, Statics.lumberIconTexture),

@@ -2,10 +2,10 @@ package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.ClientEvent;
-import com.gregswebserver.catan.client.graphics.ScreenArea;
+import com.gregswebserver.catan.client.event.RenderEvent;
+import com.gregswebserver.catan.client.graphics.renderer.RenderThread;
+import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
 import com.gregswebserver.catan.client.input.InputListener;
-import com.gregswebserver.catan.client.renderer.RenderEvent;
-import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
@@ -107,7 +107,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 window.setCanvas((Canvas) event.getPayload());
                 break;
             case Hitbox_Update:
-                listener.setHitbox((ScreenArea) event.getPayload());
+                listener.setHitbox((ScreenObject) event.getPayload());
                 break;
             case Lobby_Create:
                 outgoing = new ControlEvent(identity, ControlEventType.Lobby_Create, new LobbyConfig(identity));

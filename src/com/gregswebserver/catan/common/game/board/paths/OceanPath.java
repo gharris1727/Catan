@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.paths;
 
-import com.gregswebserver.catan.client.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.common.game.player.Team;
 
 /**

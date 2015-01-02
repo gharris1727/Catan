@@ -7,7 +7,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.Direction;
 import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
 import com.gregswebserver.catan.common.game.board.paths.OceanPath;
 import com.gregswebserver.catan.common.game.board.tiles.*;
-import com.gregswebserver.catan.common.game.gameplay.DiceRoll;
+import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
 
 import java.util.HashSet;

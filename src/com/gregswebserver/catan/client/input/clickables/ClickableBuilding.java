@@ -9,19 +9,11 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
  */
 public class ClickableBuilding extends ClickableBoardObject {
 
-    private Building building;
+    private final Building building;
 
-    public ClickableBuilding(Coordinate position, Building building) {
-        super(position);
+    public ClickableBuilding(Coordinate position, Clickable mapDrag, Building building) {
+        super(position, mapDrag);
         this.building = building;
-    }
-
-    public void onRightClick() {
-
-    }
-
-    public void onLeftClick() {
-
     }
 
     public String toString() {

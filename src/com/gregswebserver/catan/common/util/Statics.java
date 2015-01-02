@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.common.util;
 
-import com.gregswebserver.catan.client.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.GraphicSource;
-import com.gregswebserver.catan.client.masks.*;
+import com.gregswebserver.catan.client.graphics.masks.*;
+import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.util.GraphicSource;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.game.gameplay.generator.RandomBoardGenerator;
 

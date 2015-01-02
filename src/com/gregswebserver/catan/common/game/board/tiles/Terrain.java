@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.client.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.common.game.gameplay.enums.Resource;
 import com.gregswebserver.catan.common.util.Statics;
 

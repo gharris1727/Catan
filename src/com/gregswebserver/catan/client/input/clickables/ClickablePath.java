@@ -9,19 +9,11 @@ import com.gregswebserver.catan.common.game.board.paths.Path;
  */
 public class ClickablePath extends ClickableBoardObject {
 
-    private Path path;
+    private final Path path;
 
-    public ClickablePath(Coordinate position, Path path) {
-        super(position);
+    public ClickablePath(Coordinate position, Clickable mapDrag, Path path) {
+        super(position, mapDrag);
         this.path = path;
-    }
-
-    public void onRightClick() {
-
-    }
-
-    public void onLeftClick() {
-
     }
 
     public String toString() {

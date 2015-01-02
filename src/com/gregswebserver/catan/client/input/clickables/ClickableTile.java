@@ -11,8 +11,8 @@ public class ClickableTile extends ClickableBoardObject {
 
     private Tile tile;
 
-    public ClickableTile(Coordinate position, Tile tile) {
-        super(position);
+    public ClickableTile(Coordinate position, Clickable mapDrag, Tile tile) {
+        super(position, mapDrag);
         this.tile = tile;
     }
 

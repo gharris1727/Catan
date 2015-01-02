@@ -11,8 +11,8 @@ import com.gregswebserver.catan.common.game.board.paths.Road;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
+import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.player.Player;
 import com.gregswebserver.catan.common.network.Identity;
 

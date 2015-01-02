@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.input.clickables;
 
-import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 
 /**
@@ -14,17 +13,5 @@ public class ClickableTrade implements Clickable {
 
     public ClickableTrade(Trade trade) {
         this.trade = trade;
-    }
-
-    public void onRightClick() {
-
-    }
-
-    public void onLeftClick() {
-
-    }
-
-    public void onMiddleClick() {
-
     }
 }

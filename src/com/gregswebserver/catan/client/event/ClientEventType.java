@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.event;
 
-import com.gregswebserver.catan.client.graphics.ScreenArea;
+import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
@@ -19,7 +19,7 @@ public enum ClientEventType implements EventType {
     Net_Connect(ServerLogin.class), //Begin connecting to a remote server given by netID.
     Net_Disconnect(null), //Disconnects from a remote server.
     Canvas_Update(Canvas.class), //Event sent from the renderThread which updates the Canvas object kept in the ClientWindow.
-    Hitbox_Update(ScreenArea.class), //Event sent from the renderThread that updates the hitbox information in ClientListener.
+    Hitbox_Update(ScreenObject.class), //Event sent from the renderThread that updates the hitbox information in ClientListener.
     Lobby_Create(null),
     Lobby_Join(Identity.class),
     Lobby_Leave(null),
