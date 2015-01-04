@@ -3,12 +3,14 @@ package com.gregswebserver.catan.client;
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.RenderEvent;
+import com.gregswebserver.catan.client.event.RenderEventType;
+import com.gregswebserver.catan.client.graphics.areas.ScreenObject;
 import com.gregswebserver.catan.client.graphics.renderer.RenderThread;
-import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
+import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.event.GameEvent;
@@ -43,6 +45,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
     private ClientConnection connection;
     private Identity identity;
     private ClientPool clientPool;
+    private ServerList loginList;
 
     public Client() {
         super(Main.logger); //TODO: Create a separate logger for the client.
@@ -53,9 +56,11 @@ public class Client extends QueuedInputThread<GenericEvent> {
         chatThread = new ChatThread(logger);
         gameThread = new GameThread(this);
         renderThread = new RenderThread(this);
+        loginList = new ServerList();
 
         state = ClientState.Disconnected;
         start();
+        renderThread.addEvent(new RenderEvent(this, RenderEventType.Connection_Update, loginList));
         renderThread.start();
     }
 
@@ -129,6 +134,9 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 outgoing = new ControlEvent(identity, ControlEventType.Game_Start, null);
                 connection.sendEvent(outgoing);
                 break;
+            case State_Change:
+                state = (ClientState) event.getPayload();
+                break;
         }
     }
 
@@ -174,7 +182,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 break;
             case Game_Start:
                 state = ClientState.Starting;
-                gameThread.init(Statics.BASE_GAME);
+                gameThread.createNew(Statics.BASE_GAME); //TODO: temp
                 gameThread.start();
                 break;
             case Game_Quit:
@@ -217,6 +225,10 @@ public class Client extends QueuedInputThread<GenericEvent> {
         stop();
     }
 
+    public void sendEvent(ExternalEvent event) {
+        connection.sendEvent(event);
+    }
+
     public Identity getIdentity() {
         return identity;
     }
@@ -225,4 +237,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
         return "Client";
     }
 
+    public ClientState getState() {
+        return state;
+    }
 }

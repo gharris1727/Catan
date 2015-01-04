@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.areas;
 
-import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
-import com.gregswebserver.catan.client.input.clickables.Clickable;
+import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
 
@@ -14,11 +13,13 @@ public abstract class GridScreenArea extends ScreenArea {
     private int[] widths, heights, cWidths, cHeights;
     private ScreenObject[][] objects;
 
-    public GridScreenArea(Point position, int priority, Clickable clickable) {
-        super(position, priority, clickable);
+    public GridScreenArea(Point position, int priority) {
+        super(position, priority);
     }
 
-    public void resize(int[] widths, int[] heights) {
+    public abstract void resize(Dimension d);
+
+    protected void resize(int[] widths, int[] heights) {
         this.widths = widths;
         this.cWidths = new int[widths.length + 1];
         this.heights = heights;
@@ -47,14 +48,17 @@ public abstract class GridScreenArea extends ScreenArea {
         for (int i : cHeights)
             if (p.y >= i)
                 y++;
-        //TODO: check these lines for validity
+        Point position = getPosition();
         Point subPosition = new Point(p.x - position.x, p.y - position.y);
         ScreenObject object = objects[y][x];
         return (object != null) ? object.getClickable(subPosition) : clickable;
     }
 
     public void add(ScreenObject object) {
+        if (object == null) return;
         Point p = object.getPosition();
+        if (objects[p.y][p.x] != null)
+            return;
         objects[p.y][p.x] = object;
         super.add(object);
     }
@@ -63,13 +67,23 @@ public abstract class GridScreenArea extends ScreenArea {
         return getCellPosition(object.getPosition());
     }
 
+    public Point getCellPosition(Point p) {
+        return new Point(cWidths[p.x], cHeights[p.y]);
+    }
+
     public Dimension getCellDimension(Point p) {
         return new Dimension(widths[p.x], heights[p.y]);
     }
 
-    public Point getCellPosition(Point p) {
-        return new Point(cWidths[p.x], cHeights[p.y]);
+    public Dimension getMultiDimension(Point p, Point size) {
+        Dimension out = new Dimension();
+        for (int i = p.x; i < p.x + size.x; i++)
+            out.width += widths[i];
+        for (int i = p.y; i < p.y + size.y; i++)
+            out.height += heights[i];
+        return out;
     }
+
 
     public void clear() {
         if (widths != null && heights != null)

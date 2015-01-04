@@ -4,7 +4,6 @@ package com.gregswebserver.catan.client.graphics.util;
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.renderer.Renderable;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -110,16 +109,12 @@ public class Graphic implements Renderable {
     }
 
     private static void pixelCopy(int[] src, int srcPos, int srcStep, int[] dst, int dstPos, int dstStep, int length) {
-        if (srcStep == 1 && dstStep == 1)
-            System.arraycopy(src, srcPos, dst, dstPos, length);
-        else {
-            for (int i = 0; i < length; i++) {
-                int srcCurr = i * srcStep + srcPos;
-                int dstCurr = i * dstStep + dstPos;
-                int color = src[srcCurr];
-                if (color != transColor)
-                    dst[dstCurr] = color;
-            }
+        for (int i = 0; i < length; i++) {
+            int srcCurr = i * srcStep + srcPos;
+            int dstCurr = i * dstStep + dstPos;
+            int color = src[srcCurr];
+            if (color != transColor)
+                dst[dstCurr] = color;
         }
     }
 
@@ -132,6 +127,10 @@ public class Graphic implements Renderable {
                 dst[dstCurr] = color;
             }
         }
+    }
+
+    public RenderMask getMask() {
+        return mask;
     }
 
     public void setMask(RenderMask mask) {

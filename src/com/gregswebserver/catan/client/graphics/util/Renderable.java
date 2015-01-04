@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.client.graphics.renderer;
+package com.gregswebserver.catan.client.graphics.util;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
 
 import java.awt.*;
 

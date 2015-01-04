@@ -7,10 +7,10 @@ package com.gregswebserver.catan.client.state;
  */
 public enum ClientState {
 
-    Disconnected(null),
-    Disconnecting(Disconnected),
-    Connected(null),
-    Connecting(Connected),
+    Disconnected(null), //Displays the server connect screen
+    Disconnecting(Disconnected), //Disconnection in progress...
+    Connected(null), //Displays lobby join screen
+    Connecting(Connected), //Connection in progress
     Leaving(Connected),
     Quitting(Connected),
     InLobby(null),

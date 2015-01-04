@@ -1,8 +1,7 @@
 package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
-import com.gregswebserver.catan.client.input.clickables.Clickable;
+import com.gregswebserver.catan.client.graphics.areas.ScreenObject;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
@@ -23,7 +22,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     private final Client client;
     private ScreenObject hitbox;
     private Point dragStart;
-    private Clickable lastSelected;
+    private Clickable selected;
 
     public InputListener(Client client) {
         logger = client.logger;
@@ -35,15 +34,23 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     }
 
     private void updateClickable(MouseEvent e) {
-        if (hitbox != null)
-            lastSelected = hitbox.getClickable(e.getPoint());
-        logger.log("lastSelected: " + lastSelected, LogLevel.DEBUG);
+        if (hitbox != null) {
+            Clickable last = selected;
+            selected = hitbox.getClickable(e.getPoint());
+            if (last != selected) {
+                if (last != null)
+                    last.onDeselect();
+                if (selected != null)
+                    selected.onSelect();
+            }
+            logger.log("selected: " + selected, LogLevel.DEBUG);
+        }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if (lastSelected != null)
-            lastSelected.onKeyTyped(e.getKeyCode());
+        if (selected != null)
+            selected.onKeyTyped(e);
     }
 
     @Override
@@ -57,8 +64,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     @Override
     public void mouseClicked(MouseEvent e) {
         updateClickable(e);
-        if (lastSelected != null)
-            lastSelected.onMouseClick(e.getButton());
+        if (selected != null)
+            selected.onMouseClick(e);
     }
 
     @Override
@@ -84,8 +91,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         Point dragEnd = e.getPoint();
         dragEnd.translate(-dragStart.x, -dragStart.y);
         dragStart = e.getPoint();
-        if (lastSelected != null)
-            lastSelected.onMouseDrag(dragEnd);
+        if (selected != null)
+            selected.onMouseDrag(dragEnd);
     }
 
     @Override
@@ -94,8 +101,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (lastSelected != null)
-            lastSelected.onMouseScroll(e.getWheelRotation());
+        if (selected != null)
+            selected.onMouseScroll(e.getWheelRotation());
     }
 
     public String toString() {

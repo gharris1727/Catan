@@ -32,6 +32,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
     private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
     private HashMap<Identity, Player> players;
     private Coordinate robberLocation;
+    private Player localPlayer;
 
     public CatanGame(GameType type) {
         //Create a new board
@@ -118,5 +119,9 @@ public class CatanGame implements EventConsumer<GameEvent> {
 
     public GameBoard getBoard() {
         return board;
+    }
+
+    public Player getLocalPlayer() {
+        return localPlayer;
     }
 }

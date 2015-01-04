@@ -1,8 +1,6 @@
 package com.gregswebserver.catan.client.graphics.areas;
 
-import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
-import com.gregswebserver.catan.client.input.clickables.Clickable;
 
 import java.awt.*;
 import java.util.*;
@@ -17,8 +15,8 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
     protected Dimension size;
     private Map<Integer, List<ScreenObject>> priorityMap;
 
-    protected ScreenArea(Point position, int priority, Clickable clickable) {
-        super(position, priority, clickable);
+    protected ScreenArea(Point position, int priority) {
+        super(position, priority);
         clear();
     }
 
@@ -37,6 +35,7 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
     }
 
     public void add(ScreenObject object) {
+        if (object == null) return;
         List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
         if (objects == null) {
             objects = new LinkedList<>();
@@ -68,12 +67,16 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
         };
     }
 
-    public boolean needsRendering() {
+    public boolean needsRender() {
         if (needsRendering) return true;
         for (ScreenObject object : this) {
-            if (object.needsRendering()) return true;
+            if (object.needsRender()) return true;
         }
         return false;
+    }
+
+    public boolean canRender() {
+        return size != null;
     }
 
     public Graphic getGraphic() {
@@ -81,7 +84,7 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
             graphic = new Graphic(size);
             needsRendering = true;
         }
-        if (needsRendering()) {
+        if (needsRender()) {
             render();
             graphic.clear();
             for (ScreenObject object : this)
@@ -93,6 +96,7 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
 
     public abstract Point getObjectPosition(ScreenObject object);
 
-    protected abstract void render();
+    protected void render() {
+    }
 
 }

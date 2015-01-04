@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.areas;
 
-import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
-import com.gregswebserver.catan.client.input.clickables.Clickable;
+import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -15,19 +14,20 @@ public abstract class ColorScreenArea extends ScreenArea {
 
     private Map<Integer, ScreenObject> hitboxMap;
 
-    public ColorScreenArea(Point position, int priority, Clickable clickable) {
-        super(position, priority, clickable);
+    public ColorScreenArea(Point position, int priority) {
+        super(position, priority);
     }
 
     public Clickable getClickable(Point p) {
         int color = getGraphic().getHitboxColor(p);
         ScreenObject object = hitboxMap.get(color);
-        //TODO: check this line for accuracy.
+        Point position = getObjectPosition(object);
         Point subPosition = new Point(p.x - position.x, p.y - position.y);
         return (object == null) ? clickable : object.getClickable(subPosition);
     }
 
     public void add(ScreenObject object) {
+        if (object == null) return;
         hitboxMap.put(object.getHitboxColor(), object);
         super.add(object);
     }

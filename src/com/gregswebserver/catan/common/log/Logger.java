@@ -2,7 +2,8 @@ package com.gregswebserver.catan.common.log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -10,10 +11,10 @@ import java.util.ArrayList;
  */
 public class Logger {
 
-    private ArrayList<LogListener> listeners;
+    private List<LogListener> listeners;
 
     public Logger() {
-        listeners = new ArrayList<>();
+        listeners = new LinkedList<>();
         addListener(new StdOutListener());
         //TODO: remove when deployed, prints to IDE console.
     }

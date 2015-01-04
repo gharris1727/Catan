@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.event;
 
-import com.gregswebserver.catan.client.graphics.renderer.ScreenObject;
+import com.gregswebserver.catan.client.graphics.areas.ScreenObject;
+import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
@@ -24,7 +25,8 @@ public enum ClientEventType implements EventType {
     Lobby_Join(Identity.class),
     Lobby_Leave(null),
     Lobby_Modify(LobbyConfig.class),
-    Lobby_Start(null);
+    Lobby_Start(null),
+    State_Change(ClientState.class);
 
     private Class payloadType;
 

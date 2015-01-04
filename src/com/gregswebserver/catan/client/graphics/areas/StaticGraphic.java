@@ -1,7 +1,7 @@
-package com.gregswebserver.catan.client.graphics.renderer;
+package com.gregswebserver.catan.client.graphics.areas;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
-import com.gregswebserver.catan.client.input.clickables.Clickable;
+import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
 
@@ -11,13 +11,18 @@ import java.awt.*;
  */
 public class StaticGraphic extends ScreenObject {
 
-    public StaticGraphic(Graphic graphic, Point position, int priority, Clickable clickable) {
-        super(position, priority, clickable);
+    public StaticGraphic(Point position, int priority, Graphic graphic, Clickable clickable) {
+        super(position, priority);
         this.graphic = graphic;
+        this.clickable = clickable;
     }
 
-    public boolean needsRendering() {
+    public boolean needsRender() {
         return false;
+    }
+
+    public boolean canRender() {
+        return true;
     }
 
     public Graphic getGraphic() {
@@ -25,6 +30,6 @@ public class StaticGraphic extends ScreenObject {
     }
 
     public String toString() {
-        return super.toString() + " StaticGraphic";
+        return "StaticGraphic";
     }
 }

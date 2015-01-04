@@ -11,10 +11,14 @@ import java.awt.*;
  */
 public class GraphicsConfig {
 
+    public static final Font[] listAllFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+    public static final Font defaultFont = listAllFonts[0];
+
     public static final String tileGraphicSourcePath = "/graphics/tiles.jpg";
     public static final String oceanGraphicSourcePath = "/graphics/ocean.png";
     public static final String beachGraphicSourcePath = "/graphics/beach.png";
     public static final String blankGraphicSourcePath = "/graphics/blank.png";
+    public static final String uiGraphicSourcePath = "/graphics/ui.png";
 
     public static final String redTeamGraphicSourcePath = "/graphics/redTeam.png";
     public static final String orangeTeamGraphicSourcePath = "/graphics/orangeTeam.png";
@@ -134,6 +138,9 @@ public class GraphicsConfig {
     public static final Point horizontalPathLocation = new Point();
     public static final Point diagonalUpPathLocation = new Point();
     public static final Point diagonalDownPathLocation = new Point();
+
+    public static final Point uiBackgroundTextureLocation = new Point();
+    public static final Point uiEditableFieldTextureLocation = new Point();
 
     public static final int boardUnitWidth = 200;
     public static final int boardUnitHeight = 112;

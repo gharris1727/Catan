@@ -22,6 +22,7 @@ public class Statics {
     public static GraphicSource beachGraphicSource;
     public static GraphicSource tradeGraphicSource;
     public static GraphicSource blankGraphicSource;
+    public static GraphicSource uiGraphicSource;
 
     public static GraphicSource redTeamGraphicSource;
     public static GraphicSource orangeTeamGraphicSource;
@@ -44,6 +45,7 @@ public class Statics {
     public static RenderMask diagonalUpRenderMask;
     public static RenderMask diagonalDownRenderMask;
 
+
     public static RenderMask resourceCardRenderMask;
     public static RenderMask achievementCardRenderMask;
     public static RenderMask diceRollTokenRenderMask;
@@ -57,6 +59,9 @@ public class Statics {
     public static RenderMask dialogButtonSmallRenderMask;
     public static RenderMask dialogButtonMediumRenderMask;
     public static RenderMask dialogButtonLargeRenderMask;
+
+    public static RenderMask uiBackgroundTextureRenderMask;
+    public static RenderMask uiEditableFieldTextureRenderMask;
 
     public static Graphic hillTexture;
     public static Graphic forestTexture;
@@ -166,6 +171,9 @@ public class Statics {
     public static Graphic blankDiagonalUpPath;
     public static Graphic blankDiagonalDownPath;
 
+    public static Graphic uiBackgroundTexture;
+    public static Graphic uiEditableFieldTexture;
+
     public static GameType BASE_GAME;
 
     public Statics() {
@@ -176,6 +184,7 @@ public class Statics {
         oceanGraphicSource = GraphicSource.load(GraphicsConfig.oceanGraphicSourcePath);
         beachGraphicSource = GraphicSource.load(GraphicsConfig.beachGraphicSourcePath);
         blankGraphicSource = GraphicSource.load(GraphicsConfig.blankGraphicSourcePath);
+        uiGraphicSource = GraphicSource.load(GraphicsConfig.uiGraphicSourcePath);
 
         redTeamGraphicSource = GraphicSource.load(GraphicsConfig.redTeamGraphicSourcePath);
         orangeTeamGraphicSource = GraphicSource.load(GraphicsConfig.orangeTeamGraphicSourcePath);
@@ -199,6 +208,7 @@ public class Statics {
         diagonalUpRenderMask = new DiagonalMask(GraphicsConfig.diagonalUpRenderMaskSize);
         diagonalDownRenderMask = new FlippedMask(diagonalUpRenderMask, FlippedMask.Direction.VERTICAL);
 
+
         resourceCardRenderMask = new RoundedRectangularMask(GraphicsConfig.resourceCardRenderMaskSize);
         achievementCardRenderMask = new RectangularMask(GraphicsConfig.achievementCardRenderMaskSize);
 
@@ -213,6 +223,9 @@ public class Statics {
         dialogButtonSmallRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonSmallRenderMaskSize);
         dialogButtonMediumRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonMediumRenderMaskSize);
         dialogButtonLargeRenderMask = new RoundedRectangularMask(GraphicsConfig.dialogButtonLargeRenderMaskSize);
+
+        uiBackgroundTextureRenderMask = new RectangularMask(new Dimension(32, 32));
+        uiEditableFieldTextureRenderMask = new RectangularMask(new Dimension(32, 32));
 
         hillTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.hillTextureLocation);
         forestTexture = new Graphic(tileGraphicSource, tileRenderMask, GraphicsConfig.forestTextureLocation);
@@ -321,6 +334,9 @@ public class Statics {
         blankHorizontalPath = new Graphic(blankGraphicSource, horizontalRenderMask, GraphicsConfig.horizontalPathLocation);
         blankDiagonalUpPath = new Graphic(blankGraphicSource, diagonalUpRenderMask, GraphicsConfig.diagonalUpPathLocation);
         blankDiagonalDownPath = new Graphic(blankGraphicSource, diagonalDownRenderMask, GraphicsConfig.diagonalDownPathLocation);
+
+        uiBackgroundTexture = new Graphic(uiGraphicSource, uiBackgroundTextureRenderMask, GraphicsConfig.uiBackgroundTextureLocation);
+        uiEditableFieldTexture = new Graphic(uiGraphicSource, uiEditableFieldTextureRenderMask, GraphicsConfig.uiEditableFieldTextureLocation);
 
         BASE_GAME = new GameType("Settlers of Catan Base");
         BASE_GAME.size(15, 11);

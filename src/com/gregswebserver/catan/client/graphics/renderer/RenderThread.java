@@ -4,12 +4,17 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
-import com.gregswebserver.catan.client.graphics.areas.RootArea;
+import com.gregswebserver.catan.client.graphics.areas.Screen;
+import com.gregswebserver.catan.client.graphics.areas.ScreenArea;
+import com.gregswebserver.catan.client.input.Clickable;
+import com.gregswebserver.catan.client.state.ClientState;
+import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -20,15 +25,17 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     private Client client;
     private Screen screen;
-    private RootArea rootArea;
-    private boolean enabled = false;
+    private HashMap<ClientState, ScreenArea> areas;
+    private ScreenArea screenArea;
+    private boolean enabled;
 
     public RenderThread(Client client) {
         super(client.logger);
         this.client = client;
         screen = new Screen();
-        rootArea = new RootArea(logger);
-        client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, rootArea));
+        areas = new HashMap<>();
+        screenArea = null;
+        enabled = false;
     }
 
     protected void execute() throws ThreadStop {
@@ -36,17 +43,23 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         RenderEvent event = getEvent(false);
         if (event != null) {
             switch (event.getType()) {
+                case Connection_Update:
+                    ConnectScreen connect = new ConnectScreen((ServerList) event.getPayload());
+                    areas.put(ClientState.Disconnected, connect);
+                    break;
                 case Game_Create:
-                    rootArea.setActiveGame((CatanGame) event.getPayload());
+                    InGameScreen gameCreate = new InGameScreen((CatanGame) event.getPayload());
+                    areas.put(ClientState.InGame, gameCreate);
                     break;
                 case Game_Update:
-                    rootArea.updateMap();
+                    InGameScreen gameUpdate = (InGameScreen) areas.get(ClientState.InGame);
+                    gameUpdate.update();
                     break;
                 case Window_Resize:
                     enabled = false;
                     Dimension size = (Dimension) event.getPayload();
                     screen.resize(size);
-                    rootArea.resize(size);
+                    screenArea.resize(size);
                     client.addEvent(new ClientEvent(this, ClientEventType.Canvas_Update, screen.getCanvas()));
                     break;
                 case Render_Disable:
@@ -59,14 +72,28 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         }
         //TODO: add a better frame limiter/profiling/fps tool.
         if (event == null && enabled) {
+            ScreenArea next = areas.get(client.getState());
             screen.clear();
-            rootArea.getGraphic().renderTo(screen, null, new Point(), 0);
+            if (next != null) {
+                if (screenArea != next)
+                    client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, screenArea));
+                screenArea = next;
+                if (screenArea.canRender())
+                    screenArea.getGraphic().renderTo(screen, null, new Point(), 0);
+            }
             screen.show();
         }
     }
 
     public String toString() {
-        return client + "RenderThread";
+        return "RenderThread";
     }
+
+    private class RootClickable implements Clickable {
+        public String toString() {
+            return "RootClickable";
+        }
+    }
+
 
 }
