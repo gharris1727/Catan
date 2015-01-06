@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.areas;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.util.Resizable;
 
 import java.awt.*;
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ScreenArea extends ScreenObject implements Iterable<ScreenObject> {
+public abstract class ScreenArea extends ScreenObject implements Iterable<ScreenObject>, Resizable {
 
     protected Dimension size;
     private Map<Integer, List<ScreenObject>> priorityMap;
@@ -28,6 +29,14 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
 
     public Dimension getSize() {
         return size;
+    }
+
+    public void step() {
+        for (ScreenObject o : this) o.step();
+    }
+
+    public void reset() {
+        for (ScreenObject o : this) o.reset();
     }
 
     protected void clear() {
@@ -62,8 +71,6 @@ public abstract class ScreenArea extends ScreenObject implements Iterable<Screen
                     listIterator = treeIterator.next().iterator();
                 return listIterator.next();
             }
-
-
         };
     }
 

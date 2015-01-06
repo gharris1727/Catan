@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.input;
 
+import com.gregswebserver.catan.client.event.UserEvent;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -11,21 +13,31 @@ import java.awt.event.MouseEvent;
  */
 public interface Clickable {
 
-    public default void onMouseClick(MouseEvent event) {
+    public default UserEvent onMouseClick(MouseEvent event) {
+        return null;
     }
 
-    public default void onKeyTyped(KeyEvent event) {
+    public default UserEvent onKeyTyped(KeyEvent event) {
+        return null;
     }
 
-    public default void onMouseScroll(int wheelRotation) {
+    public default UserEvent onMouseScroll(int wheelRotation) {
+        return null;
     }
 
-    public default void onMouseDrag(Point p) {
+    public default UserEvent onMouseDrag(Point p) {
+        return null;
     }
 
-    public default void onSelect() {
+    public default UserEvent onSelect() {
+        return null;
     }
 
-    public default void onDeselect() {
+    public default UserEvent onDeselect() {
+        return null;
+    }
+
+    public default Clickable getClickable(Point p) {
+        return this;
     }
 }

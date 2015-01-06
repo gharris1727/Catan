@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics.areas;
 
+import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.client.graphics.util.UniqueColor;
@@ -11,13 +12,12 @@ import java.awt.*;
  * Created by Greg on 8/19/2014.
  * A set of methods that all object that appear on the screen must implement.
  */
-public abstract class ScreenObject implements Graphical {
+public abstract class ScreenObject implements Graphical, Clickable, Animated {
 
     private final Point position;
     private final int priority;
     private final int hitboxColor;
     protected Graphic graphic;
-    protected Clickable clickable;
     protected boolean needsRendering;
 
     protected ScreenObject(Point position, int priority) {
@@ -25,6 +25,14 @@ public abstract class ScreenObject implements Graphical {
         this.priority = priority;
         hitboxColor = UniqueColor.getNext();
         needsRendering = true;
+    }
+
+    public void step() {
+        if (graphic instanceof Animated) ((Animated) graphic).step();
+    }
+
+    public void reset() {
+        if (graphic instanceof Animated) ((Animated) graphic).reset();
     }
 
     //Get render position relative to the parent.
@@ -45,13 +53,6 @@ public abstract class ScreenObject implements Graphical {
     //Forces this object to re-render the next time getGraphic is called.
     public void forceRender() {
         needsRendering = true;
-    }
-
-    //If this object functions as a hitbox, then it will return the sub-object, otherwise it returns it's primary reference.
-
-
-    public Clickable getClickable(Point p) {
-        return clickable;
     }
 
     //Tag to check if this object needs re-rendering.

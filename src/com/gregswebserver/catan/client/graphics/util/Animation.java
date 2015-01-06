@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Created by Greg on 8/16/2014.
  * A sequence of graphics for displaying an animated feature.
  */
-public class Animation implements Renderable {
+public class Animation extends Graphic implements Animated {
 
     private ArrayList<Graphic> graphics;
     private int currentFrame = 0;
@@ -24,7 +24,7 @@ public class Animation implements Renderable {
         return this;
     }
 
-    private void reset() {
+    public void reset() {
         currentFrame = 0;
     }
 

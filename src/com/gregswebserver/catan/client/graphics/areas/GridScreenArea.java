@@ -39,7 +39,7 @@ public abstract class GridScreenArea extends ScreenArea {
 
     public Clickable getClickable(Point p) {
         if (p.x < 0 || p.y < 0 || p.x >= size.width || p.y >= size.height)
-            return clickable;
+            return this;
         int x = -1;
         int y = -1;
         for (int i : cWidths)
@@ -51,7 +51,7 @@ public abstract class GridScreenArea extends ScreenArea {
         Point position = getPosition();
         Point subPosition = new Point(p.x - position.x, p.y - position.y);
         ScreenObject object = objects[y][x];
-        return (object != null) ? object.getClickable(subPosition) : clickable;
+        return (object != null) ? object.getClickable(subPosition) : this;
     }
 
     public void add(ScreenObject object) {

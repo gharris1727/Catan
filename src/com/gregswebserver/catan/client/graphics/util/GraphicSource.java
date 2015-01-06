@@ -21,7 +21,7 @@ public class GraphicSource extends Graphic {
 
     public static GraphicSource load(String path) {
         int width = 0, height = 0;
-        int[] pixelsRGBA = null, pixels = null;
+        int[] pixelsRGBA, pixels = null;
         try {
             BufferedImage image = ImageIO.read(Main.class.getResourceAsStream(path));
             width = image.getWidth();

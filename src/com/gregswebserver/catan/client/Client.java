@@ -4,9 +4,10 @@ import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.RenderEventType;
+import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.areas.ScreenObject;
-import com.gregswebserver.catan.client.graphics.renderer.RenderThread;
 import com.gregswebserver.catan.client.input.InputListener;
+import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
@@ -60,7 +61,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
         state = ClientState.Disconnected;
         start();
-        renderThread.addEvent(new RenderEvent(this, RenderEventType.Connection_Update, loginList));
+        renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionList_Create, loginList));
         renderThread.start();
     }
 
@@ -69,33 +70,41 @@ public class Client extends QueuedInputThread<GenericEvent> {
         GenericEvent event = getEvent(true);
 //        logger.log("Client received event: " + event, LogLevel.DEBUG);
         if (event instanceof ExternalEvent) {
-            if (event instanceof ChatEvent) {
+            if (event instanceof ChatEvent)
                 chatThread.addEvent((ChatEvent) event);
-            }
-            if (event instanceof GameEvent) {
+            if (event instanceof GameEvent)
                 gameThread.addEvent((GameEvent) event);
-            }
-            if (event instanceof ControlEvent) {
+            if (event instanceof ControlEvent)
                 controlEvent((ControlEvent) event);
-            }
         }
         if (event instanceof InternalEvent) {
-            if (event instanceof RenderEvent) {
+            if (event instanceof RenderEvent)
                 renderThread.addEvent((RenderEvent) event);
-            }
-            if (event instanceof ClientEvent) {
+            if (event instanceof ClientEvent)
                 clientEvent((ClientEvent) event);
-            }
+            if (event instanceof UserEvent)
+                userEvent((UserEvent) event);
         }
 
     }
 
     private void clientEvent(ClientEvent event) {
-        ExternalEvent outgoing;
         switch (event.getType()) {
             case Quit_All:
                 shutdown();
                 break;
+            case Canvas_Update:
+                window.setCanvas((Canvas) event.getPayload());
+                break;
+            case Hitbox_Update:
+                listener.setHitbox((ScreenObject) event.getPayload());
+                break;
+        }
+    }
+
+    private void userEvent(UserEvent event) {
+        ExternalEvent outgoing;
+        switch (event.getType()) {
             case Net_Connect:
                 //Connect to remote server
                 state = ClientState.Connecting;
@@ -107,12 +116,6 @@ public class Client extends QueuedInputThread<GenericEvent> {
             case Net_Disconnect:
                 state = ClientState.Disconnecting;
                 disconnect("Quitting");
-                break;
-            case Canvas_Update:
-                window.setCanvas((Canvas) event.getPayload());
-                break;
-            case Hitbox_Update:
-                listener.setHitbox((ScreenObject) event.getPayload());
                 break;
             case Lobby_Create:
                 outgoing = new ControlEvent(identity, ControlEventType.Lobby_Create, new LobbyConfig(identity));
@@ -134,8 +137,16 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 outgoing = new ControlEvent(identity, ControlEventType.Game_Start, null);
                 connection.sendEvent(outgoing);
                 break;
-            case State_Change:
-                state = (ClientState) event.getPayload();
+            case Map_Drag:
+                renderThread.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, event.getPayload()));
+                break;
+            case Tile_Clicked:
+                break;
+            case Edge_Clicked:
+                break;
+            case Vertex_Clicked:
+                break;
+            case Inventory_Clicked:
                 break;
         }
     }
@@ -223,10 +234,6 @@ public class Client extends QueuedInputThread<GenericEvent> {
         gameThread.stop();
         renderThread.stop();
         stop();
-    }
-
-    public void sendEvent(ExternalEvent event) {
-        connection.sendEvent(event);
     }
 
     public Identity getIdentity() {

@@ -3,9 +3,6 @@ package com.gregswebserver.catan.common;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
-import com.gregswebserver.catan.common.network.ControlEvent;
-import com.gregswebserver.catan.common.network.ControlEventType;
-import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;
@@ -112,7 +109,7 @@ public class Startup extends GenericWindow {
     private void startClient(InetAddress host, int port, String username, String password) {
         Client client = new Client();
 //        client.addEvent(new ClientEvent(this, ClientEventType.Net_Connect, new ServerLogin("localhost", 25000, "greg", "a")));
-        client.addEvent(new ControlEvent(new Identity("Startup"), ControlEventType.Game_Start, null));
+//        client.addEvent(new ControlEvent(new Identity("Startup"), ControlEventType.Game_Start, null));
     }
 
     private void startServer(int port, String password) {

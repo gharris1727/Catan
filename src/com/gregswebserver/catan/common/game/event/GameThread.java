@@ -1,10 +1,7 @@
 package com.gregswebserver.catan.common.game.event;
 
-import com.gregswebserver.catan.client.event.ClientEvent;
-import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.RenderEventType;
-import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.GenericEvent;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
@@ -42,8 +39,6 @@ public class GameThread extends QueuedInputThread<GameEvent> {
     public void createNew(GameType type) {
         game = new CatanGame(type);
         host.addEvent(new RenderEvent(this, RenderEventType.Game_Create, game));
-        host.addEvent(new ClientEvent(this, ClientEventType.State_Change, ClientState.InGame));
-        //TODO: remove
     }
 
     public String toString() {

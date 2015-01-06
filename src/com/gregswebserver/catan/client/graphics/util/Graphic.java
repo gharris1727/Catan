@@ -12,7 +12,7 @@ import java.util.Arrays;
  * Created by Greg on 8/15/2014.
  * Utility class to provide pixel-moving functions to the other image handlers.
  */
-public class Graphic implements Renderable {
+public class Graphic {
 
     public static final int transColor = 0xffff00ff;
     protected String name;
@@ -36,7 +36,7 @@ public class Graphic implements Renderable {
     public Graphic(GraphicSource source, RenderMask mask, Point start) {
         this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
         name = "Source: " + source + " Mask: " + mask + " Pixels: " + mask.getPixelCount();
-        renderFrom(source, null, start, 0);
+        render(this, null, new Point(), source, null, start, 0);
     }
 
     protected Graphic(int[] pixels, int[] hitbox, RenderMask mask) {
@@ -133,11 +133,11 @@ public class Graphic implements Renderable {
         return mask;
     }
 
-    public void setMask(RenderMask mask) {
+    protected void setMask(RenderMask mask) {
         this.mask = mask;
     }
 
-    public void setPixels(int[] pixels) {
+    protected void setPixels(int[] pixels) {
         this.pixels = pixels;
         hitbox = new int[pixels.length];
     }
@@ -149,11 +149,6 @@ public class Graphic implements Renderable {
     public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color) {
         //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
         render(to, toMask, toPos, this, null, new Point(), color);
-    }
-
-    public void renderFrom(Graphic from, RenderMask fromMask, Point fromPos, int color) {
-        //Renders this Image from another, with the fromPos pixel being at this image's top corner.
-        render(this, null, new Point(), from, fromMask, fromPos, color);
     }
 
     public void clear() {

@@ -23,7 +23,7 @@ public abstract class ColorScreenArea extends ScreenArea {
         ScreenObject object = hitboxMap.get(color);
         Point position = getObjectPosition(object);
         Point subPosition = new Point(p.x - position.x, p.y - position.y);
-        return (object == null) ? clickable : object.getClickable(subPosition);
+        return (object == null) ? this : object.getClickable(subPosition);
     }
 
     public void add(ScreenObject object) {

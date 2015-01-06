@@ -1,8 +1,7 @@
-package com.gregswebserver.catan.client.graphics.areas;
+package com.gregswebserver.catan.client.graphics.util;
 
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
