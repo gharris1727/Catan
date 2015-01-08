@@ -121,10 +121,6 @@ public class Startup extends GenericWindow {
         dispose();
     }
 
-    protected void onResize(Dimension size) {
-        //Nothing can happen cause this window isn't resizable.
-    }
-
     public String toString() {
         return "Startup";
     }

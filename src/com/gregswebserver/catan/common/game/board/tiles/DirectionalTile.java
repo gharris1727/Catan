@@ -8,7 +8,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.Direction;
  */
 public abstract class DirectionalTile extends Tile {
 
-    private Direction direction;
+    private final Direction direction;
 
     public DirectionalTile(Direction direction) {
         this.direction = direction;

@@ -25,9 +25,9 @@ public class Authenticator {
     public boolean authLogin(UserLogin login) {
         return true;
         //TODO: actually authenticate passwords properly.
-//        String correctHash = passwords.get(userLogin.identity);
+//        String correctHash = passwords.get(login.identity);
 //        try {
-//            return PasswordHash.validatePassword(userLogin.password.getPassword(), correctHash);
+//            return PasswordHash.validatePassword(login.password.getPassword(), correctHash);
 //        } catch (Exception e) {
 //            logger.log(e, LogLevel.ERROR);
 //            return false;
@@ -45,8 +45,8 @@ public class Authenticator {
         }
     }
 
-    public boolean changeLogin(UserLogin login) {
-        return removeLogin(login.identity) && registerLogin(login);
+    public boolean changeLogin(Identity identity, Password password) {
+        return removeLogin(identity) && registerLogin(new UserLogin(identity, password));
     }
 
     public boolean removeLogin(Identity user) {

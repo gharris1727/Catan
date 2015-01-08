@@ -2,24 +2,30 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
-import com.gregswebserver.catan.common.util.Statics;
+import com.gregswebserver.catan.common.game.gameplay.VictoryFactor;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
+
+import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.AchievementArmy;
+import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.AchievementRoad;
 
 /**
  * Created by Greg on 8/9/2014.
  * Enum storing the different achievement cards.
  */
-public enum Achievement implements Graphical {
+public enum Achievement implements Graphical, VictoryFactor {
 
-    LongestRoad("Longest Road", 2, Statics.longestRoadCardTexture),
-    LargestArmy("Largest Army", 2, Statics.largestArmyCardTexture);
+
+    //TODO: insert the correct descriptions.
+    LongestRoad("Longest Road", "Description for Longest Road", ResourceLoader.getGraphic(AchievementRoad)),
+    LargestArmy("Largest Army", "Description for Largest Army", ResourceLoader.getGraphic(AchievementArmy));
 
     private final String name;
-    private final int vp;
+    private final String desc;
     private final Graphic graphic;
 
-    Achievement(String name, int vp, Graphic graphic) {
+    Achievement(String name, String desc, Graphic graphic) {
         this.name = name;
-        this.vp = vp;
+        this.desc = desc;
         this.graphic = graphic;
     }
 
@@ -27,8 +33,12 @@ public enum Achievement implements Graphical {
         return name;
     }
 
+    public String getDescription() {
+        return desc;
+    }
+
     public int getVictoryPoints() {
-        return vp;
+        return 2;
     }
 
     public Graphic getGraphic() {

@@ -10,8 +10,8 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
 
     public static final int MAX_SIZE = Integer.MAX_VALUE - 8;
     public final int sizeX, sizeY;
-    private int size;
     private Object[] data;
+    private int size;
 
     public TwoDimensionalArray(int x, int y) {
         if (x < 0 || x >= MAX_SIZE || y < 0 || y >= MAX_SIZE) {

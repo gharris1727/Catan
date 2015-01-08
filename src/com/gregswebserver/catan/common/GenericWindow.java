@@ -35,6 +35,12 @@ public abstract class GenericWindow extends JFrame {
             }
         });
         addComponentListener(new ComponentAdapter() {
+
+            public void componentMoved(ComponentEvent e) {
+                onMove();
+                super.componentMoved(e);
+            }
+
             public void componentResized(ComponentEvent e) {
                 onResize(e.getComponent().getSize());
                 super.componentResized(e);
@@ -43,7 +49,12 @@ public abstract class GenericWindow extends JFrame {
     }
 
     // Gracefully close any pertinent threads when the window is closed.
-    protected abstract void onClose();
+    protected void onClose() {
+    }
 
-    protected abstract void onResize(Dimension size);
+    protected void onMove() {
+    }
+
+    protected void onResize(Dimension size) {
+    }
 }

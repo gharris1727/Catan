@@ -1,13 +1,15 @@
 package com.gregswebserver.catan.common.game.gameplay.generator;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
-import com.gregswebserver.catan.common.game.board.buildings.OceanBuilding;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.Direction;
 import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
-import com.gregswebserver.catan.common.game.board.paths.OceanPath;
-import com.gregswebserver.catan.common.game.board.tiles.*;
+import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
+import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
+import com.gregswebserver.catan.common.game.board.tiles.Tile;
+import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
+import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
 
 import java.util.HashSet;
@@ -68,15 +70,15 @@ public class RandomBoardGenerator implements BoardGenerator {
         }
 
         //Place all of the ocean features that fill the rest of the map.
-        for (Coordinate c : oceanTiles) {
-            board.hexArray.place(c, new OceanTile());
-        }
-        for (Coordinate c : oceanVertices) {
-            board.hexArray.place(c, new OceanBuilding());
-        }
-        for (Coordinate c : oceanPaths) {
-            board.hexArray.place(c, new OceanPath());
-        }
+//        for (Coordinate c : oceanTiles) {
+//            board.hexArray.place(c, new EmptyTile());
+//        }
+//        for (Coordinate c : oceanVertices) {
+//            board.hexArray.place(c, new EmptyBuilding());
+//        }
+//        for (Coordinate c : oceanPaths) {
+//            board.hexArray.place(c, new EmptyPath());
+//        }
 
         // Place all beaches, checking for surrounding tiles.
         for (Coordinate c : beachTiles) {
@@ -108,7 +110,7 @@ public class RandomBoardGenerator implements BoardGenerator {
                 }
                 tile = trade;
             } else
-                tile = new BeachTile(foundTiles.size(), Direction.getAverage(foundTiles));
+                tile = new BeachTile(Direction.getAverage(foundTiles), foundTiles.size());
             board.hexArray.place(c, tile);
         }
 

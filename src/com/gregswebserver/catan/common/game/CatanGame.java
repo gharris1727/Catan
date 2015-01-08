@@ -11,15 +11,15 @@ import com.gregswebserver.catan.common.game.board.paths.Road;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameHistory;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.player.Player;
 import com.gregswebserver.catan.common.network.Identity;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -28,7 +28,7 @@ import java.util.List;
 public class CatanGame implements EventConsumer<GameEvent> {
 
     private GameBoard board;
-    private List<GameEvent> history;
+    private GameHistory history;
     private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
     private HashMap<Identity, Player> players;
     private Coordinate robberLocation;
@@ -37,7 +37,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
     public CatanGame(GameType type) {
         //Create a new board
         board = type.generate();
-        history = new LinkedList<>();
+        history = new GameHistory();
     }
 
     public boolean test(GameEvent event) {
@@ -112,7 +112,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 break;
             case Player_Roll_Dice:
                 break;
-            case Player_Turn_Advance:
+            case Turn_Advance:
                 break;
         }
     }
@@ -123,5 +123,9 @@ public class CatanGame implements EventConsumer<GameEvent> {
 
     public Player getLocalPlayer() {
         return localPlayer;
+    }
+
+    public Dimension getBoardSize() {
+        return board.getSize();
     }
 }

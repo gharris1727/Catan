@@ -8,29 +8,26 @@ import java.util.HashSet;
  */
 public enum Direction {
     //Edge/Space-only reference.
-    up(0, 0, 1),
-    down(1, 0, -1),
+    up(0, 1),
+    down(0, -1),
     //Vertex-only reference.
-    left(2, -1, 0),
-    right(3, 1, 0),
+    left(-1, 0),
+    right(1, 0),
     //Dual reference.
-    upleft(4, up, left),
-    downleft(5, down, left),
-    upright(6, up, right),
-    downright(7, down, right);
+    upleft(up, left),
+    downleft(down, left),
+    upright(up, right),
+    downright(down, right);
 
-    private final int index;
     private final int x;
     private final int y;
 
-    Direction(int index, int x, int y) {
-        this.index = index;
+    Direction(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    Direction(int index, Direction a, Direction b) {
-        this.index = index;
+    Direction(Direction a, Direction b) {
         this.x = a.x + b.x;
         this.y = a.y + b.y;
     }
@@ -65,9 +62,5 @@ public enum Direction {
                 out = downleft;
         }
         return out;
-    }
-
-    public int index() {
-        return index;
     }
 }

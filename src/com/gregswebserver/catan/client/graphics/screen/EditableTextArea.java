@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.areas;
+package com.gregswebserver.catan.client.graphics.screen;
 
 import java.awt.*;
 
@@ -6,7 +6,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * A screen area containing a text box that is editable by the user.
  */
-public abstract class EditableTextArea extends ColorScreenArea {
+public abstract class EditableTextArea extends ColorObjectArea {
 
     protected TiledArea background;
     protected TextArea foreground;
@@ -23,9 +23,9 @@ public abstract class EditableTextArea extends ColorScreenArea {
         previous = state;
     }
 
-    public void resize(Dimension d) {
-        super.resize(d);
-        background.resize(d);
+    public void setSize(Dimension d) {
+        super.setSize(d);
+        background.setSize(d);
     }
 
     protected abstract void render();

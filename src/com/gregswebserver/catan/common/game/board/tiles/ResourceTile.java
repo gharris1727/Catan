@@ -1,12 +1,8 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.Resource;
-import com.gregswebserver.catan.common.util.GraphicsConfig;
-import com.gregswebserver.catan.common.util.Statics;
-
-import java.awt.*;
+import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -17,7 +13,6 @@ public class ResourceTile extends Tile {
     private DiceRoll diceRoll;
     private Terrain terrain;
     private boolean robber;
-    private Graphic graphic;
 
     public ResourceTile(Terrain terrain, DiceRoll diceRoll) {
         this.terrain = terrain;
@@ -43,16 +38,6 @@ public class ResourceTile extends Tile {
     public Resource getResource() {
         if (robber || terrain == null) return null;
         return terrain.resource;
-    }
-
-    public Graphic getGraphic() {
-        if (graphic == null) {
-            graphic = new Graphic(Statics.tileRenderMask);
-            terrain.image.renderTo(graphic, null, new Point(), 0);
-            if (diceRoll != null)
-                diceRoll.getGraphic().renderTo(graphic, null, GraphicsConfig.resourceTileTokenRender, 0);
-        }
-        return graphic;
     }
 
     public String toString() {

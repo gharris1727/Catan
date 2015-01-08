@@ -4,7 +4,7 @@ import com.gregswebserver.catan.common.event.EventPayload;
 
 /**
  * Created by Greg on 10/17/2014.
- * A password that is passed over the network to userLogin to a server.
+ * A password that is passed over the network to login to a server.
  */
 public class Password extends EventPayload {
 

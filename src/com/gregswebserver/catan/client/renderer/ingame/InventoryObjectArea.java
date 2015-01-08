@@ -2,14 +2,13 @@ package com.gregswebserver.catan.client.renderer.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
-import com.gregswebserver.catan.client.graphics.areas.ColorScreenArea;
-import com.gregswebserver.catan.client.graphics.areas.ScreenObject;
-import com.gregswebserver.catan.client.graphics.areas.StaticGraphic;
+import com.gregswebserver.catan.client.graphics.screen.ColorObjectArea;
+import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
+import com.gregswebserver.catan.client.graphics.screen.StaticObject;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.player.Player;
-import com.gregswebserver.catan.common.util.Statics;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -20,11 +19,11 @@ import java.util.HashMap;
  * Created by Greg on 1/5/2015.
  * Area responsible for rendering the inventory of the player.
  */
-public class InventoryScreenArea extends ColorScreenArea {
+public class InventoryObjectArea extends ColorObjectArea {
 
     private Player player;
 
-    public InventoryScreenArea(Point position, int priority, Player player) {
+    public InventoryObjectArea(Point position, int priority, Player player) {
         super(position, priority);
         this.player = player;
     }
@@ -42,9 +41,13 @@ public class InventoryScreenArea extends ColorScreenArea {
             Point position = new Point();
             positions.add(position);
             for (int i = 0; i < num; i++) {
-                ScreenObject o = new StaticGraphic(position, 0, graphic) {
+                ScreenObject o = new StaticObject(position, 0, graphic) {
                     public UserEvent onMouseClick(MouseEvent event) {
                         return new UserEvent(this, UserEventType.Inventory_Clicked, position.x);
+                    }
+
+                    public String toString() {
+                        return "Inventory Item #" + position.x;
                     }
                 };
                 add(o);
@@ -54,5 +57,9 @@ public class InventoryScreenArea extends ColorScreenArea {
         for (int i = 0; i < positions.size(); i++) {
             positions.get(i).setLocation(divX * (i + 1), 16);
         }
+    }
+
+    public String toString() {
+        return "InventoryScreenArea " + player;
     }
 }

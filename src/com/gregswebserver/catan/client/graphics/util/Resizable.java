@@ -8,7 +8,7 @@ import java.awt.*;
  */
 public interface Resizable {
 
-    public void resize(Dimension d);
-
     public Dimension getSize();
+
+    public void setSize(Dimension d);
 }

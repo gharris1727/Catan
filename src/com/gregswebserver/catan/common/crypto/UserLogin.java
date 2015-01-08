@@ -12,9 +12,9 @@ public class UserLogin extends EventPayload {
     public final Identity identity;
     public final Password password;
 
-    public UserLogin(Identity name, String pass) {
+    protected UserLogin(Identity name, Password pass) {
         identity = name;
-        password = new Password(pass);
+        password = pass;
     }
 
     public String toString() {

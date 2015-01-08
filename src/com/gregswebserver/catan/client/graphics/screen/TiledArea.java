@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.areas;
+package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.input.Clickable;
@@ -9,7 +9,9 @@ import java.awt.*;
  * Created by Greg on 1/2/2015.
  * Resizable graphic
  */
-public abstract class TiledArea extends ScreenArea {
+public abstract class TiledArea extends ObjectArea {
+
+    //TODO: rework to allow for special edging.
 
     private Graphic texture;
 
@@ -26,11 +28,15 @@ public abstract class TiledArea extends ScreenArea {
         clear();
         int width = texture.getMask().getWidth();
         int height = texture.getMask().getHeight();
-        for (int x = 0; x < size.width; x += width) {
-            for (int y = 0; y < size.height; y += height) {
-                add(new StaticGraphic(new Point(x, y), 0, texture) {
+        for (int x = 0; x < getSize().width; x += width) {
+            for (int y = 0; y < getSize().height; y += height) {
+                add(new StaticObject(new Point(x, y), 0, texture) {
                     public Clickable getClickable(Point p) {
                         return TiledArea.this;
+                    }
+
+                    public String toString() {
+                        return "TiledAreaTile " + getPosition();
                     }
                 });
             }

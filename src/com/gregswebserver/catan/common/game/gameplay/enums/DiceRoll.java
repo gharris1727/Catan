@@ -2,7 +2,9 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
-import com.gregswebserver.catan.common.util.Statics;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
+
+import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.*;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -10,17 +12,17 @@ import com.gregswebserver.catan.common.util.Statics;
  */
 public enum DiceRoll implements Graphical {
 
-    Two(2, 1, Statics.diceRollTwo),
-    Three(3, 2, Statics.diceRollThree),
-    Four(4, 3, Statics.diceRollFour),
-    Five(5, 4, Statics.diceRollFive),
-    Six(6, 5, Statics.diceRollSix),
-    Seven(7, 0, Statics.diceRollSeven),
-    Eight(8, 5, Statics.diceRollEight),
-    Nine(9, 4, Statics.diceRollNine),
-    Ten(10, 3, Statics.diceRollTen),
-    Eleven(11, 2, Statics.diceRollEleven),
-    Twelve(12, 1, Statics.diceRollTwelve);
+    Two(2, 1, ResourceLoader.getGraphic(DiceTwo)),
+    Three(3, 2, ResourceLoader.getGraphic(DiceThree)),
+    Four(4, 3, ResourceLoader.getGraphic(DiceFour)),
+    Five(5, 4, ResourceLoader.getGraphic(DiceFive)),
+    Six(6, 5, ResourceLoader.getGraphic(DiceSix)),
+    Seven(7, 0, ResourceLoader.getGraphic(DiceSeven)),
+    Eight(8, 5, ResourceLoader.getGraphic(DiceEight)),
+    Nine(9, 4, ResourceLoader.getGraphic(DiceNine)),
+    Ten(10, 3, ResourceLoader.getGraphic(DiceTen)),
+    Eleven(11, 2, ResourceLoader.getGraphic(DiceEleven)),
+    Twelve(12, 1, ResourceLoader.getGraphic(DiceTwelve));
 
     private final int value;
     private final int rank;

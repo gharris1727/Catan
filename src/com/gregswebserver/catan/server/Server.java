@@ -3,6 +3,7 @@ package com.gregswebserver.catan.server;
 
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.common.crypto.Authenticator;
+import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.lobby.ClientPool;
@@ -108,7 +109,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
             case Pass_Change:
-                authenticator.changeLogin(new UserLogin(event.getOrigin(), (String) event.getPayload()));
+                authenticator.changeLogin(event.getOrigin(), (Password) event.getPayload());
                 break;
             case Handshake_Client_Connect:
             case Handshake_Client_Connect_Success:

@@ -52,6 +52,11 @@ public class PasswordHash {
     public static final int SALT_INDEX = 1;
     public static final int PBKDF2_INDEX = 2;
 
+
+    private PasswordHash() {
+        //Cannot create an instance of this class.
+    }
+
     /**
      * Returns a salted PBKDF2 hash of the password.
      *

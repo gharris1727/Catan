@@ -13,7 +13,7 @@ import com.gregswebserver.catan.common.lobby.ServerClient;
  */
 public enum ControlEventType implements EventType {
 
-    Handshake_Client_Connect(UserLogin.class), //Client -> Server, contains userLogin details.
+    Handshake_Client_Connect(UserLogin.class), //Client -> Server, contains login details.
     Handshake_Client_Connect_Success(ClientPool.class), //Server -> Client, contains clientPool from server.
     Handshake_Client_Connect_Failure(String.class), //Server -> Client, contains reason why connection failed.
     Name_Change(String.class), //Client -> Server -> Broadcast, contains a name change

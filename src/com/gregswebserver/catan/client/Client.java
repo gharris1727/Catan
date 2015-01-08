@@ -5,12 +5,13 @@ import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.RenderEventType;
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.areas.ScreenObject;
+import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
+import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.event.*;
@@ -23,7 +24,6 @@ import com.gregswebserver.catan.common.network.ClientConnection;
 import com.gregswebserver.catan.common.network.ControlEvent;
 import com.gregswebserver.catan.common.network.ControlEventType;
 import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.util.Statics;
 
 import java.awt.*;
 
@@ -61,14 +61,19 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
         state = ClientState.Disconnected;
         start();
-        renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionList_Create, loginList));
         renderThread.start();
+        loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
+        loginList.add(new ConnectionInfo("invalid", "25000", "Jeff", "password1"));
+        loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
+        loginList.add(new ConnectionInfo("localhost", "25000", "", "password3"));
+        loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
+        renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionList_Create, loginList));
     }
 
 
     public void execute() throws ThreadStop {
         GenericEvent event = getEvent(true);
-//        logger.log("Client received event: " + event, LogLevel.DEBUG);
+        logger.log("Client received event: " + event, LogLevel.DEBUG);
         if (event instanceof ExternalEvent) {
             if (event instanceof ChatEvent)
                 chatThread.addEvent((ChatEvent) event);
@@ -109,7 +114,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 //Connect to remote server
                 state = ClientState.Connecting;
                 ServerLogin serverLogin = (ServerLogin) event.getPayload();
-                identity = serverLogin.userLogin.identity;
+                identity = serverLogin.login.identity;
                 connection = new ClientConnection(this, serverLogin);
                 connection.connect();
                 break;
@@ -193,7 +198,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 break;
             case Game_Start:
                 state = ClientState.Starting;
-                gameThread.createNew(Statics.BASE_GAME); //TODO: temp
+                //TODO: create a new game.
                 gameThread.start();
                 break;
             case Game_Quit:

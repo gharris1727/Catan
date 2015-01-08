@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.areas;
+package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.TextGraphic;
@@ -9,7 +9,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * A GridScreenArea that contains text.
  */
-public abstract class TextArea extends GridScreenArea {
+public abstract class TextArea extends GridObjectArea {
 
     public TextArea(Point position, int priority, Font f, String text) {
         super(position, priority);
@@ -27,9 +27,9 @@ public abstract class TextArea extends GridScreenArea {
         super.resize(widths, heights);
     }
 
-    protected abstract StaticGraphic charObject(int index, int priority, Graphic g);
+    protected abstract StaticObject charObject(int index, int priority, Graphic g);
 
-    public void resize(Dimension d) {
+    public void setSize(Dimension d) {
         //Do nothing, this is non-resizable
     }
 

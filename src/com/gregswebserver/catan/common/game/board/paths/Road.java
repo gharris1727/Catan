@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.board.paths;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.player.Player;
 
@@ -12,10 +11,6 @@ public class Road extends Path implements Tradeable {
 
     public Road(Player owner) {
         super(owner);
-    }
-
-    public Graphic getGraphic() {
-        return getOwner().getTeam().paths[getPosition().x % 3];
     }
 
     public String toString() {

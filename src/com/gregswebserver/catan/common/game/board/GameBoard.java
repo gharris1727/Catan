@@ -18,8 +18,8 @@ import java.util.HashMap;
  */
 public class GameBoard {
 
-    public final Dimension size;
     public final HexagonalArray<Tile, Path, Building> hexArray;
+    private final Dimension size;
     private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
     private HashMap<Coordinate, TradingPost> tradingPosts;
 
@@ -43,5 +43,9 @@ public class GameBoard {
 
     public void setTradingPostCoordinate(Coordinate coordinate, TradingPost tradingPost) {
         tradingPosts.put(coordinate, tradingPost);
+    }
+
+    public Dimension getSize() {
+        return size;
     }
 }

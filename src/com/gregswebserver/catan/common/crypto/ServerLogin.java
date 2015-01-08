@@ -1,10 +1,6 @@
 package com.gregswebserver.catan.common.crypto;
 
-import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.common.network.NetID;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Created by Greg on 12/28/2014.
@@ -13,20 +9,14 @@ import java.net.UnknownHostException;
 public class ServerLogin {
 
     public final NetID remote;
-    public final UserLogin userLogin;
+    public final UserLogin login;
 
-    public ServerLogin(String host, int port, String user, String pass) {
-        NetID tempRemote = null;
-        try {
-            tempRemote = new NetID(InetAddress.getByName(host), port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        remote = tempRemote;
-        userLogin = new UserLogin(new Identity(user), pass);
+    public ServerLogin(NetID remote, UserLogin login) {
+        this.remote = remote;
+        this.login = login;
     }
 
     public String toString() {
-        return "ServerLogin " + userLogin;
+        return "ServerLogin " + login;
     }
 }

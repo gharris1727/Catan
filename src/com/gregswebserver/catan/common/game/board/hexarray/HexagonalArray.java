@@ -117,8 +117,8 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
     }
 
     private static Coordinate convert(Coordinate c, Direction d, int[][] additions) {
-        int outX = c.x + additions[0][d.index()];
-        int outY = c.y + additions[1][d.index()];
+        int outX = c.x + additions[0][d.ordinal()];
+        int outY = c.y + additions[1][d.ordinal()];
         return new Coordinate(outX, outY);
     }
 
@@ -133,15 +133,15 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
     private static Coordinate convertUp(Coordinate c, Direction d, int multX, int[][] additions) {
         int outX = c.x * multX;
         int outY = c.y;
-        outX += additions[0][d.index()];
-        outY += additions[1][d.index()];
+        outX += additions[0][d.ordinal()];
+        outY += additions[1][d.ordinal()];
         return new Coordinate(outX, outY);
     }
 
     @Deprecated
     private static Coordinate convertDown(Coordinate c, Direction d, int divX, int[][] subtractions) {
-        int outX = c.x - subtractions[0][d.index()];
-        int outY = c.y - subtractions[1][d.index()];
+        int outX = c.x - subtractions[0][d.ordinal()];
+        int outY = c.y - subtractions[1][d.ordinal()];
         outX /= divX;
         return new Coordinate(outX, outY);
     }
@@ -157,28 +157,25 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
     private static void checkDirection(Direction d, int[][] array) throws IllegalDirectionException {
         //If both indexes are zero, then that indicates that no motion is made.
         //only usable for the 1:1 ratio conversions (space-space, edge-edge, vertex-vertex)
-        if (array[0][d.index()] == 0 && array[1][d.index()] == 0)
+        if (array[0][d.ordinal()] == 0 && array[1][d.ordinal()] == 0)
             throw new IllegalDirectionException(d);
     }
 
     @SuppressWarnings("unchecked")
-    public void place(Coordinate c, Object o) {
-        if (o instanceof BoardObject) {
-            BoardObject object = (BoardObject) o;
-            object.setHexArray(this);
-            object.setPosition(c);
-            if (isSubclass(object, xClass)) {
-                spaces.set(c, (X) object);
-                object.setParentArray(spaces);
-            } else if (isSubclass(object, yClass)) {
-                edges.set(c, (Y) object);
-                object.setParentArray(edges);
-            } else if (isSubclass(object, zClass)) {
-                vertices.set(c, (Z) object);
-                object.setParentArray(vertices);
-            } else {
-                throw new IllegalArgumentException("Object not an instanceof X Y or Z types.");
-            }
+    public void place(Coordinate c, BoardObject object) {
+        object.setHexArray(this);
+        object.setPosition(c);
+        if (isSubclass(object, xClass)) {
+            spaces.set(c, (X) object);
+            object.setParentArray(spaces);
+        } else if (isSubclass(object, yClass)) {
+            edges.set(c, (Y) object);
+            object.setParentArray(edges);
+        } else if (isSubclass(object, zClass)) {
+            vertices.set(c, (Z) object);
+            object.setParentArray(vertices);
+        } else {
+            throw new IllegalArgumentException("Object not an instanceof X Y or Z types.");
         }
     }
 

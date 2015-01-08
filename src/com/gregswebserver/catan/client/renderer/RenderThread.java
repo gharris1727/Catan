@@ -4,10 +4,12 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
-import com.gregswebserver.catan.client.graphics.areas.ScreenArea;
+import com.gregswebserver.catan.client.graphics.screen.ObjectArea;
+import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
+import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.graphics.util.Screen;
-import com.gregswebserver.catan.client.renderer.connect.ConnectScreen;
-import com.gregswebserver.catan.client.renderer.ingame.InGameScreen;
+import com.gregswebserver.catan.client.renderer.connect.ConnectObject;
+import com.gregswebserver.catan.client.renderer.ingame.InGameObject;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
@@ -26,8 +28,8 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     private Client client;
     private Screen screen;
-    private HashMap<ClientState, ScreenArea> areas;
-    private ScreenArea screenArea;
+    private HashMap<ClientState, ObjectArea> areas;
+    private ScreenObject root;
     private boolean enabled;
 
     public RenderThread(Client client) {
@@ -35,7 +37,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         this.client = client;
         screen = new Screen();
         areas = new HashMap<>();
-        screenArea = null;
+        root = null;
         enabled = false;
     }
 
@@ -44,48 +46,45 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         RenderEvent event = getEvent(true);
         switch (event.getType()) {
             case ConnectionList_Create:
-                ConnectScreen connect = new ConnectScreen((ServerList) event.getPayload());
+                ConnectObject connect = new ConnectObject((ServerList) event.getPayload());
                 areas.put(ClientState.Disconnected, connect);
                 break;
             case Game_Create:
-                InGameScreen gameCreate = new InGameScreen((CatanGame) event.getPayload());
+                InGameObject gameCreate = new InGameObject((CatanGame) event.getPayload());
                 areas.put(ClientState.InGame, gameCreate);
                 break;
             case Game_Scroll:
-                InGameScreen gameScroll = (InGameScreen) areas.get(ClientState.InGame);
+                InGameObject gameScroll = (InGameObject) areas.get(ClientState.InGame);
                 gameScroll.scroll((Point) event.getPayload());
                 break;
             case Game_Update:
-                InGameScreen gameUpdate = (InGameScreen) areas.get(ClientState.InGame);
+                InGameObject gameUpdate = (InGameObject) areas.get(ClientState.InGame);
                 gameUpdate.update();
                 break;
             case Window_Resize:
                 enabled = false;
                 Dimension size = (Dimension) event.getPayload();
                 screen.resize(size);
-                for (ScreenArea area : areas.values())
-                    area.resize(size);
+                for (ObjectArea area : areas.values())
+                    area.setSize(size);
                 client.addEvent(new ClientEvent(this, ClientEventType.Canvas_Update, screen.getCanvas()));
-                break;
-            case Render_Disable:
-                enabled = false;
                 break;
             case Render_Enable:
                 enabled = true;
                 break;
             case Animation_Step:
-                if (screenArea != null)
-                    screenArea.step();
+                if (root != null && root.isAnimated())
+                    ((Animated) root).step();
                 break;
         }
         if (enabled) {
-            ScreenArea next = areas.get(client.getState());
+            ObjectArea next = areas.get(client.getState());
             screen.clear();
-            if (screenArea != next)
-                client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, screenArea));
-            screenArea = next;
-            if (screenArea != null && screenArea.canRender())
-                screenArea.getGraphic().renderTo(screen, null, new Point(), 0);
+            if (root != next)
+                client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, next));
+            root = next;
+            if (root != null && root.canRender())
+                root.getGraphic().renderTo(screen, new Point(), 0);
             screen.show();
         }
     }
@@ -93,6 +92,5 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
     public String toString() {
         return "RenderThread";
     }
-
 
 }

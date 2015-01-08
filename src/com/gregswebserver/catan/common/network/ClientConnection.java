@@ -24,7 +24,7 @@ public class ClientConnection extends NetConnection {
     public ClientConnection(Client client, ServerLogin login) {
         super(client.logger);
         this.client = client;
-        this.info = login.userLogin;
+        this.info = login.login;
         this.remote = login.remote;
     }
 

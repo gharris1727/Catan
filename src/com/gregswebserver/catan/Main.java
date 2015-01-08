@@ -2,7 +2,7 @@ package com.gregswebserver.catan;
 
 import com.gregswebserver.catan.common.Startup;
 import com.gregswebserver.catan.common.log.Logger;
-import com.gregswebserver.catan.common.util.Statics;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         // Load the startup window to create/login to a server.
         logger = new Logger();
-        new Statics(); //Just to initialize all of the values.
+        new ResourceLoader(logger);
         Startup startup = new Startup(logger);
         startup.setVisible(true);
     }

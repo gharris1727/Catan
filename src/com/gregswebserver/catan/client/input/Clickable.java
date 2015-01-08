@@ -40,4 +40,5 @@ public interface Clickable {
     public default Clickable getClickable(Point p) {
         return this;
     }
+
 }

@@ -3,7 +3,9 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
-import com.gregswebserver.catan.common.util.Statics;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
+
+import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.*;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -11,9 +13,12 @@ import com.gregswebserver.catan.common.util.Statics;
  */
 public enum DevelopmentCard implements Tradeable, Graphical {
 
-    Knight("Knight", 1, Statics.knightCardTexture),
-    Progress("Progress Card", 0, Statics.progressCardTexture),
-    VictoryPoint("Victory Point Card", 1, Statics.victoryPointCardTexture);
+    Knight("Knight", 1, ResourceLoader.getGraphic(DevelopmentKnight)),
+    VictoryPoint("Victory Point", 1, ResourceLoader.getGraphic(DevelopmentVictoryPoint)),
+    Monopoly("Monopoly", 0, ResourceLoader.getGraphic(DevelopmentMonopoly)),
+    YearOfPlenty("Year of Plenty", 0, ResourceLoader.getGraphic(DevelopmentYearOfPlenty)),
+    RoadBuilding("Road Building", 0, ResourceLoader.getGraphic(DevelopmentRoadBuilding));
+
 
     private final String name;
     private final int vp;

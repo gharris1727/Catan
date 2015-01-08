@@ -22,34 +22,34 @@ public class Graphic {
     protected Graphic() {
     }
 
+    //For use in the ObjectArea class to create a new, blank graphic.
     public Graphic(Dimension size) {
-        this(new int[size.width * size.height], new int[size.width * size.height], new RectangularMask(size));
-        name = "Blank: " + size.width + "x" + size.height;
+        this(new RectangularMask(size));
         clear();
     }
 
+    //For use in the Statics class to create graphics from source files.
+    public Graphic(Graphic source, RenderMask mask, Point start) {
+        this(mask);
+        render(this, new Point(), source, start, 0);
+    }
+
+    //For use in the BoardObject subclasses for complex
     public Graphic(RenderMask mask) {
         this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
-        name = "Masked: " + mask.toString();
     }
 
-    public Graphic(GraphicSource source, RenderMask mask, Point start) {
-        this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
-        name = "Source: " + source + " Mask: " + mask + " Pixels: " + mask.getPixelCount();
-        render(this, null, new Point(), source, null, start, 0);
-    }
-
+    //Underlying constructor
     protected Graphic(int[] pixels, int[] hitbox, RenderMask mask) {
         this.pixels = pixels;
         this.hitbox = hitbox;
         this.mask = mask;
+        this.name = "Graphic " + mask + " Pixels: " + mask.getPixelCount();
     }
 
-    private static void render(Graphic to, RenderMask toMask, Point toStart, Graphic from, RenderMask fromMask, Point fromStart, int color) {
-        if (toMask == null)
-            toMask = to.mask;
-        if (fromMask == null)
-            fromMask = from.mask;
+    private static void render(Graphic to, Point toStart, Graphic from, Point fromStart, int color) {
+        RenderMask toMask = to.mask;
+        RenderMask fromMask = from.mask;
         //Check for upper bounds, if any of these are out of spec, nothing will get copied anyway.
         if (toStart.x >= toMask.getWidth()) return;
         if (toStart.y >= toMask.getHeight()) return;
@@ -146,9 +146,9 @@ public class Graphic {
         return hitbox[mask.getIndex(p.x, p.y)];
     }
 
-    public void renderTo(Graphic to, RenderMask toMask, Point toPos, int color) {
+    public void renderTo(Graphic to, Point toPos, int color) {
         //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
-        render(to, toMask, toPos, this, null, new Point(), color);
+        render(to, toPos, this, new Point(), color);
     }
 
     public void clear() {
