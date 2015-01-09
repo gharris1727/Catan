@@ -35,6 +35,6 @@ public class Lobby extends HashSet<Identity> {
     }
 
     public String toString() {
-        return config.getOwner().username + "'s Lobby: " + config.getLobbyName();
+        return "Lobby UID: " + owner;
     }
 }

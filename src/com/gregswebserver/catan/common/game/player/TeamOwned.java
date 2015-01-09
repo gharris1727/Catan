@@ -6,15 +6,15 @@ import com.gregswebserver.catan.common.game.board.BoardObject;
  * Created by Greg on 8/8/2014.
  * Generic for a player owned object.
  */
-public abstract class PlayerOwned extends BoardObject {
+public abstract class TeamOwned extends BoardObject {
 
-    private Player owner;
+    private Team owner;
 
-    protected PlayerOwned(Player owner) {
+    protected TeamOwned(Team owner) {
         this.owner = owner;
     }
 
-    public Player getOwner() {
+    public Team getTeam() {
         return owner;
     }
 

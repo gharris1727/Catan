@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.common.game.board.paths;
 
+import com.gregswebserver.catan.common.game.player.Team;
+
 /**
  * Created by Greg on 8/9/2014.
  * Ocean path object to prevent players from building off the map.
@@ -7,7 +9,7 @@ package com.gregswebserver.catan.common.game.board.paths;
 public class EmptyPath extends Path {
 
     public EmptyPath() {
-        super(null);
+        super(Team.None);
     }
 
     public String toString() {

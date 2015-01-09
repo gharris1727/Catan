@@ -5,8 +5,8 @@ import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.common.game.gameplay.VictoryFactor;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
-import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.AchievementArmy;
-import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.AchievementRoad;
+import static com.gregswebserver.catan.client.resources.GraphicInfo.AchievementArmy;
+import static com.gregswebserver.catan.client.resources.GraphicInfo.AchievementRoad;
 
 /**
  * Created by Greg on 8/9/2014.

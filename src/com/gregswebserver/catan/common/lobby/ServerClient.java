@@ -8,14 +8,22 @@ import com.gregswebserver.catan.common.network.Identity;
  * An object that exists to represent a client on the server side.
  */
 public class ServerClient extends EventPayload {
-    private final Identity identity;
     private final int uniqueID;
+    private final Identity identity;
     private String displayName;
 
-    public ServerClient(Identity identity, int uniqueID) {
-        this.identity = identity;
+    public ServerClient(int uniqueID, Identity identity, String displayName) {
         this.uniqueID = uniqueID;
-        displayName = identity.username;
+        this.identity = identity;
+        this.displayName = displayName;
+    }
+
+    public int getUniqueID() {
+        return uniqueID;
+    }
+
+    public Identity getIdentity() {
+        return identity;
     }
 
     public String getDisplayName() {
@@ -26,15 +34,7 @@ public class ServerClient extends EventPayload {
         this.displayName = displayName;
     }
 
-    public Identity getIdentity() {
-        return identity;
-    }
-
-    public int getUniqueID() {
-        return uniqueID;
-    }
-
     public String toString() {
-        return "ServerClient " + identity + " UID: " + uniqueID + " Name: " + displayName;
+        return "ServerClient UID: " + uniqueID + " Name: " + displayName;
     }
 }

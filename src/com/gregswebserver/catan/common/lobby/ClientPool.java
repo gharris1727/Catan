@@ -56,6 +56,7 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
     public void execute(ControlEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);
+        Identity origin = event.getOrigin();
         ServerClient client;
         Identity identity;
         Lobby lobby;
@@ -65,15 +66,15 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
                 client.setDisplayName((String) event.getPayload());
             case Client_Connect:
                 client = (ServerClient) event.getPayload();
-                clients.put(client.getIdentity(), client);
+                clients.put(origin, client);
                 break;
             case Client_Disconnect:
                 identity = (Identity) event.getPayload();
                 clients.remove(identity);
                 break;
             case Lobby_Create:
-                lobby = new Lobby(event.getOrigin());
-                lobbies.put(event.getOrigin(), lobby);
+                lobby = new Lobby(origin);
+                lobbies.put(origin, lobby);
                 break;
             case Lobby_Change_Config:
                 lobby = lobbies.get(event.getOrigin());
@@ -85,14 +86,14 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
                 break;
             case Lobby_Delete:
                 lobby = lobbies.get(event.getOrigin());
-                for (Identity user : lobby)
-                    lobbies.remove(user);
+                for (Identity clientID : lobby)
+                    lobbies.remove(clientID);
                 break;
             case Lobby_Join:
                 identity = (Identity) event.getPayload();
                 lobby = lobbies.get(identity);
-                lobby.add(event.getOrigin());
-                lobbies.put(event.getOrigin(), lobby);
+                lobby.add(origin);
+                lobbies.put(origin, lobby);
                 break;
             case Lobby_Leave:
                 lobby = lobbies.remove(event.getOrigin());
@@ -101,7 +102,7 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
         }
     }
 
-    public int getUniqueID(Identity identity) {
+    public int getConnectionID(Identity identity) {
         if (clients.containsKey(identity)) {
             ServerClient client = clients.get(identity);
             return client.getUniqueID();

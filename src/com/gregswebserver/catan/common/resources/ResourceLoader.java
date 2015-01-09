@@ -3,15 +3,17 @@ package com.gregswebserver.catan.common.resources;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.GraphicSource;
+import com.gregswebserver.catan.client.resources.FontInfo;
+import com.gregswebserver.catan.client.resources.GameInfo;
+import com.gregswebserver.catan.client.resources.GraphicInfo;
+import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
-import com.gregswebserver.catan.common.resources.cached.FontInfo;
-import com.gregswebserver.catan.common.resources.cached.GameInfo;
-import com.gregswebserver.catan.common.resources.cached.GraphicInfo;
-import com.gregswebserver.catan.common.resources.cached.GraphicSourceInfo;
+import com.gregswebserver.catan.server.resources.ObjectStoreInfo;
 
 import java.awt.*;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -25,6 +27,7 @@ public class ResourceLoader {
     private static final HashMap<GameInfo, GameType> gameCache = new HashMap<>();
     private static final HashMap<GraphicInfo, Graphic> graphicCache = new HashMap<>();
     private static final HashMap<GraphicSourceInfo, GraphicSource> graphicSourceCache = new HashMap<>();
+    private static final HashMap<ObjectStoreInfo, Object> objectStoreCache = new HashMap<>();
     private static Logger logger;
     private static int resourcesLoaded = 0;
 
@@ -103,6 +106,56 @@ public class ResourceLoader {
             synchronized (lock) {
                 graphicSourceCache.put(info, o);
                 resourcesLoaded++;
+            }
+        }
+    }
+
+    public static Object getObjectStore(ObjectStoreInfo info) {
+        if (!objectStoreCache.containsKey(info))
+            loadObjectStore(info);
+        return objectStoreCache.get(info);
+    }
+
+    public static void saveObjectStore(ObjectStoreInfo info) {
+        if (objectStoreCache.containsKey(info)) {
+            synchronized (info) {
+                FileOutputStream stream = null;
+                try {
+                    stream = new FileOutputStream(info.getPath());
+                    new ObjectOutputStream(stream).writeObject(getObjectStore(info));
+                } catch (IOException e) {
+                    logger.log(e, LogLevel.ERROR);
+                } finally {
+                    if (stream != null)
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            logger.log(e, LogLevel.ERROR);
+                        }
+                }
+            }
+        }
+    }
+
+    private static void loadObjectStore(ObjectStoreInfo info) {
+        synchronized (info) {
+            FileInputStream stream = null;
+            try {
+                stream = new FileInputStream(info.getPath());
+                Object o = new ObjectInputStream(stream).readObject();
+                synchronized (lock) {
+                    objectStoreCache.put(info, stream);
+                    resourcesLoaded++;
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                logger.log(e, LogLevel.ERROR);
+            } finally {
+                if (stream != null)
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        logger.log(e, LogLevel.ERROR);
+                    }
             }
         }
     }

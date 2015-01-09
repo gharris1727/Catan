@@ -1,19 +1,19 @@
 package com.gregswebserver.catan.common.network;
 
-import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.server.Server;
 
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by Greg on 12/27/2014.
  * Class for managing a collection of clients all clients to the server.
  */
-public class ConnectionPool {
+public class ConnectionPool implements Iterable<ServerConnection> {
 
+    private final Server server;
     private final HashMap<Integer, ServerConnection> connections;
-    private Server server;
     private int totalClients;
     private int disconnectedClients;
 
@@ -24,36 +24,27 @@ public class ConnectionPool {
         disconnectedClients = 0;
     }
 
-    public void disconnectAll(String reason) {
-        for (ServerConnection conn : connections.values()) {
-            conn.sendEvent(new ControlEvent(server.getIdentity(), ControlEventType.Server_Disconnect, reason));
-            conn.disconnect();
-            disconnectedClients++;
-        }
-        connections.clear();
+    public void connect(Socket socket) {
+        ServerConnection connection = new ServerConnection(server, socket, ++totalClients);
+        connections.put(totalClients, connection);
+        connection.connect();
     }
 
-    public void processNewConnection(Socket clientSocket) {
-        ServerConnection newClient = new ServerConnection(server, clientSocket, ++totalClients);
-        connections.put(totalClients, newClient);
-        newClient.connect();
+    public ServerConnection get(int connectionID) {
+        return connections.get(connectionID);
     }
 
-    public void disconnectClient(int uniqueID, String reason) {
-        if (connections.containsKey(uniqueID)) {
-            ServerConnection conn = connections.remove(uniqueID);
+    public void disconnect(int connectionID, String reason) {
+        if (connections.containsKey(connectionID)) {
+            ServerConnection conn = connections.remove(connectionID);
             conn.sendEvent(new ControlEvent(server.getIdentity(), ControlEventType.Server_Disconnect, reason));
             conn.disconnect();
             disconnectedClients++;
         }
     }
 
-    public boolean sendClientEvent(int uniqueID, ExternalEvent event) {
-        if (connections.containsKey(uniqueID)) {
-            connections.get(uniqueID).sendEvent(event);
-            return true;
-        }
-        return false;
+    public Iterator<ServerConnection> iterator() {
+        return connections.values().iterator();
     }
 
     public int size() {

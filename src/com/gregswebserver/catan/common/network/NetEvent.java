@@ -13,11 +13,11 @@ public class NetEvent extends GenericEvent implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    public final NetID origin;
+    public final int sessionID;
     public final ExternalEvent event;
 
-    public NetEvent(NetID origin, ExternalEvent event) {
-        this.origin = origin;
+    public NetEvent(int sessionID, ExternalEvent event) {
+        this.sessionID = sessionID;
         this.event = event;
     }
 }

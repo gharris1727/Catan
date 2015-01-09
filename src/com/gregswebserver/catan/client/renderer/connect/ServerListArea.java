@@ -53,7 +53,7 @@ public class ServerListArea extends GridObjectArea {
         clear();
         for (int i = 0; i < displayed; i++)
             add(new ServerListItemArea(new Point(1, i + 1), 0, i + scroll));
-        add(new ButtonPanelArea(new Point(1, displayed + 1), 0));
+        add(new ButtonPanelArea(new Point(1, displayed), 0));
     }
 
     public String toString() {

@@ -13,32 +13,18 @@ import java.awt.event.MouseEvent;
  */
 public interface Clickable {
 
-    public default UserEvent onMouseClick(MouseEvent event) {
-        return null;
-    }
+    public UserEvent onMouseClick(MouseEvent event);
 
-    public default UserEvent onKeyTyped(KeyEvent event) {
-        return null;
-    }
+    public UserEvent onKeyTyped(KeyEvent event);
 
-    public default UserEvent onMouseScroll(int wheelRotation) {
-        return null;
-    }
+    public UserEvent onMouseScroll(int rot);
 
-    public default UserEvent onMouseDrag(Point p) {
-        return null;
-    }
+    public UserEvent onMouseDrag(Point p);
 
-    public default UserEvent onSelect() {
-        return null;
-    }
+    public UserEvent onSelect();
 
-    public default UserEvent onDeselect() {
-        return null;
-    }
+    public UserEvent onDeselect();
 
-    public default Clickable getClickable(Point p) {
-        return this;
-    }
+    public Clickable getClickable(Point p);
 
 }

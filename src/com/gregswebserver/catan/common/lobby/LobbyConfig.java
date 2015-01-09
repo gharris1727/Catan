@@ -9,27 +9,20 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public class LobbyConfig extends EventPayload {
 
-    private Identity owner;
     private String lobbyName;
     private String mapGenerator;
     private int maxPlayers;
 
-    public LobbyConfig(Identity owner) {
-        this.owner = owner;
-        lobbyName = owner.username + "'s Game";
-        this.mapGenerator = "Default";
-        this.maxPlayers = 4;
-    }
-
-    public LobbyConfig(Identity owner, String lobbyName, String mapGenerator, int maxPlayers) {
-        this.owner = owner;
+    public LobbyConfig(String lobbyName, String mapGenerator, int maxPlayers) {
         this.lobbyName = lobbyName;
         this.mapGenerator = mapGenerator;
         this.maxPlayers = maxPlayers;
     }
 
-    public Identity getOwner() {
-        return owner;
+    public LobbyConfig(Identity identity) {
+        lobbyName = identity.username + "'s Game";
+        mapGenerator = "default";
+        maxPlayers = 3;
     }
 
     public String getLobbyName() {

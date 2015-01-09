@@ -3,22 +3,19 @@ package com.gregswebserver.catan.common.game;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.GameBoard;
-import com.gregswebserver.catan.common.game.board.buildings.Building;
-import com.gregswebserver.catan.common.game.board.buildings.City;
-import com.gregswebserver.catan.common.game.board.buildings.Settlement;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Road;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
+import com.gregswebserver.catan.common.game.board.towns.City;
+import com.gregswebserver.catan.common.game.board.towns.Settlement;
+import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.event.GameHistory;
-import com.gregswebserver.catan.common.game.gameplay.GameType;
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.player.Player;
+import com.gregswebserver.catan.common.game.player.Team;
 import com.gregswebserver.catan.common.network.Identity;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -28,43 +25,30 @@ import java.util.HashMap;
 public class CatanGame implements EventConsumer<GameEvent> {
 
     private GameBoard board;
-    private GameHistory history;
-    private HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
     private HashMap<Identity, Player> players;
-    private Coordinate robberLocation;
     private Player localPlayer;
 
-    public CatanGame(GameType type) {
-        //Create a new board
-        board = type.generate();
-        history = new GameHistory();
+    public CatanGame() {
     }
 
     public boolean test(GameEvent event) {
         switch (event.getType()) {
             //TODO: turn checks
             case Build_Settlement:
-                return board.hexArray.vertices.get((Coordinate) event.getPayload()) == null;
+                return board.getBuilding((Coordinate) event.getPayload()) == null;
             case Build_City:
-                Building b = board.hexArray.vertices.get((Coordinate) event.getPayload());
-                return (b instanceof Settlement && b.getOwner().getIdentity().equals(event.getOrigin()));
+                Town b = board.getBuilding((Coordinate) event.getPayload());
+                return (b instanceof Settlement && b.getTeam() == players.get(event.getOrigin()).getTeam());
             case Build_Road:
-                return board.hexArray.edges.get((Coordinate) event.getPayload()) == null;
+                return board.getPath((Coordinate) event.getPayload()) == null;
             case Player_Select_Location:
                 return true;
             case Player_Move_Robber:
-                Tile tile = board.hexArray.spaces.get((Coordinate) event.getPayload());
+                Tile tile = board.getTile((Coordinate) event.getPayload());
                 return (tile instanceof ResourceTile);
             case Player_Roll_Dice:
                 //TODO: turn checks
                 return true;
-            case Trade_Bank:
-                //TODO: trading
-                break;
-            case Trade_Offer:
-                break;
-            case Trade_Accept:
-                break;
         }
         return false;
     }
@@ -72,31 +56,25 @@ public class CatanGame implements EventConsumer<GameEvent> {
     public void execute(GameEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);
-        history.add(event);
         Identity origin = event.getOrigin();
         Player player = players.get(origin);
+        Team team = player.getTeam();
         Coordinate coordinate;
         switch (event.getType()) {
             case Build_Settlement:
                 coordinate = (Coordinate) event.getPayload();
-                Settlement settlement = new Settlement(player);
-                board.hexArray.place(coordinate, settlement);
+                Settlement settlement = new Settlement(team);
+                board.setBuilding(coordinate, settlement);
                 break;
             case Build_City:
                 coordinate = (Coordinate) event.getPayload();
-                City city = new City(player);
-                board.hexArray.place(coordinate, city);
+                City city = new City(team);
+                board.setBuilding(coordinate, city);
                 break;
             case Build_Road:
                 coordinate = (Coordinate) event.getPayload();
-                Road road = new Road(player);
-                board.hexArray.place(coordinate, road);
-                break;
-            case Trade_Bank:
-                break;
-            case Trade_Offer:
-                break;
-            case Trade_Accept:
+                Road road = new Road(team);
+                board.setPath(coordinate, road);
                 break;
             case Player_Select_Location:
                 coordinate = (Coordinate) event.getPayload();
@@ -104,11 +82,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 break;
             case Player_Move_Robber:
                 coordinate = (Coordinate) event.getPayload();
-                ResourceTile newTile = (ResourceTile) board.hexArray.spaces.get(coordinate);
-                ResourceTile oldTile = (ResourceTile) board.hexArray.spaces.get(robberLocation);
-                oldTile.removeRobber();
-                newTile.placeRobber();
-                robberLocation = coordinate;
+                board.moveRobber(coordinate);
                 break;
             case Player_Roll_Dice:
                 break;

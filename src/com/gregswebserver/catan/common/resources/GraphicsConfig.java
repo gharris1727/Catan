@@ -13,6 +13,9 @@ public class GraphicsConfig {
 
     public static final Dimension mapEdgeBufferSize = new Dimension(64, 64);
 
+    public static final Point diceRollRender = new Point();
+    public static final Point robberRender = new Point();
+
     public static final int boardUnitWidth = 200;
     public static final int boardUnitHeight = 112;
 

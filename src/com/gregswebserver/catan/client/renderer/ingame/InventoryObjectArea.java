@@ -14,6 +14,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -30,27 +32,27 @@ public class InventoryObjectArea extends ColorObjectArea {
 
     protected void render() {
         clear();
-        //TODO: clean up this renderer
         HashMap<Tradeable, Integer> inventory = player.getInventory();
-        ArrayList<Point> positions = new ArrayList<>();
-        for (Tradeable t : inventory.keySet()) {
-            int num = inventory.get(t);
-            Graphic graphic = Statics.nullGraphic;
-            if (t instanceof Graphical)
-                graphic = ((Graphical) t).getGraphic();
-            Point position = new Point();
-            positions.add(position);
-            for (int i = 0; i < num; i++) {
-                ScreenObject o = new StaticObject(position, 0, graphic) {
-                    public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Inventory_Clicked, position.x);
-                    }
+        List<Point> positions = new ArrayList<>();
+        for (Map.Entry<Tradeable, Integer> e : inventory.entrySet()) {
+            Tradeable t = e.getKey();
+            int n = e.getValue();
+            if (t instanceof Graphical) {
+                Graphic g = ((Graphical) t).getGraphic();
+                Point position = new Point();
+                positions.add(position);
+                for (int i = 0; i < n; i++) {
+                    ScreenObject o = new StaticObject(position, 0, g) {
+                        public UserEvent onMouseClick(MouseEvent event) {
+                            return new UserEvent(this, UserEventType.Inventory_Clicked, position.x);
+                        }
 
-                    public String toString() {
-                        return "Inventory Item #" + position.x;
-                    }
-                };
-                add(o);
+                        public String toString() {
+                            return "Inventory Item #" + position.x;
+                        }
+                    };
+                    add(o);
+                }
             }
         }
         int divX = (getSize().width - 128) / positions.size();

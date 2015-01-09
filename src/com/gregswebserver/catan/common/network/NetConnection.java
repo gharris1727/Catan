@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.common.event.ExternalEvent;
+import com.gregswebserver.catan.common.event.GenericEvent;
+import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
@@ -20,6 +22,7 @@ public abstract class NetConnection implements Runnable {
     protected final Logger logger;
     protected NetID local;
     protected NetID remote;
+    protected int sessionID;
 
     protected Socket socket;
     protected Thread connect, disconnect, receive;
@@ -27,8 +30,8 @@ public abstract class NetConnection implements Runnable {
     protected ObjectOutputStream out;
     protected boolean open;
 
-    public NetConnection(Logger logger) {
-        this.logger = logger;
+    public NetConnection(QueuedInputThread<GenericEvent> host) {
+        this.logger = host.logger;
         //Thread to establish a connection, uses this class' own run() method from Runnable.
         connect = new Thread(this);
         //Thread to accept incoming objects and sendEvent them to the process implementation.
@@ -36,11 +39,8 @@ public abstract class NetConnection implements Runnable {
             public void run() {
                 while (open) {
                     try {
-                        connect.join();
-                        ExternalEvent e = ((NetEvent) in.readObject()).event;
-                        process(e);
-                    } catch (InterruptedException ignored) {
-                        //Something happened to the start thread
+                        NetEvent e = ((NetEvent) in.readObject());
+                        host.addEvent(e);
                     } catch (EOFException | SocketException ignored) {
                         open = false;
                         logger.log("Connection closed", LogLevel.INFO);
@@ -52,7 +52,6 @@ public abstract class NetConnection implements Runnable {
             }
         };
         //Thread to close the socket and sever the connection.
-        //Formally closes the streams, although by this time the threads should no longer be active.
         disconnect = new Thread("Disconnect") {
             public void run() {
                 logger.log("Disconnecting...", LogLevel.INFO);
@@ -79,9 +78,8 @@ public abstract class NetConnection implements Runnable {
     }
 
     public void sendEvent(ExternalEvent event) {
-        logger.log("Sending event " + event, LogLevel.DEBUG);
         try {
-            out.writeObject(new NetEvent(local, event));
+            out.writeObject(new NetEvent(sessionID, event));
         } catch (SocketException ignored) {
             open = false;
             logger.log("Connection closed", LogLevel.INFO);
@@ -89,7 +87,6 @@ public abstract class NetConnection implements Runnable {
             open = false;
             logger.log("Send Failure", e, LogLevel.ERROR);
         }
-        logger.log("Sent event", LogLevel.DEBUG);
     }
 
     public void connect() {
@@ -103,9 +100,4 @@ public abstract class NetConnection implements Runnable {
     public boolean isOpen() {
         return open;
     }
-
-    //Connect method to be implemented in subclasses.
-    public abstract void run();
-
-    public abstract void process(ExternalEvent event);
 }

@@ -3,11 +3,11 @@ package com.gregswebserver.catan.common.game.gameplay.generator;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.Direction;
-import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
+import com.gregswebserver.catan.common.game.board.paths.EmptyPath;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
-import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
+import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
@@ -34,26 +34,9 @@ public class RandomBoardGenerator implements BoardGenerator {
         Iterator<TradingPost> posts = tradeGenerator.iterator();
 
         //Use the valid hexagons to find all valid vertices and edges, as well as adjacent tiles that are beaches.
-        HashSet<Coordinate> validVertices = new HashSet<>();
-        HashSet<Coordinate> validEdges = new HashSet<>();
-        HashSet<Coordinate> beachTiles = new HashSet<>();
-        for (Coordinate spaceCoordinate : validSpaces) {
-            validVertices.addAll(board.hexArray.getAdjacentVerticesFromSpace(spaceCoordinate).values());
-            validEdges.addAll(board.hexArray.getAdjacentEdgesFromSpace(spaceCoordinate).values());
-            beachTiles.addAll(board.hexArray.getAdjacentSpacesFromSpace(spaceCoordinate).values());
-        }
-
-        //Remove any beachTiles that are actually resourceTiles.
-        beachTiles.removeAll(validSpaces);
-
-        //Remove the valid/beach coordinates from all to find the ocean coordinates;
-        HashSet<Coordinate> oceanTiles = board.hexArray.spaces.getAllCoordinates();
-        oceanTiles.removeAll(validSpaces);
-        oceanTiles.removeAll(beachTiles);
-        HashSet<Coordinate> oceanVertices = board.hexArray.vertices.getAllCoordinates();
-        oceanVertices.removeAll(validVertices);
-        HashSet<Coordinate> oceanPaths = board.hexArray.edges.getAllCoordinates();
-        oceanPaths.removeAll(validEdges);
+        HashSet<Coordinate> validVertices = board.getValidVertices(validSpaces);
+        HashSet<Coordinate> validEdges = board.getValidEdges(validSpaces);
+        HashSet<Coordinate> beachTiles = board.getBeachTiles(validSpaces);
 
         //Generate and place playable hexagons
         for (Coordinate c : validSpaces) {
@@ -66,52 +49,31 @@ public class RandomBoardGenerator implements BoardGenerator {
                 tile = new ResourceTile(t, tokens.next());
                 board.setDiceRollCoordinate(tile.getDiceRoll(), c);
             }
-            board.hexArray.place(c, tile);
+            board.setTile(c, tile);
         }
 
-        //Place all of the ocean features that fill the rest of the map.
-//        for (Coordinate c : oceanTiles) {
-//            board.hexArray.place(c, new EmptyTile());
-//        }
-//        for (Coordinate c : oceanVertices) {
-//            board.hexArray.place(c, new EmptyBuilding());
-//        }
-//        for (Coordinate c : oceanPaths) {
-//            board.hexArray.place(c, new EmptyPath());
-//        }
+        //Place all of the empty features that fill the rest of the valid map.
+        for (Coordinate c : validVertices) {
+            board.setBuilding(c, new EmptyTown());
+        }
+        for (Coordinate c : validEdges) {
+            board.setPath(c, new EmptyPath());
+        }
 
         // Place all beaches, checking for surrounding tiles.
         for (Coordinate c : beachTiles) {
             //Find surrounding tiles and save the directions.
-            HashSet<Direction> foundTiles = new HashSet<>();
-            for (Direction d : Direction.values()) {
-                try {
-                    Coordinate found = board.hexArray.getSpaceCoordinateFromSpace(c, d);
-                    Tile t = board.hexArray.spaces.get(found);
-                    //IMPORTANT: this check must happen AFTER tiles have been generated
-                    //and BEFORE any ocean is generated. Otherwise everything is messed up.
-                    if (t != null && t instanceof ResourceTile) {
-                        foundTiles.add(d);
-                    }
-                } catch (Exception e) {
-                    //Ignore any errors, just don't process that combination any further.
-                }
-            }
+            HashSet<Direction> found = board.getAdjacentResourceTiles(c);
             BeachTile tile = null;
             if (tradingPosts.contains(c)) {
-                TradeTile trade = new TradeTile(foundTiles.size(), Direction.getAverage(foundTiles), posts.next());
-                HashSet<Direction> directions = trade.getTradingPostDirections();
-                for (Direction d : directions) {
-                    try {
-                        board.setTradingPostCoordinate(board.hexArray.getVertexCoordinateFromSpace(c, d), trade.getTradingPost());
-                    } catch (IllegalDirectionException e) {
-                        //uh.
-                    }
+                TradeTile trade = new TradeTile(Direction.getAverage(found), found.size(), posts.next());
+                for (Coordinate vertex : trade.getTradingPostCoordinates()) {
+                    board.setTradingPostCoordinate(vertex, trade.getTradingPost());
                 }
                 tile = trade;
             } else
-                tile = new BeachTile(Direction.getAverage(foundTiles), foundTiles.size());
-            board.hexArray.place(c, tile);
+                tile = new BeachTile(Direction.getAverage(found), found.size());
+            board.setTile(c, tile);
         }
 
     }

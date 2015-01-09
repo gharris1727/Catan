@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.resources.GraphicInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
-import com.gregswebserver.catan.common.resources.cached.GraphicInfo;
 
 /**
  * Created by Greg on 8/9/2014.

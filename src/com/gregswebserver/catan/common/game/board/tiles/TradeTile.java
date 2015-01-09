@@ -1,9 +1,19 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
+import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.resources.GraphicInfo;
+import com.gregswebserver.catan.client.resources.RenderMasks;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.Direction;
+import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 
+import java.awt.*;
 import java.util.HashSet;
+
+import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
+import static com.gregswebserver.catan.common.game.board.hexarray.Direction.*;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -11,52 +21,70 @@ import java.util.HashSet;
  */
 public class TradeTile extends BeachTile {
 
-    private TradingPost tradingPost;
-    private HashSet<Direction> directions;
+    private static final GraphicInfo[] tradeGraphics = new GraphicInfo[]{
+            null, null, TradeLeft, TradeRight, TradeUpLeft, TradeDownLeft, TradeUpRight, TradeDownRight
+    };
+    private static final Point[] position = new Point[]{
+            new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point()
+    };
 
-    public TradeTile(int sides, Direction direction, TradingPost tradingPost) {
+    private TradingPost tradingPost;
+    private Graphic graphic;
+
+    public TradeTile(Direction direction, int sides, TradingPost tradingPost) {
         super(direction, sides);
         this.tradingPost = tradingPost;
-        directions = new HashSet<>();
-        switch (direction) {
-            case up:
-                directions.add(Direction.upright);
-                directions.add(Direction.upleft);
-                break;
-            case down:
-                directions.add(Direction.downright);
-                directions.add(Direction.downleft);
-                break;
-            case upleft:
-                directions.add(Direction.upleft);
-                directions.add(Direction.left);
-                break;
-            case downleft:
-                directions.add(Direction.downleft);
-                directions.add(Direction.left);
-                break;
-            case upright:
-                directions.add(Direction.upright);
-                directions.add(Direction.right);
-                break;
-            case downright:
-                directions.add(Direction.downright);
-                directions.add(Direction.right);
-                break;
-            default:
-                //uh.
-        }
     }
 
     public TradingPost getTradingPost() {
         return tradingPost;
     }
 
-    public HashSet<Direction> getTradingPostDirections() {
-        return directions;
+    private Direction[] getTradingPostDirections() {
+        switch (getDirection()) {
+            case up:
+                return new Direction[]{upright, upleft};
+            case down:
+                return new Direction[]{downright, downleft};
+            case upleft:
+                return new Direction[]{upleft, left};
+            case downleft:
+                return new Direction[]{downleft, left};
+            case upright:
+                return new Direction[]{upright, right};
+            case downright:
+                return new Direction[]{downright, right};
+            default:
+                return new Direction[]{};
+        }
+    }
+
+    public HashSet<Coordinate> getTradingPostCoordinates() {
+        HashSet<Coordinate> out = new HashSet<>(3);
+        for (Direction d : getTradingPostDirections()) {
+            try {
+                out.add(getHexArray().getVertexCoordinateFromSpace(getPosition(), d));
+            } catch (IllegalDirectionException e) {
+                //Shouldn't happen.
+            }
+        }
+        return out;
+    }
+
+    public Graphic getGraphic() {
+        if (graphic == null) {
+            graphic = new Graphic(RenderMasks.TileMask.getMask());
+            Graphic b = super.getGraphic();
+            b.renderTo(graphic, new Point(), 0);
+            for (Direction d : getTradingPostDirections()) {
+                Graphic t = ResourceLoader.getGraphic(tradeGraphics[d.ordinal()]);
+                t.renderTo(graphic, position[d.ordinal()], 0);
+            }
+        }
+        return graphic;
     }
 
     public String toString() {
-        return "TradeTile " + tradingPost;
+        return "TradeTile n/" + getSides() + " d/" + getDirection();
     }
 }

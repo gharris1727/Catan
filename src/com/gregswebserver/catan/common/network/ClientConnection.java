@@ -3,7 +3,6 @@ package com.gregswebserver.catan.common.network;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.crypto.UserLogin;
-import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.log.LogLevel;
 
 import java.io.IOException;
@@ -18,12 +17,10 @@ import java.net.Socket;
  */
 public class ClientConnection extends NetConnection {
 
-    private final Client client;
     private final UserLogin info;
 
     public ClientConnection(Client client, ServerLogin login) {
-        super(client.logger);
-        this.client = client;
+        super(client);
         this.info = login.login;
         this.remote = login.remote;
     }
@@ -34,12 +31,9 @@ public class ClientConnection extends NetConnection {
             open = true;
             socket = new Socket(remote.address, remote.port);
             local = new NetID(socket);
-
-            ExternalEvent handshake = new ControlEvent(info.identity, ControlEventType.Handshake_Client_Connect, info);
             out = new ObjectOutputStream(socket.getOutputStream());
-            sendEvent(handshake);
+            sendEvent(new ControlEvent(info.identity, ControlEventType.Handshake_Client_Connect, info));
             out.flush();
-
             in = new ObjectInputStream(socket.getInputStream());
             logger.log("Received reply from server.", LogLevel.DEBUG);
             receive.start();
@@ -48,18 +42,7 @@ public class ClientConnection extends NetConnection {
             logger.log("Connection Refused", LogLevel.WARN);
         } catch (IOException e) {
             open = false;
-            logger.log("No reply from server", e, LogLevel.ERROR);
+            logger.log("Connection Error", e, LogLevel.ERROR);
         }
-    }
-
-    //Process incoming events, and pre-process certain events that have significance to this connection.
-    public void process(ExternalEvent event) {
-        if (event instanceof ControlEvent) {
-            if (((ControlEvent) event).getType() == ControlEventType.Server_Disconnect) {
-                open = false;
-                logger.log("Received Server Disconnect message, closing...", LogLevel.INFO);
-            }
-        }
-        client.addEvent(event);
     }
 }

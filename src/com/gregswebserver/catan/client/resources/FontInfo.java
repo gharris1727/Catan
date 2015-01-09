@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.resources.cached;
+package com.gregswebserver.catan.client.resources;
 
 /**
  * Created by Greg on 1/6/2015.

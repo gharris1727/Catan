@@ -1,12 +1,12 @@
-package com.gregswebserver.catan.common.resources.cached;
+package com.gregswebserver.catan.client.resources;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 
 import java.awt.*;
 
-import static com.gregswebserver.catan.common.resources.cached.GraphicLocation.*;
-import static com.gregswebserver.catan.common.resources.cached.GraphicSourceInfo.*;
-import static com.gregswebserver.catan.common.resources.cached.RenderMasks.*;
+import static com.gregswebserver.catan.client.resources.GraphicLocation.*;
+import static com.gregswebserver.catan.client.resources.GraphicSourceInfo.*;
+import static com.gregswebserver.catan.client.resources.RenderMasks.*;
 
 /**
  * Created by Greg on 1/6/2015.
@@ -39,12 +39,12 @@ public enum GraphicInfo {
 
     OceanBackground(Beach, OceanBackgroundMask, OceanBackgroundLocation),
 
-    TradeUpRight(Trade, TileMask, TradeUpRightLocation),
-    TradeRight(Trade, TileMask, TradeRightLocation),
-    TradeDownRight(Trade, TileMask, TradeDownRightLocation),
-    TradeDownLeft(Trade, TileMask, TradeDownLeftLocation),
-    TradeLeft(Trade, TileMask, TradeLeftLocation),
-    TradeUpleft(Trade, TileMask, TradeUpLeftLocation),
+    TradeUpRight(Trade, TradeDiagonalUpMask, TradeUpRightLocation),
+    TradeRight(Trade, TradeHorizontalMask, TradeRightLocation),
+    TradeDownRight(Trade, TradeDiagonalDownMask, TradeDownRightLocation),
+    TradeDownLeft(Trade, TradeDiagonalUpMask, TradeDownLeftLocation),
+    TradeLeft(Trade, TradeHorizontalMask, TradeLeftLocation),
+    TradeUpLeft(Trade, TradeDiagonalDownMask, TradeUpLeftLocation),
 
     ResourceBrick(Resource, ResourceCardMask, ResourceBrickLocation),
     ResourceLumber(Resource, ResourceCardMask, ResourceLumberLocation),
@@ -88,6 +88,8 @@ public enum GraphicInfo {
     EmptyPathDiagonalUp(Empty, EdgeDiagonalUpMask, DiagonalUpLocation),
     EmptyPathDiagonalDown(Empty, EdgeDiagonalDownMask, DiagonalDownLocation),
 
+    Robber(Empty, RobberMask, RobberLocation),
+
     RedSettlement(Red, VertexSettlementMask, SettlementLocation),
     RedCity(Red, VertexCityMask, CityLocation),
     RedPathHorizontal(Red, EdgeHorizontalMask, HorizontalLocation),
@@ -99,7 +101,6 @@ public enum GraphicInfo {
     OrangePathHorizontal(Orange, EdgeHorizontalMask, HorizontalLocation),
     OrangePathDiagonalUp(Orange, EdgeDiagonalUpMask, DiagonalUpLocation),
     OrangePathDiagonalDown(Orange, EdgeDiagonalDownMask, DiagonalDownLocation),
-
 
     BlueSettlement(Blue, VertexSettlementMask, SettlementLocation),
     BlueCity(Blue, VertexCityMask, CityLocation),

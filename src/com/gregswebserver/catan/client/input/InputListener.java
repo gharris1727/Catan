@@ -35,7 +35,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
                 return log("Key typed");
             }
 
-            public UserEvent onMouseScroll(int wheelRotation) {
+            public UserEvent onMouseScroll(int rot) {
                 return log("Mouse scrolled");
             }
 
@@ -77,8 +77,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         return selected.onKeyTyped(event);
     }
 
-    public UserEvent onMouseScroll(int wheelRotation) {
-        return selected.onMouseScroll(wheelRotation);
+    public UserEvent onMouseScroll(int rot) {
+        return selected.onMouseScroll(rot);
     }
 
     public UserEvent onMouseDrag(Point p) {

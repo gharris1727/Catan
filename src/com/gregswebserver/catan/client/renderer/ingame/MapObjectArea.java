@@ -5,23 +5,20 @@ import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.screen.*;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.board.buildings.Building;
-import com.gregswebserver.catan.common.game.board.buildings.EmptyBuilding;
+import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.paths.EmptyPath;
 import com.gregswebserver.catan.common.game.board.paths.Path;
-import com.gregswebserver.catan.common.game.board.tiles.EmptyTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
-import com.gregswebserver.catan.common.game.player.Team;
+import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.resources.GraphicsConfig;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 
-import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.OceanBackground;
+import static com.gregswebserver.catan.client.resources.GraphicInfo.OceanBackground;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -41,25 +38,9 @@ public class MapObjectArea extends ColorObjectArea {
         this.game = game;
         boardSize = GraphicsConfig.boardToScreen(game.getBoardSize());
         this.mapOffset = new Point();
-        background = new TiledArea(mapOffset, 0, ResourceLoader.getGraphic(OceanBackground)) {
-            public UserEvent onMouseDrag(Point p) {
-                return new UserEvent(this, UserEventType.Map_Drag, p);
-            }
-
-            public String toString() {
-                return "Map Background";
-            }
-        };
-        midground = new MapElements(mapOffset, 1);
-        foreground = new ColorObjectArea(mapOffset, 2) {
-            public UserEvent onMouseDrag(Point p) {
-                return new UserEvent(this, UserEventType.Map_Drag, p);
-            }
-
-            public String toString() {
-                return "Map Foreground";
-            }
-        };
+        background = new Background(mapOffset, 0, ResourceLoader.getGraphic(OceanBackground));
+        midground = new MiddleGround(mapOffset, 1, game.getBoard());
+        foreground = new Foreground(mapOffset, 2);
         background.setSize(boardSize);
         midground.setSize(boardSize);
         foreground.setSize(boardSize);
@@ -102,98 +83,107 @@ public class MapObjectArea extends ColorObjectArea {
         return "MapScreenArea " + game;
     }
 
-    private class MapElements extends ColorObjectArea {
+    private class Background extends TiledArea {
 
-        public MapElements(Point position, int priority) {
+        public Background(Point position, int priority, Graphic texture) {
+            super(position, priority, texture);
+            setClickable(MapObjectArea.this);
+        }
+
+        public String toString() {
+            return "Map Background";
+        }
+    }
+
+    private class MiddleGround extends ColorObjectArea {
+
+        private GameBoard board;
+
+        public MiddleGround(Point position, int priority, GameBoard board) {
             super(position, priority);
+            this.board = board;
         }
 
         protected void render() {
             clear();
-            synchronized (game) {
-                //TODO: add some kind of ocean backdrop.
+            HashMap<Coordinate, Tile> tiles = board.getTileMap();
+            HashMap<Coordinate, Path> paths = board.getPathMap();
+            HashMap<Coordinate, Town> towns = board.getTownMap();
 
-                HashSet<Coordinate> spaces = game.hexArray.spaces.getAllCoordinates();
-                HashSet<Coordinate> edges = game.hexArray.edges.getAllCoordinates();
-                HashSet<Coordinate> vertices = game.hexArray.vertices.getAllCoordinates();
+            for (Map.Entry<Coordinate, Tile> e : tiles.entrySet()) {
+                Coordinate c = e.getKey();
+                Tile t = e.getValue();
+                Graphic g = t.getGraphic();
+                ScreenObject o = new StaticObject(GraphicsConfig.tileToScreen(c), 0, g) {
+                    public UserEvent onMouseClick(MouseEvent event) {
+                        return new UserEvent(this, UserEventType.Tile_Clicked, c);
+                    }
 
-                HashMap<Coordinate, Tile> tiles = game.hexArray.spaces.toHashMap();
-                HashMap<Coordinate, Path> paths = game.hexArray.edges.toHashMap();
-                HashMap<Coordinate, Building> buildings = game.hexArray.vertices.toHashMap();
+                    public UserEvent onMouseDrag(Point p) {
+                        return MapObjectArea.this.onMouseDrag(p);
+                    }
 
-                for (Coordinate c : spaces) {
-                    Tile t = tiles.get(c);
-                    if (t instanceof EmptyTile)
-                        continue;
-                    Graphic g = t.getGraphic();
-                    ScreenObject o = new StaticObject(GraphicsConfig.tileToScreen(c), 1, g) {
+                    public String toString() {
+                        return "Map Tile " + c;
+                    }
+                };
+                add(o);
+            }
+            for (Map.Entry<Coordinate, Path> e : paths.entrySet()) {
+                Coordinate c = e.getKey();
+                Path p = e.getValue();
+                Graphic g = p.getGraphic();
+                ScreenObject o = new StaticObject(GraphicsConfig.edgeToScreen(c), 2, g) {
 
-                        public UserEvent onMouseClick(MouseEvent event) {
-                            return new UserEvent(this, UserEventType.Tile_Clicked, c);
-                        }
+                    public UserEvent onMouseClick(MouseEvent event) {
+                        return new UserEvent(this, UserEventType.Edge_Clicked, c);
+                    }
 
-                        public UserEvent onMouseDrag(Point p) {
-                            return MapObjectArea.this.onMouseDrag(p);
-                        }
+                    public UserEvent onMouseDrag(Point p) {
+                        return MapObjectArea.this.onMouseDrag(p);
+                    }
 
-                        public String toString() {
-                            return "MapTile " + c;
-                        }
-                    };
-                    add(o);
-                }
-                for (Coordinate c : edges) {
-                    Path p = paths.get(c);
-                    if (p instanceof EmptyPath)
-                        continue;
-                    Graphic g = null;
-                    if (p != null) g = p.getGraphic();
-                    if (g == null) g = Team.Blank.paths[c.x % 3];
-                    ScreenObject o = new StaticObject(GraphicsConfig.edgeToScreen(c), 2, g) {
+                    public String toString() {
+                        return "Map Path " + c;
+                    }
+                };
+                add(o);
+            }
+            for (Map.Entry<Coordinate, Town> e : towns.entrySet()) {
+                Coordinate c = e.getKey();
+                Town t = e.getValue();
+                Graphic g = t.getGraphic();
+                ScreenObject o = new StaticObject(GraphicsConfig.vertexToScreen(c), 3, g) {
 
-                        public UserEvent onMouseClick(MouseEvent event) {
-                            return new UserEvent(this, UserEventType.Edge_Clicked, c);
-                        }
+                    public UserEvent onMouseClick(MouseEvent event) {
+                        return new UserEvent(this, UserEventType.Vertex_Clicked, c);
+                    }
 
-                        public UserEvent onMouseDrag(Point p) {
-                            return MapObjectArea.this.onMouseDrag(p);
-                        }
+                    public UserEvent onMouseDrag(Point p) {
+                        return MapObjectArea.this.onMouseDrag(p);
+                    }
 
-                        public String toString() {
-                            return "MapEdge " + c;
-                        }
-                    };
-                    add(o);
-                }
-                for (Coordinate c : vertices) {
-                    Building b = buildings.get(c);
-                    if (b instanceof EmptyBuilding)
-                        continue;
-                    Graphic g = null;
-                    if (b != null) g = b.getGraphic();
-                    if (g == null) g = Team.Blank.settlement[c.x % 2];
-                    ScreenObject o = new StaticObject(GraphicsConfig.vertexToScreen(c), 3, g) {
-
-                        public UserEvent onMouseClick(MouseEvent event) {
-                            return new UserEvent(this, UserEventType.Vertex_Clicked, c);
-                        }
-
-                        public UserEvent onMouseDrag(Point p) {
-                            return MapObjectArea.this.onMouseDrag(p);
-                        }
-
-                        public String toString() {
-                            return "MapVertex " + c;
-                        }
-                    };
-                    add(o);
-                }
+                    public String toString() {
+                        return "Map Town " + c;
+                    }
+                };
+                add(o);
             }
         }
 
         public String toString() {
-            return "Backdrop " + game;
+            return "Middle Ground";
+        }
+    }
+
+    private class Foreground extends ColorObjectArea {
+
+        public Foreground(Point position, int priority) {
+            super(position, priority);
         }
 
+        public String toString() {
+            return "Foreground";
+        }
     }
 }

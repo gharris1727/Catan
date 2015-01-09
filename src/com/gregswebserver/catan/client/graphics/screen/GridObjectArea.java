@@ -52,7 +52,7 @@ public abstract class GridObjectArea extends ObjectArea {
         for (int i : cHeights)
             if (p.y >= i)
                 y++;
-        Point subPosition = new Point(p.x - getPosition().x, p.y - getPosition().y);
+        Point subPosition = new Point(p.x - cWidths[x], p.y - cHeights[y]);
         ScreenObject object = objects[y][x];
         return (object == null) ? this : object.getClickable(subPosition);
     }

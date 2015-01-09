@@ -9,7 +9,8 @@ import com.gregswebserver.catan.common.event.EventType;
 public enum ServerEventType implements EventType {
 
     Quit_All(null),//Kill all processes in the running server.
-    Client_Disconnect(Integer.class); //Removes a connection from the server after a disconnect.
+    Client_Disconnect(Integer.class), //Removes a connection from the server after a disconnect.
+    Client_Connect(Integer.class); //Connection has authenticated and confirmed the connection.
 
     private Class payloadType;
 

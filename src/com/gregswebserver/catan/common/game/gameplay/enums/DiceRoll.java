@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
-import static com.gregswebserver.catan.common.resources.cached.GraphicInfo.*;
+import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
 
 /**
  * Created by Greg on 8/10/2014.

@@ -3,7 +3,6 @@ package com.gregswebserver.catan.common.network;
 import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.lobby.ClientPool;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.lobby.ServerClient;
 
@@ -14,7 +13,7 @@ import com.gregswebserver.catan.common.lobby.ServerClient;
 public enum ControlEventType implements EventType {
 
     Handshake_Client_Connect(UserLogin.class), //Client -> Server, contains login details.
-    Handshake_Client_Connect_Success(ClientPool.class), //Server -> Client, contains clientPool from server.
+    Handshake_Client_Connect_Success(Integer.class), //Server -> Client, contains sessionID from server.
     Handshake_Client_Connect_Failure(String.class), //Server -> Client, contains reason why connection failed.
     Name_Change(String.class), //Client -> Server -> Broadcast, contains a name change
     Pass_Change(Password.class), //Client -> Server, when the client requests a password change.

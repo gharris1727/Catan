@@ -27,7 +27,7 @@ public class InGameObject extends GridObjectArea {
     public InGameObject(CatanGame game) {
         super(new Point(), 0);
         this.game = game;
-        map = new MapObjectArea(main, 0, game.getBoard());
+        map = new MapObjectArea(main, 0, game);
         trade = new TradeObjectArea(side, 1);
         inventory = new InventoryObjectArea(bottom, 2, game.getLocalPlayer());
         context = new ContextObjectArea(corner, 3);
@@ -55,4 +55,7 @@ public class InGameObject extends GridObjectArea {
         return "InGameScreen " + game;
     }
 
+    public void update() {
+        map.forceRender();
+    }
 }

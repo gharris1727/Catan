@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.common.game.board.hexarray;
 
-import com.gregswebserver.catan.common.game.board.BoardObject;
+import com.gregswebserver.catan.common.game.board.paths.Path;
+import com.gregswebserver.catan.common.game.board.tiles.Tile;
+import com.gregswebserver.catan.common.game.board.towns.Town;
 
 import java.util.HashMap;
 
@@ -8,7 +10,7 @@ import java.util.HashMap;
  * Created by Greg on 8/8/2014.
  * Map system for storing board data.
  */
-public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z extends BoardObject> {
+public class HexagonalArray {
 
     // additions[<x or y>][<direction>] = translation
     private static final int[][][] spaceToSpace = {
@@ -95,25 +97,14 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
                     {}, //X
                     {}}}; //Y
 
-    public TwoDimensionalArray<X> spaces;
-    public TwoDimensionalArray<Y> edges;
-    public TwoDimensionalArray<Z> vertices;
-    private Class xClass;
-    private Class yClass;
-    private Class zClass;
+    public final TwoDimensionalArray<Tile> spaces;
+    public final TwoDimensionalArray<Path> edges;
+    public final TwoDimensionalArray<Town> vertices;
 
-    public HexagonalArray(Class<X> xClass, Class<Y> yClass, Class<Z> zClass, int x, int y) {
-        this.xClass = xClass;
-        this.yClass = yClass;
-        this.zClass = zClass;
+    public HexagonalArray(int x, int y) {
         spaces = new TwoDimensionalArray<>(x, y); // Number of spaces in a hex map is x * y
         edges = new TwoDimensionalArray<>(3 * (x + 1), y + 1); // number of edges in a hex map is less than 4x * y+1
         vertices = new TwoDimensionalArray<>(2 * (x + 1), y + 1); // number of vertices in a hex map is less than 2(x+1) * y+1
-    }
-
-    @SuppressWarnings("unchecked")
-    private static boolean isSubclass(Object o, Class c) {
-        return c.isAssignableFrom(o.getClass());
     }
 
     private static Coordinate convert(Coordinate c, Direction d, int[][] additions) {
@@ -123,7 +114,6 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
     }
 
     //Unimplemented features are marked deprecated to warn against using them.
-    //They still exist though.
 
     @Deprecated
     private static Coordinate convertAcross(Coordinate c, Direction d, int divX, int multX, int[][] subtractions, int[][] additions) {
@@ -161,22 +151,45 @@ public class HexagonalArray<X extends BoardObject, Y extends BoardObject, Z exte
             throw new IllegalDirectionException(d);
     }
 
-    @SuppressWarnings("unchecked")
-    public void place(Coordinate c, BoardObject object) {
-        object.setHexArray(this);
-        object.setPosition(c);
-        if (isSubclass(object, xClass)) {
-            spaces.set(c, (X) object);
-            object.setParentArray(spaces);
-        } else if (isSubclass(object, yClass)) {
-            edges.set(c, (Y) object);
-            object.setParentArray(edges);
-        } else if (isSubclass(object, zClass)) {
-            vertices.set(c, (Z) object);
-            object.setParentArray(vertices);
-        } else {
-            throw new IllegalArgumentException("Object not an instanceof X Y or Z types.");
-        }
+    public void setTile(Coordinate c, Tile t) {
+        if (t == null) return;
+        t.setHexArray(this);
+        t.setPosition(c);
+        spaces.set(c, t);
+    }
+
+    public void setPath(Coordinate c, Path p) {
+        if (p == null) return;
+        p.setHexArray(this);
+        p.setPosition(c);
+        edges.set(c, p);
+    }
+
+    public void setTown(Coordinate c, Town b) {
+        if (b == null) return;
+        b.setHexArray(this);
+        b.setPosition(c);
+        vertices.set(c, b);
+    }
+
+    public Tile getTile(Coordinate c) {
+        return spaces.get(c);
+    }
+
+    public Path getPath(Coordinate c) {
+        return edges.get(c);
+    }
+
+    public Town getTown(Coordinate c) {
+        return vertices.get(c);
+    }
+
+    //Edge Orientation
+    public int getEdgeOrientation(Coordinate c) {
+        if (c.x % 3 == 2) return 0;
+        if (c.x % 6 == 0 || c.x % 6 == 4) return 1;
+        if (c.x % 6 == 1 || c.x % 6 == 3) return 2;
+        return 3; //Will end up returning a settlement graphic, should never happen.
     }
 
     //Multi-translation functions

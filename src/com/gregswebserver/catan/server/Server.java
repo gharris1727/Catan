@@ -2,9 +2,8 @@ package com.gregswebserver.catan.server;
 
 
 import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.common.crypto.Authenticator;
+import com.gregswebserver.catan.common.crypto.ClientDatabase;
 import com.gregswebserver.catan.common.crypto.Password;
-import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.lobby.ClientPool;
 import com.gregswebserver.catan.common.lobby.ServerClient;
@@ -12,7 +11,7 @@ import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ConnectionPool;
 import com.gregswebserver.catan.common.network.ControlEvent;
 import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.network.NetID;
+import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.server.event.ServerEvent;
 import com.gregswebserver.catan.server.event.ServerEventType;
 
@@ -29,20 +28,20 @@ public class Server extends QueuedInputThread<GenericEvent> {
 
     private final Identity identity;
     private final ServerWindow window;
+    private ClientDatabase database;
     private ConnectionPool connectionPool;
     private ClientPool clientPool;
 
     private ServerSocket socket;
     private boolean listening;
     private Thread listen;
-    private Authenticator authenticator;
 
     public Server() {
         super(Main.logger); //TODO: Create new logger for the server.
         identity = new Identity("Server"); //For use in chat and sending events originating here.
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
-        authenticator = new Authenticator(this);
+        database = new ClientDatabase(logger);
         clientPool = new ClientPool();
     }
 
@@ -57,7 +56,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
                     while (listening) {
                         try {
                             Socket clientSocket = socket.accept();
-                            connectionPool.processNewConnection(clientSocket);
+                            connectionPool.connect(clientSocket);
                         } catch (SocketException ignored) {
                             listening = false;
                             logger.log("Listening Stopped", LogLevel.INFO);
@@ -90,9 +89,12 @@ public class Server extends QueuedInputThread<GenericEvent> {
             } else {
                 logger.log("Received invalid ExternalEvent", LogLevel.ERROR);
             }
+        } else if (event instanceof NetEvent) {
+            netEvent((NetEvent) event);
         } else {
             logger.log("Received invalid GenericEvent", LogLevel.ERROR);
         }
+
     }
 
     private void serverEvent(ServerEvent event) {
@@ -101,7 +103,10 @@ public class Server extends QueuedInputThread<GenericEvent> {
                 shutdown();
                 break;
             case Client_Disconnect:
-                connectionPool.disconnectClient((Integer) event.getPayload(), "Disconnected");
+                connectionPool.disconnect((Integer) event.getPayload(), "Disconnected");
+                break;
+            case Client_Connect:
+                ServerClient client = database.getServerClient((int) event.getPayload());
                 break;
         }
     }
@@ -109,7 +114,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
             case Pass_Change:
-                authenticator.changeLogin(event.getOrigin(), (Password) event.getPayload());
+                database.passChange(event.getOrigin(), (Password) event.getPayload());
                 break;
             case Handshake_Client_Connect:
             case Handshake_Client_Connect_Success:
@@ -120,7 +125,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
                 //Should die in the client, and never get here.
                 break;
             case Client_Disconnect:
-                int uniqueID = clientPool.getUniqueID(event.getOrigin());
+                int uniqueID = clientPool.getConnectionID(event.getOrigin());
                 addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, uniqueID));
             case Client_Connect:
             case Lobby_Create:
@@ -154,26 +159,13 @@ public class Server extends QueuedInputThread<GenericEvent> {
         }
     }
 
-    public void sendToLobby(Identity identity, ExternalEvent event) {
-        for (Identity i : clientPool.getLobby(identity)) {
-            int uniqueID = clientPool.getUniqueID(i);
-            connectionPool.sendClientEvent(uniqueID, event);
-        }
-    }
-
-    public void sendToAll(ExternalEvent event) {
-        for (ServerClient client : clientPool)
-            connectionPool.sendClientEvent(client.getUniqueID(), event);
-    }
-
-    public void sendToClient(Identity identity, ExternalEvent event) {
-        int uniqueID = clientPool.getUniqueID(identity);
-        connectionPool.sendClientEvent(uniqueID, event);
+    public void netEvent(NetEvent event) {
+        if (database.validateSessionID(event.sessionID, event.event.getOrigin()))
+            addEvent(event.event);
     }
 
 
     public void shutdown() {
-        connectionPool.disconnectAll("Server Closed");
         window.dispose();
         listening = false;
         try {
@@ -193,11 +185,4 @@ public class Server extends QueuedInputThread<GenericEvent> {
         return identity.username;
     }
 
-    public boolean authenticate(NetID remote, UserLogin login) {
-        return authenticator.authLogin(login);
-    }
-
-    public ClientPool getClientPool() {
-        return clientPool;
-    }
 }

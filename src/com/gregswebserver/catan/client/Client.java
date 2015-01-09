@@ -20,10 +20,7 @@ import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.lobby.ClientPool;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.log.LogLevel;
-import com.gregswebserver.catan.common.network.ClientConnection;
-import com.gregswebserver.catan.common.network.ControlEvent;
-import com.gregswebserver.catan.common.network.ControlEventType;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.network.*;
 
 import java.awt.*;
 
@@ -81,14 +78,17 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 gameThread.addEvent((GameEvent) event);
             if (event instanceof ControlEvent)
                 controlEvent((ControlEvent) event);
-        }
-        if (event instanceof InternalEvent) {
+        } else if (event instanceof InternalEvent) {
             if (event instanceof RenderEvent)
                 renderThread.addEvent((RenderEvent) event);
             if (event instanceof ClientEvent)
                 clientEvent((ClientEvent) event);
             if (event instanceof UserEvent)
                 userEvent((UserEvent) event);
+        } else if (event instanceof NetEvent) {
+            netEvent((NetEvent) event);
+        } else {
+            logger.log("Received invalid GenericEvent.", LogLevel.WARN);
         }
 
     }
@@ -153,6 +153,8 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 break;
             case Inventory_Clicked:
                 break;
+            case Server_Clicked:
+                break;
         }
     }
 
@@ -186,6 +188,8 @@ public class Client extends QueuedInputThread<GenericEvent> {
             case Client_Disconnect:
             case Lobby_Create:
             case Lobby_Change_Config:
+            case Lobby_Change_Owner:
+                break;
             case Lobby_Delete:
             case Lobby_Join:
             case Lobby_Leave:
@@ -225,6 +229,11 @@ public class Client extends QueuedInputThread<GenericEvent> {
         }
     }
 
+    public void netEvent(NetEvent event) {
+        //Simple unwrapping, implicitly trust everything from the server
+        addEvent(event.event);
+    }
+
     public void disconnect(String reason) {
         if (connection != null && connection.isOpen()) {
             connection.sendEvent(new ControlEvent(identity, ControlEventType.Client_Disconnect, reason));
@@ -234,7 +243,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
     public void shutdown() {
         //Shut down the client and all running threads.
-        disconnect("Game Quitting");
+        disconnect("Quitting");
         chatThread.stop();
         gameThread.stop();
         renderThread.stop();

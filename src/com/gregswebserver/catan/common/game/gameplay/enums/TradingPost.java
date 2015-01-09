@@ -44,18 +44,6 @@ public enum TradingPost implements Trader {
         }
     }
 
-    public boolean canOffer(Trade t) {
-        return trades.contains(t);
-    }
-
-    public boolean canFillRequest(Trade t) {
-        return trades.contains(t);
-    }
-
-    public HashSet<Trade> getTrades() {
-        return trades;
-    }
-
     public Resource getResource() {
         return resource;
     }

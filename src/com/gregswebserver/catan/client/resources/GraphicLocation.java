@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.resources.cached;
+package com.gregswebserver.catan.client.resources;
 
 import java.awt.*;
 
@@ -81,7 +81,9 @@ public enum GraphicLocation {
     DevelopmentRoadBuildingLocation(Root),
 
     AchievementRoadLocation(Root),
-    AchievementArmyLocation(Root);
+    AchievementArmyLocation(Root),
+
+    RobberLocation(Root);
 
     private final Point location;
 

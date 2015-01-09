@@ -7,6 +7,9 @@ import java.util.HashSet;
  * Direction enum for spatial relationships in the HexagonalArray.
  */
 public enum Direction {
+    //ORDER OF CREATION INCREDIBLY IMPORTANT HERE.
+    //ordinal() is used for a large amount of graphics processing.
+
     //Edge/Space-only reference.
     up(0, 1),
     down(0, -1),
