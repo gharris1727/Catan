@@ -142,9 +142,6 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 outgoing = new ControlEvent(identity, ControlEventType.Game_Start, null);
                 connection.sendEvent(outgoing);
                 break;
-            case Map_Drag:
-                renderThread.addEvent(new RenderEvent(this, RenderEventType.Game_Scroll, event.getPayload()));
-                break;
             case Tile_Clicked:
                 break;
             case Edge_Clicked:

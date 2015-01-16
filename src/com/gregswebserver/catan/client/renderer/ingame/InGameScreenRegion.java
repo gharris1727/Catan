@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.renderer.ingame;
 
-import com.gregswebserver.catan.client.graphics.screen.GridObjectArea;
+import com.gregswebserver.catan.client.graphics.screen.GridScreenRegion;
 import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * The area that renders all features visible while the client is in a game.
  */
-public class InGameObject extends GridObjectArea {
+public class InGameScreenRegion extends GridScreenRegion {
 
     private final static int sidebarWidth = 256;
     private final static int bottomHeight = 256;
@@ -19,18 +19,18 @@ public class InGameObject extends GridObjectArea {
     private final static Point corner = new Point(1, 1);
 
     private final CatanGame game;
-    private final MapObjectArea map;
-    private final TradeObjectArea trade;
-    private final InventoryObjectArea inventory;
-    private final ContextObjectArea context;
+    private final MapRegion map;
+    private final TradeRegion trade;
+    private final InventoryRegion inventory;
+    private final ContextRegion context;
 
-    public InGameObject(CatanGame game) {
-        super(new Point(), 0);
+    public InGameScreenRegion(Dimension size, CatanGame game) {
+        super(new Point(), 0, size);
         this.game = game;
-        map = new MapObjectArea(main, 0, game);
-        trade = new TradeObjectArea(side, 1);
-        inventory = new InventoryObjectArea(bottom, 2, game.getLocalPlayer());
-        context = new ContextObjectArea(corner, 3);
+        map = new MapRegion(main, 0, size, game);
+        trade = new TradeRegion(side, 1, size);
+        inventory = new InventoryRegion(bottom, 2, size, game.getLocalPlayer());
+        context = new ContextRegion(corner, 3, size);
         add(map);
         add(trade);
         add(inventory);
@@ -40,15 +40,11 @@ public class InGameObject extends GridObjectArea {
     public void setSize(Dimension d) {
         int[] widths = new int[]{d.width - sidebarWidth, sidebarWidth};
         int[] heights = new int[]{d.height - bottomHeight, bottomHeight};
-        super.resize(widths, heights);
+        super.setGridSize(widths, heights);
         map.setSize(getCellDimension(main));
         trade.setSize(getCellDimension(side));
         inventory.setSize(getCellDimension(bottom));
         context.setSize(getCellDimension(corner));
-    }
-
-    public void scroll(Point p) {
-        map.scroll(p);
     }
 
     public String toString() {

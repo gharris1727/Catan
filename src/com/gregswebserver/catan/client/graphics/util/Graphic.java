@@ -4,6 +4,7 @@ package com.gregswebserver.catan.client.graphics.util;
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.common.resources.ResourceLoadException;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -29,9 +30,13 @@ public class Graphic {
     }
 
     //For use in the Statics class to create graphics from source files.
-    public Graphic(Graphic source, RenderMask mask, Point start) {
+    public Graphic(Graphic source, RenderMask mask, Point start) throws ResourceLoadException {
         this(mask);
-        render(this, new Point(), source, start, 0);
+        try {
+            render(this, new Point(), source, start, 0);
+        } catch (Exception e) {
+            throw new ResourceLoadException(e);
+        }
     }
 
     //For use in the BoardObject subclasses for complex

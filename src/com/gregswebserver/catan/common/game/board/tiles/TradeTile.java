@@ -4,16 +4,16 @@ import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.resources.GraphicInfo;
 import com.gregswebserver.catan.client.resources.RenderMasks;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.hexarray.Direction;
 import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
+import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
 import java.util.HashSet;
 
 import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
-import static com.gregswebserver.catan.common.game.board.hexarray.Direction.*;
+import static com.gregswebserver.catan.common.util.Direction.*;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -22,10 +22,10 @@ import static com.gregswebserver.catan.common.game.board.hexarray.Direction.*;
 public class TradeTile extends BeachTile {
 
     private static final GraphicInfo[] tradeGraphics = new GraphicInfo[]{
-            null, null, TradeLeft, TradeRight, TradeUpLeft, TradeDownLeft, TradeUpRight, TradeDownRight
+            null, null, null, TradeLeft, TradeRight, TradeUpLeft, TradeDownLeft, TradeUpRight, TradeDownRight
     };
     private static final Point[] position = new Point[]{
-            new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point()
+            new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point()
     };
 
     private TradingPost tradingPost;

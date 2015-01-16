@@ -2,8 +2,8 @@ package com.gregswebserver.catan.common.game.board.tiles;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.resources.GraphicInfo;
-import com.gregswebserver.catan.common.game.board.hexarray.Direction;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
+import com.gregswebserver.catan.common.util.Direction;
 
 import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
 
@@ -14,8 +14,8 @@ import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
 public class BeachTile extends DirectionalTile {
 
     private static final GraphicInfo[][] graphics = new GraphicInfo[][]{
-            {BeachSingleUp, BeachSingleDown, null, null, BeachSingleUpLeft, BeachSingleDownLeft, BeachSingleUpRight, BeachSingleDownRight},
-            {null, null, BeachDoubleLeft, BeachDoubleRight, BeachDoubleUpLeft, BeachDoubleDownLeft, BeachDoubleUpRight, BeachDoubleDownRight}
+            {null, BeachSingleUp, BeachSingleDown, null, null, BeachSingleUpLeft, BeachSingleDownLeft, BeachSingleUpRight, BeachSingleDownRight},
+            {null, null, null, BeachDoubleLeft, BeachDoubleRight, BeachDoubleUpLeft, BeachDoubleDownLeft, BeachDoubleUpRight, BeachDoubleDownRight}
     };
 
     private int sides;

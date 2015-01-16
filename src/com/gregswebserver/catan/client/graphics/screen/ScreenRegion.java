@@ -12,16 +12,15 @@ import java.util.List;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ObjectArea extends ScreenObject implements Iterable<ScreenObject>, Resizable, Animated {
+public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Resizable, Animated {
 
     private Dimension size;
     private Graphic graphic;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
 
-    protected ObjectArea(Point position, int priority) {
+    protected ScreenRegion(Point position, int priority) {
         super(position, priority);
-        clear();
     }
 
     public Dimension getSize() {
@@ -69,9 +68,8 @@ public abstract class ObjectArea extends ScreenObject implements Iterable<Screen
     public ScreenObject remove(ScreenObject object) {
         if (object == null) return null;
         List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
-        if (objects == null) {
+        if (objects == null)
             return object;
-        }
         objects.remove(object);
         needsRendering = true;
         return object;
@@ -107,7 +105,7 @@ public abstract class ObjectArea extends ScreenObject implements Iterable<Screen
     public boolean needsRender() {
         if (needsRendering) return true;
         for (ScreenObject object : this)
-            if (object.needsRender() && object.canRender())
+            if (object.needsRender())
                 return true;
         return false;
     }
@@ -117,14 +115,11 @@ public abstract class ObjectArea extends ScreenObject implements Iterable<Screen
     }
 
     public Graphic getGraphic() {
-        if (!canRender())
-            throw new IllegalStateException("Cannot render an ObjectArea without a defined size.");
         if (needsRender()) {
             render();
             graphic.clear();
             for (ScreenObject object : this)
-                if (object.canRender())
-                    object.getGraphic().renderTo(graphic, getObjectPosition(object), object.getHitboxColor());
+                object.getGraphic().renderTo(graphic, getObjectPosition(object), object.getHitboxColor());
             needsRendering = false;
         }
         return graphic;
@@ -133,7 +128,6 @@ public abstract class ObjectArea extends ScreenObject implements Iterable<Screen
     protected void render() {
     }
 
-    public abstract Point getObjectPosition(ScreenObject object);
-
+    protected abstract Point getObjectPosition(ScreenObject object);
 
 }

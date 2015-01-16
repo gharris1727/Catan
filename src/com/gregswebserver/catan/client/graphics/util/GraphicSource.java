@@ -34,6 +34,7 @@ public class GraphicSource extends Graphic {
         } catch (IOException e) {
             throw new ResourceLoadException(e);
         }
-        new Graphic(pixels, new int[width * height], new RectangularMask(new Dimension(width, height)));
+        setPixels(pixels);
+        setMask(new RectangularMask(new Dimension(width, height)));
     }
 }

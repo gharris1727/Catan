@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.common.game.board;
 
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.hexarray.Direction;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
@@ -9,6 +8,7 @@ import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
+import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
 import java.util.ArrayList;

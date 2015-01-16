@@ -14,8 +14,6 @@ import static com.gregswebserver.catan.client.resources.RenderMasks.*;
  */
 public enum GraphicInfo {
 
-    Default(null, null, null),
-
     TileHill(Tiles, TileMask, TileHillLocation),
     TileForest(Tiles, TileMask, TileForestLocation),
     TilePasture(Tiles, TileMask, TilePastureLocation),
@@ -112,7 +110,27 @@ public enum GraphicInfo {
     WhiteCity(White, VertexCityMask, CityLocation),
     WhitePathHorizontal(White, EdgeHorizontalMask, HorizontalLocation),
     WhitePathDiagonalUp(White, EdgeDiagonalUpMask, DiagonalUpLocation),
-    WhitePathDiagonalDown(White, EdgeDiagonalDownMask, DiagonalDownLocation);
+    WhitePathDiagonalDown(White, EdgeDiagonalDownMask, DiagonalDownLocation),
+
+    UIBlueCenter(UI, UIBackgroundMask, UIBlueBackgroundCenterLocation),
+    UIBlueUp(UI, UIBackgroundMask, UIBlueBackgroundUpLocation),
+    UIBlueDown(UI, UIBackgroundMask, UIBlueBackgroundDownLocation),
+    UIBlueLeft(UI, UIBackgroundMask, UIBlueBackgroundLeftLocation),
+    UIBlueRight(UI, UIBackgroundMask, UIBlueBackgroundRightLocation),
+    UIBlueUpLeft(UI, UIBackgroundMask, UIBlueBackgroundUpLeftLocation),
+    UIBlueUpRight(UI, UIBackgroundMask, UIBlueBackgroundUpRightLocation),
+    UIBlueDownLeft(UI, UIBackgroundMask, UIBlueBackgroundDownLeftLocation),
+    UIBlueDownRight(UI, UIBackgroundMask, UIBlueBackgroundDownRightLocation),
+
+    UIGreenCenter(UI, UIBackgroundMask, UIGreenBackgroundCenterLocation),
+    UIGreenUp(UI, UIBackgroundMask, UIGreenBackgroundUpLocation),
+    UIGreenDown(UI, UIBackgroundMask, UIGreenBackgroundDownLocation),
+    UIGreenLeft(UI, UIBackgroundMask, UIGreenBackgroundLeftLocation),
+    UIGreenRight(UI, UIBackgroundMask, UIGreenBackgroundRightLocation),
+    UIGreenUpLeft(UI, UIBackgroundMask, UIGreenBackgroundUpLeftLocation),
+    UIGreenUpRight(UI, UIBackgroundMask, UIGreenBackgroundUpRightLocation),
+    UIGreenDownLeft(UI, UIBackgroundMask, UIGreenBackgroundDownLeftLocation),
+    UIGreenDownRight(UI, UIBackgroundMask, UIGreenBackgroundDownRightLocation);
 
     private final GraphicSourceInfo source;
     private final RenderMasks mask;

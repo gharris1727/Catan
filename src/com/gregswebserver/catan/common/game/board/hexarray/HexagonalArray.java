@@ -3,6 +3,7 @@ package com.gregswebserver.catan.common.game.board.hexarray;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
+import com.gregswebserver.catan.common.util.Direction;
 
 import java.util.HashMap;
 
@@ -15,58 +16,58 @@ public class HexagonalArray {
     // additions[<x or y>][<direction>] = translation
     private static final int[][][] spaceToSpace = {
             { //EVEN
-                    {0, 0, 0, 0, -1, -1, 1, 1}, //X
-                    {-1, 1, 0, 0, -1, 0, -1, 0}}, //Y
+                    {0, 0, 0, 0, 0, -1, -1, 1, 1}, //X
+                    {0, -1, 1, 0, 0, -1, 0, -1, 0}}, //Y
             { //ODD
-                    {0, 0, 0, 0, -1, -1, 1, 1,}, //X
-                    {-1, 1, 0, 0, 0, 1, 0, 1}}}; //Y
+                    {0, 0, 0, 0, 0, -1, -1, 1, 1,}, //X
+                    {0, -1, 1, 0, 0, 0, 1, 0, 1}}}; //Y
     private static final int[][][] edgeToEdge = {
             { //ZERO
-                    {1, 1, -1, 2, 0, 0, 0, 0}, //X
-                    {-1, 0, 0, 0, 0, 0, 0, 0}}, //Y
+                    {0, 1, 1, -1, 2, 0, 0, 0, 0}, //X
+                    {0, -1, 0, 0, 0, 0, 0, 0, 0}}, //Y
             { //ONE
-                    {-1, -1, -2, 1, 0, 0, 0, 0}, //X
-                    {0, 1, 0, 1, 0, 0, 0, 0}}, //Y
+                    {0, -1, -1, -2, 1, 0, 0, 0, 0}, //X
+                    {0, 0, 1, 0, 1, 0, 0, 0, 0}}, //Y
             { //TWO
-                    {0, 0, 0, 0, -1, -2, 2, 1}, //X
-                    {0, 0, 0, 0, -1, 0, -1, 0}}, //Y
+                    {0, 0, 0, 0, 0, -1, -2, 2, 1}, //X
+                    {0, 0, 0, 0, 0, -1, 0, -1, 0}}, //Y
             { //THREE
-                    {1, 1, -1, 2, 0, 0, 0, 0}, //X
-                    {-1, 0, 0, 0, 0, 0, 0, 0}}, //Y
+                    {0, 1, 1, -1, 2, 0, 0, 0, 0}, //X
+                    {0, -1, 0, 0, 0, 0, 0, 0, 0}}, //Y
             { //FOUR
-                    {-1, -1, -2, 1, 0, 0, 0, 0}, //X
-                    {0, 1, 1, 0, 0, 0, 0, 0}}, //Y
+                    {0, -1, -1, -2, 1, 0, 0, 0, 0}, //X
+                    {0, 0, 1, 1, 0, 0, 0, 0, 0}}, //Y
             { //FIVE
-                    {0, 0, 0, 0, -2, -1, 1, 2}, //X
-                    {0, 0, 0, 0, 0, 0, 0, 0}}}; //Y
+                    {0, 0, 0, 0, 0, -2, -1, 1, 2}, //X
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0}}}; //Y
     private static final int[][][] vertexToVertex = {
             { //ZERO
-                    {0, 0, -1, 0, 0, 0, 1, 1}, //X
-                    {0, 0, 0, 0, 0, 0, 0, -1}}, //Y
+                    {0, 0, 0, -1, 0, 0, 0, 1, 1}, //X
+                    {0, 0, 0, 0, 0, 0, 0, 0, -1}}, //Y
             { //ONE
-                    {0, 0, 0, 1, -1, -1, 0, 0}, //X
-                    {0, 0, 0, 0, -1, 0, 0, 0}}, //Y
+                    {0, 0, 0, 0, 1, -1, -1, 0, 0}, //X
+                    {0, 0, 0, 0, 0, -1, 0, 0, 0}}, //Y
             { //TWO
-                    {0, 0, -1, 0, 0, 0, 1, 1}, //X
-                    {0, 0, 0, 0, 0, 0, -1, 0}}, //Y
+                    {0, 0, 0, -1, 0, 0, 0, 1, 1}, //X
+                    {0, 0, 0, 0, 0, 0, 0, -1, 0}}, //Y
             { //THREE
-                    {0, 0, 0, 1, -1, -1, 0, 0}, //X
-                    {0, 0, 0, 0, 0, 1, 0, 0}}}; //Y
+                    {0, 0, 0, 0, 1, -1, -1, 0, 0}, //X
+                    {0, 0, 0, 0, 0, 0, 1, 0, 0}}}; //Y
     // additions[<even or odd>][<x or y>][<direction>] = translation
     private static final int[][][] spaceToEdge = {
             { //EVEN
-                    {2, 2, 0, 0, 0, 1, 3, 4}, //X
-                    {0, 1, 0, 0, 0, 0, 0, 0}}, //Y
+                    {0, 2, 2, 0, 0, 0, 1, 3, 4}, //X
+                    {0, 0, 1, 0, 0, 0, 0, 0, 0}}, //Y
             { //ODD
-                    {2, 2, 0, 0, 0, 1, 4, 3}, //X
-                    {0, 1, 0, 0, 0, 1, 0, 1}}}; //Y
+                    {0, 2, 2, 0, 0, 0, 1, 4, 3}, //X
+                    {0, 0, 1, 0, 0, 0, 1, 0, 1}}}; //Y
     private static final int[][][] spaceToVertex = {
             { //EVEN
-                    {0, 0, 0, 3, 1, 1, 2, 2}, //X
-                    {0, 0, 0, 0, 0, 1, 0, 1}}, //Y
+                    {0, 0, 0, 0, 3, 1, 1, 2, 2}, //X
+                    {0, 0, 0, 0, 0, 0, 1, 0, 1}}, //Y
             { //ODD
-                    {0, 0, 0, 3, 1, 1, 2, 2}, //X
-                    {0, 0, 1, 1, 0, 1, 0, 1}}}; //Y
+                    {0, 0, 0, 0, 3, 1, 1, 2, 2}, //X
+                    {0, 0, 0, 1, 1, 0, 1, 0, 1}}}; //Y
     //TODO: finish implementing more translations.
     private static final int[][][] edgeToSpace = {
             { //EVEN
@@ -145,6 +146,7 @@ public class HexagonalArray {
     }
 
     private static void checkDirection(Direction d, int[][] array) throws IllegalDirectionException {
+        //TODO: this function needs to be refined, fails on more cases than necessary.
         //If both indexes are zero, then that indicates that no motion is made.
         //only usable for the 1:1 ratio conversions (space-space, edge-edge, vertex-vertex)
         if (array[0][d.ordinal()] == 0 && array[1][d.ordinal()] == 0)

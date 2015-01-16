@@ -111,7 +111,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         if (hitbox != null) {
             Clickable next = getClickable(e.getPoint());
             if (selected != next) {
-                logger.log("Clickable changed from " + selected + " to " + next, LogLevel.DEBUG);
+                logger.log("Clickable changed to " + next, LogLevel.DEBUG);
                 sendEvent(onDeselect());
                 selected = next;
                 sendEvent(onSelect());

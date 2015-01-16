@@ -31,19 +31,16 @@ public abstract class GenericWindow extends JFrame {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onClose();
-                super.windowClosing(e);
             }
         });
         addComponentListener(new ComponentAdapter() {
 
             public void componentMoved(ComponentEvent e) {
                 onMove();
-                super.componentMoved(e);
             }
 
             public void componentResized(ComponentEvent e) {
                 onResize(e.getComponent().getSize());
-                super.componentResized(e);
             }
         });
     }

@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         // Load the startup window to create/login to a server.
         logger = new Logger();
-        new ResourceLoader(logger);
+        new ResourceLoader();
         Startup startup = new Startup(logger);
         startup.setVisible(true);
     }

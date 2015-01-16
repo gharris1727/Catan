@@ -27,7 +27,9 @@ public enum RenderMasks {
     AchievementCardMask(new RectangularMask(new Dimension(192, 192))),
     DiceRollMask(new RoundedMask(new Dimension(32, 32))),
     TradeRatioMask(new RectangularMask(new Dimension(32, 16))),
-    RobberMask(new RectangularMask(new Dimension(32, 96)));
+    RobberMask(new RectangularMask(new Dimension(32, 96))),
+
+    UIBackgroundMask(new RectangularMask(new Dimension(32, 32)));
 
     private final RenderMask mask;
 

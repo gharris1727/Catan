@@ -14,9 +14,9 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  * Created by Greg on 8/24/2014.
  * graphical object that takes a text string and displays it.
  */
-public class TextGraphic extends Graphic {
+public class CharGraphic extends Graphic {
 
-    public TextGraphic(Font f, char c) {
+    public CharGraphic(Font f, char c) {
         super();
         String s = new String(new char[]{c});
         FontRenderContext frc = new FontRenderContext(null, true, true);

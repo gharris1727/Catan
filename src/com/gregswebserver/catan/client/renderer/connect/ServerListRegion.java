@@ -1,10 +1,13 @@
 package com.gregswebserver.catan.client.renderer.connect;
 
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.screen.ColorObjectArea;
-import com.gregswebserver.catan.client.graphics.screen.GridObjectArea;
+import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
+import com.gregswebserver.catan.client.graphics.screen.GridScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.TextScreenRegion;
+import com.gregswebserver.catan.client.resources.FontInfo;
 import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.ServerList;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -13,7 +16,7 @@ import java.awt.event.MouseEvent;
  * Created by Greg on 1/5/2015.
  * A list of servers printed on screen.
  */
-public class ServerListArea extends GridObjectArea {
+public class ServerListRegion extends GridScreenRegion {
 
     private static final Dimension serverSize = new Dimension(256, 128);
     private static final Dimension buttonPanelSize = new Dimension(serverSize.width, 256);
@@ -23,8 +26,9 @@ public class ServerListArea extends GridObjectArea {
     private int displayed;
     private int selected;
 
-    public ServerListArea(Point position, int priority, ServerList list) {
+    public ServerListRegion(Point position, int priority, Dimension size, ServerList list) {
         super(position, priority);
+        setSize(size);
         this.list = list;
         scroll = 0;
         displayed = 0;
@@ -46,30 +50,38 @@ public class ServerListArea extends GridObjectArea {
             heights[i + 1] = serverSize.height;
         heights[heights.length - 2] = buttonPanelSize.height;
         heights[heights.length - 1] = dPadding;
-        resize(widths, heights);
+        setGridSize(widths, heights);
     }
 
     protected void render() {
         clear();
         for (int i = 0; i < displayed; i++)
-            add(new ServerListItemArea(new Point(1, i + 1), 0, i + scroll));
-        add(new ButtonPanelArea(new Point(1, displayed), 0));
+            add(new ServerListItem(new Point(1, i + 1), 0, i + scroll));
+        add(new ButtonPanelAreaScreen(new Point(1, displayed), 0));
     }
 
     public String toString() {
         return "ServerListArea";
     }
 
-    private class ServerListItemArea extends ColorObjectArea {
+    private class ServerListItem extends ColorScreenRegion {
 
         private final int listIndex;
-        private final ConnectionInfo info;
 
-        public ServerListItemArea(Point position, int priority, int listIndex) {
-            super(position, priority);
+        public ServerListItem(Point position, int priority, int listIndex) {
+            super(position, priority, serverSize);
             this.listIndex = listIndex;
-            info = list.get(listIndex);
-            setSize(serverSize);
+            ConnectionInfo info = list.get(listIndex);
+            add(new TextScreenRegion(new Point(), 0, ResourceLoader.getFont(FontInfo.Default), "Remote Address: " + info.getRemote() + ":" + info.getPort()) {
+                public String toString() {
+                    return "ServerListItem Remote Address";
+                }
+            });
+            add(new TextScreenRegion(new Point(0, 64), 0, ResourceLoader.getFont(FontInfo.Default), "Username: " + info.getUsername()) {
+                public String toString() {
+                    return "ServerListItem Username";
+                }
+            });
         }
 
         public UserEvent onMouseClick(MouseEvent event) {
@@ -82,11 +94,10 @@ public class ServerListArea extends GridObjectArea {
         }
     }
 
-    private class ButtonPanelArea extends ColorObjectArea {
+    private class ButtonPanelAreaScreen extends ColorScreenRegion {
 
-        public ButtonPanelArea(Point position, int priority) {
-            super(position, priority);
-            setSize(buttonPanelSize);
+        public ButtonPanelAreaScreen(Point position, int priority) {
+            super(position, priority, buttonPanelSize);
         }
 
         public String toString() {

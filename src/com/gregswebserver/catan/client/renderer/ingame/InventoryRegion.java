@@ -2,7 +2,7 @@ package com.gregswebserver.catan.client.renderer.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
-import com.gregswebserver.catan.client.graphics.screen.ColorObjectArea;
+import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
@@ -21,12 +21,12 @@ import java.util.Map;
  * Created by Greg on 1/5/2015.
  * Area responsible for rendering the inventory of the player.
  */
-public class InventoryObjectArea extends ColorObjectArea {
+public class InventoryRegion extends ColorScreenRegion {
 
     private Player player;
 
-    public InventoryObjectArea(Point position, int priority, Player player) {
-        super(position, priority);
+    public InventoryRegion(Point position, int priority, Dimension size, Player player) {
+        super(position, priority, size);
         this.player = player;
     }
 

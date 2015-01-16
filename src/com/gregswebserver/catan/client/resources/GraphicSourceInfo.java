@@ -11,7 +11,7 @@ public enum GraphicSourceInfo {
     Beach("beach"),
     Blank("blank"),
     UI("ui"),
-    Empty("empty"),
+    Empty("emptyTeam"),
     Red("redTeam"),
     Orange("orangeTeam"),
     Blue("blueTeam"),
@@ -22,7 +22,6 @@ public enum GraphicSourceInfo {
     Dice("tokens"),
     Icon("icons"),
     Dialog("dialogs"),
-    Interface("interface"),
     Trade("trade");
 
     private final String name;

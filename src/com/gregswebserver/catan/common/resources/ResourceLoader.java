@@ -8,13 +8,10 @@ import com.gregswebserver.catan.client.resources.GameInfo;
 import com.gregswebserver.catan.client.resources.GraphicInfo;
 import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
-import com.gregswebserver.catan.common.log.LogLevel;
-import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.server.resources.ObjectStoreInfo;
 
 import java.awt.*;
 import java.io.*;
-import java.util.HashMap;
 
 /**
  * Created by Greg on 1/7/2015.
@@ -22,141 +19,84 @@ import java.util.HashMap;
  */
 public class ResourceLoader {
 
-    private static final Object lock = new Object();
-    private static final HashMap<FontInfo, Font> fontCache = new HashMap<>();
-    private static final HashMap<GameInfo, GameType> gameCache = new HashMap<>();
-    private static final HashMap<GraphicInfo, Graphic> graphicCache = new HashMap<>();
-    private static final HashMap<GraphicSourceInfo, GraphicSource> graphicSourceCache = new HashMap<>();
-    private static final HashMap<ObjectStoreInfo, Object> objectStoreCache = new HashMap<>();
-    private static Logger logger;
-    private static int resourcesLoaded = 0;
+    private static final ResourceCache<FontInfo, Font> fontCache = new ResourceCache<FontInfo, Font>() {
+        protected Font load(FontInfo fontInfo) throws ResourceLoadException {
+            return new Font(fontInfo.getName(), fontInfo.getStyle(), fontInfo.getSize());
+        }
+    };
 
-    public ResourceLoader(Logger log) {
-        logger = log;
+    private static final ResourceCache<GameInfo, GameType> gameCache = new ResourceCache<GameInfo, GameType>() {
+        protected GameType load(GameInfo gameInfo) throws ResourceLoadException {
+            return new GameType(gameInfo.getPath());
+        }
+    };
+
+    private static final ResourceCache<GraphicInfo, Graphic> graphicCache = new ResourceCache<GraphicInfo, Graphic>() {
+        protected Graphic load(GraphicInfo graphicInfo) throws ResourceLoadException {
+            GraphicSource s = getGraphicSource(graphicInfo.getSource());
+            RenderMask m = graphicInfo.getMask();
+            return new Graphic(s, m, graphicInfo.getLocation());
+        }
+    };
+
+    private static final ResourceCache<GraphicSourceInfo, GraphicSource> graphicSourceCache = new ResourceCache<GraphicSourceInfo, GraphicSource>() {
+        protected GraphicSource load(GraphicSourceInfo info) throws ResourceLoadException {
+            return new GraphicSource(info.getPath());
+        }
+    };
+
+    private static final ResourceCache<ObjectStoreInfo, Object> objectStoreCache = new ResourceCache<ObjectStoreInfo, Object>() {
+        protected Object load(ObjectStoreInfo objectStoreInfo) throws ResourceLoadException {
+            try {
+                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(objectStoreInfo.getPath()));
+                Object o = stream.readObject();
+                stream.close();
+                return o;
+            } catch (IOException | ClassNotFoundException e) {
+                throw new ResourceLoadException(e);
+            }
+        }
+
+        public void save(ObjectStoreInfo objectStoreInfo) throws ResourceLoadException {
+            try {
+                ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(objectStoreInfo.getPath()));
+                stream.writeObject(getObjectStore(objectStoreInfo));
+                stream.close();
+            } catch (IOException e) {
+                throw new ResourceLoadException(e);
+            }
+        }
+    };
+
+    public ResourceLoader() {
+        fontCache.clear();
+        gameCache.clear();
+        graphicCache.clear();
+        graphicSourceCache.clear();
+        objectStoreCache.clear();
     }
 
-    public static Font getFont(FontInfo info) {
-        if (!fontCache.containsKey(info))
-            loadFont(info);
+    public static Font getFont(FontInfo info) throws ResourceLoadException {
         return fontCache.get(info);
     }
 
-    private static void loadFont(FontInfo info) {
-        synchronized (info) {
-            synchronized (lock) {
-                //TODO: font loading.
-            }
-        }
-    }
-
-    public static GameType getGame(GameInfo info) {
-        if (!gameCache.containsKey(info))
-            loadGame(info);
+    public static GameType getGame(GameInfo info) throws ResourceLoadException {
         return gameCache.get(info);
     }
 
-    private static void loadGame(GameInfo info) {
-        synchronized (info) {
-            try {
-                GameType o = new GameType(info.getPath());
-                synchronized (lock) {
-                    gameCache.put(info, o);
-                    resourcesLoaded++;
-                }
-            } catch (ResourceLoadException e) {
-                logger.log(e, LogLevel.ERROR);
-            }
-        }
-    }
-
-    public static Graphic getGraphic(GraphicInfo info) {
-        if (!graphicCache.containsKey(info))
-            loadGraphic(info);
+    public static Graphic getGraphic(GraphicInfo info) throws ResourceLoadException {
         return graphicCache.get(info);
     }
 
-    private static void loadGraphic(GraphicInfo info) {
-        synchronized (info) {
-            try {
-                Graphic s = getGraphicSource(info.getSource());
-                RenderMask m = info.getMask();
-                Graphic o = new Graphic(s, m, info.getLocation());
-                synchronized (lock) {
-                    graphicCache.put(info, o);
-                    resourcesLoaded++;
-                }
-            } catch (ResourceLoadException e) {
-                logger.log(e, LogLevel.ERROR);
-                synchronized (lock) {
-                    graphicCache.put(info, new Graphic(new Dimension(1, 1)));
-                }
-            }
-        }
-    }
-
     private static GraphicSource getGraphicSource(GraphicSourceInfo info) throws ResourceLoadException {
-        if (!graphicSourceCache.containsKey(info))
-            loadGraphicSource(info);
         return graphicSourceCache.get(info);
     }
 
-    private static void loadGraphicSource(GraphicSourceInfo info) throws ResourceLoadException {
-        synchronized (info) {
-            GraphicSource o = new GraphicSource(info.getPath());
-            synchronized (lock) {
-                graphicSourceCache.put(info, o);
-                resourcesLoaded++;
-            }
-        }
-    }
-
-    public static Object getObjectStore(ObjectStoreInfo info) {
-        if (!objectStoreCache.containsKey(info))
-            loadObjectStore(info);
+    public static Object getObjectStore(ObjectStoreInfo info) throws ResourceLoadException {
         return objectStoreCache.get(info);
     }
 
-    public static void saveObjectStore(ObjectStoreInfo info) {
-        if (objectStoreCache.containsKey(info)) {
-            synchronized (info) {
-                FileOutputStream stream = null;
-                try {
-                    stream = new FileOutputStream(info.getPath());
-                    new ObjectOutputStream(stream).writeObject(getObjectStore(info));
-                } catch (IOException e) {
-                    logger.log(e, LogLevel.ERROR);
-                } finally {
-                    if (stream != null)
-                        try {
-                            stream.close();
-                        } catch (IOException e) {
-                            logger.log(e, LogLevel.ERROR);
-                        }
-                }
-            }
-        }
-    }
-
-    private static void loadObjectStore(ObjectStoreInfo info) {
-        synchronized (info) {
-            FileInputStream stream = null;
-            try {
-                stream = new FileInputStream(info.getPath());
-                Object o = new ObjectInputStream(stream).readObject();
-                synchronized (lock) {
-                    objectStoreCache.put(info, stream);
-                    resourcesLoaded++;
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                logger.log(e, LogLevel.ERROR);
-            } finally {
-                if (stream != null)
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        logger.log(e, LogLevel.ERROR);
-                    }
-            }
-        }
+    public static void saveObjectStore(ObjectStoreInfo info) throws ResourceLoadException {
+        objectStoreCache.save(info);
     }
 }

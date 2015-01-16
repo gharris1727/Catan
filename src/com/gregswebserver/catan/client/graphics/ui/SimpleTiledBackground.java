@@ -1,5 +1,8 @@
-package com.gregswebserver.catan.client.graphics.screen;
+package com.gregswebserver.catan.client.graphics.ui;
 
+import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
+import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
+import com.gregswebserver.catan.client.graphics.screen.StaticObject;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.input.Clickable;
 
@@ -9,18 +12,17 @@ import java.awt.*;
  * Created by Greg on 1/2/2015.
  * Resizable graphic
  */
-public abstract class TiledArea extends ObjectArea {
-
-    //TODO: rework to allow for special edging.
+public abstract class SimpleTiledBackground extends ScreenRegion {
 
     private Graphic texture;
 
-    public TiledArea(Point position, int priority, Graphic texture) {
+    public SimpleTiledBackground(Point position, int priority, Dimension size, Graphic texture) {
         super(position, priority);
+        setSize(size);
         this.texture = texture;
     }
 
-    public Point getObjectPosition(ScreenObject object) {
+    protected Point getObjectPosition(ScreenObject object) {
         return object.getPosition();
     }
 
@@ -32,7 +34,7 @@ public abstract class TiledArea extends ObjectArea {
             for (int y = 0; y < getSize().height; y += height) {
                 add(new StaticObject(new Point(x, y), 0, texture) {
                     public Clickable getClickable(Point p) {
-                        return TiledArea.this;
+                        return SimpleTiledBackground.this;
                     }
 
                     public String toString() {

@@ -10,12 +10,14 @@ import java.util.Map;
  * Created by Greg on 8/19/2014.
  * A screen object consisting of other screen objects with HitboxColors to differentiate them.
  */
-public abstract class ColorObjectArea extends ObjectArea {
+public abstract class ColorScreenRegion extends ScreenRegion {
 
     private Map<Integer, ScreenObject> hitboxMap;
 
-    public ColorObjectArea(Point position, int priority) {
+    public ColorScreenRegion(Point position, int priority, Dimension size) {
         super(position, priority);
+        setSize(size);
+        clear();
     }
 
     public Clickable getClickable(Point p) {
@@ -45,7 +47,7 @@ public abstract class ColorObjectArea extends ObjectArea {
         super.clear();
     }
 
-    public Point getObjectPosition(ScreenObject object) {
+    protected Point getObjectPosition(ScreenObject object) {
         return object.getPosition();
     }
 }

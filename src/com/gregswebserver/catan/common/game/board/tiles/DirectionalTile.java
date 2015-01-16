@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.common.game.board.hexarray.Direction;
+import com.gregswebserver.catan.common.util.Direction;
 
 /**
  * Created by Greg on 8/22/2014.

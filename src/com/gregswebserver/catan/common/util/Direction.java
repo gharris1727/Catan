@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.board.hexarray;
+package com.gregswebserver.catan.common.util;
 
 import java.util.HashSet;
 
@@ -9,7 +9,8 @@ import java.util.HashSet;
 public enum Direction {
     //ORDER OF CREATION INCREDIBLY IMPORTANT HERE.
     //ordinal() is used for a large amount of graphics processing.
-
+    //Self-reference
+    center(0, 0),
     //Edge/Space-only reference.
     up(0, 1),
     down(0, -1),
@@ -44,7 +45,7 @@ public enum Direction {
         }
         if (sumY == 0) {
             if (sumX == 0)
-                out = null;
+                out = center;
             if (sumX > 0)
                 out = right;
             if (sumX < 0)

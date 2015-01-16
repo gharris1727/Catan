@@ -6,8 +6,6 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.network.Identity;
 
-import java.awt.*;
-
 /**
  * Created by Greg on 1/4/2015.
  * The types of events that can be sent as InputEvents.
@@ -21,7 +19,6 @@ public enum UserEventType implements EventType {
     Lobby_Leave(null),
     Lobby_Modify(LobbyConfig.class),
     Lobby_Start(null),
-    Map_Drag(Point.class),
     Tile_Clicked(Coordinate.class),
     Edge_Clicked(Coordinate.class),
     Vertex_Clicked(Coordinate.class),

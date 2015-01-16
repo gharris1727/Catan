@@ -8,18 +8,24 @@ import java.awt.*;
  * Created by Greg on 1/1/2015.
  * A screen area defined by two arrays of grid sizes.
  */
-public abstract class GridObjectArea extends ObjectArea {
+public abstract class GridScreenRegion extends ScreenRegion {
 
     private int[] widths, heights, cWidths, cHeights;
     private ScreenObject[][] objects;
 
-    public GridObjectArea(Point position, int priority) {
+    public GridScreenRegion(Point position, int priority, Dimension size) {
+        super(position, priority);
+        setSize(size);
+        clear();
+    }
+
+    protected GridScreenRegion(Point position, int priority) {
         super(position, priority);
     }
 
     public abstract void setSize(Dimension d);
 
-    protected void resize(int[] widths, int[] heights) {
+    protected void setGridSize(int[] widths, int[] heights) {
         this.widths = widths;
         this.cWidths = new int[widths.length + 1];
         this.heights = heights;
@@ -37,13 +43,9 @@ public abstract class GridObjectArea extends ObjectArea {
         super.setSize(new Dimension(width, height));
     }
 
-    public boolean canRender() {
-        return widths != null && heights != null && super.canRender();
-    }
-
     public Clickable getClickable(Point p) {
         if (p.x < 0 || p.y < 0 || p.x >= getSize().width || p.y >= getSize().height)
-            return null;
+            return this;
         int x = -1;
         int y = -1;
         for (int i : cWidths)
@@ -78,32 +80,20 @@ public abstract class GridObjectArea extends ObjectArea {
     }
 
     public void clear() {
-        if (!canRender()) return;
-        objects = new ScreenObject[widths.length][heights.length];
+        objects = new ScreenObject[heights.length][widths.length];
         super.clear();
     }
 
-    public Point getObjectPosition(ScreenObject object) {
-        return getCellPosition(object.getPosition());
+    protected Point getObjectPosition(ScreenObject object) {
+        int x = object.getPosition().x;
+        int y = object.getPosition().y;
+        x = cWidths[x];
+        y = cHeights[y];
+        return new Point(x, y);
     }
 
-    private Point getCellPosition(Point p) {
-        return new Point(cWidths[p.x], cHeights[p.y]);
-    }
-
-    public Dimension getCellDimension(Point p) {
+    protected Dimension getCellDimension(Point p) {
         return new Dimension(widths[p.x], heights[p.y]);
-    }
-
-    //Unused and unsupported, maybe sometime in the future.
-    //TODO: add support for multi-cell objects.
-    private Dimension getMultiDimension(Point p, Point size) {
-        Dimension out = new Dimension();
-        for (int i = p.x; i < p.x + size.x; i++)
-            out.width += widths[i];
-        for (int i = p.y; i < p.y + size.y; i++)
-            out.height += heights[i];
-        return out;
     }
 
 }

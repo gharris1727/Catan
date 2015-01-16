@@ -2,7 +2,6 @@ package com.gregswebserver.catan.common.game.gameplay.generator;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.hexarray.Direction;
 import com.gregswebserver.catan.common.game.board.paths.EmptyPath;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
@@ -11,6 +10,7 @@ import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
+import com.gregswebserver.catan.common.util.Direction;
 
 import java.util.HashSet;
 import java.util.Iterator;

@@ -83,7 +83,26 @@ public enum GraphicLocation {
     AchievementRoadLocation(Root),
     AchievementArmyLocation(Root),
 
-    RobberLocation(Root);
+    RobberLocation(Root),
+
+    UIBlueBackgroundCenterLocation(new Point(0, 0)),
+    UIBlueBackgroundUpLocation(new Point(32, 0)),
+    UIBlueBackgroundDownLocation(new Point(64, 0)),
+    UIBlueBackgroundLeftLocation(new Point(96, 0)),
+    UIBlueBackgroundRightLocation(new Point(128, 0)),
+    UIBlueBackgroundUpLeftLocation(new Point(160, 0)),
+    UIBlueBackgroundUpRightLocation(new Point(192, 0)),
+    UIBlueBackgroundDownLeftLocation(new Point(224, 0)),
+    UIBlueBackgroundDownRightLocation(new Point(256, 0)),
+    UIGreenBackgroundCenterLocation(new Point(0, 32)),
+    UIGreenBackgroundUpLocation(new Point(32, 32)),
+    UIGreenBackgroundDownLocation(new Point(64, 32)),
+    UIGreenBackgroundLeftLocation(new Point(96, 32)),
+    UIGreenBackgroundRightLocation(new Point(128, 32)),
+    UIGreenBackgroundUpLeftLocation(new Point(160, 32)),
+    UIGreenBackgroundUpRightLocation(new Point(192, 32)),
+    UIGreenBackgroundDownLeftLocation(new Point(224, 32)),
+    UIGreenBackgroundDownRightLocation(new Point(256, 32));
 
     private final Point location;
 

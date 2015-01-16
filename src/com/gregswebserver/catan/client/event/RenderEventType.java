@@ -4,8 +4,6 @@ import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.CatanGame;
 
-import java.awt.*;
-
 /**
  * Created by Greg on 8/13/2014.
  * Enum sent with the RenderEvent indicating what is to be done with the data at the renderer.
@@ -16,7 +14,6 @@ public enum RenderEventType implements EventType {
 
     ConnectionList_Create(ServerList.class),
     Game_Create(CatanGame.class),
-    Game_Scroll(Point.class),
     Game_Update(null),
     Window_Resize(null),
     Render_Disable(null),

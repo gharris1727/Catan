@@ -59,13 +59,7 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
         return needsRendering && canRender();
     }
 
-    public boolean canRender() {
-        return current != null;
-    }
-
     public Graphic getGraphic() {
-        if (!canRender())
-            throw new IllegalStateException("Cannot render animation.");
         needsRendering = false;
         return current;
     }
