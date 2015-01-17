@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.renderer.connect;
 
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 
@@ -13,8 +14,8 @@ public class ServerEditRegion extends ColorScreenRegion {
 
     ConnectionInfo info;
 
-    public ServerEditRegion(Point position, int priority, Dimension size, ConnectionInfo info) {
-        super(position, priority, size);
+    public ServerEditRegion(Point position, int priority, RenderMask mask, ConnectionInfo info) {
+        super(position, priority, mask);
         this.info = info;
     }
 

@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.resources;
 
 import com.gregswebserver.catan.client.graphics.masks.*;
+import com.gregswebserver.catan.common.resources.GraphicsConfig;
 
 import java.awt.*;
 
@@ -8,7 +9,7 @@ import java.awt.*;
  * Created by Greg on 1/6/2015.
  * A set of cached RenderMasks.
  */
-public enum RenderMasks {
+public enum RenderMaskInfo {
 
     TileMask(new HexagonalMask(new Dimension(112, 96))),
     VertexSettlementMask(new RectangularMask(new Dimension(32, 32))),
@@ -29,11 +30,17 @@ public enum RenderMasks {
     TradeRatioMask(new RectangularMask(new Dimension(32, 16))),
     RobberMask(new RectangularMask(new Dimension(32, 96))),
 
-    UIBackgroundMask(new RectangularMask(new Dimension(32, 32)));
+    UILargeMask(new RectangularMask(GraphicsConfig.largeTileSize)),
+    UISmallMask(new RectangularMask(GraphicsConfig.smallTileSize));
+
+    public static RenderMaskInfo[] tradeBridgeMasks = new RenderMaskInfo[]{null, null, null, TradeHorizontalMask,
+            TradeHorizontalMask, TradeDiagonalDownMask, TradeDiagonalDownMask, TradeDiagonalUpMask, TradeDiagonalUpMask};
+    public static RenderMaskInfo[] teamBuildingMasks = new RenderMaskInfo[]{EdgeHorizontalMask, EdgeDiagonalUpMask,
+            EdgeDiagonalDownMask, VertexSettlementMask, VertexCityMask, RobberMask};
 
     private final RenderMask mask;
 
-    RenderMasks(RenderMask mask) {
+    RenderMaskInfo(RenderMask mask) {
         this.mask = mask;
     }
 

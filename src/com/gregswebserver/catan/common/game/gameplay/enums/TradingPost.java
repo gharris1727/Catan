@@ -12,23 +12,23 @@ import java.util.HashSet;
  */
 public enum TradingPost implements Trader {
 
-    Brick(Resource.Brick),
-    Lumber(Resource.Lumber),
-    Wool(Resource.Wool),
-    Grain(Resource.Grain),
-    Ore(Resource.Ore),
+    Brick(GameResource.Brick),
+    Lumber(GameResource.Lumber),
+    Wool(GameResource.Wool),
+    Grain(GameResource.Grain),
+    Ore(GameResource.Ore),
     Wildcard(null);
 
     private HashSet<Trade> trades;
-    private Resource resource;
+    private GameResource gameResource;
 
-    private TradingPost(Resource r) {
-        resource = r;
+    private TradingPost(GameResource r) {
+        gameResource = r;
         trades = new HashSet<>();
-        for (Resource a : Resource.values()) {
+        for (GameResource a : GameResource.values()) {
             if (r == null) {
                 //Trade any 3 of a resource for any other.
-                for (Resource b : Resource.values()) {
+                for (GameResource b : GameResource.values()) {
                     Trade trade = new Trade();
                     trade.request.put(a, 3);
                     trade.offer.put(b, 1);
@@ -44,7 +44,7 @@ public enum TradingPost implements Trader {
         }
     }
 
-    public Resource getResource() {
-        return resource;
+    public GameResource getGameResource() {
+        return gameResource;
     }
 }

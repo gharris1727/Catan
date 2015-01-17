@@ -4,9 +4,9 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
-import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.graphics.util.Screen;
 import com.gregswebserver.catan.client.renderer.connect.ConnectScreenRegion;
 import com.gregswebserver.catan.client.renderer.ingame.InGameScreenRegion;
@@ -27,10 +27,10 @@ import java.util.HashMap;
 public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     private Client client;
-    private Dimension screenSize = new Dimension(640, 480);
+    private RenderMask screenMask = new RectangularMask(new Dimension(640, 480));
     private Screen screen;
     private HashMap<ClientState, ScreenRegion> areas;
-    private ScreenObject root;
+    private ScreenRegion root;
     private boolean enabled;
 
     public RenderThread(Client client) {
@@ -47,11 +47,11 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         RenderEvent event = getEvent(true);
         switch (event.getType()) {
             case ConnectionList_Create:
-                ConnectScreenRegion connect = new ConnectScreenRegion(screenSize, (ServerList) event.getPayload());
+                ConnectScreenRegion connect = new ConnectScreenRegion(screenMask, (ServerList) event.getPayload());
                 areas.put(ClientState.Disconnected, connect);
                 break;
             case Game_Create:
-                InGameScreenRegion gameCreate = new InGameScreenRegion(screenSize, (CatanGame) event.getPayload());
+                InGameScreenRegion gameCreate = new InGameScreenRegion(screenMask, (CatanGame) event.getPayload());
                 areas.put(ClientState.InGame, gameCreate);
                 break;
             case Game_Update:
@@ -60,10 +60,11 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                 break;
             case Window_Resize:
                 enabled = false;
-                screenSize = (Dimension) event.getPayload();
-                screen.resize(screenSize);
+                Dimension size = (Dimension) event.getPayload();
+                screen.resize(size);
+                screenMask = new RectangularMask(size);
                 for (ScreenRegion area : areas.values())
-                    area.setSize(screenSize);
+                    area.setMask(screenMask);
                 client.addEvent(new ClientEvent(this, ClientEventType.Canvas_Update, screen.getCanvas()));
                 break;
             case Render_Disable:
@@ -73,7 +74,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                 break;
             case Animation_Step:
                 if (root != null && root.isAnimated())
-                    ((Animated) root).step();
+                    root.step();
                 break;
         }
         if (enabled) {

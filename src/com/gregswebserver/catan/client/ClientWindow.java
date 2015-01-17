@@ -21,9 +21,8 @@ public class ClientWindow extends GenericWindow {
     private boolean resizing = false;
 
     public ClientWindow(Client client) {
-        super("Settlers of Catan - Client", new Dimension(1024, 768), true, client.logger);
+        super("Settlers of Catan - Client", new Dimension(640, 480), true, client.logger);
         this.client = client;
-        onResize(getSize()); //Prompts an event loop that eventually calls setCanvas and sets this window to visible.
     }
 
     public void setListener(InputListener listener) {

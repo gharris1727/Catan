@@ -1,31 +1,21 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
-import com.gregswebserver.catan.client.resources.GraphicInfo;
-import com.gregswebserver.catan.client.resources.RenderMasks;
+import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.Resource;
+import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.resources.GraphicsConfig;
-import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
 
-import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
+import static com.gregswebserver.catan.client.resources.RenderMaskInfo.TileMask;
 
 /**
  * Created by Greg on 8/22/2014.
  * A tile for producing resources on the map.
  */
 public class ResourceTile extends Tile {
-
-    private final static GraphicInfo[] tileGraphics = new GraphicInfo[]{
-            TileHill, TileForest, TilePasture, TileMountain, TileField, TileDesert
-    };
-    private final static GraphicInfo[] diceGraphics = new GraphicInfo[]{
-            DiceTwo, DiceThree, DiceFour, DiceFive, DiceSix, DiceSeven, DiceEight, DiceNine, DiceTen, DiceEleven, DiceTwelve
-    };
-
 
     private DiceRoll diceRoll;
     private Terrain terrain;
@@ -55,9 +45,9 @@ public class ResourceTile extends Tile {
         return robber;
     }
 
-    public Resource getResource() {
+    public GameResource getResource() {
         if (robber || terrain == null) return null;
-        return terrain.resource;
+        return terrain.gameResource;
     }
 
     public String toString() {
@@ -66,15 +56,10 @@ public class ResourceTile extends Tile {
 
     public Graphic getGraphic() {
         if (graphic == null) {
-            graphic = new Graphic(RenderMasks.TileMask.getMask());
-            Graphic t = ResourceLoader.getGraphic(tileGraphics[terrain.ordinal()]);
-            t.renderTo(graphic, new Point(), 0);
-            Graphic d = ResourceLoader.getGraphic(diceGraphics[diceRoll.ordinal() - 2]);
-            d.renderTo(graphic, GraphicsConfig.diceRollRender, 0);
-            if (robber) {
-                Graphic r = ResourceLoader.getGraphic(Robber);
-                r.renderTo(graphic, GraphicsConfig.robberRender, 0);
-            }
+            graphic = new Graphic(TileMask.getMask());
+            GraphicSet.Land.getGraphic(terrain.ordinal()).renderTo(graphic, new Point(), 0);
+            GraphicSet.Dice.getGraphic(diceRoll.ordinal()).renderTo(graphic, GraphicsConfig.diceRollRender, 0);
+            //Figure out how to render the robber.
         }
         return graphic;
     }

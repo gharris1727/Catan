@@ -2,6 +2,7 @@ package com.gregswebserver.catan.client.renderer.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
@@ -25,8 +26,8 @@ public class InventoryRegion extends ColorScreenRegion {
 
     private Player player;
 
-    public InventoryRegion(Point position, int priority, Dimension size, Player player) {
-        super(position, priority, size);
+    public InventoryRegion(Point position, int priority, RenderMask mask, Player player) {
+        super(position, priority, mask);
         this.player = player;
     }
 
@@ -55,7 +56,7 @@ public class InventoryRegion extends ColorScreenRegion {
                 }
             }
         }
-        int divX = (getSize().width - 128) / positions.size();
+        int divX = (getMask().getWidth() - 128) / positions.size();
         for (int i = 0; i < positions.size(); i++) {
             positions.get(i).setLocation(divX * (i + 1), 16);
         }

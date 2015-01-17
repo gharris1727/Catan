@@ -6,23 +6,29 @@ package com.gregswebserver.catan.client.resources;
  */
 public enum GraphicSourceInfo {
 
-    Tiles("tiles"),
-    Ocean("ocean"),
-    Beach("beach"),
-    Blank("blank"),
-    UI("ui"),
-    Empty("emptyTeam"),
-    Red("redTeam"),
-    Orange("orangeTeam"),
-    Blue("blueTeam"),
-    White("whiteTeam"),
-    Resource("resources"),
-    Development("development"),
-    Achievement("achievement"),
-    Dice("tokens"),
-    Icon("icons"),
-    Dialog("dialogs"),
-    Trade("trade");
+    Land("tiles/land"),
+    BeachSingle("tiles/singleBeach"),
+    BeachDouble("tiles/doubleBeach"),
+
+    BlueUIBackground("ui/blue/background"),
+    BlueUIWindow("ui/blue/window"),
+    BlueUIText("ui/blue/text"),
+    BlueUIButton("ui/blue/button"),
+
+    EmptyTeam("teams/empty"),
+    RedTeam("teams/red"),
+    OrangeTeam("teams/orange"),
+    BlueTeam("teams/blue"),
+    WhiteTeam("teams/white"),
+
+    TradeBridges("trade/bridges"),
+    TradeRatios("trade/ratios"),
+    TradeIcons("trade/icons"),
+
+    Dice("game/dice"),
+    ResourceCard("game/resource"),
+    Development("game/development"),
+    Achievement("game/achievement");
 
     private final String name;
 

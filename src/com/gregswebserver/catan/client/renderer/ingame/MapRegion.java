@@ -2,13 +2,15 @@ package com.gregswebserver.catan.client.renderer.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.ui.SimpleTiledBackground;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.input.Clickable;
+import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
 import com.gregswebserver.catan.common.game.board.GameBoard;
@@ -18,14 +20,11 @@ import com.gregswebserver.catan.common.game.board.paths.Road;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.resources.GraphicsConfig;
-import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.gregswebserver.catan.client.resources.GraphicInfo.OceanBackground;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -34,18 +33,19 @@ import static com.gregswebserver.catan.client.resources.GraphicInfo.OceanBackgro
 public class MapRegion extends ColorScreenRegion {
 
     private final CatanGame game;
-    private final Dimension boardSize;
+    private final RenderMask boardSize;
     private final Point mapOffset;
     private final ScreenRegion background;
     private final ScreenRegion midground;
     private final ScreenRegion foreground;
 
-    public MapRegion(Point position, int priority, Dimension size, CatanGame game) {
-        super(position, priority, size);
+    public MapRegion(Point position, int priority, RenderMask mask, CatanGame game) {
+        super(position, priority, mask);
         this.game = game;
-        boardSize = GraphicsConfig.boardToScreen(game.getBoardSize());
+        boardSize = new RectangularMask(GraphicsConfig.boardToScreen(game.getBoardSize()));
         this.mapOffset = new Point();
-        background = new Background(mapOffset, 0, boardSize, this, ResourceLoader.getGraphic(OceanBackground));
+        //TODO: FIX ME.
+        background = null; // new Background(mapOffset, 0, boardSize, this, ResourceLoader.getGraphic(oceanBackground));
         midground = new MiddleGround(mapOffset, 1, boardSize, this, game.getBoard());
         foreground = new Foreground(mapOffset, 2, boardSize, this);
         add(background);
@@ -56,8 +56,8 @@ public class MapRegion extends ColorScreenRegion {
     private void limitBackdropScroll() {
         int maxX = -GraphicsConfig.mapEdgeBufferSize.width;
         int maxY = -GraphicsConfig.mapEdgeBufferSize.height;
-        int minX = -boardSize.width + getSize().width - 2 * maxX;
-        int minY = -boardSize.height + getSize().height - 2 * maxY;
+        int minX = -boardSize.getWidth() + getMask().getWidth() - 2 * maxX;
+        int minY = -boardSize.getHeight() + getMask().getHeight() - 2 * maxY;
         if (mapOffset.x < minX)
             mapOffset.x = minX;
         if (mapOffset.y < minY)
@@ -75,8 +75,8 @@ public class MapRegion extends ColorScreenRegion {
         return null;
     }
 
-    public void setSize(Dimension d) {
-        super.setSize(d);
+    public void setMask(RenderMask mask) {
+        super.setMask(mask);
         limitBackdropScroll();
     }
 
@@ -84,10 +84,10 @@ public class MapRegion extends ColorScreenRegion {
         return "MapScreenArea " + game;
     }
 
-    private class Background extends SimpleTiledBackground {
+    private class Background extends TiledBackground {
 
-        public Background(Point position, int priority, Dimension size, Clickable redirect, Graphic texture) {
-            super(position, priority, size, texture);
+        public Background(Point position, int priority, RenderMask mask, Clickable redirect, GraphicSet style) {
+            super(position, priority, mask, style);
             setClickable(redirect);
         }
 
@@ -104,8 +104,8 @@ public class MapRegion extends ColorScreenRegion {
 
         private GameBoard board;
 
-        public MiddleGround(Point position, int priority, Dimension size, Clickable redirect, GameBoard board) {
-            super(position, priority, size);
+        public MiddleGround(Point position, int priority, RenderMask mask, Clickable redirect, GameBoard board) {
+            super(position, priority, mask);
             setClickable(redirect);
             this.board = board;
         }
@@ -202,8 +202,8 @@ public class MapRegion extends ColorScreenRegion {
 
     private class Foreground extends ColorScreenRegion {
 
-        public Foreground(Point position, int priority, Dimension size, Clickable redirect) {
-            super(position, priority, size);
+        public Foreground(Point position, int priority, RenderMask mask, Clickable redirect) {
+            super(position, priority, mask);
             setClickable(redirect);
         }
 

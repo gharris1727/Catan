@@ -8,7 +8,7 @@ import java.awt.*;
  */
 public enum FontInfo {
 
-    Default("Lucida Console", Font.PLAIN, 16);
+    Lucida_Console("Lucida Console", Font.PLAIN, 16);
 
     private final String name;
     private final int style;

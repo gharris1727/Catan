@@ -51,12 +51,8 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
         needsRendering = true;
     }
 
-    public boolean isAnimated() {
-        return true;
-    }
-
     public boolean needsRender() {
-        return needsRendering && canRender();
+        return needsRendering;
     }
 
     public Graphic getGraphic() {

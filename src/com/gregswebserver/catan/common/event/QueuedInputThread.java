@@ -21,7 +21,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
     public QueuedInputThread(Logger logger) {
         this.logger = logger;
         eventQueue = new LinkedBlockingQueue<>();
-        run = new Thread(this.getClass().getName()) {
+        run = new Thread(toString()) {
             public void run() {
                 while (running) {
                     try {

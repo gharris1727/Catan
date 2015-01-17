@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
@@ -14,10 +15,8 @@ public abstract class ColorScreenRegion extends ScreenRegion {
 
     private Map<Integer, ScreenObject> hitboxMap;
 
-    public ColorScreenRegion(Point position, int priority, Dimension size) {
-        super(position, priority);
-        setSize(size);
-        clear();
+    public ColorScreenRegion(Point position, int priority, RenderMask mask) {
+        super(position, priority, mask);
     }
 
     public Clickable getClickable(Point p) {
@@ -47,7 +46,4 @@ public abstract class ColorScreenRegion extends ScreenRegion {
         super.clear();
     }
 
-    protected Point getObjectPosition(ScreenObject object) {
-        return object.getPosition();
-    }
 }

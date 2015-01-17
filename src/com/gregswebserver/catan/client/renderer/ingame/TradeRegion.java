@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.renderer.ingame;
 
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GridScreenRegion;
 
 import java.awt.*;
@@ -10,11 +11,11 @@ import java.awt.*;
  */
 public class TradeRegion extends GridScreenRegion {
 
-    public TradeRegion(Point position, int priority, Dimension size) {
-        super(position, priority, size);
+    public TradeRegion(Point position, int priority, RenderMask mask) {
+        super(position, priority, mask);
     }
 
-    public void setSize(Dimension d) {
+    public void setMask(RenderMask mask) {
         //TODO: resize logic.
     }
 

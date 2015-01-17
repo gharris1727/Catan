@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.util;
 
 
-import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.resources.ResourceLoadException;
@@ -15,7 +14,7 @@ import java.util.Arrays;
  */
 public class Graphic {
 
-    public static final int transColor = 0xffff00ff;
+    public static final int transColor = 0xff00ff;
     protected String name;
     protected int[] pixels, hitbox;
     private RenderMask mask;
@@ -33,7 +32,7 @@ public class Graphic {
     public Graphic(Graphic source, RenderMask mask, Point start) throws ResourceLoadException {
         this(mask);
         try {
-            render(this, new Point(), source, start, 0);
+            render(this, new Point(), source, start, 0, false);
         } catch (Exception e) {
             throw new ResourceLoadException(e);
         }
@@ -52,7 +51,7 @@ public class Graphic {
         this.name = "Graphic " + mask + " Pixels: " + mask.getPixelCount();
     }
 
-    private static void render(Graphic to, Point toStart, Graphic from, Point fromStart, int color) {
+    private static void render(Graphic to, Point toStart, Graphic from, Point fromStart, int color, boolean trans) {
         RenderMask toMask = to.mask;
         RenderMask fromMask = from.mask;
         //Check for upper bounds, if any of these are out of spec, nothing will get copied anyway.
@@ -100,26 +99,25 @@ public class Graphic {
             int length = endX - currX;
             if (length < 1) continue;
             //Copy
-            try {
-                pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length);
-                if (color > 0)
-                    colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
-                else
-                    pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), 1, to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, length);
-            } catch (Exception e) {
-                Main.logger.debug(null, e.toString());
-                Main.logger.debug(null, "X/" + startX + "/" + currX + "/" + endX + " Y/" + startY + "/" + currY + "/" + endY + " L/" + length);
-            }
+            pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length, trans);
+            if (color > 0)
+                colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
+            else
+                pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), 1, to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, length, false);
         }
     }
 
-    private static void pixelCopy(int[] src, int srcPos, int srcStep, int[] dst, int dstPos, int dstStep, int length) {
-        for (int i = 0; i < length; i++) {
-            int srcCurr = i * srcStep + srcPos;
-            int dstCurr = i * dstStep + dstPos;
-            int color = src[srcCurr];
-            if (color != transColor)
-                dst[dstCurr] = color;
+    private static void pixelCopy(int[] src, int srcPos, int srcStep, int[] dst, int dstPos, int dstStep, int length, boolean trans) {
+        if (!trans && srcStep == 1 && dstStep == 1)
+            System.arraycopy(src, srcPos, dst, dstPos, length);
+        else {
+            for (int i = 0; i < length; i++) {
+                int srcCurr = i * srcStep + srcPos;
+                int dstCurr = i * dstStep + dstPos;
+                int color = src[srcCurr];
+                if (trans && color != transColor)
+                    dst[dstCurr] = color;
+            }
         }
     }
 
@@ -148,12 +146,12 @@ public class Graphic {
     }
 
     public int getHitboxColor(Point p) {
-        return hitbox[mask.getIndex(p.x, p.y)];
+        return hitbox[mask.getIndex(p)];
     }
 
     public void renderTo(Graphic to, Point toPos, int color) {
         //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
-        render(to, toPos, this, new Point(), color);
+        render(to, toPos, this, new Point(), color, true);
     }
 
     public void clear() {

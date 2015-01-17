@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.graphics.masks;
 
+import java.awt.*;
+
 /**
  * Created by Greg on 8/14/2014.
  * Mask for rendering complex shapes to the screen.
@@ -32,6 +34,10 @@ public abstract class RenderMask {
         return height;
     }
 
+    public Dimension getSize() {
+        return new Dimension(width, height);
+    }
+
     public int[] getPadding() {
         return padding;
     }
@@ -40,16 +46,28 @@ public abstract class RenderMask {
         return widths;
     }
 
+    public int getIndex(Point p) {
+        return getIndex(p.x, p.y);
+    }
+
     public int getIndex(int x, int y) {
-        if (y < 0 || y >= height)
-            throw new IllegalArgumentException("Y Coordinate out of bounds.");
-        int minX = padding[y];
-        int maxX = minX + widths[y];
-        if (x < minX || x >= maxX)
-            throw new IllegalArgumentException("X Coordinate out of bounds.");
+        if (!containsPoint(x, y))
+            throw new IllegalArgumentException("Coordinate outside of mask bounds.");
         int index = x - padding[y];
         if (y > 0) index += cumulative[y - 1];
         return index;
+    }
+
+    public boolean containsPoint(Point p) {
+        return containsPoint(p.x, p.y);
+    }
+
+    public boolean containsPoint(int x, int y) {
+        if (y < 0 || y >= height)
+            return false;
+        int minX = padding[y];
+        int maxX = minX + widths[y];
+        return x >= minX && x < maxX;
     }
 
     public int getPixelCount() {

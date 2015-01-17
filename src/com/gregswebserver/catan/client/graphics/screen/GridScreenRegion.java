@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
@@ -13,19 +14,17 @@ public abstract class GridScreenRegion extends ScreenRegion {
     private int[] widths, heights, cWidths, cHeights;
     private ScreenObject[][] objects;
 
-    public GridScreenRegion(Point position, int priority, Dimension size) {
-        super(position, priority);
-        setSize(size);
-        clear();
+    public GridScreenRegion(Point position, int priority, RenderMask mask) {
+        super(position, priority, mask);
     }
 
     protected GridScreenRegion(Point position, int priority) {
         super(position, priority);
     }
 
-    public abstract void setSize(Dimension d);
+    public abstract void setMask(RenderMask mask);
 
-    protected void setGridSize(int[] widths, int[] heights) {
+    protected final void setGridSize(int[] widths, int[] heights, RenderMask mask) {
         this.widths = widths;
         this.cWidths = new int[widths.length + 1];
         this.heights = heights;
@@ -40,11 +39,11 @@ public abstract class GridScreenRegion extends ScreenRegion {
             height += heights[i];
             cHeights[i + 1] = height;
         }
-        super.setSize(new Dimension(width, height));
+        super.setMask(mask);
     }
 
     public Clickable getClickable(Point p) {
-        if (p.x < 0 || p.y < 0 || p.x >= getSize().width || p.y >= getSize().height)
+        if (p == null || !getMask().containsPoint(p))
             return this;
         int x = -1;
         int y = -1;
@@ -92,7 +91,7 @@ public abstract class GridScreenRegion extends ScreenRegion {
         return new Point(x, y);
     }
 
-    protected Dimension getCellDimension(Point p) {
+    protected final Dimension getCellDimension(Point p) {
         return new Dimension(widths[p.x], heights[p.y]);
     }
 

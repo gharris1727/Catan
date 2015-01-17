@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -14,13 +15,15 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  * Created by Greg on 8/24/2014.
  * graphical object that takes a text string and displays it.
  */
-public class CharGraphic extends Graphic {
+public class TextGraphic extends Graphic {
 
-    public CharGraphic(Font f, char c) {
-        super();
-        String s = new String(new char[]{c});
+    private TextLayout layout;
+    private FontMetrics metrics;
+
+    public TextGraphic(Font f, String s) {
         FontRenderContext frc = new FontRenderContext(null, true, true);
-        Rectangle2D bounds = f.getStringBounds(s, 0, 1, frc);
+        layout = new TextLayout(s, f, frc);
+        Rectangle2D bounds = layout.getBounds();
         int width = (int) bounds.getWidth();
         int height = (int) bounds.getHeight();
         BufferedImage image;
@@ -30,7 +33,16 @@ public class CharGraphic extends Graphic {
         clear();
         Graphics g = image.getGraphics();
         g.setFont(f);
-        g.drawString(s, 0, height);
+        metrics = g.getFontMetrics();
+        g.drawString(s, 0, (int) layout.getAscent());
         g.dispose();
+    }
+
+    public TextLayout getLayout() {
+        return layout;
+    }
+
+    public FontMetrics getMetrics() {
+        return metrics;
     }
 }

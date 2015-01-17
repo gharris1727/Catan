@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.renderer.ingame;
 
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GridScreenRegion;
 import com.gregswebserver.catan.common.game.CatanGame;
 
@@ -24,27 +26,27 @@ public class InGameScreenRegion extends GridScreenRegion {
     private final InventoryRegion inventory;
     private final ContextRegion context;
 
-    public InGameScreenRegion(Dimension size, CatanGame game) {
-        super(new Point(), 0, size);
+    public InGameScreenRegion(RenderMask mask, CatanGame game) {
+        super(new Point(), 0, mask);
         this.game = game;
-        map = new MapRegion(main, 0, size, game);
-        trade = new TradeRegion(side, 1, size);
-        inventory = new InventoryRegion(bottom, 2, size, game.getLocalPlayer());
-        context = new ContextRegion(corner, 3, size);
+        map = new MapRegion(main, 0, mask, game);
+        trade = new TradeRegion(side, 1, mask);
+        inventory = new InventoryRegion(bottom, 2, mask, game.getLocalPlayer());
+        context = new ContextRegion(corner, 3, mask);
         add(map);
         add(trade);
         add(inventory);
         add(context);
     }
 
-    public void setSize(Dimension d) {
-        int[] widths = new int[]{d.width - sidebarWidth, sidebarWidth};
-        int[] heights = new int[]{d.height - bottomHeight, bottomHeight};
-        super.setGridSize(widths, heights);
-        map.setSize(getCellDimension(main));
-        trade.setSize(getCellDimension(side));
-        inventory.setSize(getCellDimension(bottom));
-        context.setSize(getCellDimension(corner));
+    public void setMask(RenderMask mask) {
+        int[] widths = new int[]{mask.getWidth() - sidebarWidth, sidebarWidth};
+        int[] heights = new int[]{mask.getHeight() - bottomHeight, bottomHeight};
+        super.setGridSize(widths, heights, mask);
+        map.setMask(new RectangularMask(getCellDimension(main)));
+        trade.setMask(new RectangularMask(getCellDimension(side)));
+        inventory.setMask(new RectangularMask(getCellDimension(bottom)));
+        context.setMask(new RectangularMask(getCellDimension(corner)));
     }
 
     public String toString() {

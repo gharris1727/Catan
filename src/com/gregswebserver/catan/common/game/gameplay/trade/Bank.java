@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.Resource;
+import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 
 import java.util.HashSet;
 
@@ -15,8 +15,8 @@ public class Bank implements Trader {
     public Bank() {
         //Add all 4-to-1 trading possibilities.
         trades = new HashSet<>();
-        for (Resource a : Resource.values()) {
-            for (Resource b : Resource.values()) {
+        for (GameResource a : GameResource.values()) {
+            for (GameResource b : GameResource.values()) {
                 if (!a.equals(b)) {
                     Trade trade = new Trade();
                     trade.request.put(a, 4);

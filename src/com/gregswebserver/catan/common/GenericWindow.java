@@ -22,12 +22,6 @@ public abstract class GenericWindow extends JFrame {
         } catch (Exception e) {
             logger.log(e, LogLevel.WARN);
         }
-        setTitle(title);
-        setSize(d);
-        setMinimumSize(d);
-        setLocationRelativeTo(null);
-        setResizable(resizable);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onClose();
@@ -40,9 +34,20 @@ public abstract class GenericWindow extends JFrame {
             }
 
             public void componentResized(ComponentEvent e) {
-                onResize(e.getComponent().getSize());
+                //Uses the insets of the window to get the real content size of the window.
+                Dimension size = e.getComponent().getSize();
+                Insets i = getInsets();
+                size.width -= i.left + i.right;
+                size.height -= i.bottom + i.top;
+                onResize(size);
             }
         });
+        setTitle(title);
+        setSize(d);
+        setMinimumSize(d);
+        setLocationRelativeTo(null);
+        setResizable(resizable);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
     // Gracefully close any pertinent threads when the window is closed.

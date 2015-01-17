@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.graphics.util;
 
-import java.awt.*;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -8,7 +8,7 @@ import java.awt.*;
  */
 public interface Resizable {
 
-    public Dimension getSize();
+    public RenderMask getMask();
 
-    public void setSize(Dimension d);
+    public void setMask(RenderMask mask);
 }

@@ -1,11 +1,11 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
-import com.gregswebserver.catan.client.resources.GraphicInfo;
-import com.gregswebserver.catan.common.resources.ResourceLoader;
+import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
 
-import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
+import static com.gregswebserver.catan.client.resources.GraphicSet.BeachDouble;
+import static com.gregswebserver.catan.client.resources.GraphicSet.BeachSingle;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -13,9 +13,8 @@ import static com.gregswebserver.catan.client.resources.GraphicInfo.*;
  */
 public class BeachTile extends DirectionalTile {
 
-    private static final GraphicInfo[][] graphics = new GraphicInfo[][]{
-            {null, BeachSingleUp, BeachSingleDown, null, null, BeachSingleUpLeft, BeachSingleDownLeft, BeachSingleUpRight, BeachSingleDownRight},
-            {null, null, null, BeachDoubleLeft, BeachDoubleRight, BeachDoubleUpLeft, BeachDoubleDownLeft, BeachDoubleUpRight, BeachDoubleDownRight}
+    private static final GraphicSet[] graphics = new GraphicSet[]{
+            BeachSingle, BeachDouble
     };
 
     private int sides;
@@ -34,6 +33,6 @@ public class BeachTile extends DirectionalTile {
     }
 
     public Graphic getGraphic() {
-        return ResourceLoader.getGraphic(graphics[sides - 1][getDirection().ordinal()]);
+        return graphics[sides - 1].getGraphic(getDirection().ordinal());
     }
 }

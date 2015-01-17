@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.client.graphics.util.UniqueColor;
 import com.gregswebserver.catan.client.input.Clickable;
 
@@ -13,7 +12,7 @@ import java.awt.event.MouseEvent;
  * Created by Greg on 8/19/2014.
  * A set of methods that all object that appear on the screen must implement.
  */
-public abstract class ScreenObject implements Graphical, Clickable {
+public abstract class ScreenObject implements Clickable {
 
     private final Point position;
     private final int priority;
@@ -32,18 +31,18 @@ public abstract class ScreenObject implements Graphical, Clickable {
     }
 
     //Get render position relative to the parent.
-    public Point getPosition() {
+    public final Point getPosition() {
         return position;
+    }
+
+    //Returns the render priority of this object. Used for layering.
+    public final int getRenderPriority() {
+        return priority;
     }
 
     //Get this object's hitbox color.
     public int getHitboxColor() {
         return hitboxColor;
-    }
-
-    //Returns the render priority of this object. Used for layering.
-    public int getRenderPriority() {
-        return priority;
     }
 
     public UserEvent onMouseClick(MouseEvent event) {
@@ -71,8 +70,11 @@ public abstract class ScreenObject implements Graphical, Clickable {
     }
 
     public Clickable getClickable(Point p) {
-        return (redirect == null) ? null : this;
+        return (redirect == null) ? this : redirect;
     }
+
+    //Tag to check if the ScreenObject can be rendered.
+    public abstract boolean isGraphical();
 
     //Tag to check if the ScreenObject can be animated using step().
     public abstract boolean isAnimated();
@@ -80,10 +82,6 @@ public abstract class ScreenObject implements Graphical, Clickable {
     //Tag to check if this object needs re-rendering.
     public abstract boolean needsRender();
 
-    //Returns whether or not getGraphic() (Graphical) will complete correctly.
-    public abstract boolean canRender();
-
-    //Used in debugging the Clickable portion of these objects.
     public abstract String toString();
 
     public boolean equals(Object o) {

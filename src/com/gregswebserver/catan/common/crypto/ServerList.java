@@ -40,4 +40,8 @@ public class ServerList implements Iterable<ConnectionInfo> {
     public Iterator<ConnectionInfo> iterator() {
         return list.iterator();
     }
+
+    public int size() {
+        return list.size();
+    }
 }

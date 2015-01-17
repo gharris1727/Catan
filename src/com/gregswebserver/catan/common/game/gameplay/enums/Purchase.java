@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 
-import static com.gregswebserver.catan.common.game.gameplay.enums.Resource.*;
+import static com.gregswebserver.catan.common.game.gameplay.enums.GameResource.*;
 
 /**
  * Created by Greg on 8/13/2014.

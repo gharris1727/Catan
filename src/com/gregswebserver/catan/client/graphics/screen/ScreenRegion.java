@@ -1,7 +1,9 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.client.graphics.util.Resizable;
 
 import java.awt.*;
@@ -12,41 +14,35 @@ import java.util.List;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Resizable, Animated {
+public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Resizable, Graphical, Animated {
 
-    private Dimension size;
+    private RenderMask mask;
     private Graphic graphic;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
+
+    public ScreenRegion(Point position, int priority, RenderMask mask) {
+        super(position, priority);
+        setMask(mask);
+        clear();
+    }
 
     protected ScreenRegion(Point position, int priority) {
         super(position, priority);
     }
 
-    public Dimension getSize() {
-        return size;
+    public final RenderMask getMask() {
+        return mask;
     }
 
-    public void setSize(Dimension d) {
-        this.size = d;
-        graphic = new Graphic(size);
+    public void setMask(RenderMask mask) {
+        this.mask = mask;
+        graphic = new Graphic(mask);
+        forceRender();
+    }
+
+    public final void forceRender() {
         needsRendering = true;
-    }
-
-    public void forceRender() {
-        needsRendering = true;
-    }
-
-    public void step() {
-        for (ScreenObject object : this)
-            if (object.isAnimated())
-                ((Animated) object).step();
-    }
-
-    public void reset() {
-        for (ScreenObject object : this)
-            if (object.isAnimated())
-                ((Animated) object).reset();
     }
 
     protected void clear() {
@@ -61,7 +57,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
             priorityMap.put(object.getRenderPriority(), objects);
         }
         objects.add(object);
-        needsRendering = true;
+        forceRender();
         return object;
     }
 
@@ -71,11 +67,11 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         if (objects == null)
             return object;
         objects.remove(object);
-        needsRendering = true;
+        forceRender();
         return object;
     }
 
-    public Iterator<ScreenObject> iterator() {
+    public final Iterator<ScreenObject> iterator() {
         return new Iterator<ScreenObject>() {
 
             private Iterator<List<ScreenObject>> treeIterator = priorityMap.values().iterator();
@@ -95,14 +91,26 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         };
     }
 
-    public boolean isAnimated() {
+    public final boolean isAnimated() {
         for (ScreenObject object : this)
             if (object.isAnimated())
                 return true;
         return false;
     }
 
-    public boolean needsRender() {
+    public final void step() {
+        for (ScreenObject object : this)
+            if (object.isAnimated())
+                ((Animated) object).step();
+    }
+
+    public final void reset() {
+        for (ScreenObject object : this)
+            if (object.isAnimated())
+                ((Animated) object).reset();
+    }
+
+    public final boolean needsRender() {
         if (needsRendering) return true;
         for (ScreenObject object : this)
             if (object.needsRender())
@@ -110,16 +118,19 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return false;
     }
 
-    public boolean canRender() {
-        return size != null && graphic != null;
+    public final boolean isGraphical() {
+        return true;
     }
 
     public Graphic getGraphic() {
         if (needsRender()) {
+            if (graphic == null)
+                throw new IllegalStateException("Screen Region " + this + " has no size.");
             render();
             graphic.clear();
             for (ScreenObject object : this)
-                object.getGraphic().renderTo(graphic, getObjectPosition(object), object.getHitboxColor());
+                if (object.isGraphical())
+                    ((Graphical) object).getGraphic().renderTo(graphic, getObjectPosition(object), object.getHitboxColor());
             needsRendering = false;
         }
         return graphic;
@@ -128,6 +139,8 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     protected void render() {
     }
 
-    protected abstract Point getObjectPosition(ScreenObject object);
+    protected Point getObjectPosition(ScreenObject object) {
+        return object.getPosition();
+    }
 
 }
