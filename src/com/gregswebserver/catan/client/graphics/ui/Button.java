@@ -1,6 +1,10 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
+import com.gregswebserver.catan.client.graphics.screen.StaticObject;
+import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.util.TextGraphic;
 
 import java.awt.*;
 
@@ -10,17 +14,37 @@ import java.awt.*;
  */
 public abstract class Button extends UIScreenRegion {
 
-    private boolean toggle;
-    private boolean state;
+    private String label;
+    private ScreenRegion background;
 
-    public Button(Point position, int priority, RenderMask mask, UIStyle style, boolean toggle) {
+    public Button(Point position, int priority, RenderMask mask, UIStyle style, String label) {
         super(position, priority, mask, style);
-        this.toggle = toggle;
+        this.label = label;
+        background = new EdgedTiledBackground(new Point(), 0, getMask(), getStyle().getButtonStyle()) {
+            public String toString() {
+                return "ButtonBackground";
+            }
+        };
+        background.setClickable(this);
     }
 
-    public boolean getState() {
-        return state;
+    public void setMask(RenderMask mask) {
+        if (background != null)
+            background.setMask(mask);
+        super.setMask(mask);
     }
 
+    protected void render() {
+        clear();
+        add(background);
+
+        Graphic textGraphic = new TextGraphic(getStyle().getDarkTextStyle(), label);
+        Point position = getCenteredPosition(textGraphic.getMask());
+        add(new StaticObject(position, 1, textGraphic) {
+            public String toString() {
+                return "ButtonLabel";
+            }
+        }).setClickable(this);
+    }
 
 }

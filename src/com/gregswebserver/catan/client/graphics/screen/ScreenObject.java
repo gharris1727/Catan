@@ -26,7 +26,7 @@ public abstract class ScreenObject implements Clickable {
     }
 
     //Method to defer all clickable operations to another clickable object.
-    protected void setClickable(Clickable redirect) {
+    public void setClickable(Clickable redirect) {
         this.redirect = redirect;
     }
 

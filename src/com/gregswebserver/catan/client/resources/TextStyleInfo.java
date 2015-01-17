@@ -6,19 +6,21 @@ import java.awt.*;
  * Created by Greg on 1/6/2015.
  * A set of cached fonts that can be loaded by the ResourceLoader.
  */
-public enum FontInfo {
+public enum TextStyleInfo {
 
-    Lucida_Console("Lucida Console", Font.PLAIN, 16);
+    UIBlueLight("Lucida Console", Font.PLAIN, 16, Color.WHITE),
+    UIBlueDark("Segoe UI", Font.PLAIN, 16, Color.BLACK);
 
     private final String name;
     private final int style;
     private final int size;
+    private Color color;
 
-
-    FontInfo(String name, int style, int size) {
+    TextStyleInfo(String name, int style, int size, Color color) {
         this.name = name;
         this.style = style;
         this.size = size;
+        this.color = color;
     }
 
     public String getName() {
@@ -31,5 +33,9 @@ public enum FontInfo {
 
     public int getSize() {
         return size;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

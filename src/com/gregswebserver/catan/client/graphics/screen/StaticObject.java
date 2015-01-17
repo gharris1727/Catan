@@ -2,7 +2,6 @@ package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
-import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;
 
@@ -13,11 +12,6 @@ import java.awt.*;
 public abstract class StaticObject extends ScreenObject implements Graphical {
 
     private final Graphic graphic;
-
-    public StaticObject(Point position, int priority, Graphic graphic, Clickable redirect) {
-        this(position, priority, graphic);
-        setClickable(redirect);
-    }
 
     protected StaticObject(Point position, int priority, Graphic graphic) {
         super(position, priority);

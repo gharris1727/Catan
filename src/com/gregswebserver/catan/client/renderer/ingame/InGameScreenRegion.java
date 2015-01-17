@@ -3,6 +3,7 @@ package com.gregswebserver.catan.client.renderer.ingame;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GridScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ public class InGameScreenRegion extends GridScreenRegion {
     private final InventoryRegion inventory;
     private final ContextRegion context;
 
-    public InGameScreenRegion(RenderMask mask, CatanGame game) {
+    public InGameScreenRegion(RenderMask mask, UIStyle style, CatanGame game) {
         super(new Point(), 0, mask);
         this.game = game;
         map = new MapRegion(main, 0, mask, game);

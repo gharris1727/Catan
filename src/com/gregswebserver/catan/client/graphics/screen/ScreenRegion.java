@@ -143,4 +143,10 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return object.getPosition();
     }
 
+    public Point getCenteredPosition(RenderMask other) {
+        int x = (mask.getWidth() - other.getWidth()) / 2;
+        int y = (mask.getHeight() - other.getHeight()) / 2;
+        return new Point(x, y);
+    }
+
 }

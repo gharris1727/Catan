@@ -19,15 +19,15 @@ public class ConnectScreenRegion extends ColorScreenRegion {
     private ServerListRegion servers;
     private ServerEditRegion detail;
 
-    public ConnectScreenRegion(RenderMask mask, ServerList list) {
+    public ConnectScreenRegion(RenderMask mask, UIStyle style, ServerList list) {
         super(new Point(), 0, mask);
-        background = new EdgedTiledBackground(new Point(), 0, mask, UIStyle.Blue.getBackgroundStyle()) {
+        background = new EdgedTiledBackground(new Point(), 0, mask, style.getBackgroundStyle()) {
             public String toString() {
                 return "ConnectScreenBackground";
             }
         };
         add(background);
-        servers = new ServerListRegion(new Point(), 1, mask, list);
+        servers = new ServerListRegion(new Point(), 1, mask, style, list);
         add(servers);
     }
 

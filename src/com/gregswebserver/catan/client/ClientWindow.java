@@ -33,21 +33,21 @@ public class ClientWindow extends GenericWindow {
         client.shutdown();
     }
 
-    protected void onResize(Dimension size) {
+    protected synchronized void onResize(Dimension size) {
         if (!resizing) {
+            if (canvas != null) {
+                remove(canvas);
+                canvas.removeKeyListener(listener);
+                canvas.removeMouseListener(listener);
+                canvas.removeMouseMotionListener(listener);
+                canvas.removeMouseWheelListener(listener);
+            }
             client.addEvent(new RenderEvent(this, RenderEventType.Window_Resize, size));
         }
         resizing = true;
     }
 
-    public void setCanvas(Canvas newCanvas) {
-        if (canvas != null) {
-            canvas.removeKeyListener(listener);
-            canvas.removeMouseListener(listener);
-            canvas.removeMouseMotionListener(listener);
-            canvas.removeMouseWheelListener(listener);
-            remove(canvas);
-        }
+    public synchronized void setCanvas(Canvas newCanvas) {
         canvas = newCanvas;
         add(canvas);
         setVisible(true);

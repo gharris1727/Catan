@@ -1,19 +1,18 @@
 package com.gregswebserver.catan.client.renderer.connect;
 
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.GridScreenRegion;
-import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
-import com.gregswebserver.catan.client.graphics.screen.TextObject;
+import com.gregswebserver.catan.client.graphics.screen.StaticObject;
+import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.UIStyle;
-import com.gregswebserver.catan.client.resources.FontInfo;
+import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.util.TextGraphic;
 import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.ServerList;
-import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -26,18 +25,20 @@ public class ServerListRegion extends GridScreenRegion {
 
     private static final int serverWidth = 384;
     private static final int serverHeight = 72;
-    private static final RenderMask serverSize = new RectangularMask(new Dimension(serverWidth, serverHeight));
+    private static final RenderMask serverSize = new RoundedRectangularMask(new Dimension(serverWidth, serverHeight));
+    private static final int listGap = 4;
     private static final int buttonHeight = 96;
-    private static final RenderMask buttonPanelSize = new RectangularMask(new Dimension(serverWidth, buttonHeight));
+    private static final RenderMask buttonPanelSize = new RoundedRectangularMask(new Dimension(serverWidth, buttonHeight));
     private static final int vertPadding = 48;
+    private final UIStyle style;
     private final ServerList list;
     private int scroll;
     private int displayed;
     private int selected;
 
-    public ServerListRegion(Point position, int priority, RenderMask mask, ServerList list) {
-        super(position, priority);
-        setMask(mask);
+    public ServerListRegion(Point position, int priority, RenderMask mask, UIStyle style, ServerList list) {
+        super(position, priority, mask);
+        this.style = style;
         this.list = list;
         scroll = 0;
         displayed = 0;
@@ -57,15 +58,17 @@ public class ServerListRegion extends GridScreenRegion {
         //Find out how many servers we can display.
         displayed = ((height - vertPadding - buttonHeight) / serverHeight) - 1;
         //Create a new dynamic array that contains the list of heights.
-        int[] heights = new int[displayed + 3];
+        int[] heights = new int[displayed * 2 + 3];
         //Figure out the vertical padding we need
-        int vPadding = height - serverHeight * displayed - buttonHeight;
+        int vPadding = height - (serverHeight + listGap) * displayed - buttonHeight;
         int uPadding = vPadding / 2;
         int dPadding = vPadding / 2 + vPadding % 2;
         //Fill out the array of heights
         heights[0] = uPadding;
-        for (int i = 0; i < displayed; i++)
-            heights[i + 1] = serverHeight;
+        for (int i = 0; i < displayed; i++) {
+            heights[2 * i + 1] = serverHeight;
+            heights[2 * i + 2] = listGap;
+        }
         heights[heights.length - 2] = buttonHeight;
         heights[heights.length - 1] = dPadding;
         //Finally send all of this to the grid layout.
@@ -75,8 +78,8 @@ public class ServerListRegion extends GridScreenRegion {
     protected void render() {
         clear();
         for (int i = 0; i < displayed && i + scroll < list.size(); i++)
-            add(new ServerListItem(new Point(1, i + 1), 0, i + scroll, serverSize));
-        add(new ButtonPanelAreaScreen(new Point(1, displayed), 0, buttonPanelSize));
+            add(new ServerListItem(new Point(1, 2 * i + 1), 0, i + scroll, serverSize));
+        add(new ButtonPanelAreaScreen(new Point(1, displayed * 2 + 1), 0, buttonPanelSize));
     }
 
     public String toString() {
@@ -88,28 +91,34 @@ public class ServerListRegion extends GridScreenRegion {
         private final int listIndex;
 
         public ServerListItem(Point position, int priority, int listIndex, RenderMask mask) {
-            //TODO: clean this up.
             super(position, priority, mask);
             this.listIndex = listIndex;
+        }
+
+        protected void render() {
+            clear();
+
             ConnectionInfo info = list.get(listIndex);
-            ScreenObject background = new EdgedTiledBackground(new Point(), 0, new RoundedRectangularMask(mask.getSize(), new Dimension(32, 32)), UIStyle.Blue.getInterfaceStyle()) {
+            String address = "Remote Address : " + info.getRemote() + ":" + info.getPort();
+            Graphic addressGraphic = new TextGraphic(style.getLightTextStyle(), address);
+            String login = "Username: " + info.getUsername();
+            Graphic loginGraphic = new TextGraphic(style.getLightTextStyle(), login);
+
+            add(new EdgedTiledBackground(new Point(), 0, getMask(), style.getInterfaceStyle()) {
                 public String toString() {
                     return "ServerListItem Background";
                 }
-            };
-            add(background);
-            String serverAddressString = "Remote Address: " + info.getRemote() + ":" + info.getPort();
-            ScreenObject serverAddress = new TextObject(new Point(16, 16), 1, ResourceLoader.getFont(FontInfo.Lucida_Console), serverAddressString) {
+            }).setClickable(this);
+            add(new StaticObject(new Point(16, 16), 1, addressGraphic) {
                 public String toString() {
                     return "ServerListItem Remote Address";
                 }
-            };
-            add(serverAddress);
-            add(new TextObject(new Point(16, 40), 2, ResourceLoader.getFont(FontInfo.Lucida_Console), "Username: " + info.getUsername()) {
+            }).setClickable(this);
+            add(new StaticObject(new Point(16, 40), 2, loginGraphic) {
                 public String toString() {
                     return "ServerListItem Username";
                 }
-            });
+            }).setClickable(this);
         }
 
         public UserEvent onMouseClick(MouseEvent event) {
@@ -126,16 +135,21 @@ public class ServerListRegion extends GridScreenRegion {
 
         public ButtonPanelAreaScreen(Point position, int priority, RenderMask mask) {
             super(position, priority, mask);
-            add(new EdgedTiledBackground(new Point(), 0, new RoundedRectangularMask(mask.getSize(), new Dimension(32, 32)), UIStyle.Blue.getInterfaceStyle()) {
+        }
+
+        protected void render() {
+            clear();
+            add(new EdgedTiledBackground(new Point(), 0, getMask(), style.getInterfaceStyle()) {
                 public String toString() {
                     return "ServerListItem Background";
                 }
-            });
-            add(new TextObject(new Point(), 1, ResourceLoader.getFont(FontInfo.Lucida_Console), "Dummy Button Box") {
+            }).setClickable(this);
+            add(new Button(new Point(16, 16), 1, new RoundedRectangularMask(new Dimension(128, 32)), style, "Connect") {
                 public String toString() {
                     return "Button Panel";
                 }
             });
+
         }
 
         public String toString() {

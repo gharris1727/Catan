@@ -8,11 +8,13 @@ import java.awt.*;
  */
 public class RoundedRectangularMask extends RenderMask {
 
-    RenderMask corner;
+    private static final int scale = 4;
+
+    private RenderMask corner;
 
     public RoundedRectangularMask(Dimension square) {
         //Auto-sizes the corners to be proportional to the whole window.
-        int radius = (square.width > square.height) ? square.height / 8 : square.width / 8;
+        int radius = (square.width > square.height) ? square.height / scale : square.width / scale;
         init(square, new Dimension(radius, radius));
     }
 

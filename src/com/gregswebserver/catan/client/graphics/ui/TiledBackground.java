@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.graphics.ui;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
 
@@ -26,10 +25,6 @@ public abstract class TiledBackground extends ScreenRegion {
         return style;
     }
 
-    public Clickable getClickable(Point p) {
-        return this;
-    }
-
     protected void render() {
         clear();
         RenderMask mask = getStyle().getGraphic(0).getMask();
@@ -46,10 +41,10 @@ public abstract class TiledBackground extends ScreenRegion {
     }
 
     protected void addTile(Point position, Direction d) {
-        add(new StaticObject(position, d.ordinal(), style.getGraphic(d.ordinal()), TiledBackground.this) {
+        add(new StaticObject(position, d.ordinal(), style.getGraphic(d.ordinal())) {
             public String toString() {
                 return "Tile inside " + TiledBackground.this;
             }
-        });
+        }).setClickable(this);
     }
 }

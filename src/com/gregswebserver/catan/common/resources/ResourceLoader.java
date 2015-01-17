@@ -1,16 +1,16 @@
 package com.gregswebserver.catan.common.resources;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.ui.TextStyle;
 import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.GraphicSource;
-import com.gregswebserver.catan.client.resources.FontInfo;
 import com.gregswebserver.catan.client.resources.GameInfo;
 import com.gregswebserver.catan.client.resources.GraphicInfo;
 import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
+import com.gregswebserver.catan.client.resources.TextStyleInfo;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
 import com.gregswebserver.catan.server.resources.ObjectStoreInfo;
 
-import java.awt.*;
 import java.io.*;
 
 /**
@@ -19,12 +19,13 @@ import java.io.*;
  */
 public class ResourceLoader {
 
-    private static final ResourceCache<FontInfo, Font> fontCache = new ResourceCache<FontInfo, Font>() {
-        protected Font load(FontInfo fontInfo) throws ResourceLoadException {
-            return new Font(fontInfo.getName(), fontInfo.getStyle(), fontInfo.getSize());
+    private static final ResourceCache<TextStyleInfo, TextStyle> fontCache = new ResourceCache<TextStyleInfo, TextStyle>() {
+        protected TextStyle load(TextStyleInfo textStyleInfo) throws ResourceLoadException {
+            return new TextStyle(textStyleInfo.getName(), textStyleInfo.getStyle(), textStyleInfo.getSize(), textStyleInfo.getColor());
         }
     };
 
+    //TODO: rename GameType to match the other Info schemas.
     private static final ResourceCache<GameInfo, GameType> gameCache = new ResourceCache<GameInfo, GameType>() {
         protected GameType load(GameInfo gameInfo) throws ResourceLoadException {
             return new GameType(gameInfo.getPath());
@@ -76,7 +77,7 @@ public class ResourceLoader {
         objectStoreCache.clear();
     }
 
-    public static Font getFont(FontInfo info) throws ResourceLoadException {
+    public static TextStyle getTextStyle(TextStyleInfo info) throws ResourceLoadException {
         return fontCache.get(info);
     }
 

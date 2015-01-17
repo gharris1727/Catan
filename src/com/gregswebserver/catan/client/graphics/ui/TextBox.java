@@ -2,7 +2,8 @@ package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.TextObject;
+import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
+import com.gregswebserver.catan.client.resources.GraphicSet;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,19 +13,18 @@ import java.awt.event.MouseEvent;
  * Created by Greg on 1/3/2015.
  * A screen area containing a text box that is editable by the user.
  */
-public abstract class TextBox extends UIScreenRegion {
+public abstract class TextBox extends ScreenRegion {
 
     private EditableState state;
     private EditableState previous;
-    private UIScreenRegion background;
+    private ScreenRegion background;
     private String text;
-    private TextObject graphic;
     private int cursorPos;
     private int selectStart;
     private int selectEnd;
 
-    public TextBox(Point position, int priority, RenderMask mask, UIStyle style) {
-        super(position, priority, mask, style);
+    public TextBox(Point position, int priority, RenderMask mask, GraphicSet style) {
+        super(position, priority, mask);
         state = EditableState.Deselected;
         previous = state;
     }
@@ -64,7 +64,6 @@ public abstract class TextBox extends UIScreenRegion {
     public void render() {
         clear();
         add(background);
-        add(graphic);
     }
 
     protected enum EditableState {

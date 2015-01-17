@@ -34,12 +34,12 @@ public abstract class EdgedTiledBackground extends TiledBackground {
         //Top and bottom edges.
         for (int x = 0; x < totWidth; x += texWidth) {
             addTile(new Point(x, 0), up);
-            addTile(new Point(x, totHeight), down);
+            addTile(new Point(x, corHeight), down);
         }
         //Left and right edges.
         for (int y = 0; y < totHeight; y += texHeight) {
             addTile(new Point(0, y), left);
-            addTile(new Point(totWidth, y), right);
+            addTile(new Point(corWidth, y), right);
         }
     }
 

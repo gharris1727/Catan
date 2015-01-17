@@ -9,7 +9,6 @@ import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
-import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
@@ -46,11 +45,11 @@ public class MapRegion extends ColorScreenRegion {
         this.mapOffset = new Point();
         //TODO: FIX ME.
         background = null; // new Background(mapOffset, 0, boardSize, this, ResourceLoader.getGraphic(oceanBackground));
-        midground = new MiddleGround(mapOffset, 1, boardSize, this, game.getBoard());
-        foreground = new Foreground(mapOffset, 2, boardSize, this);
-        add(background);
-        add(midground);
-        add(foreground);
+        midground = new MiddleGround(mapOffset, 1, boardSize, game.getBoard());
+        foreground = new Foreground(mapOffset, 2, boardSize);
+        add(background).setClickable(this);
+        add(midground).setClickable(this);
+        add(foreground).setClickable(this);
     }
 
     private void limitBackdropScroll() {
@@ -86,9 +85,8 @@ public class MapRegion extends ColorScreenRegion {
 
     private class Background extends TiledBackground {
 
-        public Background(Point position, int priority, RenderMask mask, Clickable redirect, GraphicSet style) {
+        public Background(Point position, int priority, RenderMask mask, GraphicSet style) {
             super(position, priority, mask, style);
-            setClickable(redirect);
         }
 
         public String toString() {
@@ -104,9 +102,8 @@ public class MapRegion extends ColorScreenRegion {
 
         private GameBoard board;
 
-        public MiddleGround(Point position, int priority, RenderMask mask, Clickable redirect, GameBoard board) {
+        public MiddleGround(Point position, int priority, RenderMask mask, GameBoard board) {
             super(position, priority, mask);
-            setClickable(redirect);
             this.board = board;
         }
 
@@ -202,9 +199,8 @@ public class MapRegion extends ColorScreenRegion {
 
     private class Foreground extends ColorScreenRegion {
 
-        public Foreground(Point position, int priority, RenderMask mask, Clickable redirect) {
+        public Foreground(Point position, int priority, RenderMask mask) {
             super(position, priority, mask);
-            setClickable(redirect);
         }
 
         public String toString() {
