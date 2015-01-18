@@ -1,7 +1,8 @@
 package com.gregswebserver.catan.common.network;
 
-import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.GenericEvent;
+import com.gregswebserver.catan.common.event.NetEvent;
+import com.gregswebserver.catan.common.event.NetEventType;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
@@ -23,7 +24,6 @@ public abstract class NetConnection implements Runnable {
     protected QueuedInputThread<GenericEvent> host;
     protected NetID local;
     protected NetID remote;
-    protected int sessionID;
 
     protected Socket socket;
     protected Thread connect, disconnect, receive;
@@ -42,11 +42,12 @@ public abstract class NetConnection implements Runnable {
                 while (open) {
                     try {
                         NetEvent e = ((NetEvent) in.readObject());
+                        e.setConnection(NetConnection.this);
                         host.addEvent(e);
                     } catch (EOFException | SocketException ignored) {
-                        hostDisconnect("Receive failure: connection closed.");
+                        onDisconnect("Receive failure: connection closed.");
                     } catch (ClassCastException | ClassNotFoundException | IOException e) {
-                        hostDisconnect("Receive failure: " + e.getMessage() + ".");
+                        onDisconnect("Receive failure: " + e.getMessage() + ".");
                         logger.log("Error while receiving", e, LogLevel.ERROR);
                     }
                 }
@@ -66,23 +67,24 @@ public abstract class NetConnection implements Runnable {
                         socket.close();
                     receive.join();
                 } catch (InterruptedException ignored) {
-                    hostDisconnect("Disconnect failure: synchronization error.");
+                    onDisconnect("Disconnect failure: synchronization error.");
                 } catch (SocketException ignored) {
-                    hostDisconnect("Disconnect failure: connection closed.");
+                    onDisconnect("Disconnect failure: connection closed.");
                 } catch (IOException e) {
+                    onDisconnect("Disconnect failure: " + e.getMessage() + ".");
                     logger.log("Disconnect failure", e, LogLevel.ERROR);
                 }
             }
         };
     }
 
-    public void sendEvent(ExternalEvent event) {
+    public void sendEvent(NetEvent event) {
         try {
-            out.writeObject(new NetEvent(sessionID, event));
+            out.writeObject(event);
         } catch (SocketException ignored) {
-            hostDisconnect("Send failure: connection closed.");
+            onDisconnect("Send failure: connection closed.");
         } catch (IOException e) {
-            hostDisconnect("Send failure: " + e.getMessage() + ".");
+            onDisconnect("Send failure: " + e.getMessage() + ".");
             logger.log("Send Failure", e, LogLevel.ERROR);
         }
     }
@@ -99,5 +101,8 @@ public abstract class NetConnection implements Runnable {
         return open;
     }
 
-    public abstract void hostDisconnect(String message);
+    protected void onDisconnect(String message) {
+        open = false;
+        host.addEvent(new NetEvent(this, NetEventType.Error, message));
+    }
 }

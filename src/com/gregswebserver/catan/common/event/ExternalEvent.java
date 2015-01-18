@@ -40,6 +40,6 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
     }
 
     public String toString() {
-        return "[EVENT] O:" + origin + " T:" + type + " P:" + payload;
+        return "[EXT EVENT] O:" + origin + " T:" + type + " P:" + payload;
     }
 }

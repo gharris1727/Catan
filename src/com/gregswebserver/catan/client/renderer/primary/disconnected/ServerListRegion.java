@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.renderer.connect;
+package com.gregswebserver.catan.client.renderer.primary.disconnected;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
@@ -15,7 +15,8 @@ import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.ServerList;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 /**
@@ -44,6 +45,7 @@ public class ServerListRegion extends UIScreenRegion {
         this.list = list;
         scroll = 0;
         selected = -1;
+        resizeContents(mask);
     }
 
     protected void resizeContents(RenderMask mask) {

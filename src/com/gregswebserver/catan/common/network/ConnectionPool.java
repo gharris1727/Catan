@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.common.network;
 
+import com.gregswebserver.catan.common.event.NetEvent;
+import com.gregswebserver.catan.common.event.NetEventType;
 import com.gregswebserver.catan.server.Server;
 
 import java.net.Socket;
@@ -37,7 +39,15 @@ public class ConnectionPool implements Iterable<ServerConnection> {
     public void disconnect(int connectionID, String reason) {
         if (connections.containsKey(connectionID)) {
             ServerConnection conn = connections.remove(connectionID);
-            conn.sendEvent(new ControlEvent(server.getIdentity(), ControlEventType.Server_Disconnect, reason));
+            conn.sendEvent(new NetEvent(server.getIdentity(), NetEventType.Disconnect, reason));
+            conn.disconnect();
+            disconnectedClients++;
+        }
+    }
+
+    public void disconnectAll(String reason) {
+        for (ServerConnection conn : connections.values()) {
+            conn.sendEvent(new NetEvent(server.getIdentity(), NetEventType.Disconnect, reason));
             conn.disconnect();
             disconnectedClients++;
         }

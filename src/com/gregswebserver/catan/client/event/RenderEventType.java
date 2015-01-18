@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.event;
 
+import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.CatanGame;
@@ -14,14 +15,12 @@ import com.gregswebserver.catan.common.lobby.ClientPool;
 public enum RenderEventType implements EventType {
 
     ConnectionListCreate(ServerList.class), // Disconnected
-    // Connecting
+    ConnectProgress(Integer.class),
     LobbyListUpdate(ClientPool.class), // Connected
     DisconnectMessage(String.class),// Disconnecting
     GameCreate(CatanGame.class), //InGame
     Game_Update(null),
-    Window_Resize(null),
-    Render_Disable(null),
-    Render_Enable(null),
+    Canvas_Update(ScreenCanvas.class),
     Animation_Step(null);
 
     private Class payloadType;

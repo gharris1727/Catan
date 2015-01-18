@@ -2,10 +2,11 @@ package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.RenderEventType;
+import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.common.GenericWindow;
 
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -15,7 +16,7 @@ import java.awt.*;
 public class ClientWindow extends GenericWindow {
 
     private Client client;
-    private Canvas canvas;
+    private ScreenCanvas canvas;
     private InputListener listener;
     //Field to prevent the onResize function from spamming resize requests when there is one still processing.
     private boolean resizing = false;
@@ -26,37 +27,50 @@ public class ClientWindow extends GenericWindow {
     }
 
     public void setListener(InputListener listener) {
+        if (canvas != null) {
+            removeListeners();
+        }
         this.listener = listener;
+        addListeners();
+    }
+
+    private void removeListeners() {
+        if (canvas != null && listener != null) {
+            canvas.removeKeyListener(listener);
+            canvas.removeMouseListener(listener);
+            canvas.removeMouseMotionListener(listener);
+            canvas.removeMouseWheelListener(listener);
+        }
+    }
+
+    private void addListeners() {
+        if (canvas != null && listener != null) {
+            canvas.addKeyListener(listener);
+            canvas.addMouseListener(listener);
+            canvas.addMouseMotionListener(listener);
+            canvas.addMouseWheelListener(listener);
+        }
     }
 
     protected void onClose() {
         client.shutdown();
     }
 
-    protected synchronized void onResize(Dimension size) {
+    protected void onResize(Dimension size) {
         if (!resizing) {
-            if (canvas != null) {
-                remove(canvas);
-                canvas.removeKeyListener(listener);
-                canvas.removeMouseListener(listener);
-                canvas.removeMouseMotionListener(listener);
-                canvas.removeMouseWheelListener(listener);
-            }
-            client.addEvent(new RenderEvent(this, RenderEventType.Window_Resize, size));
+            resizing = true;
+            if (canvas != null)
+                synchronized (canvas) { //Make sure the existing canvas isn't currently rendering.
+                    removeListeners();
+                    remove(canvas);
+                }
+            canvas = new ScreenCanvas(size);
+            add(canvas);
+            addListeners();
+            setVisible(true);
+            client.addEvent(new RenderEvent(this, RenderEventType.Canvas_Update, canvas));
+            resizing = false;
         }
-        resizing = true;
-    }
-
-    public synchronized void setCanvas(Canvas newCanvas) {
-        canvas = newCanvas;
-        add(canvas);
-        setVisible(true);
-        canvas.addKeyListener(listener);
-        canvas.addMouseListener(listener);
-        canvas.addMouseMotionListener(listener);
-        canvas.addMouseWheelListener(listener);
-        client.addEvent(new RenderEvent(this, RenderEventType.Render_Enable, null));
-        resizing = false;
     }
 
     public String toString() {

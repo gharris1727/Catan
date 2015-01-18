@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.common.network;
+package com.gregswebserver.catan.common.event;
 
-import com.gregswebserver.catan.common.event.ExternalEvent;
+import com.gregswebserver.catan.common.network.Identity;
 
 /**
  * Created by Greg on 10/16/2014.

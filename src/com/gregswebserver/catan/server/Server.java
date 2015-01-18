@@ -2,19 +2,22 @@ package com.gregswebserver.catan.server;
 
 
 import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.ClientDatabase;
 import com.gregswebserver.catan.common.crypto.Password;
+import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.lobby.ClientPool;
 import com.gregswebserver.catan.common.lobby.ServerClient;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ConnectionPool;
-import com.gregswebserver.catan.common.network.ControlEvent;
 import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.network.NetEvent;
+import com.gregswebserver.catan.common.network.NetID;
+import com.gregswebserver.catan.common.network.ServerConnection;
 import com.gregswebserver.catan.server.event.ServerEvent;
 import com.gregswebserver.catan.server.event.ServerEventType;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -76,7 +79,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
     public void execute() throws ThreadStop {
         //Process events from the input queue.
         GenericEvent event = getEvent(true);
-//        logger.log("Server received event: " + event, LogLevel.DEBUG);
+        logger.log("Server received event: " + event, LogLevel.DEBUG);
         if (event instanceof InternalEvent) {
             if (event instanceof ServerEvent) {
                 serverEvent((ServerEvent) event);
@@ -116,11 +119,6 @@ public class Server extends QueuedInputThread<GenericEvent> {
             case Pass_Change:
                 database.passChange(event.getOrigin(), (Password) event.getPayload());
                 break;
-            case Handshake_Client_Connect:
-                //TODO: accept the client's handshake.
-                break;
-            case Handshake_Client_Connect_Success:
-            case Handshake_Client_Connect_Failure:
             case Server_Disconnect:
             case Pass_Change_Success:
             case Pass_Change_Failure:
@@ -162,15 +160,34 @@ public class Server extends QueuedInputThread<GenericEvent> {
     }
 
     public void netEvent(NetEvent event) {
-        //TODO: allow for the handshake to come through uninhibited.
-        if (database.validateSessionID(event.sessionID, event.event.getOrigin()))
-            addEvent(event.event);
+        switch (event.getType()) {
+            case Authenticate:
+                ServerConnection connection = (ServerConnection) event.getConnection();
+                try {
+                    AuthToken token = database.authenticate((NetID) event.getOrigin(), (UserLogin) event.getPayload());
+                    connection.sendEvent(new NetEvent(identity, NetEventType.AuthenticationSuccess, token));
+                    //TODO: do something on the server side.
+                } catch (AuthenticationException e) {
+                    connection.sendEvent(new NetEvent(identity, NetEventType.AuthenticationFailure, "Auth Failure."));
+                    int id = connection.getConnectionID();
+                    addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, id));
+                }
+                break;
+            case AuthenticationSuccess:
+                break;
+            case AuthenticationFailure:
+                break;
+            case Error:
+                break;
+            case External:
+                break;
+        }
     }
-
 
     public void shutdown() {
         window.dispose();
         listening = false;
+        connectionPool.disconnectAll("Server closed");
         try {
             socket.close();
             listen.join();

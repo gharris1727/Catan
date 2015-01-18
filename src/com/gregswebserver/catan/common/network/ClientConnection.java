@@ -3,6 +3,8 @@ package com.gregswebserver.catan.common.network;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.crypto.UserLogin;
+import com.gregswebserver.catan.common.event.NetEvent;
+import com.gregswebserver.catan.common.event.NetEventType;
 import com.gregswebserver.catan.common.log.LogLevel;
 
 import java.io.IOException;
@@ -31,21 +33,15 @@ public class ClientConnection extends NetConnection {
             socket = new Socket(remote.address, remote.port);
             local = new NetID(socket);
             out = new ObjectOutputStream(socket.getOutputStream());
-            sendEvent(new ControlEvent(info.identity, ControlEventType.Handshake_Client_Connect, info));
+            sendEvent(new NetEvent(local, NetEventType.Authenticate, info));
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
             receive.start();
         } catch (ConnectException ignored) {
-            hostDisconnect("Connect error: connection refused.");
+            onDisconnect("Connect error: connection refused.");
         } catch (IOException e) {
-            hostDisconnect("Connect error: " + e.getMessage() + ".");
+            onDisconnect("Connect error: " + e.getMessage() + ".");
             logger.log("Connection Error", e, LogLevel.ERROR);
         }
-    }
-
-    public void hostDisconnect(String message) {
-        open = false;
-        logger.log("Disconnected : " + message, LogLevel.DEBUG);
-        host.addEvent(new ControlEvent(((Client) host).getIdentity(), ControlEventType.Handshake_Client_Connect_Failure, message));
     }
 }

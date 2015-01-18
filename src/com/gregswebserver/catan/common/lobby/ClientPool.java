@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.common.lobby;
 
+import com.gregswebserver.catan.common.event.ControlEvent;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.network.ControlEvent;
 import com.gregswebserver.catan.common.network.Identity;
 
 import java.util.HashMap;

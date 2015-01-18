@@ -7,6 +7,7 @@ import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.common.network.NetID;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
+import javax.naming.AuthenticationException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 
@@ -24,11 +25,13 @@ public class ClientDatabase {
     private HashMap<Identity, ServerClient> clients;
     private HashMap<Identity, Integer> sessionIDs;
     private HashMap<Integer, Identity> identities;
+    private HashMap<Identity, NetID> lastSeen;
 
     public ClientDatabase(Logger logger) {
         this.logger = logger;
         sessionIDs = new HashMap<>();
         identities = new HashMap<>();
+        lastSeen = new HashMap<>();
     }
 
     public void loadResources() {
@@ -45,10 +48,12 @@ public class ClientDatabase {
         return passwords.containsKey(identity);
     }
 
-    public int authenticate(NetID remote, int connectionID, UserLogin login) {
-        if (isRegistered(login.identity) && authenticate(login))
-            return generateSessionID(login.identity);
-        return 0;
+    public AuthToken authenticate(NetID origin, UserLogin login) throws AuthenticationException {
+        if (isRegistered(login.identity) && authenticate(login)) {
+            lastSeen.put(login.identity, origin);
+            return generateAuthToken(login.identity);
+        }
+        throw new AuthenticationException("Auth failure.");
     }
 
     private boolean authenticate(UserLogin login) {
@@ -61,12 +66,12 @@ public class ClientDatabase {
         }
     }
 
-    private int generateSessionID(Identity identity) {
+    private AuthToken generateAuthToken(Identity identity) {
         revokeSessionID(identity);
         int sessionID = new SecureRandom().nextInt();
         sessionIDs.put(identity, sessionID);
         identities.put(sessionID, identity);
-        return sessionID;
+        return new AuthToken(identity, sessionID);
     }
 
     private void revokeSessionID(Identity identity) {
@@ -97,14 +102,13 @@ public class ClientDatabase {
         return removeLogin(identity) && registerLogin(new UserLogin(identity, password));
     }
 
-
     public ServerClient getServerClient(int sessionID) {
         Identity identity = identities.get(sessionID);
         if (identity == null) return null;
         return clients.get(identity);
     }
 
-    public boolean validateSessionID(int sessionID, Identity origin) {
-        return sessionIDs.get(origin) == sessionID;
+    public boolean validateAuthToken(AuthToken token) {
+        return sessionIDs.get(token.identity) == token.sessionID;
     }
 }

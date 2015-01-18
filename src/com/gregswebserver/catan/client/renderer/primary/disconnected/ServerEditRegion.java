@@ -1,11 +1,11 @@
-package com.gregswebserver.catan.client.renderer.connect;
+package com.gregswebserver.catan.client.renderer.primary.disconnected;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * Created by Greg on 1/5/2015.
