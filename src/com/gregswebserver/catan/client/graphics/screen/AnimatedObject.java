@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Animated;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
 
 import java.awt.*;
 import java.util.Iterator;

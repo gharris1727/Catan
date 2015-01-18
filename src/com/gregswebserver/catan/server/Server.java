@@ -117,6 +117,8 @@ public class Server extends QueuedInputThread<GenericEvent> {
                 database.passChange(event.getOrigin(), (Password) event.getPayload());
                 break;
             case Handshake_Client_Connect:
+                //TODO: accept the client's handshake.
+                break;
             case Handshake_Client_Connect_Success:
             case Handshake_Client_Connect_Failure:
             case Server_Disconnect:
@@ -160,6 +162,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
     }
 
     public void netEvent(NetEvent event) {
+        //TODO: allow for the handshake to come through uninhibited.
         if (database.validateSessionID(event.sessionID, event.event.getOrigin()))
             addEvent(event.event);
     }
@@ -182,7 +185,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
     }
 
     public String toString() {
-        return identity.username;
+        return "Server";
     }
 
 }

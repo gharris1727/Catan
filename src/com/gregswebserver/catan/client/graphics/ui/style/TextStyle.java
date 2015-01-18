@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.graphics.ui.style;
 
 import java.awt.*;
 

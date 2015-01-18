@@ -2,11 +2,11 @@ package com.gregswebserver.catan.client.renderer.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
+import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.player.Player;
@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by Greg on 1/5/2015.
  * Area responsible for rendering the inventory of the player.
  */
-public class InventoryRegion extends ColorScreenRegion {
+public class InventoryRegion extends ScreenRegion {
 
     private Player player;
 
@@ -31,8 +31,9 @@ public class InventoryRegion extends ColorScreenRegion {
         this.player = player;
     }
 
-    protected void render() {
+    protected void renderContents() {
         clear();
+        //TODO: rewrite.
         HashMap<Tradeable, Integer> inventory = player.getInventory();
         List<Point> positions = new ArrayList<>();
         for (Map.Entry<Tradeable, Integer> e : inventory.entrySet()) {

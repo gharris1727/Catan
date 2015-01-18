@@ -20,6 +20,7 @@ import java.net.SocketException;
 public abstract class NetConnection implements Runnable {
 
     protected final Logger logger;
+    protected QueuedInputThread<GenericEvent> host;
     protected NetID local;
     protected NetID remote;
     protected int sessionID;
@@ -31,6 +32,7 @@ public abstract class NetConnection implements Runnable {
     protected boolean open;
 
     public NetConnection(QueuedInputThread<GenericEvent> host) {
+        this.host = host;
         this.logger = host.logger;
         //Thread to establish a connection, uses this class' own run() method from Runnable.
         connect = new Thread(this);
@@ -42,10 +44,9 @@ public abstract class NetConnection implements Runnable {
                         NetEvent e = ((NetEvent) in.readObject());
                         host.addEvent(e);
                     } catch (EOFException | SocketException ignored) {
-                        open = false;
-                        logger.log("Connection closed", LogLevel.INFO);
+                        hostDisconnect("Receive failure: connection closed.");
                     } catch (ClassCastException | ClassNotFoundException | IOException e) {
-                        open = false;
+                        hostDisconnect("Receive failure: " + e.getMessage() + ".");
                         logger.log("Error while receiving", e, LogLevel.ERROR);
                     }
                 }
@@ -54,7 +55,6 @@ public abstract class NetConnection implements Runnable {
         //Thread to close the socket and sever the connection.
         disconnect = new Thread("Disconnect") {
             public void run() {
-                logger.log("Disconnecting...", LogLevel.INFO);
                 open = false;
                 try {
                     connect.join();
@@ -66,13 +66,12 @@ public abstract class NetConnection implements Runnable {
                         socket.close();
                     receive.join();
                 } catch (InterruptedException ignored) {
-                    //Something happened to the other threads
+                    hostDisconnect("Disconnect failure: synchronization error.");
                 } catch (SocketException ignored) {
-                    logger.log("Connection Closed", LogLevel.INFO);
+                    hostDisconnect("Disconnect failure: connection closed.");
                 } catch (IOException e) {
-                    logger.log("Disconnect Failure", e, LogLevel.ERROR);
+                    logger.log("Disconnect failure", e, LogLevel.ERROR);
                 }
-                logger.log("Disconnected", LogLevel.INFO);
             }
         };
     }
@@ -81,10 +80,9 @@ public abstract class NetConnection implements Runnable {
         try {
             out.writeObject(new NetEvent(sessionID, event));
         } catch (SocketException ignored) {
-            open = false;
-            logger.log("Connection closed", LogLevel.INFO);
+            hostDisconnect("Send failure: connection closed.");
         } catch (IOException e) {
-            open = false;
+            hostDisconnect("Send failure: " + e.getMessage() + ".");
             logger.log("Send Failure", e, LogLevel.ERROR);
         }
     }
@@ -100,4 +98,6 @@ public abstract class NetConnection implements Runnable {
     public boolean isOpen() {
         return open;
     }
+
+    public abstract void hostDisconnect(String message);
 }

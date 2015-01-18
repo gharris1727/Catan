@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.common.resources;
 
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.GraphicSource;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.TextStyle;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
-import com.gregswebserver.catan.client.graphics.util.GraphicSource;
+import com.gregswebserver.catan.client.graphics.ui.style.TextStyle;
 import com.gregswebserver.catan.client.resources.GameInfo;
 import com.gregswebserver.catan.client.resources.GraphicInfo;
 import com.gregswebserver.catan.client.resources.GraphicSourceInfo;

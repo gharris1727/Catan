@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 
 import java.awt.*;

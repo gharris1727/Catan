@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.client.resources.RenderMaskInfo;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;

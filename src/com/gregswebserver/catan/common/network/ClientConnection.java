@@ -26,7 +26,6 @@ public class ClientConnection extends NetConnection {
     }
 
     public void run() {
-        logger.log("Connecting to remote Server...", LogLevel.INFO);
         try {
             open = true;
             socket = new Socket(remote.address, remote.port);
@@ -35,14 +34,18 @@ public class ClientConnection extends NetConnection {
             sendEvent(new ControlEvent(info.identity, ControlEventType.Handshake_Client_Connect, info));
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
-            logger.log("Received reply from server.", LogLevel.DEBUG);
             receive.start();
         } catch (ConnectException ignored) {
-            open = false;
-            logger.log("Connection Refused", LogLevel.WARN);
+            hostDisconnect("Connect error: connection refused.");
         } catch (IOException e) {
-            open = false;
+            hostDisconnect("Connect error: " + e.getMessage() + ".");
             logger.log("Connection Error", e, LogLevel.ERROR);
         }
+    }
+
+    public void hostDisconnect(String message) {
+        open = false;
+        logger.log("Disconnected : " + message, LogLevel.DEBUG);
+        host.addEvent(new ControlEvent(((Client) host).getIdentity(), ControlEventType.Handshake_Client_Connect_Failure, message));
     }
 }

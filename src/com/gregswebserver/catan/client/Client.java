@@ -1,10 +1,7 @@
 package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.client.event.ClientEvent;
-import com.gregswebserver.catan.client.event.RenderEvent;
-import com.gregswebserver.catan.client.event.RenderEventType;
-import com.gregswebserver.catan.client.event.UserEvent;
+import com.gregswebserver.catan.client.event.*;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderThread;
@@ -23,6 +20,9 @@ import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.*;
 
 import java.awt.*;
+import java.net.UnknownHostException;
+
+import static com.gregswebserver.catan.client.state.ClientState.*;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -34,37 +34,19 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
     private ClientWindow window;
     private InputListener listener;
-    //TODO: fully implement client states.
     private ClientState state;
-    //Other sub-QueuedInputThreads
     private ChatThread chatThread;
     private GameThread gameThread;
     private RenderThread renderThread;
     private ClientConnection connection;
     private Identity identity;
     private ClientPool clientPool;
-    private ServerList loginList;
 
     public Client() {
         super(Main.logger); //TODO: Create a separate logger for the client.
-
-        window = new ClientWindow(this);
-        listener = new InputListener(this);
-        window.setListener(listener);
-        chatThread = new ChatThread(logger);
-        gameThread = new GameThread(this);
-        renderThread = new RenderThread(this);
-        loginList = new ServerList();
-
-        state = ClientState.Disconnected;
+        state = Disconnected;
+        addEvent(new ClientEvent(this, ClientEventType.Startup, null));
         start();
-        renderThread.start();
-        loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
-        loginList.add(new ConnectionInfo("invalid", "25000", "Jeff", "password1"));
-        loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
-        loginList.add(new ConnectionInfo("localhost", "25000", "", "password3"));
-        loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
-        renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionList_Create, loginList));
     }
 
 
@@ -72,14 +54,14 @@ public class Client extends QueuedInputThread<GenericEvent> {
         GenericEvent event = getEvent(true);
         logger.log("Client received event: " + event, LogLevel.DEBUG);
         if (event instanceof ExternalEvent) {
-            if (event instanceof ChatEvent)
+            if (event instanceof ChatEvent && chatThread != null)
                 chatThread.addEvent((ChatEvent) event);
-            if (event instanceof GameEvent)
+            if (event instanceof GameEvent && gameThread != null)
                 gameThread.addEvent((GameEvent) event);
             if (event instanceof ControlEvent)
                 controlEvent((ControlEvent) event);
         } else if (event instanceof InternalEvent) {
-            if (event instanceof RenderEvent)
+            if (event instanceof RenderEvent && renderThread != null)
                 renderThread.addEvent((RenderEvent) event);
             if (event instanceof ClientEvent)
                 clientEvent((ClientEvent) event);
@@ -95,6 +77,17 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
     private void clientEvent(ClientEvent event) {
         switch (event.getType()) {
+            case Startup:
+                startup();
+                //TODO: remove this testing data.
+                ServerList loginList = new ServerList();
+                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
+                loginList.add(new ConnectionInfo("invalid", "25000", "Jeff", "password1"));
+                loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
+                loginList.add(new ConnectionInfo("localhost", "25000", "", "password3"));
+                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
+                renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionListCreate, loginList));
+                break;
             case Quit_All:
                 shutdown();
                 break;
@@ -112,14 +105,21 @@ public class Client extends QueuedInputThread<GenericEvent> {
         switch (event.getType()) {
             case Net_Connect:
                 //Connect to remote server
-                state = ClientState.Connecting;
-                ServerLogin serverLogin = (ServerLogin) event.getPayload();
-                identity = serverLogin.login.identity;
-                connection = new ClientConnection(this, serverLogin);
-                connection.connect();
+                state = Connecting;
+                ConnectionInfo info = (ConnectionInfo) event.getPayload();
+                try {
+                    ServerLogin login = info.createServerLogin();
+                    identity = login.login.identity;
+                    connection = new ClientConnection(this, login);
+                    connection.connect();
+                } catch (UnknownHostException | NumberFormatException e) {
+                    logger.log(e, LogLevel.WARN);
+                    addEvent(new RenderEvent(this, RenderEventType.DisconnectMessage, e.getMessage()));
+                    state = Disconnecting;
+                }
                 break;
             case Net_Disconnect:
-                state = ClientState.Disconnecting;
+                state = Disconnecting;
                 disconnect("Quitting");
                 break;
             case Lobby_Create:
@@ -161,16 +161,18 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 //Should never get here, this event should die in the server.
                 break;
             case Handshake_Client_Connect_Success:
-                state = ClientState.Connected;
+                state = Connected;
                 clientPool = (ClientPool) event.getPayload();
+                addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, clientPool));
                 logger.log("Connected to remote server", LogLevel.DEBUG);
                 break;
             case Handshake_Client_Connect_Failure:
-                state = ClientState.Disconnected;
+                state = Disconnected;
+                addEvent(new RenderEvent(this, RenderEventType.DisconnectMessage, event.getPayload()));
                 logger.log("Unable to connect to remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case Server_Disconnect:
-                state = ClientState.Disconnected;
+                state = Disconnected;
                 logger.log("Disconnected from remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case Pass_Change:
@@ -198,30 +200,30 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 }
                 break;
             case Game_Start:
-                state = ClientState.Starting;
+                state = Starting;
                 //TODO: create a new game.
                 gameThread.start();
                 break;
             case Game_Quit:
-                state = ClientState.Quitting;
+                state = Quitting;
                 break;
             case Game_End:
-                state = ClientState.Finishing;
+                state = Finishing;
                 break;
             case Game_Replay:
-                state = ClientState.Joining;
+                state = Joining;
                 break;
             case Replay_Start:
-                state = ClientState.Spectating;
+                state = Spectating;
                 break;
             case Replay_Quit:
-                state = ClientState.Quitting;
+                state = Quitting;
                 break;
             case Spectate_Start:
-                state = ClientState.Spectating;
+                state = Spectating;
                 break;
             case Spectate_Quit:
-                state = ClientState.Quitting;
+                state = Quitting;
                 break;
         }
     }
@@ -231,20 +233,31 @@ public class Client extends QueuedInputThread<GenericEvent> {
         addEvent(event.event);
     }
 
-    public void disconnect(String reason) {
-        if (connection != null && connection.isOpen()) {
-            connection.sendEvent(new ControlEvent(identity, ControlEventType.Client_Disconnect, reason));
-            connection.disconnect();
-        }
+    private void startup() {
+        window = new ClientWindow(this);
+        listener = new InputListener(this);
+        window.setListener(listener);
+        renderThread = new RenderThread(this);
+        renderThread.start();
     }
 
     public void shutdown() {
         //Shut down the client and all running threads.
         disconnect("Quitting");
-        chatThread.stop();
-        gameThread.stop();
-        renderThread.stop();
+        if (renderThread != null && renderThread.isRunning())
+            renderThread.stop();
+//        if (chatThread != null && chatThread.isRunning())
+//            chatThread.stop();
+        if (gameThread != null && gameThread.isRunning())
+            gameThread.stop();
         stop();
+    }
+
+    public void disconnect(String reason) {
+        if (connection != null && connection.isOpen()) {
+            connection.sendEvent(new ControlEvent(identity, ControlEventType.Client_Disconnect, reason));
+            connection.disconnect();
+        }
     }
 
     public Identity getIdentity() {

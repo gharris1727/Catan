@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.player;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 
 /**

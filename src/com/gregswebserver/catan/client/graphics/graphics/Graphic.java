@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.client.graphics.util;
+package com.gregswebserver.catan.client.graphics.graphics;
 
 
-import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.resources.ResourceLoadException;
 
@@ -19,16 +18,11 @@ public class Graphic {
     protected int[] pixels, hitbox;
     private RenderMask mask;
 
+    //For subclasses to do their own instantiation.
     protected Graphic() {
     }
 
-    //For use in the ObjectArea class to create a new, blank graphic.
-    public Graphic(Dimension size) {
-        this(new RectangularMask(size));
-        clear();
-    }
-
-    //For use in the Statics class to create graphics from source files.
+    //For creating Graphics from other Graphics (usually StaticGraphics).
     public Graphic(Graphic source, RenderMask mask, Point start) throws ResourceLoadException {
         this(mask);
         try {
@@ -38,15 +32,10 @@ public class Graphic {
         }
     }
 
-    //For use in the BoardObject subclasses for complex
+    //Primary constructor for a blank Graphic object.
     public Graphic(RenderMask mask) {
-        this(new int[mask.getPixelCount()], new int[mask.getPixelCount()], mask);
-    }
-
-    //Underlying constructor
-    protected Graphic(int[] pixels, int[] hitbox, RenderMask mask) {
-        this.pixels = pixels;
-        this.hitbox = hitbox;
+        this.pixels = new int[mask.getPixelCount()];
+        this.hitbox = new int[mask.getPixelCount()];
         this.mask = mask;
         this.name = "Graphic " + mask + " Pixels: " + mask.getPixelCount();
     }
@@ -100,10 +89,7 @@ public class Graphic {
             if (length < 1) continue;
             //Copy
             pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length, trans);
-            if (color > 0)
-                colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
-            else
-                pixelCopy(from.hitbox, from.mask.getIndex(currX, currY), 1, to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, length, false);
+            colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
         }
     }
 

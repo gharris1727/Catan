@@ -2,8 +2,8 @@ package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.resources.GraphicSet;
+import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -13,33 +13,25 @@ import java.awt.event.MouseEvent;
  * Created by Greg on 1/3/2015.
  * A screen area containing a text box that is editable by the user.
  */
-public abstract class TextBox extends ScreenRegion {
+public abstract class TextBox extends UIScreenRegion {
 
     private EditableState state;
     private EditableState previous;
-    private ScreenRegion background;
     private String text;
     private int cursorPos;
     private int selectStart;
     private int selectEnd;
 
-    public TextBox(Point position, int priority, RenderMask mask, GraphicSet style) {
-        super(position, priority, mask);
+    public TextBox(Point position, int priority, RenderMask mask, UIStyle style) {
+        super(position, priority, mask, style);
         state = EditableState.Deselected;
         previous = state;
-    }
-
-    public void setMask(RenderMask mask) {
-        if (background != null)
-            background.setMask(mask);
-        super.setMask(mask);
+        //TODO: implement.
     }
 
     public String getText() {
         return text;
     }
-
-    //TODO: add text editing.
 
     public UserEvent onMouseClick(MouseEvent event) {
         return super.onMouseClick(event);
@@ -61,12 +53,7 @@ public abstract class TextBox extends ScreenRegion {
         return super.onKeyTyped(event);
     }
 
-    public void render() {
-        clear();
-        add(background);
-    }
-
-    protected enum EditableState {
+    private enum EditableState {
         Deselected, SingleChar, DragSelect, DragMove,
     }
 }

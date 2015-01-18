@@ -23,6 +23,7 @@ public abstract class ScreenObject implements Clickable {
         this.position = position;
         this.priority = priority;
         hitboxColor = UniqueColor.getNext();
+        redirect = null;
     }
 
     //Method to defer all clickable operations to another clickable object.

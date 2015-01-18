@@ -4,21 +4,26 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
+import com.gregswebserver.catan.client.graphics.graphics.Screen;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
-import com.gregswebserver.catan.client.graphics.util.Screen;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.renderer.connect.ConnectScreenRegion;
+import com.gregswebserver.catan.client.renderer.disconnect.DisconnectScreenRegion;
 import com.gregswebserver.catan.client.renderer.ingame.InGameScreenRegion;
+import com.gregswebserver.catan.client.renderer.server.ServerScreenRegion;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.crypto.ServerList;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.lobby.ClientPool;
 
 import java.awt.*;
 import java.util.HashMap;
+
+import static com.gregswebserver.catan.client.state.ClientState.*;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -48,16 +53,24 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         //Process the event queue, blocking for every event. Only re-renders what needs to be re-rendered.
         RenderEvent event = getEvent(true);
         switch (event.getType()) {
-            case ConnectionList_Create:
+            case ConnectionListCreate:
                 ConnectScreenRegion connect = new ConnectScreenRegion(screenMask, style, (ServerList) event.getPayload());
-                areas.put(ClientState.Disconnected, connect);
+                areas.put(Disconnected, connect);
                 break;
-            case Game_Create:
+            case LobbyListUpdate:
+                ServerScreenRegion lobby = new ServerScreenRegion(screenMask, style, (ClientPool) event.getPayload());
+                areas.put(Connected, lobby);
+                break;
+            case DisconnectMessage:
+                DisconnectScreenRegion disconnect = new DisconnectScreenRegion(screenMask, style, (String) event.getPayload());
+                areas.put(Disconnecting, disconnect);
+                break;
+            case GameCreate:
                 InGameScreenRegion gameCreate = new InGameScreenRegion(screenMask, style, (CatanGame) event.getPayload());
-                areas.put(ClientState.InGame, gameCreate);
+                areas.put(InGame, gameCreate);
                 break;
             case Game_Update:
-                InGameScreenRegion gameUpdate = (InGameScreenRegion) areas.get(ClientState.InGame);
+                InGameScreenRegion gameUpdate = (InGameScreenRegion) areas.get(InGame);
                 gameUpdate.update();
                 break;
             case Window_Resize:
@@ -66,7 +79,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                 screen.resize(size);
                 screenMask = new RectangularMask(size);
                 for (ScreenRegion area : areas.values())
-                    area.setMask(screenMask);
+                    area.resize(screenMask);
                 client.addEvent(new ClientEvent(this, ClientEventType.Canvas_Update, screen.getCanvas()));
                 break;
             case Render_Disable:

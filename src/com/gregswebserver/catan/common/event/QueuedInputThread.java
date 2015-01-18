@@ -84,4 +84,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
 
     public abstract String toString(); //force downstream to override this.
 
+    public boolean isRunning() {
+        return running;
+    }
 }

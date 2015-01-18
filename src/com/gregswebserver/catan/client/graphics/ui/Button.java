@@ -1,10 +1,13 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.TextGraphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.util.Graphic;
-import com.gregswebserver.catan.client.graphics.util.TextGraphic;
+import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 
 import java.awt.*;
 
@@ -16,6 +19,7 @@ public abstract class Button extends UIScreenRegion {
 
     private String label;
     private ScreenRegion background;
+    private StaticObject text;
 
     public Button(Point position, int priority, RenderMask mask, UIStyle style, String label) {
         super(position, priority, mask, style);
@@ -25,26 +29,17 @@ public abstract class Button extends UIScreenRegion {
                 return "ButtonBackground";
             }
         };
-        background.setClickable(this);
-    }
-
-    public void setMask(RenderMask mask) {
-        if (background != null)
-            background.setMask(mask);
-        super.setMask(mask);
-    }
-
-    protected void render() {
-        clear();
-        add(background);
-
         Graphic textGraphic = new TextGraphic(getStyle().getDarkTextStyle(), label);
-        Point position = getCenteredPosition(textGraphic.getMask());
-        add(new StaticObject(position, 1, textGraphic) {
+        text = new StaticObject(getCenteredPosition(textGraphic.getMask()), 1, textGraphic) {
             public String toString() {
                 return "ButtonLabel";
             }
-        }).setClickable(this);
+        };
+        add(background).setClickable(this);
+        add(text).setClickable(this);
     }
 
+    public void resizeContents(RenderMask mask) {
+        background.resize(mask);
+    }
 }

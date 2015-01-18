@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Graphical;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;

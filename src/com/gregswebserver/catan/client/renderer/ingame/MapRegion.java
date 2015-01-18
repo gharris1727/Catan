@@ -4,11 +4,10 @@ import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ColorScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
@@ -29,7 +28,7 @@ import java.util.Map;
  * Created by Greg on 1/5/2015.
  * The region of the screen responsible for rendering the game map.
  */
-public class MapRegion extends ColorScreenRegion {
+public class MapRegion extends ScreenRegion {
 
     private final CatanGame game;
     private final RenderMask boardSize;
@@ -74,8 +73,7 @@ public class MapRegion extends ColorScreenRegion {
         return null;
     }
 
-    public void setMask(RenderMask mask) {
-        super.setMask(mask);
+    public void resizeComponents(RenderMask mask) {
         limitBackdropScroll();
     }
 
@@ -94,7 +92,7 @@ public class MapRegion extends ColorScreenRegion {
         }
     }
 
-    private class MiddleGround extends ColorScreenRegion {
+    private class MiddleGround extends ScreenRegion {
 
         private HashMap<Coordinate, MapScreenObject> tiles;
         private HashMap<Coordinate, MapScreenObject> roads;
@@ -136,12 +134,7 @@ public class MapRegion extends ColorScreenRegion {
             super.clear();
         }
 
-        protected void render() {
-            //TODO: adaptively update the screen to avoid clearing and re-rendering everything.
-            renderAll();
-        }
-
-        private void renderAll() {
+        protected void renderContents() {
             clear();
             HashMap<Coordinate, Tile> tiles = board.getTileMap();
             HashMap<Coordinate, Path> paths = board.getPathMap();
@@ -197,7 +190,7 @@ public class MapRegion extends ColorScreenRegion {
         }
     }
 
-    private class Foreground extends ColorScreenRegion {
+    private class Foreground extends ScreenRegion {
 
         public Foreground(Point position, int priority, RenderMask mask) {
             super(position, priority, mask);

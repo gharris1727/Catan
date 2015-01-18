@@ -1,11 +1,13 @@
 package com.gregswebserver.catan.client.resources;
 
-import com.gregswebserver.catan.client.graphics.util.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.game.gameplay.enums.*;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
+import java.util.Arrays;
 
 import static com.gregswebserver.catan.client.resources.RenderMaskInfo.*;
 
@@ -39,9 +41,11 @@ public enum GraphicSet {
     UIBlueText(GraphicSourceInfo.BlueUIText, UISmallMask, Direction.values().length),
     UIBlueButton(GraphicSourceInfo.BlueUIButton, UISmallMask, Direction.values().length);
 
+    private final RenderMaskInfo[] masks;
     private final GraphicInfo[] graphics;
 
     GraphicSet(GraphicSourceInfo source, RenderMaskInfo[] masks) {
+        this.masks = masks;
         graphics = new GraphicInfo[masks.length];
         int width = 0;
         for (int i = 0; i < graphics.length; i++) {
@@ -53,6 +57,8 @@ public enum GraphicSet {
     }
 
     GraphicSet(GraphicSourceInfo source, RenderMaskInfo mask, int num) {
+        masks = new RenderMaskInfo[num];
+        Arrays.fill(masks, mask);
         graphics = new GraphicInfo[num];
         int width = mask.getMask().getWidth();
         for (int i = 0; i < graphics.length; i++) {
@@ -61,6 +67,18 @@ public enum GraphicSet {
     }
 
     public Graphic getGraphic(int ordinal) {
+        if (ordinal < 0 || ordinal >= graphics.length)
+            throw new IllegalArgumentException("Unable to provide selected graphic: Out of range");
         return ResourceLoader.getGraphic(graphics[ordinal]);
+    }
+
+    public RenderMask getMask() {
+        return getMask(0);
+    }
+
+    public RenderMask getMask(int ordinal) {
+        if (ordinal < 0 || ordinal >= masks.length)
+            throw new IllegalArgumentException("Unable to provide selected graphic: Out of range");
+        return masks[ordinal].getMask();
     }
 }

@@ -1,7 +1,7 @@
-package com.gregswebserver.catan.client.graphics.util;
+package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.TextStyle;
+import com.gregswebserver.catan.client.graphics.ui.style.TextStyle;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -24,16 +24,16 @@ public class TextGraphic extends Graphic {
         Font f = style.getFont();
         FontRenderContext frc = new FontRenderContext(null, false, false);
         layout = new TextLayout(text, f, frc);
-        Rectangle2D bounds = layout.getBounds();
-        int width = (int) bounds.getWidth() + (int) layout.getAdvance();
-        int height = (int) bounds.getHeight() + (int) layout.getDescent();
+        Rectangle2D bounds = f.getStringBounds(text, frc);
+        int width = (int) bounds.getWidth();
+        int height = (int) layout.getAscent() + (int) layout.getDescent();
         BufferedImage image = new BufferedImage(width, height, TYPE_INT_RGB);
         setPixels(((DataBufferInt) image.getRaster().getDataBuffer()).getData());
         setMask(new RectangularMask(new Dimension(width, height)));
         clear();
         Graphics g = image.getGraphics();
         g.setColor(style.getColor());
-        layout.draw((Graphics2D) g, (int) layout.getLeading(), (int) layout.getAscent());
+        layout.draw((Graphics2D) g, 0, (int) layout.getAscent());
         g.dispose();
     }
 

@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.graphics.ui.util;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
@@ -25,9 +25,9 @@ public abstract class TiledBackground extends ScreenRegion {
         return style;
     }
 
-    protected void render() {
+    protected void renderContents() {
         clear();
-        RenderMask mask = getStyle().getGraphic(0).getMask();
+        RenderMask mask = getStyle().getMask();
         int texWidth = mask.getWidth();
         int texHeight = mask.getHeight();
         int totWidth = getMask().getWidth();

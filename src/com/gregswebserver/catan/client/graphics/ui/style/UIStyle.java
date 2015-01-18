@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.graphics.ui.style;
 
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.client.resources.TextStyleInfo;

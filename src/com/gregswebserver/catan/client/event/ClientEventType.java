@@ -12,6 +12,7 @@ import java.awt.*;
  */
 public enum ClientEventType implements EventType {
 
+    Startup(null), //Event that starts the client from inside its own thread.
     Quit_All(null), //Kills all client processes and exits the game.
     Canvas_Update(Canvas.class), //Event sent from the renderThread which updates the Canvas object kept in the ClientWindow.
     Hitbox_Update(Clickable.class); //Event sent from the renderThread that updates the hitbox information in ClientListener.

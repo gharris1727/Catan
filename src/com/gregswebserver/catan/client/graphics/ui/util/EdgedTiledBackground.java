@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.graphics.ui.util;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
@@ -17,9 +17,9 @@ public abstract class EdgedTiledBackground extends TiledBackground {
         super(position, priority, mask, textures);
     }
 
-    protected void render() {
-        super.render();
-        RenderMask mask = getStyle().getGraphic(0).getMask();
+    protected void renderContents() {
+        super.renderContents();
+        RenderMask mask = getStyle().getMask();
         int texWidth = mask.getWidth();
         int texHeight = mask.getHeight();
         int totWidth = getMask().getWidth();
