@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.crypto;
 
-import com.gregswebserver.catan.common.network.Identity;
 import com.gregswebserver.catan.common.network.NetID;
 
 import java.net.InetAddress;
@@ -65,7 +64,7 @@ public class ConnectionInfo {
     public ServerLogin createServerLogin() throws NumberFormatException, UnknownHostException {
         int portNumber = Integer.parseInt(port);
         NetID netID = new NetID(InetAddress.getByName(remote), portNumber);
-        UserLogin userLogin = new UserLogin(new Identity(username), password);
+        UserLogin userLogin = new UserLogin(new Username(username), password);
         return new ServerLogin(netID, userLogin);
     }
 }

@@ -14,9 +14,9 @@ import java.awt.event.WindowEvent;
  * Created by Greg on 8/11/2014.
  * Generic window that extends JFrame and has some basic config settings.
  */
-public abstract class GenericWindow extends JFrame {
+public abstract class CoreWindow extends JFrame {
 
-    protected GenericWindow(String title, Dimension d, boolean resizable, Logger logger) {
+    protected CoreWindow(String title, Dimension d, boolean resizable, Logger logger) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {

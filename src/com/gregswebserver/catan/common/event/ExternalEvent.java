@@ -1,22 +1,22 @@
 package com.gregswebserver.catan.common.event;
 
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 import java.io.Serializable;
 
 /**
  * Created by Greg on 8/12/2014.
- * Event that is capable of being sent across the network, carries origin identity information.
+ * Event that is capable of being sent across the network, carries origin username information.
  */
 public abstract class ExternalEvent<T extends EventType> extends GenericEvent implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    protected final Identity origin;
+    protected final Username origin;
     protected final T type;
     protected final Object payload;
 
-    protected ExternalEvent(Identity origin, T type, Object payload) {
+    protected ExternalEvent(Username origin, T type, Object payload) {
         this.origin = origin;
         this.type = type;
         this.payload = payload;
@@ -27,7 +27,7 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
             throw new EventPayloadException(payload, Serializable.class);
     }
 
-    public Identity getOrigin() {
+    public Username getOrigin() {
         return origin;
     }
 
@@ -40,6 +40,6 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
     }
 
     public String toString() {
-        return "[EXT EVENT] O:" + origin + " T:" + type + " P:" + payload;
+        return "[EXTERNAL] O(" + origin + ") T(" + type + ") P(" + payload + ")";
     }
 }

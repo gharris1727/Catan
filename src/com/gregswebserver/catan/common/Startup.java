@@ -15,7 +15,7 @@ import java.net.InetAddress;
  * Created by Greg on 8/10/2014.
  * Splash screen to allow either starting a server or log into one.
  */
-public class Startup extends GenericWindow {
+public class Startup extends CoreWindow {
 
     private JPanel contentPane;
     private JTextField[] fields = new JTextField[TextField.values().length];
@@ -108,7 +108,7 @@ public class Startup extends GenericWindow {
 
     private void startClient(InetAddress host, int port, String username, String password) {
         Client client = new Client();
-//        client.addEvent(new ControlEvent(new Identity("Startup"), ControlEventType.Game_Start, null));
+//        client.addEvent(new ControlEvent(new Username("Startup"), ControlEventType.Game_Start, null));
     }
 
     private void startServer(int port, String password) {

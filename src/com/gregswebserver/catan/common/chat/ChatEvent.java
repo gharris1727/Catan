@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.chat;
 
 import com.gregswebserver.catan.common.event.ExternalEvent;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,13 +17,13 @@ public class ChatEvent extends ExternalEvent<ChatEventType> {
     public final String message;
 
     //General purpose constructor.
-    public ChatEvent(Identity origin, String message) {
+    public ChatEvent(Username origin, String message) {
         super(origin, ChatEventType.Lobby, null);
         this.message = format(message);
     }
 
     //Custom constructor.
-    public ChatEvent(Identity origin, ChatEventType type, Identity destination, String message) {
+    public ChatEvent(Username origin, ChatEventType type, Username destination, String message) {
         super(origin, type, destination);
         this.message = format(message);
     }

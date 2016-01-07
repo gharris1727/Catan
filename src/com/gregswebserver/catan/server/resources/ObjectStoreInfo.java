@@ -6,8 +6,7 @@ package com.gregswebserver.catan.server.resources;
  */
 public enum ObjectStoreInfo {
 
-    UserInfo("users"),
-    Authentication("auth");
+    UserInfo("users");
 
     private String name;
 

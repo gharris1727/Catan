@@ -2,17 +2,16 @@ package com.gregswebserver.catan.server;
 
 
 import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.common.crypto.ClientDatabase;
+import com.gregswebserver.catan.common.crypto.UserDatabase;
 import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.lobby.ClientPool;
-import com.gregswebserver.catan.common.lobby.ServerClient;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ConnectionPool;
-import com.gregswebserver.catan.common.network.Identity;
-import com.gregswebserver.catan.common.network.NetID;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.network.ServerConnection;
 import com.gregswebserver.catan.server.event.ServerEvent;
 import com.gregswebserver.catan.server.event.ServerEventType;
@@ -22,16 +21,16 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.security.SecureRandom;
 
 /**
  * Created by Greg on 8/9/2014.
  * Server architecture to allow for multi-player over internet.
  */
-public class Server extends QueuedInputThread<GenericEvent> {
+public class Server extends CoreThread {
 
-    private final Identity identity;
     private final ServerWindow window;
-    private ClientDatabase database;
+    private UserDatabase database;
     private ConnectionPool connectionPool;
     private ClientPool clientPool;
 
@@ -41,11 +40,12 @@ public class Server extends QueuedInputThread<GenericEvent> {
 
     public Server() {
         super(Main.logger); //TODO: Create new logger for the server.
-        identity = new Identity("Server"); //For use in chat and sending events originating here.
+        token = new AuthToken(new Username("Server"),new SecureRandom().nextInt()); //For use in chat and sending events originating here.
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
-        database = new ClientDatabase(logger);
+        database = new UserDatabase(logger);
         clientPool = new ClientPool();
+        start();
     }
 
     public void start(int port) {
@@ -76,40 +76,32 @@ public class Server extends QueuedInputThread<GenericEvent> {
         }
     }
 
-    public void execute() throws ThreadStop {
-        //Process events from the input queue.
-        GenericEvent event = getEvent(true);
-        logger.log("Server received event: " + event, LogLevel.DEBUG);
-        if (event instanceof InternalEvent) {
-            if (event instanceof ServerEvent) {
-                serverEvent((ServerEvent) event);
-            } else {
-                logger.log("Received invalid InternalEvent", LogLevel.ERROR);
-            }
-        } else if (event instanceof ExternalEvent) {
-            if (event instanceof ControlEvent) {
-                controlEvent((ControlEvent) event);
-            } else {
-                logger.log("Received invalid ExternalEvent", LogLevel.ERROR);
-            }
-        } else if (event instanceof NetEvent) {
-            netEvent((NetEvent) event);
-        } else {
-            logger.log("Received invalid GenericEvent", LogLevel.ERROR);
-        }
+    protected void externalEvent(ExternalEvent event) {
+        if (event instanceof ControlEvent)
+            controlEvent((ControlEvent) event);
+        else
+            logger.log("Received invalid ExternalEvent", LogLevel.ERROR);
+    }
 
+    protected void internalEvent(InternalEvent event) {
+        if (event instanceof ServerEvent)
+            serverEvent((ServerEvent) event);
+        else
+            logger.log("Received invalid InternalEvent", LogLevel.ERROR);
     }
 
     private void serverEvent(ServerEvent event) {
         switch (event.getType()) {
             case Quit_All:
+                if (database != null) {
+                    database.dumpResources();
+                }
                 shutdown();
                 break;
             case Client_Disconnect:
                 connectionPool.disconnect((Integer) event.getPayload(), "Disconnected");
                 break;
             case Client_Connect:
-                ServerClient client = database.getServerClient((int) event.getPayload());
                 break;
         }
     }
@@ -117,7 +109,7 @@ public class Server extends QueuedInputThread<GenericEvent> {
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
             case Pass_Change:
-                database.passChange(event.getOrigin(), (Password) event.getPayload());
+                database.changePassword(event.getOrigin(), (Password) event.getPayload());
                 break;
             case Server_Disconnect:
             case Pass_Change_Success:
@@ -162,13 +154,15 @@ public class Server extends QueuedInputThread<GenericEvent> {
     public void netEvent(NetEvent event) {
         switch (event.getType()) {
             case Authenticate:
+                logger.log("Authenticating client",LogLevel.DEBUG);
                 ServerConnection connection = (ServerConnection) event.getConnection();
                 try {
-                    AuthToken token = database.authenticate((NetID) event.getOrigin(), (UserLogin) event.getPayload());
-                    connection.sendEvent(new NetEvent(identity, NetEventType.AuthenticationSuccess, token));
-                    //TODO: do something on the server side.
+                    AuthToken clientToken = database.authenticate((UserLogin) event.getPayload());
+                    connection.sendEvent(new NetEvent(token, NetEventType.AuthenticationSuccess, clientToken));
+                    //TODO: do something on the server side when the client authenticates.
                 } catch (AuthenticationException e) {
-                    connection.sendEvent(new NetEvent(identity, NetEventType.AuthenticationFailure, "Auth Failure."));
+                    logger.log(e,LogLevel.WARN);
+                    connection.sendEvent(new NetEvent(token, NetEventType.AuthenticationFailure, "Auth Failure."));
                     int id = connection.getConnectionID();
                     addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, id));
                 }
@@ -195,10 +189,6 @@ public class Server extends QueuedInputThread<GenericEvent> {
             logger.log("Shutdown error.", e, LogLevel.WARN);
         }
         stop();
-    }
-
-    public Identity getIdentity() {
-        return identity;
     }
 
     public String toString() {

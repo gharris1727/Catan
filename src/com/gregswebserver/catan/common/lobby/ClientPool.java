@@ -4,7 +4,7 @@ import com.gregswebserver.catan.common.event.ControlEvent;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,8 +15,8 @@ import java.util.Iterator;
  */
 public class ClientPool extends EventPayload implements EventConsumer<ControlEvent>, Iterable<ServerClient> {
 
-    private final HashMap<Identity, ServerClient> clients; //Maps identities to the server clients.
-    private final HashMap<Identity, Lobby> lobbies; //Maps Users to their lobbies.
+    private final HashMap<Username, ServerClient> clients; //Maps identities to the server clients.
+    private final HashMap<Username, Lobby> lobbies; //Maps Users to their lobbies.
 
     public ClientPool() {
         clients = new HashMap<>();
@@ -28,7 +28,7 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
     }
 
     public boolean test(ControlEvent event) {
-        Identity origin = event.getOrigin();
+        Username origin = event.getOrigin();
         boolean exists = clients.containsKey(origin);
         boolean inLobby = exists && lobbies.containsKey(origin);
         switch (event.getType()) {
@@ -56,9 +56,9 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
     public void execute(ControlEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);
-        Identity origin = event.getOrigin();
+        Username origin = event.getOrigin();
         ServerClient client;
-        Identity identity;
+        Username username;
         Lobby lobby;
         switch (event.getType()) {
             case Name_Change:
@@ -69,8 +69,8 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
                 clients.put(origin, client);
                 break;
             case Client_Disconnect:
-                identity = (Identity) event.getPayload();
-                clients.remove(identity);
+                username = (Username) event.getPayload();
+                clients.remove(username);
                 break;
             case Lobby_Create:
                 lobby = new Lobby(origin);
@@ -82,16 +82,16 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
                 break;
             case Lobby_Change_Owner:
                 lobby = lobbies.get(event.getOrigin());
-                lobby.setOwner((Identity) event.getPayload());
+                lobby.setOwner((Username) event.getPayload());
                 break;
             case Lobby_Delete:
                 lobby = lobbies.get(event.getOrigin());
-                for (Identity clientID : lobby)
+                for (Username clientID : lobby)
                     lobbies.remove(clientID);
                 break;
             case Lobby_Join:
-                identity = (Identity) event.getPayload();
-                lobby = lobbies.get(identity);
+                username = (Username) event.getPayload();
+                lobby = lobbies.get(username);
                 lobby.add(origin);
                 lobbies.put(origin, lobby);
                 break;
@@ -102,16 +102,16 @@ public class ClientPool extends EventPayload implements EventConsumer<ControlEve
         }
     }
 
-    public int getConnectionID(Identity identity) {
-        if (clients.containsKey(identity)) {
-            ServerClient client = clients.get(identity);
+    public int getConnectionID(Username username) {
+        if (clients.containsKey(username)) {
+            ServerClient client = clients.get(username);
             return client.getUniqueID();
         }
         return 0;
     }
 
-    public Lobby getLobby(Identity identity) {
-        return lobbies.get(identity);
+    public Lobby getLobby(Username username) {
+        return lobbies.get(username);
     }
 
     public String toString() {

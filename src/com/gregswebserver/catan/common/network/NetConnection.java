@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.network;
 
+import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.event.GenericEvent;
 import com.gregswebserver.catan.common.event.NetEvent;
 import com.gregswebserver.catan.common.event.NetEventType;
@@ -21,7 +22,7 @@ import java.net.SocketException;
 public abstract class NetConnection implements Runnable {
 
     protected final Logger logger;
-    protected QueuedInputThread<GenericEvent> host;
+    protected CoreThread host;
     protected NetID local;
     protected NetID remote;
 
@@ -31,7 +32,7 @@ public abstract class NetConnection implements Runnable {
     protected ObjectOutputStream out;
     protected boolean open;
 
-    public NetConnection(QueuedInputThread<GenericEvent> host) {
+    public NetConnection(CoreThread host) {
         this.host = host;
         this.logger = host.logger;
         //Thread to establish a connection, uses this class' own run() method from Runnable.
@@ -103,6 +104,6 @@ public abstract class NetConnection implements Runnable {
 
     protected void onDisconnect(String message) {
         open = false;
-        host.addEvent(new NetEvent(this, NetEventType.Error, message));
+        host.addEvent(new NetEvent(host.getToken(), NetEventType.Error, message));
     }
 }

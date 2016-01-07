@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.common.crypto;
 
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.network.Identity;
 
 /**
  * Created by Greg on 10/17/2014.
@@ -9,15 +8,15 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public class UserLogin extends EventPayload {
 
-    public final Identity identity;
+    public final Username username;
     public final Password password;
 
-    protected UserLogin(Identity name, Password pass) {
-        identity = name;
+    protected UserLogin(Username name, Password pass) {
+        username = name;
         password = pass;
     }
 
     public String toString() {
-        return identity + " " + password;
+        return username + " " + password;
     }
 }

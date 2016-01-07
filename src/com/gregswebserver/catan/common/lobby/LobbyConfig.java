@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.lobby;
 
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 /**
  * Created by Greg on 12/29/2014.
@@ -19,8 +19,8 @@ public class LobbyConfig extends EventPayload {
         this.maxPlayers = maxPlayers;
     }
 
-    public LobbyConfig(Identity identity) {
-        lobbyName = identity.username + "'s Game";
+    public LobbyConfig(Username username) {
+        lobbyName = username.username + "'s Game";
         mapGenerator = "default";
         maxPlayers = 3;
     }

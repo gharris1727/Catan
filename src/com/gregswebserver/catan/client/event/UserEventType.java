@@ -4,7 +4,7 @@ import com.gregswebserver.catan.common.crypto.ConnectionInfo;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 /**
  * Created by Greg on 1/4/2015.
@@ -15,7 +15,7 @@ public enum UserEventType implements EventType {
     Net_Connect(ConnectionInfo.class), //Begin connecting to a remote server
     Net_Disconnect(null), //Disconnects from a remote server.
     Lobby_Create(null),
-    Lobby_Join(Identity.class),
+    Lobby_Join(Username.class),
     Lobby_Leave(null),
     Lobby_Modify(LobbyConfig.class),
     Lobby_Start(null),

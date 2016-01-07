@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.event.ExternalEvent;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -12,7 +12,7 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public class GameEvent extends ExternalEvent<GameEventType> {
 
-    public GameEvent(Identity origin, GameEventType type, Object payload) {
+    public GameEvent(Username origin, GameEventType type, Object payload) {
         super(origin, type, payload);
     }
 }

@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.lobby;
 
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 import java.util.HashSet;
 
@@ -8,20 +8,20 @@ import java.util.HashSet;
  * Created by Greg on 8/22/2014.
  * A serializable set of lobbies that can be sent over the network.
  */
-public class Lobby extends HashSet<Identity> {
+public class Lobby extends HashSet<Username> {
 
-    private Identity owner;
+    private Username owner;
     private LobbyConfig config;
 
-    public Lobby(Identity owner) {
+    public Lobby(Username owner) {
         setOwner(owner);
     }
 
-    public Identity getOwner() {
+    public Username getOwner() {
         return owner;
     }
 
-    public void setOwner(Identity owner) {
+    public void setOwner(Username owner) {
         this.owner = owner;
         add(owner);
     }

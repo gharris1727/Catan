@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.event;
 
+import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.network.NetConnection;
 
 import java.io.Serializable;
@@ -12,19 +13,19 @@ public class NetEvent extends GenericEvent implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-    private final Object origin;
+    private final AuthToken origin;
     private final NetEventType type;
     private final Object payload;
     private transient NetConnection connection; //Not sent over the network, purely internal reference.
 
-    public NetEvent(Object origin, NetEventType type, Object payload) {
+    public NetEvent(AuthToken origin, NetEventType type, Object payload) {
         this.origin = origin;
         this.type = type;
         this.payload = payload;
         type.checkPayload(payload);
     }
 
-    public Object getOrigin() {
+    public AuthToken getOrigin() {
         return origin;
     }
 
@@ -45,6 +46,6 @@ public class NetEvent extends GenericEvent implements Serializable {
     }
 
     public String toString() {
-        return "[NET EVENT] O:" + origin + " T:" + type + " P:" + payload;
+        return "[NETWORK] O(" + origin + ") T(" + type + ") P(" + payload + ")";
     }
 }

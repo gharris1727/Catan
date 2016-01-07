@@ -13,7 +13,7 @@ import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.player.Player;
 import com.gregswebserver.catan.common.game.player.Team;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 public class CatanGame implements EventConsumer<GameEvent> {
 
     private GameBoard board;
-    private HashMap<Identity, Player> players;
+    private HashMap<Username, Player> players;
     private Player localPlayer;
 
     public CatanGame() {
@@ -56,7 +56,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
     public void execute(GameEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);
-        Identity origin = event.getOrigin();
+        Username origin = event.getOrigin();
         Player player = players.get(origin);
         Team team = player.getTeam();
         Coordinate coordinate;

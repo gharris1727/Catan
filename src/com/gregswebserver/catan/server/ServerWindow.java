@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.server;
 
-import com.gregswebserver.catan.common.GenericWindow;
+import com.gregswebserver.catan.common.CoreWindow;
 import com.gregswebserver.catan.server.console.Console;
 
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.*;
  * Created by Greg on 8/11/2014.
  * Console window for CLI access to the server application
  */
-public class ServerWindow extends GenericWindow {
+public class ServerWindow extends CoreWindow {
 
     private Server server;
     private Console console;

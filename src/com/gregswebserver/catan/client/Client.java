@@ -6,6 +6,7 @@ import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
+import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
 import com.gregswebserver.catan.common.crypto.AuthToken;
@@ -19,7 +20,7 @@ import com.gregswebserver.catan.common.lobby.ClientPool;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ClientConnection;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 import java.net.UnknownHostException;
 
@@ -31,7 +32,7 @@ import static com.gregswebserver.catan.client.state.ClientState.*;
  * Everything is handled by a main event queue, which them distributes the events to where they need to go.
  * Client events are intercepted and acted upon.
  */
-public class Client extends QueuedInputThread<GenericEvent> {
+public class Client extends CoreThread {
 
     private ClientWindow window;
     private InputListener listener;
@@ -40,8 +41,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
     private GameThread gameThread;
     private RenderThread renderThread;
     private ClientConnection connection;
-    private AuthToken token;
-    private Identity identity;
+    private Username username;
     private ClientPool clientPool;
 
     public Client() {
@@ -51,29 +51,27 @@ public class Client extends QueuedInputThread<GenericEvent> {
         start();
     }
 
+    protected void externalEvent(ExternalEvent event) {
+        if (event instanceof ChatEvent && chatThread != null)
+            chatThread.addEvent((ChatEvent) event);
+        else if (event instanceof GameEvent && gameThread != null)
+            gameThread.addEvent((GameEvent) event);
+        else if (event instanceof ControlEvent)
+            controlEvent((ControlEvent) event);
+        else
+            logger.log("Received invalid external event", LogLevel.WARN);
 
-    public void execute() throws ThreadStop {
-        GenericEvent event = getEvent(true);
-        logger.log("Client received event: " + event, LogLevel.DEBUG);
-        if (event instanceof ExternalEvent) {
-            if (event instanceof ChatEvent && chatThread != null)
-                chatThread.addEvent((ChatEvent) event);
-            if (event instanceof GameEvent && gameThread != null)
-                gameThread.addEvent((GameEvent) event);
-            if (event instanceof ControlEvent)
-                controlEvent((ControlEvent) event);
-        } else if (event instanceof InternalEvent) {
-            if (event instanceof RenderEvent && renderThread != null)
-                renderThread.addEvent((RenderEvent) event);
-            if (event instanceof ClientEvent)
-                clientEvent((ClientEvent) event);
-            if (event instanceof UserEvent)
-                userEvent((UserEvent) event);
-        } else if (event instanceof NetEvent) {
-            netEvent((NetEvent) event);
-        } else {
-            logger.log("Received invalid GenericEvent.", LogLevel.WARN);
-        }
+    }
+
+    protected void internalEvent(InternalEvent event) {
+        if (event instanceof RenderEvent && renderThread != null)
+            renderThread.addEvent((RenderEvent) event);
+        else if (event instanceof ClientEvent)
+            clientEvent((ClientEvent) event);
+        else if (event instanceof UserEvent)
+            userEvent((UserEvent) event);
+        else
+            logger.log("Received invalid internal event", LogLevel.WARN);
 
     }
 
@@ -83,11 +81,11 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 startup();
                 //TODO: remove this testing data.
                 ServerList loginList = new ServerList();
-                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
+                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
                 loginList.add(new ConnectionInfo("invalid", "25000", "Jeff", "password1"));
                 loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
                 loginList.add(new ConnectionInfo("localhost", "25000", "", "password3"));
-                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
+                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
                 renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionListCreate, loginList));
                 break;
             case Quit_All:
@@ -109,7 +107,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 ConnectionInfo info = (ConnectionInfo) event.getPayload();
                 try {
                     ServerLogin login = info.createServerLogin();
-                    identity = login.login.identity;
+                    username = login.login.username;
                     connection = new ClientConnection(this, login);
                     connection.connect();
                 } catch (UnknownHostException | NumberFormatException e) {
@@ -124,23 +122,23 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 state = Disconnected;
                 break;
             case Lobby_Create:
-                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Create, new LobbyConfig(identity));
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Create, new LobbyConfig(username));
                 sendEvent(outgoing);
                 break;
             case Lobby_Join:
-                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Join, event.getPayload());
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Join, event.getPayload());
                 sendEvent(outgoing);
                 break;
             case Lobby_Leave:
-                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Leave, null);
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Leave, null);
                 sendEvent(outgoing);
                 break;
             case Lobby_Modify:
-                outgoing = new ControlEvent(identity, ControlEventType.Lobby_Change_Config, event.getPayload());
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Change_Config, event.getPayload());
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
-                outgoing = new ControlEvent(identity, ControlEventType.Game_Start, null);
+                outgoing = new ControlEvent(username, ControlEventType.Game_Start, null);
                 sendEvent(outgoing);
                 break;
             case Tile_Clicked:
@@ -222,8 +220,9 @@ public class Client extends QueuedInputThread<GenericEvent> {
                 break;
             case AuthenticationSuccess:
                 state = Connected;
-                clientPool = (ClientPool) event.getPayload();
-                addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, clientPool));
+                token = (AuthToken) event.getPayload();
+                //TODO: move this somewhere else
+                //addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, clientPool));
                 logger.log("Connected to remote server", LogLevel.DEBUG);
                 break;
             case AuthenticationFailure:
@@ -260,7 +259,7 @@ public class Client extends QueuedInputThread<GenericEvent> {
 
     public void disconnect(String reason) {
         if (connection != null && connection.isOpen()) {
-            connection.sendEvent(new NetEvent(identity, NetEventType.Disconnect, reason));
+            connection.sendEvent(new NetEvent(token, NetEventType.Disconnect, reason));
             connection.disconnect();
         }
     }
@@ -270,10 +269,6 @@ public class Client extends QueuedInputThread<GenericEvent> {
             NetEvent out = new NetEvent(token, NetEventType.External, event);
             connection.sendEvent(out);
         }
-    }
-
-    public Identity getIdentity() {
-        return identity;
     }
 
     public String toString() {

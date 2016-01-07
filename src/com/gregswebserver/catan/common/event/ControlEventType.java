@@ -3,7 +3,7 @@ package com.gregswebserver.catan.common.event;
 import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.lobby.ServerClient;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 /**
  * Created by Greg on 10/16/2014.
@@ -20,9 +20,9 @@ public enum ControlEventType implements EventType {
     Client_Disconnect(String.class), //Client -> Server -> Broadcast, when a client disconnects, String why.
     Lobby_Create(LobbyConfig.class), //Client -> Server -> Broadcast, when a lobby is created.
     Lobby_Change_Config(LobbyConfig.class), //Client -> Server -> Broadcast, when a lobby is modified.
-    Lobby_Change_Owner(Identity.class), //Client -> Server -> Broadcast, when a lobby's owner is changed.
+    Lobby_Change_Owner(Username.class), //Client -> Server -> Broadcast, when a lobby's owner is changed.
     Lobby_Delete(null), //Client -> Server -> Broadcast, when a lobby is deleted.
-    Lobby_Join(Identity.class), //Client -> Server -> Broadcast, when a client joins a lobby, stores owner of lobby.
+    Lobby_Join(Username.class), //Client -> Server -> Broadcast, when a client joins a lobby, stores owner of lobby.
     Lobby_Leave(null), //Client -> Server -> Broadcast, when a client leaves a lobby.
     Game_Start(null),
     Game_Quit(null),
@@ -30,7 +30,7 @@ public enum ControlEventType implements EventType {
     Game_Replay(null),
     Replay_Start(null),
     Replay_Quit(null),
-    Spectate_Start(Identity.class),
+    Spectate_Start(Username.class),
     Spectate_Quit(null);
 
     private Class payloadType;

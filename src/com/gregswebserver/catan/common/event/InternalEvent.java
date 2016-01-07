@@ -32,6 +32,6 @@ public abstract class InternalEvent<T extends EventType> extends GenericEvent {
     }
 
     public String toString() {
-        return "[INT EVENT] O:" + origin + " T:" + type + " P:" + payload;
+        return "[INTERNAL] O(" + origin + ") T(" + type + ") P(" + payload + ")";
     }
 }

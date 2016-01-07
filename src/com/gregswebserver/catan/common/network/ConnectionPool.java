@@ -39,7 +39,7 @@ public class ConnectionPool implements Iterable<ServerConnection> {
     public void disconnect(int connectionID, String reason) {
         if (connections.containsKey(connectionID)) {
             ServerConnection conn = connections.remove(connectionID);
-            conn.sendEvent(new NetEvent(server.getIdentity(), NetEventType.Disconnect, reason));
+            conn.sendEvent(new NetEvent(server.getToken(), NetEventType.Disconnect, reason));
             conn.disconnect();
             disconnectedClients++;
         }
@@ -47,7 +47,7 @@ public class ConnectionPool implements Iterable<ServerConnection> {
 
     public void disconnectAll(String reason) {
         for (ServerConnection conn : connections.values()) {
-            conn.sendEvent(new NetEvent(server.getIdentity(), NetEventType.Disconnect, reason));
+            conn.sendEvent(new NetEvent(server.getToken(), NetEventType.Disconnect, reason));
             conn.disconnect();
             disconnectedClients++;
         }

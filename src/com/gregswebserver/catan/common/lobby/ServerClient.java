@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.lobby;
 
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.network.Identity;
+import com.gregswebserver.catan.common.crypto.Username;
 
 /**
  * Created by Greg on 10/17/2014.
@@ -9,12 +9,12 @@ import com.gregswebserver.catan.common.network.Identity;
  */
 public class ServerClient extends EventPayload {
     private final int uniqueID;
-    private final Identity identity;
+    private final Username username;
     private String displayName;
 
-    public ServerClient(int uniqueID, Identity identity, String displayName) {
+    public ServerClient(int uniqueID, Username username, String displayName) {
         this.uniqueID = uniqueID;
-        this.identity = identity;
+        this.username = username;
         this.displayName = displayName;
     }
 
@@ -22,8 +22,8 @@ public class ServerClient extends EventPayload {
         return uniqueID;
     }
 
-    public Identity getIdentity() {
-        return identity;
+    public Username getUsername() {
+        return username;
     }
 
     public String getDisplayName() {

@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.RenderEventType;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.input.InputListener;
-import com.gregswebserver.catan.common.GenericWindow;
+import com.gregswebserver.catan.common.CoreWindow;
 
 import java.awt.Dimension;
 
@@ -13,7 +13,7 @@ import java.awt.Dimension;
  * Graphics window to provide a GUI to the client.
  * Receives render info from the RenderThread
  */
-public class ClientWindow extends GenericWindow {
+public class ClientWindow extends CoreWindow {
 
     private Client client;
     private ScreenCanvas canvas;
