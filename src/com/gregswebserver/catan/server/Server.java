@@ -3,20 +3,17 @@ package com.gregswebserver.catan.server;
 
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.common.CoreThread;
-import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.common.crypto.UserDatabase;
-import com.gregswebserver.catan.common.crypto.Password;
-import com.gregswebserver.catan.common.crypto.UserLogin;
+import com.gregswebserver.catan.common.IllegalStateException;
+import com.gregswebserver.catan.common.crypto.*;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.lobby.ClientPool;
+import com.gregswebserver.catan.common.lobby.UserInfo;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ConnectionPool;
-import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.network.ServerConnection;
 import com.gregswebserver.catan.server.event.ServerEvent;
 import com.gregswebserver.catan.server.event.ServerEventType;
 
-import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -44,7 +41,7 @@ public class Server extends CoreThread {
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
         database = new UserDatabase(logger);
-        clientPool = new ClientPool();
+        clientPool = new ClientPool(this);
         start();
     }
 
@@ -80,14 +77,14 @@ public class Server extends CoreThread {
         if (event instanceof ControlEvent)
             controlEvent((ControlEvent) event);
         else
-            logger.log("Received invalid ExternalEvent", LogLevel.ERROR);
+            throw new IllegalStateException();
     }
 
     protected void internalEvent(InternalEvent event) {
         if (event instanceof ServerEvent)
             serverEvent((ServerEvent) event);
         else
-            logger.log("Received invalid InternalEvent", LogLevel.ERROR);
+            throw new IllegalStateException();
     }
 
     private void serverEvent(ServerEvent event) {
@@ -99,7 +96,8 @@ public class Server extends CoreThread {
                 shutdown();
                 break;
             case Client_Disconnect:
-                connectionPool.disconnect((Integer) event.getPayload(), "Disconnected");
+                connectionPool.closeConnection(clientPool.getConnectionID((Username) event.getPayload()));
+                clientPool.removeUserConnection((Username) event.getPayload());
                 break;
             case Client_Connect:
                 break;
@@ -108,26 +106,45 @@ public class Server extends CoreThread {
 
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
+            case Name_Change:
+                try {
+                    database.changeDisplayName(event.getOrigin(), (String) event.getPayload());
+                } catch (UserNotFoundException e) {
+                    logger.log(e, LogLevel.WARN);
+                }
+                break;
             case Pass_Change:
-                database.changePassword(event.getOrigin(), (Password) event.getPayload());
+                try {
+                    database.changePassword(event.getOrigin(), (Password) event.getPayload());
+                } catch (UserNotFoundException e) {
+                    logger.log(e, LogLevel.WARN);
+                }
                 break;
             case Server_Disconnect:
             case Pass_Change_Success:
             case Pass_Change_Failure:
-                //Should die in the client, and never get here.
-                break;
+            case Client_Pool_Sync:
+                throw new IllegalStateException();
             case Client_Disconnect:
-                int uniqueID = clientPool.getConnectionID(event.getOrigin());
-                addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, uniqueID));
-            case Client_Connect:
+                addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, event.getOrigin()));
+                break;
+            case User_Connect:
+            case User_Disconnect:
             case Lobby_Create:
             case Lobby_Change_Config:
+            case Lobby_Change_Owner:
             case Lobby_Delete:
             case Lobby_Join:
             case Lobby_Leave:
                 try {
                     if (clientPool.test(event))
                         clientPool.execute(event);
+                    //Rebroadcast the event to everyone connected.
+                    for (Username user : clientPool) {
+                        ServerConnection connection = connectionPool.get(clientPool.getConnectionID(user));
+                        if (connection != null)
+                            connection.sendEvent(new NetEvent(token, NetEventType.External_Event, event));
+                    }
                 } catch (EventConsumerException e) {
                     logger.log(e, LogLevel.ERROR);
                 }
@@ -152,28 +169,51 @@ public class Server extends CoreThread {
     }
 
     public void netEvent(NetEvent event) {
+        ServerConnection connection = (ServerConnection) event.getConnection();
         switch (event.getType()) {
-            case Authenticate:
+            case Log_In:
                 logger.log("Authenticating client",LogLevel.DEBUG);
-                ServerConnection connection = (ServerConnection) event.getConnection();
                 try {
+                    //Log_In the client and generate an AuthToken for them.
                     AuthToken clientToken = database.authenticate((UserLogin) event.getPayload());
-                    connection.sendEvent(new NetEvent(token, NetEventType.AuthenticationSuccess, clientToken));
-                    //TODO: do something on the server side when the client authenticates.
-                } catch (AuthenticationException e) {
+                    //Tell the client about the auth success, send them their AuthToken.
+                    connection.sendEvent(new NetEvent(token, NetEventType.Log_In_Success, clientToken));
+                    //Send them a sync of the current client pool state.
+                    connection.sendEvent(new NetEvent(token,NetEventType.External_Event,
+                            new ControlEvent(token.username,ControlEventType.Client_Pool_Sync, clientPool)));
+                    //Get their info out of the server database.
+                    UserInfo userInfo = database.getUserInfo(clientToken.username);
+                    //Keep track of their connection id in the database.
+                    clientPool.storeUserConnection(clientToken.username,connection.getConnectionID());
+                    //Tell the rest of the server about their join.
+                    externalEvent(new ControlEvent(clientToken.username,ControlEventType.User_Connect,userInfo));
+                } catch (AuthenticationException | UserNotFoundException e) {
                     logger.log(e,LogLevel.WARN);
-                    connection.sendEvent(new NetEvent(token, NetEventType.AuthenticationFailure, "Auth Failure."));
+                    //Tell the client about the auth failure.
+                    connection.sendEvent(new NetEvent(token, NetEventType.Log_In_Failure, e.getMessage()));
+                    //Kill their connection to the server.
                     int id = connection.getConnectionID();
                     addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, id));
                 }
                 break;
-            case AuthenticationSuccess:
+            case Log_In_Success:
+            case Log_In_Failure:
+                throw new IllegalStateException();
+            case Disconnect:
+            case Link_Error:
+                int id = connection.getConnectionID();
+                //Check if the user was logged in
+                Username username = clientPool.getConnectionUsername(id);
+                if (username != null) {
+                    // Log the user out.
+                    addEvent(new ControlEvent(username,ControlEventType.User_Disconnect,null));
+                }
+                //Kill their connection to the server.
+                addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, username));
                 break;
-            case AuthenticationFailure:
-                break;
-            case Error:
-                break;
-            case External:
+            case External_Event:
+                //Forward external events to be handled.
+                externalEvent((ExternalEvent) event.getPayload());
                 break;
         }
     }

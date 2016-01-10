@@ -3,7 +3,7 @@ package com.gregswebserver.catan.common.game.player;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trader;
-import com.gregswebserver.catan.common.lobby.ServerClient;
+import com.gregswebserver.catan.common.lobby.UserInfo;
 
 import java.util.HashMap;
 
@@ -18,7 +18,7 @@ public class Player implements Trader {
     private HashMap<Tradeable, Integer> inventory;
     private Coordinate selected;
 
-    public Player(ServerClient client, Team team) {
+    public Player(UserInfo client, Team team) {
         this.name = client.getDisplayName();
         this.team = team;
     }

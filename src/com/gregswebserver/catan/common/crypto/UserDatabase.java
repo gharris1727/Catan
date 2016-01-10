@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.common.crypto;
 
+import com.gregswebserver.catan.common.lobby.UserInfo;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
-import javax.naming.AuthenticationException;
 import java.util.HashMap;
 
 /**
@@ -32,46 +32,62 @@ public class UserDatabase {
         //ResourceLoader.saveObjectStore(UserInfo);
     }
 
-    public AuthToken authenticate(UserLogin login) throws AuthenticationException {
-        UserAccount user = users.get(login.username);
-        if (user == null)
-            throw new AuthenticationException("Username not registered");
-        if (!user.validatePassword(login.password))
-            throw new AuthenticationException("Password invalid");
-        return user.generateAuthToken();
-    }
-
-    private void validateAuthToken(AuthToken token) throws AuthenticationException {
-        UserAccount user = users.get(token.username);
-        if (user == null)
-            throw new AuthenticationException("Username not registered");
-        if (!user.validateToken(token))
-            throw new AuthenticationException("AuthToken invalid");
-    }
-
-    private void invalidateSession(Username username) {
-        UserAccount user = users.get(username);
-        if (user != null) user.invalidateSession();
-    }
-
-    public boolean registerAccount(UserLogin login) {
+    public void registerAccount(UserLogin login) {
         try {
             UserAccount user = new UserAccount(login.username);
             user.setPassword(login.password);
             users.put(login.username, user);
-            return true;
         } catch (Exception e) {
             logger.log(e, LogLevel.ERROR);
-            return false;
         }
     }
 
-    public void removeAccount(Username username) {
-        users.remove(username);
+    public AuthToken authenticate(UserLogin login) throws UserNotFoundException, AuthenticationException {
+        UserAccount user = users.get(login.username);
+        if (user == null)
+            throw new UserNotFoundException();
+        if (!user.validatePassword(login.password))
+            throw new AuthenticationException();
+        return user.generateAuthToken();
     }
 
-    public void changePassword(Username username, Password password) {
+    private void validateAuthToken(AuthToken token) throws UserNotFoundException, AuthenticationException {
+        UserAccount user = users.get(token.username);
+        if (user == null)
+            throw new UserNotFoundException();
+        if (!user.validateToken(token))
+            throw new AuthenticationException();
+    }
+
+    private void invalidateSession(Username username) throws UserNotFoundException {
         UserAccount user = users.get(username);
+        if (user == null)
+            throw new UserNotFoundException();
+        user.invalidateSession();
+    }
+
+    public void removeAccount(Username username) throws UserNotFoundException {
+        if (users.remove(username) == null)
+            throw new UserNotFoundException();
+    }
+
+    public void changePassword(Username username, Password password) throws UserNotFoundException {
+        UserAccount user = users.get(username);
+        if (user == null)
+            throw new UserNotFoundException();
         user.setPassword(password);
+    }
+
+    public UserInfo getUserInfo(Username username) throws UserNotFoundException {
+        UserAccount user = users.get(username);
+        if (user == null)
+            throw new UserNotFoundException();
+        return user.getUserInfo();
+    }
+    public void changeDisplayName(Username username, String displayName) throws UserNotFoundException {
+        UserAccount user = users.get(username);
+        if (user == null)
+            throw new UserNotFoundException();
+        user.setDisplayName(displayName);
     }
 }

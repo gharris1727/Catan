@@ -62,7 +62,7 @@ public class Startup extends CoreWindow {
                 try {
                     startClient(getHost(), getPort(), getUsername(), getPassword());
                 } catch (Exception ex) {
-                    logger.log("Error starting client", ex, LogLevel.ERROR);
+                    logger.log("Link_Error starting client", ex, LogLevel.ERROR);
                 }
             }
         });
@@ -71,7 +71,7 @@ public class Startup extends CoreWindow {
                 try {
                     startServer(getPort(), getPassword());
                 } catch (Exception ex) {
-                    logger.log("Error while starting server", ex, LogLevel.ERROR);
+                    logger.log("Link_Error while starting server", ex, LogLevel.ERROR);
                 }
             }
         });
@@ -93,7 +93,7 @@ public class Startup extends CoreWindow {
             return InetAddress.getByName("localhost"); //TODO: REMOVE ME!
 //            return InetAddress.getByName(fields[2].getText());
         } catch (Exception e) {
-//            logger.log("Hostname Field Error", e, LogLevel.POPUP);
+//            logger.log("Hostname Field Link_Error", e, LogLevel.POPUP);
         }
         return null;
     }

@@ -55,7 +55,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
         try {
             eventQueue.put(event);
         } catch (InterruptedException e) {
-            logger.log("Error adding to event queue", e, LogLevel.ERROR);
+            logger.log("Link_Error adding to event queue", e, LogLevel.ERROR);
         }
     }
 
@@ -67,7 +67,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
             try {
                 obj = eventQueue.take();
             } catch (InterruptedException e) {
-                logger.log("Error removing from event queue", e, LogLevel.ERROR);
+                logger.log("Link_Error removing from event queue", e, LogLevel.ERROR);
                 throw new ThreadStop();
             }
 

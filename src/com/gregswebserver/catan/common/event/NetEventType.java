@@ -9,12 +9,12 @@ import com.gregswebserver.catan.common.crypto.UserLogin;
  */
 public enum NetEventType implements EventType {
 
-    Authenticate(UserLogin.class),
-    AuthenticationSuccess(AuthToken.class),
-    AuthenticationFailure(String.class),
+    Log_In(UserLogin.class),
+    Log_In_Success(AuthToken.class),
+    Log_In_Failure(String.class),
     Disconnect(String.class),
-    Error(String.class),
-    External(ExternalEvent.class); //TODO: break down into smaller classes.
+    Link_Error(String.class),
+    External_Event(ExternalEvent.class);
 
     private Class payloadType;
 

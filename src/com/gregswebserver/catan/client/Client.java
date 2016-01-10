@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.common.CoreThread;
+import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
 import com.gregswebserver.catan.common.crypto.AuthToken;
@@ -59,7 +60,7 @@ public class Client extends CoreThread {
         else if (event instanceof ControlEvent)
             controlEvent((ControlEvent) event);
         else
-            logger.log("Received invalid external event", LogLevel.WARN);
+            throw new IllegalStateException();
 
     }
 
@@ -71,7 +72,7 @@ public class Client extends CoreThread {
         else if (event instanceof UserEvent)
             userEvent((UserEvent) event);
         else
-            logger.log("Received invalid internal event", LogLevel.WARN);
+            throw new IllegalStateException();
 
     }
 
@@ -158,22 +159,26 @@ public class Client extends CoreThread {
         switch (event.getType()) {
             case Server_Disconnect:
                 state = Disconnected;
-                logger.log("Disconnected from remote server: " + event.getPayload(), LogLevel.DEBUG);
+                logger.log("Server disconnected: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case Pass_Change:
-                //Should never get here, this event should die in the server.
-                break;
+                throw new IllegalStateException();
             case Pass_Change_Success:
                 break;
             case Pass_Change_Failure:
                 break;
+            case Client_Pool_Sync:
+                clientPool = (ClientPool) event.getPayload();
+                clientPool.setHost(this);
+                addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, clientPool));
+                break;
+            case User_Disconnect:
             case Name_Change:
-            case Client_Connect:
+            case User_Connect:
             case Client_Disconnect:
             case Lobby_Create:
             case Lobby_Change_Config:
             case Lobby_Change_Owner:
-                break;
             case Lobby_Delete:
             case Lobby_Join:
             case Lobby_Leave:
@@ -216,23 +221,22 @@ public class Client extends CoreThread {
     public void netEvent(NetEvent event) {
         ClientConnection connection = (ClientConnection) event.getConnection();
         switch (event.getType()) {
-            case Authenticate:
+            case Log_In:
                 break;
-            case AuthenticationSuccess:
+            case Log_In_Success:
                 state = Connected;
                 token = (AuthToken) event.getPayload();
-                //TODO: move this somewhere else
-                //addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, clientPool));
                 logger.log("Connected to remote server", LogLevel.DEBUG);
                 break;
-            case AuthenticationFailure:
+            case Log_In_Failure:
             case Disconnect:
-            case Error:
+            case Link_Error:
                 state = Disconnecting;
                 addEvent(new RenderEvent(this, RenderEventType.DisconnectMessage, event.getPayload()));
                 logger.log("Unable to connect to remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
-            case External:
+            case External_Event:
+                externalEvent((ExternalEvent) event.getPayload());
                 break;
         }
     }
@@ -266,7 +270,7 @@ public class Client extends CoreThread {
 
     public void sendEvent(ExternalEvent event) {
         if (connection != null && connection.isOpen()) {
-            NetEvent out = new NetEvent(token, NetEventType.External, event);
+            NetEvent out = new NetEvent(token, NetEventType.External_Event, event);
             connection.sendEvent(out);
         }
     }

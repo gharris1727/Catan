@@ -53,6 +53,13 @@ public class ConnectionPool implements Iterable<ServerConnection> {
         }
     }
 
+    public void closeConnection(int connectionID) {
+        if (connections.containsKey(connectionID)) {
+            connections.remove(connectionID).disconnect();
+            disconnectedClients++;
+        }
+    }
+
     public Iterator<ServerConnection> iterator() {
         return connections.values().iterator();
     }

@@ -20,7 +20,7 @@ public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
 
     protected void execute() throws ThreadStop {
         GenericEvent event = getEvent(true);
-        logger.log("Received event: " + event, LogLevel.DEBUG);
+        logger.log(this + " Received " + event, LogLevel.DEBUG);
         if (event instanceof ExternalEvent) {
             externalEvent((ExternalEvent) event);
         } else if (event instanceof InternalEvent) {

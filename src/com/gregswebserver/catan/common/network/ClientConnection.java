@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.ServerLogin;
 import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.NetEvent;
@@ -34,7 +33,7 @@ public class ClientConnection extends NetConnection {
             socket = new Socket(remote.address, remote.port);
             local = new NetID(socket);
             out = new ObjectOutputStream(socket.getOutputStream());
-            sendEvent(new NetEvent(host.getToken(), NetEventType.Authenticate, info));
+            sendEvent(new NetEvent(host.getToken(), NetEventType.Log_In, info));
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
             receive.start();
@@ -42,7 +41,7 @@ public class ClientConnection extends NetConnection {
             onDisconnect("Connect error: connection refused.");
         } catch (IOException e) {
             onDisconnect("Connect error: " + e.getMessage() + ".");
-            logger.log("Connection Error", e, LogLevel.ERROR);
+            logger.log("Connection Link_Error", e, LogLevel.ERROR);
         }
     }
 }

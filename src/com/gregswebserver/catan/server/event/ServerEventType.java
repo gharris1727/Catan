@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.server.event;
 
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.lobby.UserInfo;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -9,8 +11,8 @@ import com.gregswebserver.catan.common.event.EventType;
 public enum ServerEventType implements EventType {
 
     Quit_All(null),//Kill all processes in the running server.
-    Client_Disconnect(Integer.class), //Removes a connection from the server after a disconnect.
-    Client_Connect(Integer.class); //Connection has authenticated and confirmed the connection.
+    Client_Disconnect(Username.class), //Removes a connection from the server after a disconnect.
+    Client_Connect(UserInfo.class); //Connection has authenticated and confirmed the connection.
 
     private Class payloadType;
 

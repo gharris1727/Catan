@@ -1,17 +1,12 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.common.CoreThread;
-import com.gregswebserver.catan.common.event.GenericEvent;
 import com.gregswebserver.catan.common.event.NetEvent;
 import com.gregswebserver.catan.common.event.NetEventType;
-import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -45,11 +40,11 @@ public abstract class NetConnection implements Runnable {
                         NetEvent e = ((NetEvent) in.readObject());
                         e.setConnection(NetConnection.this);
                         host.addEvent(e);
-                    } catch (EOFException | SocketException ignored) {
+                    } catch (EOFException | SocketException | StreamCorruptedException ignored) {
                         onDisconnect("Receive failure: connection closed.");
                     } catch (ClassCastException | ClassNotFoundException | IOException e) {
                         onDisconnect("Receive failure: " + e.getMessage() + ".");
-                        logger.log("Error while receiving", e, LogLevel.ERROR);
+                        logger.log("Link_Error while receiving", e, LogLevel.ERROR);
                     }
                 }
             }
@@ -104,6 +99,8 @@ public abstract class NetConnection implements Runnable {
 
     protected void onDisconnect(String message) {
         open = false;
-        host.addEvent(new NetEvent(host.getToken(), NetEventType.Error, message));
+        NetEvent error = new NetEvent(host.getToken(), NetEventType.Link_Error, message);
+        error.setConnection(this);
+        host.addEvent(error);
     }
 }
