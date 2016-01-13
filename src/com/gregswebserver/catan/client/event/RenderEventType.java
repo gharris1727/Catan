@@ -16,7 +16,8 @@ public enum RenderEventType implements EventType {
 
     ConnectionListCreate(ServerPool.class), // Disconnected
     ConnectProgress(Integer.class),
-    LobbyListUpdate(MatchmakingPool.class), // Connected
+    MatchmakingPoolCreate(MatchmakingPool.class), // Connected
+    MatchmakingPoolUpdate(null),
     DisconnectMessage(String.class),// Disconnecting
     GameCreate(CatanGame.class), //InGame
     Game_Update(null),

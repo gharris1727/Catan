@@ -42,7 +42,7 @@ public enum GraphicSet {
     UIBlueText(GraphicSourceInfo.BlueUIText, UISmallMask, Direction.values().length),
     UIBlueButton(GraphicSourceInfo.BlueUIButton, UISmallMask, Direction.values().length),
 
-    UIBlueLobbyIcons(GraphicSourceInfo.BlueUIArrows, UISmallMask, 6);
+    UIBlueLobbyIcons(GraphicSourceInfo.BlueUIArrows, UILobbyArrowMask, 6);
 
     private final RenderMaskInfo[] masks;
     private final GraphicInfo[] graphics;

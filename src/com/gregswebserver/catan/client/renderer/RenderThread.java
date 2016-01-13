@@ -64,9 +64,14 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                     ConnectingScreenRegion connecting = new ConnectingScreenRegion(style);
                     areas.put(Connecting, connecting);
                     break;
-                case LobbyListUpdate:
+                case MatchmakingPoolCreate:
                     ServerScreenRegion lobby = new ServerScreenRegion(style, (MatchmakingPool) event.getPayload());
                     areas.put(Connected, lobby);
+                    break;
+                case MatchmakingPoolUpdate:
+                    ServerScreenRegion server = ((ServerScreenRegion) areas.get(Connected));
+                    server.updateLobbies();
+                    server.updateUsers();
                     break;
                 case DisconnectMessage:
                     DisconnectingScreenRegion disconnect = new DisconnectingScreenRegion(style, (String) event.getPayload());

@@ -144,6 +144,8 @@ public class Client extends CoreThread {
                 outgoing = new ControlEvent(username, ControlEventType.Game_Start, null);
                 sendEvent(outgoing);
                 break;
+            case Lobby_Sort:
+                break;
             case Tile_Clicked:
                 break;
             case Edge_Clicked:
@@ -172,7 +174,7 @@ public class Client extends CoreThread {
             case Client_Pool_Sync:
                 matchmakingPool = (MatchmakingPool) event.getPayload();
                 matchmakingPool.setHost(this);
-                addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, matchmakingPool));
+                addEvent(new RenderEvent(this, RenderEventType.MatchmakingPoolCreate, matchmakingPool));
                 break;
             case User_Disconnect:
             case Name_Change:
@@ -190,6 +192,7 @@ public class Client extends CoreThread {
                 } catch (EventConsumerException e) {
                     logger.log(e, LogLevel.ERROR);
                 }
+                renderThread.addEvent(new RenderEvent(this, RenderEventType.MatchmakingPoolUpdate, null));
                 break;
             case Game_Start:
                 state = Starting;

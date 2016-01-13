@@ -71,6 +71,6 @@ public abstract class RenderMask {
     }
 
     public int getPixelCount() {
-        return cumulative[height - 1];
+        return (height > 0) ? cumulative[height - 1] : 0;
     }
 }

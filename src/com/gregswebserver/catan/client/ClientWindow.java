@@ -15,7 +15,7 @@ import java.awt.Dimension;
  */
 public class ClientWindow extends CoreWindow {
 
-    private Client client;
+    private final Client client;
     private ScreenCanvas canvas;
     private InputListener listener;
     //Field to prevent the onResize function from spamming setMask requests when there is one still processing.
@@ -70,7 +70,10 @@ public class ClientWindow extends CoreWindow {
             add(canvas);
             addListeners();
             setVisible(true);
-            client.addEvent(new RenderEvent(this, RenderEventType.Canvas_Update, canvas));
+            //This null check is for when the window changes size before the constructor finishes (idk lol)
+            //This shouldn't be damaging to the resizing flow, but maybe revisit this.
+            if (client != null)
+                client.addEvent(new RenderEvent(this, RenderEventType.Canvas_Update, canvas));
             resizing = false;
         }
     }

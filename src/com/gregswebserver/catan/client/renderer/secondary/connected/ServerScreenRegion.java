@@ -48,4 +48,12 @@ public class ServerScreenRegion extends UIScreenRegion {
     public String toString() {
         return "ServerScreenRegion";
     }
+
+    public void updateLobbies() {
+        lobbyList.updateLobbies();
+    }
+
+    public void updateUsers() {
+        userList.forceRender();
+    }
 }
