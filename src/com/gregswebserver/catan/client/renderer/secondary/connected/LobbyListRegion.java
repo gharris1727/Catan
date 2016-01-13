@@ -75,6 +75,7 @@ public class LobbyListRegion extends UIScreenRegion {
         add(footer).setClickable(this);
     }
 
+    @Override
     protected void resizeContents(RenderMask mask) {
         //Get the new overall size of the window.
         int width = mask.getWidth();
@@ -358,6 +359,7 @@ public class LobbyListRegion extends UIScreenRegion {
                 }
             };
             joinButton = new com.gregswebserver.catan.client.graphics.ui.text.Button(1, getStyle(), "Join") {
+                @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected);
                 }

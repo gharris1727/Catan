@@ -44,10 +44,12 @@ public class TradeGenerator implements FeatureGenerator<TradingPost> {
         }
     }
 
+    @Override
     public void randomize() {
         Collections.shuffle(posts);
     }
 
+    @Override
     public Iterator<TradingPost> iterator() {
         return posts.iterator();
     }

@@ -7,8 +7,6 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.ui.primary.ServerPool;
 
-import java.awt.Point;
-
 /**
  * Created by Greg on 1/2/2015.
  * Server Connection Screen
@@ -31,6 +29,7 @@ public class DisconnectedScreenRegion extends UIScreenRegion {
         add(servers);
     }
 
+    @Override
     public void resizeContents(RenderMask mask) {
         background.setMask(mask);
         servers.setMask(mask);

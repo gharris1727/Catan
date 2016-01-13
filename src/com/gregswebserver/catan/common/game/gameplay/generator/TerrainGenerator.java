@@ -23,10 +23,12 @@ public class TerrainGenerator implements FeatureGenerator<Terrain> {
         }
     }
 
+    @Override
     public void randomize() {
         Collections.shuffle(terrain);
     }
 
+    @Override
     public Iterator<Terrain> iterator() {
         return terrain.iterator();
     }

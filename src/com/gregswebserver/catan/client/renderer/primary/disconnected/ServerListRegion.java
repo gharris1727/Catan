@@ -160,6 +160,7 @@ public class ServerListRegion extends UIScreenRegion {
                     return "Connect Button";
                 }
 
+                @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return (selected == null) ? null :new UserEvent(this, UserEventType.Net_Connect, selected);
                 }

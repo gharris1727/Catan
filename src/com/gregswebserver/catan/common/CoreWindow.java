@@ -23,16 +23,19 @@ public abstract class CoreWindow extends JFrame {
             logger.log(e, LogLevel.WARN);
         }
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 onClose();
             }
         });
         addComponentListener(new ComponentAdapter() {
 
+            @Override
             public void componentMoved(ComponentEvent e) {
                 onMove();
             }
 
+            @Override
             public void componentResized(ComponentEvent e) {
                 //Uses the insets of the window to get the real content size of the window.
                 Dimension size = e.getComponent().getSize();

@@ -2,7 +2,6 @@ package com.gregswebserver.catan.server;
 
 
 import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.*;
@@ -51,6 +50,7 @@ public class Server extends CoreThread {
             if (port <= 1024) throw new IOException("Port Number Reserved");
             socket = new ServerSocket(port);
             listen = new Thread("Listen") {
+                @Override
                 public void run() {
                     logger.log("Listening...", LogLevel.INFO);
                     listening = true;
@@ -74,6 +74,7 @@ public class Server extends CoreThread {
         }
     }
 
+    @Override
     protected void externalEvent(ExternalEvent event) {
         if (event instanceof ControlEvent)
             controlEvent((ControlEvent) event);
@@ -81,6 +82,7 @@ public class Server extends CoreThread {
             throw new IllegalStateException();
     }
 
+    @Override
     protected void internalEvent(InternalEvent event) {
         if (event instanceof ServerEvent)
             serverEvent((ServerEvent) event);
@@ -169,6 +171,7 @@ public class Server extends CoreThread {
         }
     }
 
+    @Override
     public void netEvent(NetEvent event) {
         ServerConnection connection = (ServerConnection) event.getConnection();
         switch (event.getType()) {

@@ -22,7 +22,7 @@ public enum TradingPost implements Trader {
     private HashSet<Trade> trades;
     private GameResource gameResource;
 
-    private TradingPost(GameResource r) {
+    TradingPost(GameResource r) {
         gameResource = r;
         trades = new HashSet<>();
         for (GameResource a : GameResource.values()) {

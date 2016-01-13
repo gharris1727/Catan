@@ -19,7 +19,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     private final Logger logger;
     private final Client client;
     private final Clickable nullClickable;
-    private Clickable hitbox;
+    private Clickable rootClickable;
     private Clickable selected;
     private Point dragStart;
 
@@ -27,30 +27,37 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         logger = client.logger;
         this.client = client;
         this.nullClickable = new Clickable() {
+            @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return log("Mouse clicked");
             }
 
+            @Override
             public UserEvent onKeyTyped(KeyEvent event) {
                 return log("Key typed");
             }
 
+            @Override
             public UserEvent onMouseScroll(int rot) {
                 return log("Mouse scrolled");
             }
 
+            @Override
             public UserEvent onMouseDrag(Point p) {
                 return log("Mouse dragged");
             }
 
+            @Override
             public UserEvent onSelect() {
                 return log("Selected");
             }
 
+            @Override
             public UserEvent onDeselect() {
                 return log("Deselected");
             }
 
+            @Override
             public Clickable getClickable(Point p) {
                 log("Getting clickable from");
                 return null;
@@ -66,36 +73,43 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             }
         };
         selected = nullClickable;
-        hitbox = nullClickable;
+        rootClickable = nullClickable;
     }
 
+    @Override
     public UserEvent onMouseClick(MouseEvent event) {
         return selected.onMouseClick(event);
     }
 
+    @Override
     public UserEvent onKeyTyped(KeyEvent event) {
         return selected.onKeyTyped(event);
     }
 
+    @Override
     public UserEvent onMouseScroll(int rot) {
         return selected.onMouseScroll(rot);
     }
 
+    @Override
     public UserEvent onMouseDrag(Point p) {
         return selected.onMouseDrag(p);
     }
 
+    @Override
     public UserEvent onSelect() {
         return selected.onSelect();
     }
 
+    @Override
     public UserEvent onDeselect() {
         return selected.onDeselect();
     }
 
+    @Override
     public Clickable getClickable(Point p) {
-        Clickable fromHitbox = hitbox.getClickable(p);
-        return (fromHitbox == null) ? nullClickable : fromHitbox;
+        Clickable found = rootClickable.getClickable(p);
+        return (found == null) ? nullClickable : found;
     }
 
     private void sendEvent(UserEvent event) {
@@ -103,12 +117,12 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             client.addEvent(event);
     }
 
-    public void setHitbox(Clickable hitbox) {
-        this.hitbox = (hitbox == null) ? nullClickable : hitbox;
+    public void setClickable(Clickable clickable) {
+        this.rootClickable = (clickable == null) ? nullClickable : clickable;
     }
 
     private void updateClickable(MouseEvent e) {
-        if (hitbox != null) {
+        if (rootClickable != null) {
             Clickable next = getClickable(e.getPoint());
             if (selected != next) {
                 logger.log("Clickable changed to " + next, LogLevel.DEBUG);
@@ -119,35 +133,44 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         }
     }
 
+    @Override
     public void keyTyped(KeyEvent e) {
         sendEvent(onKeyTyped(e));
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
         updateClickable(e);
         sendEvent(onMouseClick(e));
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         updateClickable(e);
         dragStart = e.getPoint();
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         Point dragEnd = e.getPoint();
         dragEnd.translate(-dragStart.x, -dragStart.y);
@@ -155,9 +178,11 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         sendEvent(onMouseDrag(dragEnd));
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
     }
 
+    @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         sendEvent(onMouseScroll(e.getWheelRotation()));
     }

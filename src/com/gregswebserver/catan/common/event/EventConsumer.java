@@ -6,8 +6,8 @@ package com.gregswebserver.catan.common.event;
  */
 public interface EventConsumer<T extends GenericEvent> {
 
-    public boolean test(T event);
+    boolean test(T event);
 
-    public void execute(T event) throws EventConsumerException;
+    void execute(T event) throws EventConsumerException;
 
 }

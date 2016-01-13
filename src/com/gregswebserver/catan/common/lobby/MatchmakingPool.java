@@ -4,9 +4,6 @@ import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.crypto.Username;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 /**
  * Created by Greg on 12/29/2014.
  * Pool of clients
@@ -27,6 +24,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
         this.host = host;
     }
 
+    @Override
     public boolean test(ControlEvent event) {
         Username origin = event.getOrigin();
         boolean exists = clients.hasUser(origin);
@@ -76,6 +74,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
         return false;
     }
 
+    @Override
     public void execute(ControlEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);

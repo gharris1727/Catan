@@ -13,6 +13,7 @@ public class EmptyTown extends Town {
         super(Team.None);
     }
 
+    @Override
     public int getResourceNumber() {
         return 0;
     }
@@ -21,6 +22,7 @@ public class EmptyTown extends Town {
         return "Empty Building";
     }
 
+    @Override
     public Graphic getGraphic() {
         return getTeam().getSettlementGraphic();
     }

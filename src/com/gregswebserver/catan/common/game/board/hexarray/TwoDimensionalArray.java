@@ -103,12 +103,14 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         return "X: " + x + "/" + limitX + " Y: " + y + "/" + limitY;
     }
 
+    @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
 
             private int currentX = 0;
             private int currentY = 0;
 
+            @Override
             public boolean hasNext() {
                 try {
                     while (get(currentX, currentY) == null) { //Either returns null or throws an exception.
@@ -121,6 +123,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
                 }
             }
 
+            @Override
             public T next() {
                 if (hasNext()) {
                     T obj = get(currentX, currentY);
@@ -131,6 +134,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
                 }
             }
 
+            @Override
             public void remove() {
             }
 
@@ -144,6 +148,7 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         };
     }
 
+    @Override
     public int size() {
         return size;
     }

@@ -2,7 +2,6 @@ package com.gregswebserver.catan.common.lobby;
 
 import com.gregswebserver.catan.common.event.EventPayload;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.gameplay.GameType;
 
 /**
  * Created by Greg on 12/29/2014.

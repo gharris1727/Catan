@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 /**
  * Created by Greg on 8/8/2014.
- * Main class for a game of catan that contains the game board, game state, and player information.
+ * Main class for a game of Catan that contains the game board, game state, and player information.
  */
 public class CatanGame implements EventConsumer<GameEvent> {
 
@@ -31,6 +31,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
     public CatanGame() {
     }
 
+    @Override
     public boolean test(GameEvent event) {
         switch (event.getType()) {
             //TODO: turn checks
@@ -53,6 +54,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
         return false;
     }
 
+    @Override
     public void execute(GameEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);

@@ -16,13 +16,13 @@ public abstract class ScreenObject implements Clickable {
 
     private final Point position;
     private final int priority;
-    private final int hitboxColor;
+    private final int clickableColor;
     private Clickable redirect;
 
     protected ScreenObject(Point position, int priority) {
         this.position = position;
         this.priority = priority;
-        hitboxColor = UniqueColor.getNext();
+        clickableColor = UniqueColor.getNext();
         redirect = null;
     }
 
@@ -45,35 +45,42 @@ public abstract class ScreenObject implements Clickable {
         return priority;
     }
 
-    //Get this object's hitbox color.
-    public int getHitboxColor() {
-        return hitboxColor;
+    //Get this object's clickable color.
+    public int getClickableColor() {
+        return clickableColor;
     }
 
+    @Override
     public UserEvent onMouseClick(MouseEvent event) {
         return (redirect == null) ? null : redirect.onMouseClick(event);
     }
 
+    @Override
     public UserEvent onKeyTyped(KeyEvent event) {
         return (redirect == null) ? null : redirect.onKeyTyped(event);
     }
 
+    @Override
     public UserEvent onMouseScroll(int rot) {
         return (redirect == null) ? null : redirect.onMouseScroll(rot);
     }
 
+    @Override
     public UserEvent onMouseDrag(Point p) {
         return (redirect == null) ? null : redirect.onMouseDrag(p);
     }
 
+    @Override
     public UserEvent onSelect() {
         return (redirect == null) ? null : redirect.onSelect();
     }
 
+    @Override
     public UserEvent onDeselect() {
         return (redirect == null) ? null : redirect.onDeselect();
     }
 
+    @Override
     public Clickable getClickable(Point p) {
         return (redirect == null) ? this : redirect;
     }
@@ -93,12 +100,12 @@ public abstract class ScreenObject implements Clickable {
         if (this == o) return true;
         if (o instanceof ScreenObject) {
             ScreenObject other = (ScreenObject) o;
-            return other.hitboxColor == this.hitboxColor;
+            return other.clickableColor == this.clickableColor;
         }
         return false;
     }
 
     public int hashCode() {
-        return hitboxColor;
+        return clickableColor;
     }
 }

@@ -25,6 +25,7 @@ public enum GameEventType implements EventType {
         this.payloadType = payloadType;
     }
 
+    @Override
     public Class getType() {
         return payloadType;
     }

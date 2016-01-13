@@ -52,10 +52,12 @@ public class ClientWindow extends CoreWindow {
         }
     }
 
+    @Override
     protected void onClose() {
         client.shutdown();
     }
 
+    @Override
     protected void onResize(Dimension size) {
         if (!resizing) {
             resizing = true;

@@ -24,6 +24,7 @@ public class ClientPool implements Serializable, Iterable<Username>  {
         this.connectedUsers = new HashMap<>();
     }
 
+    @Override
     public Iterator<Username> iterator() {
         return clients.keySet().iterator();
     }

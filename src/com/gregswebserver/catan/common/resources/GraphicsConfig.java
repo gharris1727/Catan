@@ -6,7 +6,7 @@ import java.awt.*;
 
 /**
  * Created by Greg on 8/19/2014.
- * Static graphics configuration, meant as a common source for loading graphics, rendering, and hitboxes.
+ * Static graphics configuration, meant as a common source for loading graphics.
  * Every thing should be created in one shot, and require no other resources.
  */
 public class GraphicsConfig {

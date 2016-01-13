@@ -9,22 +9,22 @@ import java.awt.event.MouseEvent;
 /**
  * Created by Greg on 8/14/2014.
  * An object that can be clicked on.
- * Used in the Hitbox interface to pass user input around.
+ * Used to identify the screen object that the client clicked on.
  */
 public interface Clickable {
 
-    public UserEvent onMouseClick(MouseEvent event);
+    UserEvent onMouseClick(MouseEvent event);
 
-    public UserEvent onKeyTyped(KeyEvent event);
+    UserEvent onKeyTyped(KeyEvent event);
 
-    public UserEvent onMouseScroll(int rot);
+    UserEvent onMouseScroll(int rot);
 
-    public UserEvent onMouseDrag(Point p);
+    UserEvent onMouseDrag(Point p);
 
-    public UserEvent onSelect();
+    UserEvent onSelect();
 
-    public UserEvent onDeselect();
+    UserEvent onDeselect();
 
-    public Clickable getClickable(Point p);
+    Clickable getClickable(Point p);
 
 }

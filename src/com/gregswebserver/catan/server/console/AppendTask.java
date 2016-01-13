@@ -16,6 +16,7 @@ public class AppendTask implements Runnable {
         this.text = text;
     }
 
+    @Override
     public void run() {
         textArea.append(text + "\n");
     }

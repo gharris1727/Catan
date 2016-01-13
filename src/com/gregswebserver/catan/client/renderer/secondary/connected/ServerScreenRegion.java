@@ -29,6 +29,7 @@ public class ServerScreenRegion extends UIScreenRegion {
         add(userList);
     }
 
+    @Override
     protected void resizeContents(RenderMask mask) {
         //Get the new overall size of the window.
         int width = mask.getWidth();

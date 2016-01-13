@@ -55,6 +55,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     //Gets the clickable object under a certain point in the screen.
+    @Override
     public Clickable getClickable(Point p) {
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
@@ -73,7 +74,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     //Add an object to be rendered on the next render pass.
     public final ScreenObject add(ScreenObject object) {
         if (object != null) {
-            hitboxMap.put(object.getHitboxColor(), object);
+            hitboxMap.put(object.getClickableColor(), object);
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
             if (objects == null) {
                 objects = new LinkedList<>();
@@ -89,7 +90,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     //This operation can be inefficient if there are many objects at the same render priority.
     public final ScreenObject remove(ScreenObject object) {
         if (object != null) {
-            hitboxMap.remove(object.getHitboxColor());
+            hitboxMap.remove(object.getClickableColor());
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
             if (objects != null) {
                 objects.remove(object);
@@ -107,16 +108,19 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     //Iterator over every object in the screen in order of priority.
+    @Override
     public final Iterator<ScreenObject> iterator() {
         return new Iterator<ScreenObject>() {
 
             private Iterator<List<ScreenObject>> treeIterator = priorityMap.values().iterator();
             private Iterator<ScreenObject> listIterator;
 
+            @Override
             public boolean hasNext() {
                 return treeIterator.hasNext() || (listIterator != null && listIterator.hasNext());
             }
 
+            @Override
             public ScreenObject next() {
                 if (!hasNext())
                     throw new NoSuchElementException();
@@ -127,6 +131,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         };
     }
 
+    @Override
     public final boolean isAnimated() {
         for (ScreenObject object : this)
             if (object.isAnimated())
@@ -134,18 +139,21 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return false;
     }
 
+    @Override
     public final void step() {
         for (ScreenObject object : this)
             if (object.isAnimated())
                 ((Animated) object).step();
     }
 
+    @Override
     public final void reset() {
         for (ScreenObject object : this)
             if (object.isAnimated())
                 ((Animated) object).reset();
     }
 
+    @Override
     public final boolean needsRender() {
         if (limitScroll() || needsRendering) return true;
         for (ScreenObject object : this)
@@ -154,10 +162,12 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return false;
     }
 
+    @Override
     public final boolean isGraphical() {
         return true;
     }
 
+    @Override
     public Graphic getGraphic() {
         if (needsRender()) {
             renderContents();
@@ -166,7 +176,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
             graphic.clear();
             for (ScreenObject object : this)
                 if (object.isGraphical())
-                    ((Graphical) object).getGraphic().renderTo(graphic, object.getPosition(), object.getHitboxColor());
+                    ((Graphical) object).getGraphic().renderTo(graphic, object.getPosition(), object.getClickableColor());
             needsRendering = false;
         }
         return graphic;
@@ -176,7 +186,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     protected abstract void resizeContents(RenderMask mask);
 
     //Take the necessary steps to render the contents, such as adding or removing elements from the screen.
-    protected void renderContents() { };
+    protected void renderContents() { }
 
     protected boolean limitScroll() {
         return false;

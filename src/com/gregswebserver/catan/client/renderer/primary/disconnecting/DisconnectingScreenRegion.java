@@ -49,6 +49,7 @@ public class DisconnectingScreenRegion extends UIScreenRegion {
                 return "DisconnectingScreenDisconnectButton";
             }
 
+            @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return new UserEvent(this, UserEventType.Net_Disconnect, null);
             }
@@ -58,6 +59,7 @@ public class DisconnectingScreenRegion extends UIScreenRegion {
         add(button);
     }
 
+    @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
         button.setMask(new RoundedRectangularMask(new Dimension(256, 32)));

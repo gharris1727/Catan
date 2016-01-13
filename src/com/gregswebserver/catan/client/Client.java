@@ -52,6 +52,7 @@ public class Client extends CoreThread {
         start();
     }
 
+    @Override
     protected void externalEvent(ExternalEvent event) {
         if (event instanceof ChatEvent && chatThread != null)
             chatThread.addEvent((ChatEvent) event);
@@ -64,6 +65,7 @@ public class Client extends CoreThread {
 
     }
 
+    @Override
     protected void internalEvent(InternalEvent event) {
         if (event instanceof RenderEvent && renderThread != null)
             renderThread.addEvent((RenderEvent) event);
@@ -92,8 +94,8 @@ public class Client extends CoreThread {
             case Quit_All:
                 shutdown();
                 break;
-            case Hitbox_Update:
-                listener.setHitbox((ScreenObject) event.getPayload());
+            case Root_Clickable_Update:
+                listener.setClickable((ScreenObject) event.getPayload());
                 break;
         }
     }
@@ -218,6 +220,7 @@ public class Client extends CoreThread {
         }
     }
 
+    @Override
     public void netEvent(NetEvent event) {
         ClientConnection connection = (ClientConnection) event.getConnection();
         switch (event.getType()) {

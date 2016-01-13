@@ -6,7 +6,7 @@ package com.gregswebserver.catan.server.console;
  */
 public interface UserInput {
 
-    public int getUserInputStart();
+    int getUserInputStart();
 
-    public String getUserInput();
+    String getUserInput();
 }

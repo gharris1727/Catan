@@ -32,10 +32,12 @@ public enum AchievementCard implements Graphical, VictoryFactor {
         return desc;
     }
 
+    @Override
     public int getVictoryPoints() {
         return 2;
     }
 
+    @Override
     public Graphic getGraphic() {
         return GraphicSet.Achievement.getGraphic(ordinal());
     }

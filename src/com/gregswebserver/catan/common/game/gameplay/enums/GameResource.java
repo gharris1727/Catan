@@ -28,6 +28,7 @@ public enum GameResource implements Tradeable, Graphical {
         return name;
     }
 
+    @Override
     public Graphic getGraphic() {
         return GraphicSet.ResourceCard.getGraphic(ordinal());
     }

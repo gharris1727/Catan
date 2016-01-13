@@ -60,6 +60,7 @@ public class ConnectionPool implements Iterable<ServerConnection> {
         }
     }
 
+    @Override
     public Iterator<ServerConnection> iterator() {
         return connections.values().iterator();
     }

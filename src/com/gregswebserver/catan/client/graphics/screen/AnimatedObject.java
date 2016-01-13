@@ -32,11 +32,13 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
         return this;
     }
 
+    @Override
     public void reset() {
         it = frames.iterator();
         needsRendering = true;
     }
 
+    @Override
     public void step() {
         if (frames.size() == 0) return;
         if (it.hasNext())
@@ -51,10 +53,12 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
         needsRendering = true;
     }
 
+    @Override
     public boolean needsRender() {
         return needsRendering;
     }
 
+    @Override
     public Graphic getGraphic() {
         needsRendering = false;
         return current;

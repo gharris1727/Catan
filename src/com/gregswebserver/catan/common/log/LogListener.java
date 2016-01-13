@@ -6,5 +6,5 @@ package com.gregswebserver.catan.common.log;
  */
 public interface LogListener {
 
-    public void onLogEvent(LogEvent e);
+    void onLogEvent(LogEvent e);
 }

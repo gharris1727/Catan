@@ -21,6 +21,7 @@ public class GameThread extends QueuedInputThread<GameEvent> {
     }
 
     //Process GameEvents from the event queue.
+    @Override
     protected void execute() throws ThreadStop {
         GameEvent event = getEvent(true);
     }

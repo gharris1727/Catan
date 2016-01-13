@@ -15,7 +15,7 @@ public class Graphic {
 
     public static final int transColor = 0xff00ff;
     protected String name;
-    protected int[] pixels, hitbox;
+    protected int[] pixels, clickable;
     private RenderMask mask;
 
     //For subclasses to do their own instantiation.
@@ -35,7 +35,7 @@ public class Graphic {
     //Primary constructor for a blank Graphic object.
     public Graphic(RenderMask mask) {
         this.pixels = new int[mask.getPixelCount()];
-        this.hitbox = new int[mask.getPixelCount()];
+        this.clickable = new int[mask.getPixelCount()];
         this.mask = mask;
         this.name = "Graphic " + mask + " Pixels: " + mask.getPixelCount();
     }
@@ -89,7 +89,7 @@ public class Graphic {
             if (length < 1) continue;
             //Copy
             pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length, trans);
-            colorCopy(to.hitbox, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
+            colorCopy(to.clickable, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
         }
     }
 
@@ -128,11 +128,11 @@ public class Graphic {
 
     protected void setPixels(int[] pixels) {
         this.pixels = pixels;
-        hitbox = new int[pixels.length];
+        clickable = new int[pixels.length];
     }
 
     public int getHitboxColor(Point p) {
-        return hitbox[mask.getIndex(p)];
+        return clickable[mask.getIndex(p)];
     }
 
     public void renderTo(Graphic to, Point toPos, int color) {
@@ -143,7 +143,7 @@ public class Graphic {
     public void clear() {
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = transColor;
-            hitbox[i] = 0;
+            clickable[i] = 0;
         }
     }
 
@@ -152,6 +152,6 @@ public class Graphic {
     }
 
     public void displayHitbox() {
-        pixels = hitbox;
+        pixels = clickable;
     }
 }

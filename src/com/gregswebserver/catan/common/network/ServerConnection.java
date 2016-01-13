@@ -24,6 +24,7 @@ public class ServerConnection extends NetConnection {
         remote = new NetID((InetSocketAddress) socket.getRemoteSocketAddress());
     }
 
+    @Override
     public void run() {
         try {
             open = true;

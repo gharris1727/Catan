@@ -20,6 +20,7 @@ public enum ServerEventType implements EventType {
         this.payloadType = payloadType;
     }
 
+    @Override
     public Class getType() {
         return payloadType;
     }

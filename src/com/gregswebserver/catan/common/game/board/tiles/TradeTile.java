@@ -66,6 +66,7 @@ public class TradeTile extends BeachTile {
         return out;
     }
 
+    @Override
     public Graphic getGraphic() {
         if (graphic == null) {
             graphic = new Graphic(RenderMaskInfo.TileMask.getMask());

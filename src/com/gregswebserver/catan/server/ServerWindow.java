@@ -25,6 +25,7 @@ public class ServerWindow extends CoreWindow {
         setVisible(true);
     }
 
+    @Override
     protected void onClose() {
         server.logger.removeListener(console);
         server.shutdown();

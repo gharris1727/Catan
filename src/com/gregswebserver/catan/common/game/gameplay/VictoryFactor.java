@@ -6,6 +6,6 @@ package com.gregswebserver.catan.common.game.gameplay;
  */
 public interface VictoryFactor {
 
-    public int getVictoryPoints();
+    int getVictoryPoints();
 
 }

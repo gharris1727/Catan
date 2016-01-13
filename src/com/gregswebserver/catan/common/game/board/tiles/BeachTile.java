@@ -32,6 +32,7 @@ public class BeachTile extends DirectionalTile {
         return "BeachTile n/" + sides + " d/" + getDirection();
     }
 
+    @Override
     public Graphic getGraphic() {
         return graphics[sides - 1].getGraphic(getDirection().ordinal());
     }

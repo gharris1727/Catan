@@ -6,5 +6,5 @@ package com.gregswebserver.catan.common.game.gameplay.generator;
  */
 public interface FeatureGenerator<T> extends Iterable<T> {
 
-    public abstract void randomize();
+    void randomize();
 }

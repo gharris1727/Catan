@@ -20,6 +20,7 @@ import java.io.*;
 public class ResourceLoader {
 
     private static final ResourceCache<TextStyleInfo, TextStyle> fontCache = new ResourceCache<TextStyleInfo, TextStyle>() {
+        @Override
         protected TextStyle load(TextStyleInfo textStyleInfo) throws ResourceLoadException {
             return new TextStyle(textStyleInfo.getName(), textStyleInfo.getStyle(), textStyleInfo.getSize(), textStyleInfo.getColor());
         }
@@ -27,12 +28,14 @@ public class ResourceLoader {
 
     //TODO: rename GameType to match the other Info schemas.
     private static final ResourceCache<GameInfo, GameType> gameCache = new ResourceCache<GameInfo, GameType>() {
+        @Override
         protected GameType load(GameInfo gameInfo) throws ResourceLoadException {
             return new GameType(gameInfo.getPath());
         }
     };
 
     private static final ResourceCache<GraphicInfo, Graphic> graphicCache = new ResourceCache<GraphicInfo, Graphic>() {
+        @Override
         protected Graphic load(GraphicInfo graphicInfo) throws ResourceLoadException {
             GraphicSource s = getGraphicSource(graphicInfo.getSource());
             RenderMask m = graphicInfo.getMask();
@@ -41,12 +44,14 @@ public class ResourceLoader {
     };
 
     private static final ResourceCache<GraphicSourceInfo, GraphicSource> graphicSourceCache = new ResourceCache<GraphicSourceInfo, GraphicSource>() {
+        @Override
         protected GraphicSource load(GraphicSourceInfo info) throws ResourceLoadException {
             return new GraphicSource(info.getPath());
         }
     };
 
     private static final ResourceCache<ObjectStoreInfo, Object> objectStoreCache = new ResourceCache<ObjectStoreInfo, Object>() {
+        @Override
         protected Object load(ObjectStoreInfo objectStoreInfo) throws ResourceLoadException {
             try {
                 ObjectInputStream stream = new ObjectInputStream(new FileInputStream(objectStoreInfo.getPath()));
@@ -58,6 +63,7 @@ public class ResourceLoader {
             }
         }
 
+        @Override
         public void save(ObjectStoreInfo objectStoreInfo) throws ResourceLoadException {
             try {
                 ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(objectStoreInfo.getPath()));

@@ -21,6 +21,7 @@ import java.util.Iterator;
  */
 public class RandomBoardGenerator implements BoardGenerator {
 
+    @Override
     public void run(GameBoard board, HashSet<Coordinate> validSpaces, HashSet<Coordinate> tradingPosts) {
         //Prep all of the helper classes to generate map features.
         TerrainGenerator terrainGenerator = new TerrainGenerator(validSpaces.size());

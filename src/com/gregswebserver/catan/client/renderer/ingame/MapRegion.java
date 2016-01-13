@@ -49,6 +49,7 @@ public class MapRegion extends ScreenRegion {
         add(foreground).setClickable(this);
     }
 
+    @Override
     protected boolean limitScroll() {
         int maxX = -GraphicsConfig.mapEdgeBufferSize.width;
         int maxY = -GraphicsConfig.mapEdgeBufferSize.height;
@@ -143,6 +144,7 @@ public class MapRegion extends ScreenRegion {
             return super.remove(object);
         }
 
+        @Override
         public void clear() {
             tiles = new HashMap<>();
             roads = new HashMap<>();
@@ -193,6 +195,7 @@ public class MapRegion extends ScreenRegion {
                 this.object = object;
             }
 
+            @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 if (object instanceof Tile)
                     return new UserEvent(this, UserEventType.Tile_Clicked, coordinate);

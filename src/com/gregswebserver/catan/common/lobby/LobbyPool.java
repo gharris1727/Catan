@@ -66,6 +66,7 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
             this.sortOption = sortOption;
         }
 
+        @Override
         public int compare(Lobby f, Lobby s) {
             switch (sortOption) {
                 case Lobby_Name_Asc:
@@ -108,6 +109,7 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
         return sortOption;
     }
 
+    @Override
     public Iterator<Lobby> iterator() {
         return list.iterator();
     }

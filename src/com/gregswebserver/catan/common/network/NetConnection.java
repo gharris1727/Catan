@@ -34,6 +34,7 @@ public abstract class NetConnection implements Runnable {
         connect = new Thread(this);
         //Thread to accept incoming objects and sendEvent them to the process implementation.
         receive = new Thread("Receive") {
+            @Override
             public void run() {
                 while (open) {
                     try {
@@ -51,6 +52,7 @@ public abstract class NetConnection implements Runnable {
         };
         //Thread to close the socket and sever the connection.
         disconnect = new Thread("Disconnect") {
+            @Override
             public void run() {
                 open = false;
                 try {

@@ -50,6 +50,7 @@ public class ChatLog implements Iterable<String> {
         lines.add(0, line);
     }
 
+    @Override
     public Iterator<String> iterator() {
         return lines.iterator();
     }

@@ -14,6 +14,7 @@ public abstract class Path extends TeamOwned {
         super(owner);
     }
 
+    @Override
     public Graphic getGraphic() {
         int orientation = getHexArray().getEdgeOrientation(getPosition());
         return getTeam().getRoadGraphic(orientation);

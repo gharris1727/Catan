@@ -5,6 +5,7 @@ package com.gregswebserver.catan.common.log;
  * Log listener that prints log output to the System.out console.
  */
 public class StdOutListener implements LogListener {
+    @Override
     public void onLogEvent(LogEvent e) {
         System.out.println(e.toString());
     }

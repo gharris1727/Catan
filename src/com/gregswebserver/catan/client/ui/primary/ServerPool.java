@@ -24,6 +24,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     public void remove(ConnectionInfo login) { list.remove(login); }
 
+    @Override
     public Iterator<ConnectionInfo> iterator() {
         return list.iterator();
     }

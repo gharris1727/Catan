@@ -103,6 +103,7 @@ public class GameType implements Comparable<GameType> {
         return "GameType: " + name;
     }
 
+    @Override
     public int compareTo(GameType gameType) {
         return 0; //TODO: implement sorting of different game types.
     }

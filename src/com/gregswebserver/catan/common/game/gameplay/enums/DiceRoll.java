@@ -49,6 +49,7 @@ public enum DiceRoll implements Graphical {
         return rank;
     }
 
+    @Override
     public Graphic getGraphic() {
         return GraphicSet.Dice.getGraphic(ordinal());
     }

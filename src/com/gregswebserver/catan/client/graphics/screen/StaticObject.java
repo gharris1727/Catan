@@ -18,18 +18,22 @@ public abstract class StaticObject extends ScreenObject implements Graphical {
         this.graphic = graphic;
     }
 
+    @Override
     public boolean isAnimated() {
         return false;
     }
 
+    @Override
     public boolean isGraphical() {
         return true;
     }
 
+    @Override
     public boolean needsRender() {
         return false;
     }
 
+    @Override
     public Graphic getGraphic() {
         return graphic;
     }

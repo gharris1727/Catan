@@ -10,8 +10,6 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 
-import java.awt.Point;
-
 /**
  * Created by Greg on 1/18/2015.
  * A screen that is shown while the client is connecting to a remote server.
@@ -39,6 +37,7 @@ public class ConnectingScreenRegion extends UIScreenRegion {
         add(text).setClickable(this);
     }
 
+    @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
         text.getPosition().setLocation(getCenteredPosition(textGraphic.getMask()));

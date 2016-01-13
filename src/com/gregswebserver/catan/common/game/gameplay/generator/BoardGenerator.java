@@ -12,5 +12,5 @@ import java.util.HashSet;
  */
 public interface BoardGenerator extends Serializable {
 
-    public abstract void run(GameBoard board, HashSet<Coordinate> tilePositions, HashSet<Coordinate> tradingPosts);
+    void run(GameBoard board, HashSet<Coordinate> tilePositions, HashSet<Coordinate> tradingPosts);
 }

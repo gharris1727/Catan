@@ -20,8 +20,9 @@ public class BufferedGraphic extends Graphic {
         setMask(new RectangularMask(new Dimension(image.getWidth(), image.getHeight())));
     }
 
+    @Override
     public void clear() {
         for (int i = 0; i < pixels.length; i++)
-            pixels[i] = hitbox[i] = 0;
+            pixels[i] = clickable[i] = 0;
     }
 }

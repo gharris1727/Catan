@@ -32,22 +32,27 @@ public abstract class TextBox extends UIScreenRegion {
         return text;
     }
 
+    @Override
     public UserEvent onMouseClick(MouseEvent event) {
         return super.onMouseClick(event);
     }
 
+    @Override
     public UserEvent onMouseDrag(Point p) {
         return super.onMouseDrag(p);
     }
 
+    @Override
     public UserEvent onSelect() {
         return super.onSelect();
     }
 
+    @Override
     public UserEvent onDeselect() {
         return super.onDeselect();
     }
 
+    @Override
     public UserEvent onKeyTyped(KeyEvent event) {
         return super.onKeyTyped(event);
     }

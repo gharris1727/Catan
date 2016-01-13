@@ -18,6 +18,7 @@ public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
         super(logger);
     }
 
+    @Override
     protected void execute() throws ThreadStop {
         GenericEvent event = getEvent(true);
         logger.log(this + " Received " + event, LogLevel.DEBUG);

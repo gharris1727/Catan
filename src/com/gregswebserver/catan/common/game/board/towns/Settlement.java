@@ -14,10 +14,12 @@ public class Settlement extends Town implements VictoryFactor {
         super(owner);
     }
 
+    @Override
     public int getResourceNumber() {
         return 1;
     }
 
+    @Override
     public int getVictoryPoints() {
         return 1;
     }
@@ -26,6 +28,7 @@ public class Settlement extends Town implements VictoryFactor {
         return "Settlement: " + getTeam();
     }
 
+    @Override
     public Graphic getGraphic() {
         return getTeam().getSettlementGraphic();
     }

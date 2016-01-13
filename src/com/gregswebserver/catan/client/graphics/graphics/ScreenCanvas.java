@@ -24,14 +24,17 @@ public class ScreenCanvas extends Canvas implements Graphical {
         graphic = new BufferedGraphic(image);
     }
 
+    @Override
     public Dimension getSize() {
         return size;
     }
 
+    @Override
     public int getWidth() {
         return size.width;
     }
 
+    @Override
     public int getHeight() {
         return size.height;
     }
@@ -40,6 +43,7 @@ public class ScreenCanvas extends Canvas implements Graphical {
         return "ScreenCanvas";
     }
 
+    @Override
     public Graphic getGraphic() {
         return graphic;
     }

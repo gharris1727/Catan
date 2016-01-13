@@ -32,6 +32,7 @@ public class Console extends JPanel implements UserInput, LogListener {
         add(new JScrollPane(textArea));
 
         textArea.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String text = getUserInput();
@@ -41,6 +42,7 @@ public class Console extends JPanel implements UserInput, LogListener {
         });
     }
 
+    @Override
     public String getUserInput() {
         try {
             return textArea.getText(userInputStart, textArea.getCaretPosition() - userInputStart).trim();
@@ -50,10 +52,12 @@ public class Console extends JPanel implements UserInput, LogListener {
         }
     }
 
+    @Override
     public int getUserInputStart() {
         return userInputStart;
     }
 
+    @Override
     public void onLogEvent(LogEvent e) {
         append(e.toString());
     }

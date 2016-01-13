@@ -12,14 +12,17 @@ public abstract class InvisibleObject extends ScreenObject {
         super(position, priority);
     }
 
+    @Override
     public boolean isAnimated() {
         return false;
     }
 
+    @Override
     public boolean isGraphical() {
         return false;
     }
 
+    @Override
     public boolean needsRender() {
         return false;
     }

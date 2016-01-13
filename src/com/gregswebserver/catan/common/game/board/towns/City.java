@@ -14,10 +14,12 @@ public class City extends Town implements VictoryFactor {
         super(owner);
     }
 
+    @Override
     public int getResourceNumber() {
         return 2;
     }
 
+    @Override
     public int getVictoryPoints() {
         return 2;
     }
@@ -26,6 +28,7 @@ public class City extends Town implements VictoryFactor {
         return "City: " + getTeam();
     }
 
+    @Override
     public Graphic getGraphic() {
         return getTeam().getCityGraphic();
     }

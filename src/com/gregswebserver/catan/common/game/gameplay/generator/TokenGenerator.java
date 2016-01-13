@@ -23,10 +23,12 @@ public class TokenGenerator implements FeatureGenerator<DiceRoll> {
         }
     }
 
+    @Override
     public void randomize() {
         Collections.shuffle(dice);
     }
 
+    @Override
     public Iterator<DiceRoll> iterator() {
         return dice.iterator();
     }

@@ -22,6 +22,7 @@ public enum NetEventType implements EventType {
         this.payloadType = payloadType;
     }
 
+    @Override
     public Class getType() {
         return payloadType;
     }

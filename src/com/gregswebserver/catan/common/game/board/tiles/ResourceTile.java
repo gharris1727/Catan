@@ -54,6 +54,7 @@ public class ResourceTile extends Tile {
         return "ResourceTile " + terrain;
     }
 
+    @Override
     public Graphic getGraphic() {
         if (graphic == null) {
             graphic = new Graphic(TileMask.getMask());

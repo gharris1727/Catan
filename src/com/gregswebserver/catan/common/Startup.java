@@ -58,6 +58,7 @@ public class Startup extends CoreWindow {
         }
 
         buttons[0].addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     startClient(getHost(), getPort(), getUsername(), getPassword());
@@ -67,6 +68,7 @@ public class Startup extends CoreWindow {
             }
         });
         buttons[1].addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     startServer(getPort(), getPassword());
@@ -116,6 +118,7 @@ public class Startup extends CoreWindow {
         server.start(25000);
     }
 
+    @Override
     protected void onClose() {
         dispose();
     }

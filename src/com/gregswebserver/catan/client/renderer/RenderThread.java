@@ -31,7 +31,7 @@ import static com.gregswebserver.catan.client.state.ClientState.*;
 /**
  * Created by Greg on 8/13/2014.
  * Render engine with a event queue on the front for data input.
- * Stores the hitbox information for the InputListener to use.
+ * Stores the clickable information for the InputListener to use.
  */
 public class RenderThread extends QueuedInputThread<RenderEvent> {
 
@@ -49,6 +49,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         root = null;
     }
 
+    @Override
     protected void execute() throws ThreadStop {
         //Process the event queue, blocking for every event. Only re-renders what needs to be re-rendered.
         RenderEvent event = getEvent(false);
@@ -94,7 +95,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
             ScreenRegion next = areas.get(client.getState());
             if (root != next) {
                 //Need to load the next screen region
-                client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, next));
+                client.addEvent(new ClientEvent(this, ClientEventType.Root_Clickable_Update, next));
                 //Resize the screen if it is newly loaded.
                 if (next != null)
                     next.setMask(screenMask);

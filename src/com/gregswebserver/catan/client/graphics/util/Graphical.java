@@ -8,5 +8,5 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphic;
  */
 public interface Graphical {
 
-    public Graphic getGraphic();
+    Graphic getGraphic();
 }

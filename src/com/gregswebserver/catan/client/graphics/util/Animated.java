@@ -6,8 +6,8 @@ package com.gregswebserver.catan.client.graphics.util;
  */
 public interface Animated extends Graphical {
 
-    public void step();
+    void step();
 
-    public void reset();
+    void reset();
 
 }

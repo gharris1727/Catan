@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Created by Greg on 1/18/2015.
- * A token sent from the server to client to avoid re-authenicating the client.
+ * A secret token generated from the server to verify the client's identity.
  */
 public class AuthToken implements Serializable {
 

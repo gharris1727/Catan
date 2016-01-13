@@ -22,6 +22,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
         this.logger = logger;
         eventQueue = new LinkedBlockingQueue<>();
         run = new Thread(toString()) {
+            @Override
             public void run() {
                 while (running) {
                     try {
