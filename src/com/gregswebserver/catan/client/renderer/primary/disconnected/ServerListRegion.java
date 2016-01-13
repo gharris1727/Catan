@@ -2,22 +2,22 @@ package com.gregswebserver.catan.client.renderer.primary.disconnected;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.graphics.TextGraphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
+import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.ui.Button;
+import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.common.crypto.ConnectionInfo;
-import com.gregswebserver.catan.common.crypto.ServerList;
+import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
+import com.gregswebserver.catan.client.ui.primary.ServerPool;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -29,25 +29,29 @@ public class ServerListRegion extends UIScreenRegion {
     private static final int serverHeight = 72;
     private static final RenderMask serverSize = new RoundedRectangularMask(new Dimension(serverWidth, serverHeight));
     private static final int buttonHeight = 96;
-    private static final RenderMask buttonPanelSize = new RoundedRectangularMask(new Dimension(serverWidth, buttonHeight));
+    private static final RenderMask footerSize = new RoundedRectangularMask(new Dimension(serverWidth, buttonHeight));
     private static final int listPadding = 4;
     private static final int vertPadding = 48;
-    private final ServerList list;
+    private final ServerPool list;
 
     private Point[] serverLocations;
-    private Point panelLocation;
+    private Point footerLocation;
 
+    //TODO: make scrolling continuous.
     private int scroll;
-    private int selected;
+    private ConnectionInfo selected;
 
-    public ServerListRegion(Point position, int priority, RenderMask mask, UIStyle style, ServerList list) {
-        super(position, priority, mask, style);
+    ScreenRegion footer;
+
+    public ServerListRegion(int priority, UIStyle style, ServerPool list) {
+        super(priority, style);
         this.list = list;
         scroll = 0;
-        selected = -1;
-        resizeContents(mask);
+        selected = null;
+        footer = new ServerListFooter(0);
     }
 
+    @Override
     protected void resizeContents(RenderMask mask) {
         //Get the new overall size of the window.
         int width = mask.getWidth();
@@ -56,21 +60,27 @@ public class ServerListRegion extends UIScreenRegion {
         //Find out the horizontal padding on either side.
         int hPadding = (width - serverWidth) / 2;
         //Find out how many servers we can display.
-        int displayed = ((height - vertPadding - buttonHeight) / serverHeight) - 1;
+        int displayed = (height - vertPadding - buttonHeight) / serverHeight;
         //Figure out the vertical padding we need
         int vPadding = (height - listHeight * displayed - buttonHeight) / 2;
         //Fill out the array of servers.
         serverLocations = new Point[displayed];
         for (int i = 0; i < displayed; i++)
             serverLocations[i] = new Point(hPadding, vPadding + i * listHeight);
-        panelLocation = new Point(hPadding, vPadding + displayed * listHeight);
+        footerLocation = new Point(hPadding, vPadding + displayed * listHeight);
     }
 
+    @Override
     protected void renderContents() {
         clear();
-        for (int i = 0; i < serverLocations.length && i + scroll < list.size(); i++)
-            add(new ServerListItem(serverLocations[i], 0, i + scroll, serverSize));
-        add(new ButtonPanelAreaScreen(panelLocation, 0, buttonPanelSize));
+        Iterator<ConnectionInfo> iter = list.iterator();
+        for (int i = 0; i < serverLocations.length && i + scroll < list.size(); i++) {
+            ScreenRegion item = new ServerListItem(0, iter.next());
+            item.setMask(serverSize).setPosition(serverLocations[i]);
+            add(item);
+        }
+        footer.setMask(footerSize).setPosition(footerLocation);
+        add(footer);
     }
 
     public String toString() {
@@ -79,73 +89,92 @@ public class ServerListRegion extends UIScreenRegion {
 
     private class ServerListItem extends ScreenRegion {
 
-        private final int listIndex;
+        private final ConnectionInfo info;
 
-        public ServerListItem(Point position, int priority, int listIndex, RenderMask mask) {
-            super(position, priority, mask);
-            this.listIndex = listIndex;
-        }
+        private ScreenRegion background;
+        private ScreenObject address;
+        private ScreenObject login;
 
-        protected void renderContents() {
-            clear();
-
-            ConnectionInfo info = list.get(listIndex);
-            String address = "Remote Address : " + info.getRemote() + ":" + info.getPort();
-            Graphic addressGraphic = new TextGraphic(getStyle().getLightTextStyle(), address);
-            String login = "Username: " + info.getUsername();
-            Graphic loginGraphic = new TextGraphic(getStyle().getLightTextStyle(), login);
-
-            add(new EdgedTiledBackground(new Point(), 0, getMask(), getStyle().getInterfaceStyle()) {
+        public ServerListItem(int priority, ConnectionInfo info) {
+            super(priority);
+            this.info = info;
+            //Create all of the screen objects.
+            background = new EdgedTiledBackground(0, getStyle().getInterfaceStyle()) {
                 public String toString() {
                     return "ServerListItem Background";
                 }
-            }).setClickable(this);
-            add(new StaticObject(new Point(16, 16), 1, addressGraphic) {
+            };
+            address = new TextLabel(1, getStyle().getLightTextStyle(),
+                    "Remote Address : " + info.getRemote() + ":" + info.getPort()) {
                 public String toString() {
                     return "ServerListItem Remote Address";
                 }
-            }).setClickable(this);
-            add(new StaticObject(new Point(16, 40), 2, loginGraphic) {
+            };
+            login = new TextLabel( 2, getStyle().getLightTextStyle(),
+                    "Username: " + info.getUsername()) {
                 public String toString() {
                     return "ServerListItem Username";
                 }
-            }).setClickable(this);
+            };
+            //Add everything to the screen.
+            add(login).setClickable(this);
+            add(background).setClickable(this);
+            add(address).setClickable(this);
+            //Set the size
+            setMask(serverSize);
         }
 
+        @Override
+        protected void resizeContents(RenderMask mask) {
+            background.setMask(mask);
+            address.setPosition(new Point(16,16));
+            login.setPosition(new Point(16,40));
+        }
+
+        @Override
         public UserEvent onMouseClick(MouseEvent event) {
-            selected = listIndex;
+            selected = info;
             return null;
         }
 
+        @Override
         public String toString() {
-            return "ServerListItemArea " + listIndex;
+            return "ServerListItemArea " + info;
         }
     }
 
-    private class ButtonPanelAreaScreen extends ScreenRegion {
+    private class ServerListFooter extends ScreenRegion {
 
-        public ButtonPanelAreaScreen(Point position, int priority, RenderMask mask) {
-            super(position, priority, mask);
-        }
+        private ScreenRegion background;
+        private ScreenRegion connectButton;
 
-        protected void renderContents() {
-            clear();
-            add(new EdgedTiledBackground(new Point(), 0, getMask(), getStyle().getInterfaceStyle()) {
+        public ServerListFooter(int priority) {
+            super(priority);
+            background = new EdgedTiledBackground(0, getStyle().getInterfaceStyle()) {
                 public String toString() {
                     return "ServerListItem Background";
                 }
-            }).setClickable(this);
-            add(new Button(new Point(16, 16), 1, new RoundedRectangularMask(new Dimension(128, 32)), getStyle(), "Connect") {
+            };
+            connectButton = new Button(1, getStyle(), "Connect") {
                 public String toString() {
                     return "Connect Button";
                 }
 
                 public UserEvent onMouseClick(MouseEvent event) {
-                    if (selected >= 0 && selected < list.size())
-                        return new UserEvent(this, UserEventType.Net_Connect, list.get(selected));
-                    return null;
+                    return (selected == null) ? null :new UserEvent(this, UserEventType.Net_Connect, selected);
                 }
-            });
+            };
+            //Add the objects to the screen
+            add(background).setClickable(this);
+            add(connectButton);
+            setMask(footerSize);
+        }
+
+        @Override
+        protected void resizeContents(RenderMask mask) {
+            background.setMask(mask);
+            connectButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
+            connectButton.setPosition(new Point(16,16));
         }
 
         public String toString() {

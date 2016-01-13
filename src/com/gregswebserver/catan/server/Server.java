@@ -2,11 +2,12 @@ package com.gregswebserver.catan.server;
 
 
 import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.*;
 import com.gregswebserver.catan.common.event.*;
-import com.gregswebserver.catan.common.lobby.ClientPool;
+import com.gregswebserver.catan.common.lobby.MatchmakingPool;
 import com.gregswebserver.catan.common.lobby.UserInfo;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ConnectionPool;
@@ -29,7 +30,7 @@ public class Server extends CoreThread {
     private final ServerWindow window;
     private UserDatabase database;
     private ConnectionPool connectionPool;
-    private ClientPool clientPool;
+    private MatchmakingPool matchmakingPool;
 
     private ServerSocket socket;
     private boolean listening;
@@ -41,7 +42,7 @@ public class Server extends CoreThread {
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
         database = new UserDatabase(logger);
-        clientPool = new ClientPool(this);
+        matchmakingPool = new MatchmakingPool(this);
         start();
     }
 
@@ -96,8 +97,8 @@ public class Server extends CoreThread {
                 shutdown();
                 break;
             case Client_Disconnect:
-                connectionPool.closeConnection(clientPool.getConnectionID((Username) event.getPayload()));
-                clientPool.removeUserConnection((Username) event.getPayload());
+                connectionPool.closeConnection(matchmakingPool.getUserList().getConnectionID((Username) event.getPayload()));
+                matchmakingPool.getUserList().removeUserConnection((Username) event.getPayload());
                 break;
             case Client_Connect:
                 break;
@@ -137,11 +138,11 @@ public class Server extends CoreThread {
             case Lobby_Join:
             case Lobby_Leave:
                 try {
-                    if (clientPool.test(event))
-                        clientPool.execute(event);
+                    if (matchmakingPool.test(event))
+                        matchmakingPool.execute(event);
                     //Rebroadcast the event to everyone connected.
-                    for (Username user : clientPool) {
-                        ServerConnection connection = connectionPool.get(clientPool.getConnectionID(user));
+                    for (Username user : matchmakingPool.getUserList()) {
+                        ServerConnection connection = connectionPool.get(matchmakingPool.getUserList().getConnectionID(user));
                         if (connection != null)
                             connection.sendEvent(new NetEvent(token, NetEventType.External_Event, event));
                     }
@@ -180,11 +181,11 @@ public class Server extends CoreThread {
                     connection.sendEvent(new NetEvent(token, NetEventType.Log_In_Success, clientToken));
                     //Send them a sync of the current client pool state.
                     connection.sendEvent(new NetEvent(token,NetEventType.External_Event,
-                            new ControlEvent(token.username,ControlEventType.Client_Pool_Sync, clientPool)));
+                            new ControlEvent(token.username,ControlEventType.Client_Pool_Sync, matchmakingPool)));
                     //Get their info out of the server database.
                     UserInfo userInfo = database.getUserInfo(clientToken.username);
                     //Keep track of their connection id in the database.
-                    clientPool.storeUserConnection(clientToken.username,connection.getConnectionID());
+                    matchmakingPool.getUserList().storeUserConnection(clientToken.username,connection.getConnectionID());
                     //Tell the rest of the server about their join.
                     externalEvent(new ControlEvent(clientToken.username,ControlEventType.User_Connect,userInfo));
                 } catch (AuthenticationException | UserNotFoundException e) {
@@ -203,7 +204,7 @@ public class Server extends CoreThread {
             case Link_Error:
                 int id = connection.getConnectionID();
                 //Check if the user was logged in
-                Username username = clientPool.getConnectionUsername(id);
+                Username username = matchmakingPool.getUserList().getConnectionUsername(id);
                 if (username != null) {
                     // Log the user out.
                     addEvent(new ControlEvent(username,ControlEventType.User_Disconnect,null));

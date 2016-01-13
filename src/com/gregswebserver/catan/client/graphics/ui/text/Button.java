@@ -1,7 +1,5 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.graphics.ui.text;
 
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.graphics.TextGraphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
@@ -9,28 +7,23 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 
-import java.awt.*;
-
 /**
  * Created by Greg on 1/16/2015.
  * A button visible on screen.
  */
 public abstract class Button extends UIScreenRegion {
 
-    private String label;
     private ScreenRegion background;
     private StaticObject text;
 
-    public Button(Point position, int priority, RenderMask mask, UIStyle style, String label) {
-        super(position, priority, mask, style);
-        this.label = label;
-        background = new EdgedTiledBackground(new Point(), 0, getMask(), getStyle().getButtonStyle()) {
+    public Button(int priority, UIStyle style, String label) {
+        super(priority, style);
+        background = new EdgedTiledBackground(0, getStyle().getButtonStyle()) {
             public String toString() {
                 return "ButtonBackground";
             }
         };
-        Graphic textGraphic = new TextGraphic(getStyle().getDarkTextStyle(), label);
-        text = new StaticObject(getCenteredPosition(textGraphic.getMask()), 1, textGraphic) {
+        text = new TextLabel(1, getStyle().getDarkTextStyle(), label) {
             public String toString() {
                 return "ButtonLabel";
             }
@@ -39,7 +32,9 @@ public abstract class Button extends UIScreenRegion {
         add(text).setClickable(this);
     }
 
+    @Override
     public void resizeContents(RenderMask mask) {
-        background.resize(mask);
+        background.setMask(mask);
+        text.getPosition().setLocation(getCenteredPosition(text.getGraphic().getMask()));
     }
 }

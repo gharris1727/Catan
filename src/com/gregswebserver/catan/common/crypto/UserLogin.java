@@ -11,7 +11,7 @@ public class UserLogin extends EventPayload {
     public final Username username;
     public final Password password;
 
-    protected UserLogin(Username name, Password pass) {
+    public UserLogin(Username name, Password pass) {
         username = name;
         password = pass;
     }

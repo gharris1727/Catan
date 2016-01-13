@@ -21,6 +21,7 @@ public enum GraphicSet {
     Land(GraphicSourceInfo.Land, TileMask, Terrain.values().length),
     BeachSingle(GraphicSourceInfo.BeachSingle, TileMask, Direction.values().length),
     BeachDouble(GraphicSourceInfo.BeachDouble, TileMask, Direction.values().length),
+    Ocean(GraphicSourceInfo.Ocean, UILargeMask, 16),
 
     Dice(GraphicSourceInfo.Dice, DiceRollMask, DiceRoll.values().length),
     ResourceCard(GraphicSourceInfo.ResourceCard, ResourceCardMask, GameResource.values().length),
@@ -39,7 +40,9 @@ public enum GraphicSet {
     UIBlueBackground(GraphicSourceInfo.BlueUIBackground, UILargeMask, Direction.values().length),
     UIBlueWindow(GraphicSourceInfo.BlueUIWindow, UISmallMask, Direction.values().length),
     UIBlueText(GraphicSourceInfo.BlueUIText, UISmallMask, Direction.values().length),
-    UIBlueButton(GraphicSourceInfo.BlueUIButton, UISmallMask, Direction.values().length);
+    UIBlueButton(GraphicSourceInfo.BlueUIButton, UISmallMask, Direction.values().length),
+
+    UIBlueLobbyIcons(GraphicSourceInfo.BlueUIArrows, UISmallMask, 6);
 
     private final RenderMaskInfo[] masks;
     private final GraphicInfo[] graphics;

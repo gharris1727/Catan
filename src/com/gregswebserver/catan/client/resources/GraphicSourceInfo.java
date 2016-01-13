@@ -7,6 +7,7 @@ package com.gregswebserver.catan.client.resources;
 public enum GraphicSourceInfo {
 
     Land("tiles/land"),
+    Ocean("tiles/ocean"),
     BeachSingle("tiles/singleBeach"),
     BeachDouble("tiles/doubleBeach"),
 
@@ -14,6 +15,8 @@ public enum GraphicSourceInfo {
     BlueUIWindow("ui/blue/window"),
     BlueUIText("ui/blue/text"),
     BlueUIButton("ui/blue/button"),
+
+    BlueUIArrows("ui/blue/arrows"),
 
     EmptyTeam("teams/empty"),
     RedTeam("teams/red"),

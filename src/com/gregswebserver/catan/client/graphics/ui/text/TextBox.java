@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.graphics.ui.text;
 
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 
@@ -22,8 +21,8 @@ public abstract class TextBox extends UIScreenRegion {
     private int selectStart;
     private int selectEnd;
 
-    public TextBox(Point position, int priority, RenderMask mask, UIStyle style) {
-        super(position, priority, mask, style);
+    public TextBox(int priority,  UIStyle style) {
+        super(priority, style);
         state = EditableState.Deselected;
         previous = state;
         //TODO: implement.

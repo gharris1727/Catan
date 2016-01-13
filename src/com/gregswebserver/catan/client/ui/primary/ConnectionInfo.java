@@ -1,5 +1,8 @@
-package com.gregswebserver.catan.common.crypto;
+package com.gregswebserver.catan.client.ui.primary;
 
+import com.gregswebserver.catan.common.crypto.Password;
+import com.gregswebserver.catan.common.crypto.UserLogin;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.network.NetID;
 
 import java.net.InetAddress;

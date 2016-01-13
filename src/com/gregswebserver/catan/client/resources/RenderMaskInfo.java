@@ -31,7 +31,8 @@ public enum RenderMaskInfo {
     RobberMask(new RectangularMask(new Dimension(32, 96))),
 
     UILargeMask(new RectangularMask(GraphicsConfig.largeTileSize)),
-    UISmallMask(new RectangularMask(GraphicsConfig.smallTileSize));
+    UISmallMask(new RectangularMask(GraphicsConfig.smallTileSize)),
+    UILobbyArrowMask(new RectangularMask(GraphicsConfig.lobbyArrowSize));
 
     public static RenderMaskInfo[] tradeBridgeMasks = new RenderMaskInfo[]{null, null, null, TradeHorizontalMask,
             TradeHorizontalMask, TradeDiagonalDownMask, TradeDiagonalDownMask, TradeDiagonalUpMask, TradeDiagonalUpMask};

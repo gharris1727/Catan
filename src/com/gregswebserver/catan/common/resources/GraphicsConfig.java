@@ -16,6 +16,8 @@ public class GraphicsConfig {
     public static final Dimension largeTileSize = new Dimension(32, 32);
     public static final Dimension smallTileSize = new Dimension(8, 8);
 
+    public static final Dimension lobbyArrowSize = new Dimension(50,50);
+
     public static final Point diceRollRender = new Point();
     public static final Point robberRender = new Point();
 

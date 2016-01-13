@@ -5,7 +5,7 @@ import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.common.crypto.ServerList;
+import com.gregswebserver.catan.client.ui.primary.ServerPool;
 
 import java.awt.Point;
 
@@ -19,21 +19,21 @@ public class DisconnectedScreenRegion extends UIScreenRegion {
     private ServerListRegion servers;
     private ServerEditRegion detail;
 
-    public DisconnectedScreenRegion(RenderMask mask, UIStyle style, ServerList list) {
-        super(new Point(), 0, mask, style);
-        background = new EdgedTiledBackground(new Point(), 0, mask, style.getBackgroundStyle()) {
+    public DisconnectedScreenRegion(UIStyle style, ServerPool list) {
+        super(0, style);
+        background = new EdgedTiledBackground(0,  style.getBackgroundStyle()) {
             public String toString() {
                 return "DisconnectedScreenBackground";
             }
         };
         add(background).setClickable(this);
-        servers = new ServerListRegion(new Point(), 1, mask, style, list);
+        servers = new ServerListRegion(1, style, list);
         add(servers);
     }
 
     public void resizeContents(RenderMask mask) {
-        background.resize(mask);
-        servers.resize(mask);
+        background.setMask(mask);
+        servers.setMask(mask);
     }
 
     public String toString() {

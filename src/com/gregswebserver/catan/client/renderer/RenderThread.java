@@ -16,11 +16,11 @@ import com.gregswebserver.catan.client.renderer.primary.disconnected.Disconnecte
 import com.gregswebserver.catan.client.renderer.primary.disconnecting.DisconnectingScreenRegion;
 import com.gregswebserver.catan.client.renderer.secondary.connected.ServerScreenRegion;
 import com.gregswebserver.catan.client.state.ClientState;
-import com.gregswebserver.catan.common.crypto.ServerList;
+import com.gregswebserver.catan.client.ui.primary.ServerPool;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.lobby.ClientPool;
+import com.gregswebserver.catan.common.lobby.MatchmakingPool;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -55,24 +55,24 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         if (event != null) {
             switch (event.getType()) {
                 case ConnectionListCreate:
-                    DisconnectedScreenRegion connect = new DisconnectedScreenRegion(screenMask, style, (ServerList) event.getPayload());
+                    DisconnectedScreenRegion connect = new DisconnectedScreenRegion(style, (ServerPool) event.getPayload());
                     areas.put(Disconnected, connect);
                     break;
                 case ConnectProgress:
                     //TODO: use the progress indicator.
-                    ConnectingScreenRegion connecting = new ConnectingScreenRegion(screenMask, style);
+                    ConnectingScreenRegion connecting = new ConnectingScreenRegion(style);
                     areas.put(Connecting, connecting);
                     break;
                 case LobbyListUpdate:
-                    ServerScreenRegion lobby = new ServerScreenRegion(screenMask, style, (ClientPool) event.getPayload());
+                    ServerScreenRegion lobby = new ServerScreenRegion(style, (MatchmakingPool) event.getPayload());
                     areas.put(Connected, lobby);
                     break;
                 case DisconnectMessage:
-                    DisconnectingScreenRegion disconnect = new DisconnectingScreenRegion(screenMask, style, (String) event.getPayload());
+                    DisconnectingScreenRegion disconnect = new DisconnectingScreenRegion(style, (String) event.getPayload());
                     areas.put(Disconnecting, disconnect);
                     break;
                 case GameCreate:
-                    InGameScreenRegion gameCreate = new InGameScreenRegion(screenMask, style, (CatanGame) event.getPayload());
+                    InGameScreenRegion gameCreate = new InGameScreenRegion(style, (CatanGame) event.getPayload());
                     areas.put(InGame, gameCreate);
                     break;
                 case Game_Update:
@@ -83,7 +83,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                     canvas = (ScreenCanvas) event.getPayload();
                     screenMask = new RectangularMask(canvas.getSize());
                     for (ScreenRegion area : areas.values())
-                        area.resize(screenMask);
+                        area.setMask(screenMask);
                     break;
                 case Animation_Step:
                     if (root != null && root.isAnimated())
@@ -92,8 +92,13 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
             }
         } else { //No event to be processed this round.
             ScreenRegion next = areas.get(client.getState());
-            if (root != next)
+            if (root != next) {
+                //Need to load the next screen region
                 client.addEvent(new ClientEvent(this, ClientEventType.Hitbox_Update, next));
+                //Resize the screen if it is newly loaded.
+                if (next != null)
+                    next.setMask(screenMask);
+            }
             root = next;
             if (canvas != null) {
                 Graphic screen = canvas.getGraphic();

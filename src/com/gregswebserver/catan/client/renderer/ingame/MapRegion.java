@@ -32,59 +32,75 @@ public class MapRegion extends ScreenRegion {
 
     private final CatanGame game;
     private final RenderMask boardSize;
-    private final Point mapOffset;
+
     private final ScreenRegion background;
     private final ScreenRegion midground;
     private final ScreenRegion foreground;
 
-    public MapRegion(Point position, int priority, RenderMask mask, CatanGame game) {
-        super(position, priority, mask);
+    public MapRegion(int priority, CatanGame game) {
+        super(priority);
         this.game = game;
-        boardSize = new RectangularMask(GraphicsConfig.boardToScreen(game.getBoardSize()));
-        this.mapOffset = new Point();
-        //TODO: FIX ME.
-        background = null; // new Background(mapOffset, 0, boardSize, this, ResourceLoader.getGraphic(oceanBackground));
-        midground = new MiddleGround(mapOffset, 1, boardSize, game.getBoard());
-        foreground = new Foreground(mapOffset, 2, boardSize);
+        this.boardSize = new RectangularMask(GraphicsConfig.boardToScreen(game.getBoardSize()));
+        background =  new Background(0, GraphicSet.Ocean);
+        midground = new MiddleGround(1, game.getBoard());
+        foreground = new Foreground(2);
         add(background).setClickable(this);
         add(midground).setClickable(this);
         add(foreground).setClickable(this);
     }
 
-    private void limitBackdropScroll() {
+    protected boolean limitScroll() {
         int maxX = -GraphicsConfig.mapEdgeBufferSize.width;
         int maxY = -GraphicsConfig.mapEdgeBufferSize.height;
         int minX = -boardSize.getWidth() + getMask().getWidth() - 2 * maxX;
         int minY = -boardSize.getHeight() + getMask().getHeight() - 2 * maxY;
-        if (mapOffset.x < minX)
+        boolean changed = false;
+        Point mapOffset =  midground.getPosition();
+        if (mapOffset.x < minX) {
+            changed = true;
             mapOffset.x = minX;
-        if (mapOffset.y < minY)
+        }
+        if (mapOffset.y < minY){
+            changed = true;
             mapOffset.y = minY;
-        if (mapOffset.x > maxX)
+        }
+        if (mapOffset.x > maxX){
+            changed = true;
             mapOffset.x = maxX;
-        if (mapOffset.y > maxY)
+        }
+        if (mapOffset.y > maxY){
+            changed = true;
             mapOffset.y = maxY;
-        forceRender();
+        }
+        return changed;
     }
 
+    @Override
     public UserEvent onMouseDrag(Point p) {
-        mapOffset.translate(p.x, p.y);
-        limitBackdropScroll();
+        midground.getPosition().translate(p.x, p.y);
         return null;
     }
 
-    public void resizeComponents(RenderMask mask) {
-        limitBackdropScroll();
+    @Override
+    protected void resizeContents(RenderMask mask) {
+        limitScroll();
+        background.setMask(mask);
+        foreground.setMask(mask);
     }
 
+    @Override
+    protected void renderContents() {
+    }
+
+    @Override
     public String toString() {
         return "MapScreenArea " + game;
     }
 
     private class Background extends TiledBackground {
 
-        public Background(Point position, int priority, RenderMask mask, GraphicSet style) {
-            super(position, priority, mask, style);
+        public Background(int priority, GraphicSet style) {
+            super( priority, style);
         }
 
         public String toString() {
@@ -100,8 +116,8 @@ public class MapRegion extends ScreenRegion {
 
         private GameBoard board;
 
-        public MiddleGround(Point position, int priority, RenderMask mask, GameBoard board) {
-            super(position, priority, mask);
+        public MiddleGround(int priority, GameBoard board) {
+            super(priority);
             this.board = board;
         }
 
@@ -134,6 +150,11 @@ public class MapRegion extends ScreenRegion {
             super.clear();
         }
 
+        @Override
+        protected void resizeContents(RenderMask mask) {
+        }
+
+        @Override
         protected void renderContents() {
             clear();
             HashMap<Coordinate, Tile> tiles = board.getTileMap();
@@ -167,7 +188,7 @@ public class MapRegion extends ScreenRegion {
             private final BoardObject object;
 
             public MapScreenObject(Point position, int priority, Coordinate coordinate, BoardObject object) {
-                super(position, priority, object.getGraphic());
+                super(priority, object.getGraphic());
                 this.coordinate = coordinate;
                 this.object = object;
             }
@@ -192,8 +213,12 @@ public class MapRegion extends ScreenRegion {
 
     private class Foreground extends ScreenRegion {
 
-        public Foreground(Point position, int priority, RenderMask mask) {
-            super(position, priority, mask);
+        public Foreground(int priority) {
+            super(priority);
+        }
+
+        @Override
+        protected void resizeContents(RenderMask mask) {
         }
 
         public String toString() {

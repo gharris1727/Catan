@@ -6,18 +6,18 @@ import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.state.ClientState;
+import com.gregswebserver.catan.client.ui.primary.ServerPool;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
 import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.common.crypto.ConnectionInfo;
-import com.gregswebserver.catan.common.crypto.ServerList;
-import com.gregswebserver.catan.common.crypto.ServerLogin;
+import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
+import com.gregswebserver.catan.client.ui.primary.ServerLogin;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
-import com.gregswebserver.catan.common.lobby.ClientPool;
+import com.gregswebserver.catan.common.lobby.MatchmakingPool;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ClientConnection;
@@ -43,7 +43,7 @@ public class Client extends CoreThread {
     private RenderThread renderThread;
     private ClientConnection connection;
     private Username username;
-    private ClientPool clientPool;
+    private MatchmakingPool matchmakingPool;
 
     public Client() {
         super(Main.logger); //TODO: Create a separate logger for the client.
@@ -81,7 +81,7 @@ public class Client extends CoreThread {
             case Startup:
                 startup();
                 //TODO: remove this testing data.
-                ServerList loginList = new ServerList();
+                ServerPool loginList = new ServerPool();
                 loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
                 loginList.add(new ConnectionInfo("invalid", "25000", "Jeff", "password1"));
                 loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
@@ -168,9 +168,9 @@ public class Client extends CoreThread {
             case Pass_Change_Failure:
                 break;
             case Client_Pool_Sync:
-                clientPool = (ClientPool) event.getPayload();
-                clientPool.setHost(this);
-                addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, clientPool));
+                matchmakingPool = (MatchmakingPool) event.getPayload();
+                matchmakingPool.setHost(this);
+                addEvent(new RenderEvent(this, RenderEventType.LobbyListUpdate, matchmakingPool));
                 break;
             case User_Disconnect:
             case Name_Change:
@@ -183,8 +183,8 @@ public class Client extends CoreThread {
             case Lobby_Join:
             case Lobby_Leave:
                 try {
-                    if (clientPool.test(event))
-                        clientPool.execute(event);
+                    if (matchmakingPool.test(event))
+                        matchmakingPool.execute(event);
                 } catch (EventConsumerException e) {
                     logger.log(e, LogLevel.ERROR);
                 }

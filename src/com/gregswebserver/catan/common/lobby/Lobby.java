@@ -13,8 +13,9 @@ public class Lobby extends HashSet<Username> {
     private Username owner;
     private LobbyConfig config;
 
-    public Lobby(Username owner) {
+    public Lobby(Username owner, LobbyConfig config) {
         setOwner(owner);
+        setConfig(config);
     }
 
     public Username getOwner() {

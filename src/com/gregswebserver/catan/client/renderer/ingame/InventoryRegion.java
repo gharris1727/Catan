@@ -1,22 +1,8 @@
 package com.gregswebserver.catan.client.renderer.ingame;
 
-import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.event.UserEventType;
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.util.Graphical;
-import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.player.Player;
-
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -26,14 +12,21 @@ public class InventoryRegion extends ScreenRegion {
 
     private Player player;
 
-    public InventoryRegion(Point position, int priority, RenderMask mask, Player player) {
-        super(position, priority, mask);
+    public InventoryRegion(int priority, Player player) {
+        super(priority);
         this.player = player;
     }
 
+    @Override
+    protected void resizeContents(RenderMask mask) {
+        //TODO: handle resizing the inventory
+    }
+
+    @Override
     protected void renderContents() {
+        //TODO: handle rendering the inventory screen.
+        /*
         clear();
-        //TODO: rewrite.
         HashMap<Tradeable, Integer> inventory = player.getInventory();
         List<Point> positions = new ArrayList<>();
         for (Map.Entry<Tradeable, Integer> e : inventory.entrySet()) {
@@ -61,6 +54,7 @@ public class InventoryRegion extends ScreenRegion {
         for (int i = 0; i < positions.size(); i++) {
             positions.get(i).setLocation(divX * (i + 1), 16);
         }
+        */
     }
 
     public String toString() {

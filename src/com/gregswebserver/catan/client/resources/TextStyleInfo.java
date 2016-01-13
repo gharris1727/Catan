@@ -9,7 +9,8 @@ import java.awt.*;
 public enum TextStyleInfo {
 
     UIBlueLight("Lucida Console", Font.PLAIN, 16, Color.WHITE),
-    UIBlueDark("Segoe UI", Font.PLAIN, 16, Color.BLACK);
+    UIBlueDark("Segoe UI", Font.PLAIN, 16, Color.BLACK),
+    UIBlueSmall("Segoe UI", Font.PLAIN, 12, Color.BLACK);
 
     private final String name;
     private final int style;

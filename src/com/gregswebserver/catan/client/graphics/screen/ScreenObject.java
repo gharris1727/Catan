@@ -27,14 +27,18 @@ public abstract class ScreenObject implements Clickable {
     }
 
     //Method to defer all clickable operations to another clickable object.
-    public void setClickable(Clickable redirect) {
+    public ScreenObject setClickable(Clickable redirect) {
         this.redirect = redirect;
+        return this;
     }
 
     //Get render position relative to the parent.
     public final Point getPosition() {
         return position;
     }
+
+    //Set render position relative to the parent.
+    public final void setPosition(Point position) { this.position.setLocation(position);}
 
     //Returns the render priority of this object. Used for layering.
     public final int getRenderPriority() {

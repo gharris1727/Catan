@@ -13,19 +13,27 @@ import static com.gregswebserver.catan.common.util.Direction.*;
  */
 public abstract class EdgedTiledBackground extends TiledBackground {
 
-    public EdgedTiledBackground(Point position, int priority, RenderMask mask, GraphicSet textures) {
-        super(position, priority, mask, textures);
+    private int corWidth;
+    private int corHeight;
+
+    public EdgedTiledBackground(int priority, GraphicSet textures) {
+        super(priority, textures);
     }
 
+    @Override
+    protected void resizeContents(RenderMask mask) {
+        RenderMask texMask = getStyle().getMask();
+        texWidth = texMask.getWidth();
+        texHeight = texMask.getHeight();
+        totWidth = mask.getWidth();
+        totHeight = mask.getHeight();
+        corWidth = totWidth - texWidth;
+        corHeight = totHeight - texHeight;
+    }
+
+    @Override
     protected void renderContents() {
         super.renderContents();
-        RenderMask mask = getStyle().getMask();
-        int texWidth = mask.getWidth();
-        int texHeight = mask.getHeight();
-        int totWidth = getMask().getWidth();
-        int totHeight = getMask().getHeight();
-        int corWidth = totWidth - texWidth;
-        int corHeight = totHeight - texHeight;
         //Four corners
         addTile(new Point(), upleft);
         addTile(new Point(corWidth, 0), upright);
@@ -42,5 +50,4 @@ public abstract class EdgedTiledBackground extends TiledBackground {
             addTile(new Point(corWidth, y), right);
         }
     }
-
 }

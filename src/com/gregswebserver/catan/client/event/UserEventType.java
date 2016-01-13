@@ -1,10 +1,11 @@
 package com.gregswebserver.catan.client.event;
 
-import com.gregswebserver.catan.common.crypto.ConnectionInfo;
+import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.lobby.LobbySortOption;
 
 /**
  * Created by Greg on 1/4/2015.
@@ -19,6 +20,7 @@ public enum UserEventType implements EventType {
     Lobby_Leave(null),
     Lobby_Modify(LobbyConfig.class),
     Lobby_Start(null),
+    Lobby_Sort(LobbySortOption.class),
     Tile_Clicked(Coordinate.class),
     Edge_Clicked(Coordinate.class),
     Vertex_Clicked(Coordinate.class),
@@ -32,6 +34,6 @@ public enum UserEventType implements EventType {
     }
 
     public Class getType() {
-        return null;
+        return payloadType;
     }
 }

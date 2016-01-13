@@ -2,7 +2,7 @@ package com.gregswebserver.catan.client.renderer.ingame;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.common.game.CatanGame;
 
@@ -12,7 +12,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * The area that renders all features visible while the client is in a game.
  */
-public class InGameScreenRegion extends ScreenRegion {
+public class InGameScreenRegion extends UIScreenRegion {
 
     private final static int sidebarWidth = 256;
     private final static int bottomHeight = 256;
@@ -27,19 +27,20 @@ public class InGameScreenRegion extends ScreenRegion {
     private final InventoryRegion inventory;
     private final ContextRegion context;
 
-    public InGameScreenRegion(RenderMask mask, UIStyle style, CatanGame game) {
-        super(new Point(), 0, mask);
+    public InGameScreenRegion(UIStyle style, CatanGame game) {
+        super(0, style);
         this.game = game;
-        map = new MapRegion(main, 0, mask, game);
-        trade = new TradeRegion(side, 1, mask);
-        inventory = new InventoryRegion(bottom, 2, mask, game.getLocalPlayer());
-        context = new ContextRegion(corner, 3, mask);
+        map = new MapRegion(0, game);
+        trade = new TradeRegion(1);
+        inventory = new InventoryRegion(2, game.getLocalPlayer());
+        context = new ContextRegion(3);
         add(map);
         add(trade);
         add(inventory);
         add(context);
     }
 
+    @Override
     protected void resizeContents(RenderMask mask) {
         int mainWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - bottomHeight;
@@ -47,10 +48,10 @@ public class InGameScreenRegion extends ScreenRegion {
         bottom.y = mainHeight;
         corner.x = mainWidth;
         corner.y = mainHeight;
-        map.resize(new RectangularMask(new Dimension(mainWidth, mainHeight)));
-        trade.resize(new RectangularMask(new Dimension(sidebarWidth, mainHeight)));
-        inventory.resize(new RectangularMask(new Dimension(mainWidth, bottomHeight)));
-        context.resize(new RectangularMask(new Dimension(sidebarWidth, bottomHeight)));
+        map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
+        trade.setMask(new RectangularMask(new Dimension(sidebarWidth, mainHeight)));
+        inventory.setMask(new RectangularMask(new Dimension(mainWidth, bottomHeight)));
+        context.setMask(new RectangularMask(new Dimension(sidebarWidth, bottomHeight)));
     }
 
     public String toString() {

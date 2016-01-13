@@ -13,8 +13,8 @@ public abstract class StaticObject extends ScreenObject implements Graphical {
 
     private final Graphic graphic;
 
-    protected StaticObject(Point position, int priority, Graphic graphic) {
-        super(position, priority);
+    protected StaticObject(int priority, Graphic graphic) {
+        super(new Point(), priority);
         this.graphic = graphic;
     }
 

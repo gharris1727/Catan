@@ -11,5 +11,5 @@ public interface EventType {
             throw new EventPayloadException(o, getType());
     }
 
-    public Class getType();
+    Class getType();
 }

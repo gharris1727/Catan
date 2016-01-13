@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.common.crypto.ServerLogin;
+import com.gregswebserver.catan.client.ui.primary.ServerLogin;
 import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.event.NetEvent;
 import com.gregswebserver.catan.common.event.NetEventType;

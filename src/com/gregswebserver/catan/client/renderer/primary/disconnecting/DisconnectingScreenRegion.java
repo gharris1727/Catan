@@ -9,7 +9,7 @@ import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.screen.StaticObject;
-import com.gregswebserver.catan.client.graphics.ui.Button;
+import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
@@ -29,26 +29,24 @@ public class DisconnectingScreenRegion extends UIScreenRegion {
     private ScreenRegion background;
     private Graphic textGraphic;
     private ScreenObject text;
-    private RenderMask buttonMask;
-    private ScreenObject button;
+    private ScreenRegion button;
 
-    public DisconnectingScreenRegion(RenderMask mask, UIStyle style, String message) {
-        super(new Point(), 0, mask, style);
-        background = new EdgedTiledBackground(new Point(), 0, mask, style.getBackgroundStyle()) {
+    public DisconnectingScreenRegion(UIStyle style, String message) {
+        super(0, style);
+        background = new EdgedTiledBackground(0, style.getBackgroundStyle()) {
             public String toString() {
-                return "DisconnectingScreen Background";
+                return "DisconnectingScreenBackground";
             }
         };
         textGraphic = new TextGraphic(style.getDarkTextStyle(), message);
-        text = new StaticObject(new Point(), 1, textGraphic) {
+        text = new StaticObject(1, textGraphic) {
             public String toString() {
-                return "Disconnect Reason";
+                return "DisconnectingScreenDisconnectReason";
             }
         };
-        buttonMask = new RoundedRectangularMask(new Dimension(256, 32));
-        button = new Button(new Point(), 2, buttonMask, style, "Return to connect screen.") {
+        button = new Button(2, style, "Return to connect screen.") {
             public String toString() {
-                return "Disconnect Button";
+                return "DisconnectingScreenDisconnectButton";
             }
 
             public UserEvent onMouseClick(MouseEvent event) {
@@ -58,18 +56,19 @@ public class DisconnectingScreenRegion extends UIScreenRegion {
         add(background).setClickable(this);
         add(text).setClickable(this);
         add(button);
-        resizeContents(mask);
     }
 
     protected void resizeContents(RenderMask mask) {
-        background.resize(mask);
+        background.setMask(mask);
+        button.setMask(new RoundedRectangularMask(new Dimension(256, 32)));
+
         Point textPosition = text.getPosition();
         Point textCenter = getCenteredPosition(textGraphic.getMask());
         textPosition.x = textCenter.x;
         textPosition.y = textCenter.y - spacing;
 
         Point buttonPosition = button.getPosition();
-        Point buttonCenter = getCenteredPosition(buttonMask);
+        Point buttonCenter = getCenteredPosition(button.getMask());
         buttonPosition.x = buttonCenter.x;
         buttonPosition.y = buttonCenter.y + spacing;
     }

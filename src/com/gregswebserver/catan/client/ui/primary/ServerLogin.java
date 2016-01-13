@@ -1,5 +1,6 @@
-package com.gregswebserver.catan.common.crypto;
+package com.gregswebserver.catan.client.ui.primary;
 
+import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.network.NetID;
 
 /**

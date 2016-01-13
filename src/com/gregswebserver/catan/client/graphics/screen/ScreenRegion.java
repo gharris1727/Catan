@@ -22,9 +22,10 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     private Map<Integer, List<ScreenObject>> priorityMap;
     private Map<Integer, ScreenObject> hitboxMap;
 
-    public ScreenRegion(Point position, int priority, RenderMask mask) {
-        super(position, priority);
-        setMask(mask);
+    //The constructor of a screen region is meant to store relevant references,
+    //and create any permanent ScreenObjects needed in the render.
+    public ScreenRegion(int priority) {
+        super(new Point(), priority);
         clear();
     }
 
@@ -32,26 +33,28 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return mask;
     }
 
-    private void setMask(RenderMask mask) {
+    //Sets the display size for this region, and notifies it's contents about the resizing.
+    public final ScreenRegion setMask(RenderMask mask) {
         this.mask = mask;
         graphic = new Graphic(mask);
         forceRender();
-    }
-
-    public final void resize(RenderMask mask) {
-        setMask(mask);
         resizeContents(mask);
+        limitScroll();
+        return this;
     }
 
+    //Force this region to re-render even if none of it's children need it.
     public final void forceRender() {
         needsRendering = true;
     }
 
+    //Clear the screen of any objects. A render after this will not have anything visible.
     protected void clear() {
         priorityMap = new TreeMap<>();
         hitboxMap = new HashMap<>();
     }
 
+    //Gets the clickable object under a certain point in the screen.
     public Clickable getClickable(Point p) {
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
@@ -67,6 +70,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return result;
     }
 
+    //Add an object to be rendered on the next render pass.
     public final ScreenObject add(ScreenObject object) {
         if (object != null) {
             hitboxMap.put(object.getHitboxColor(), object);
@@ -81,6 +85,8 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return object;
     }
 
+    //Remove a specific object from the screen.
+    //This operation can be inefficient if there are many objects at the same render priority.
     public final ScreenObject remove(ScreenObject object) {
         if (object != null) {
             hitboxMap.remove(object.getHitboxColor());
@@ -93,12 +99,14 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return object;
     }
 
+    // Get the coordinate that a child needs to be at to be centered in this region.
     public final Point getCenteredPosition(RenderMask other) {
         int x = (mask.getWidth() - other.getWidth()) / 2;
         int y = (mask.getHeight() - other.getHeight()) / 2;
         return new Point(x, y);
     }
 
+    //Iterator over every object in the screen in order of priority.
     public final Iterator<ScreenObject> iterator() {
         return new Iterator<ScreenObject>() {
 
@@ -139,7 +147,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     public final boolean needsRender() {
-        if (needsRendering) return true;
+        if (limitScroll() || needsRendering) return true;
         for (ScreenObject object : this)
             if (object.needsRender())
                 return true;
@@ -152,9 +160,9 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
 
     public Graphic getGraphic() {
         if (needsRender()) {
+            renderContents();
             if (graphic == null)
                 throw new IllegalStateException("Screen Region " + this + " has no size.");
-            renderContents();
             graphic.clear();
             for (ScreenObject object : this)
                 if (object.isGraphical())
@@ -164,10 +172,14 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return graphic;
     }
 
-    protected void resizeContents(RenderMask mask) {
-    }
+    //Notify all children of this region's size, and take the necessary steps to resize them.
+    protected abstract void resizeContents(RenderMask mask);
 
-    protected void renderContents() {
+    //Take the necessary steps to render the contents, such as adding or removing elements from the screen.
+    protected void renderContents() { };
+
+    protected boolean limitScroll() {
+        return false;
     }
 
 }

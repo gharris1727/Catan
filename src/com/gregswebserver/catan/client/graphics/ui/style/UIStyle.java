@@ -7,6 +7,7 @@ import com.gregswebserver.catan.common.resources.ResourceLoader;
 import static com.gregswebserver.catan.client.resources.GraphicSet.*;
 import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueDark;
 import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueLight;
+import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueSmall;
 
 /**
  * Created by Greg on 1/15/2015.
@@ -14,7 +15,7 @@ import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueLigh
  */
 public enum UIStyle {
 
-    Blue(UIBlueBackground, UIBlueWindow, UIBlueText, UIBlueButton, UIBlueLight, UIBlueDark);
+    Blue(UIBlueBackground, UIBlueWindow, UIBlueText, UIBlueButton, UIBlueLight, UIBlueDark, UIBlueSmall);
 
     private final GraphicSet background;
     private final GraphicSet windows;
@@ -23,8 +24,10 @@ public enum UIStyle {
     //TODO: redefine the font loading so that it is more flexible.
     private final TextStyleInfo light;
     private final TextStyleInfo dark;
+    private final TextStyleInfo small;
 
-    UIStyle(GraphicSet background, GraphicSet windows, GraphicSet text, GraphicSet buttons, TextStyleInfo light, TextStyleInfo dark) {
+    UIStyle(GraphicSet background, GraphicSet windows, GraphicSet text, GraphicSet buttons,
+            TextStyleInfo light, TextStyleInfo dark, TextStyleInfo small) {
         //TODO: abstract the background styles further, not good to expose the GraphicSet.
         this.background = background;
         this.windows = windows;
@@ -32,6 +35,7 @@ public enum UIStyle {
         this.buttons = buttons;
         this.light = light;
         this.dark = dark;
+        this.small = small;
     }
 
     public GraphicSet getBackgroundStyle() {
@@ -57,4 +61,6 @@ public enum UIStyle {
     public TextStyle getDarkTextStyle() {
         return ResourceLoader.getTextStyle(dark);
     }
+
+    public TextStyle getSmallTextStyle() { return ResourceLoader.getTextStyle(small); }
 }

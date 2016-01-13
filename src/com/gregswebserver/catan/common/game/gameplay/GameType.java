@@ -15,7 +15,7 @@ import java.util.Scanner;
  * Created by Greg on 8/9/2014.
  * Static data in order to create a game of Catan.
  */
-public class GameType {
+public class GameType implements Comparable<GameType> {
 
     private String name;
     private String author;
@@ -101,5 +101,9 @@ public class GameType {
 
     public String toString() {
         return "GameType: " + name;
+    }
+
+    public int compareTo(GameType gameType) {
+        return 0; //TODO: implement sorting of different game types.
     }
 }

@@ -18,7 +18,7 @@ public class ClientWindow extends CoreWindow {
     private Client client;
     private ScreenCanvas canvas;
     private InputListener listener;
-    //Field to prevent the onResize function from spamming resize requests when there is one still processing.
+    //Field to prevent the onResize function from spamming setMask requests when there is one still processing.
     private boolean resizing = false;
 
     public ClientWindow(Client client) {
