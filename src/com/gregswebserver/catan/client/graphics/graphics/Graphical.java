@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.client.graphics.util;
+package com.gregswebserver.catan.client.graphics.graphics;
 
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/21/2014.
@@ -8,5 +8,6 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphic;
  */
 public interface Graphical {
 
+    @NotNull
     Graphic getGraphic();
 }

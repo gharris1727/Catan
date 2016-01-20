@@ -15,7 +15,7 @@ import java.net.Socket;
 
 /**
  * Created by Greg on 8/10/2014.
- * Game client that includes graphics, networking, and playing catan games.
+ * Game client that includes graphics, networking, and playing catan config.games.
  */
 public class ClientConnection extends NetConnection {
 

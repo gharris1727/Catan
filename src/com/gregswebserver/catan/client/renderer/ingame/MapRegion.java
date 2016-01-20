@@ -1,14 +1,15 @@
 package com.gregswebserver.catan.client.renderer.ingame;
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.screen.StaticObject;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
 import com.gregswebserver.catan.common.game.board.GameBoard;
@@ -17,7 +18,6 @@ import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.paths.Road;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.resources.GraphicsConfig;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -30,6 +30,9 @@ import java.util.Map;
  */
 public class MapRegion extends ScreenRegion {
 
+    private static final Dimension unitSize = Main.staticConfig.getDimension("catan.graphics.tiles.unit.size");
+    private static final Dimension borderBuffer = Main.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
+    
     private final CatanGame game;
     private final RenderMask boardSize;
 
@@ -40,8 +43,8 @@ public class MapRegion extends ScreenRegion {
     public MapRegion(int priority, CatanGame game) {
         super(priority);
         this.game = game;
-        this.boardSize = new RectangularMask(GraphicsConfig.boardToScreen(game.getBoardSize()));
-        background =  new Background(0, GraphicSet.Ocean);
+        this.boardSize = new RectangularMask(boardToScreen(game.getBoardSize()));
+        background =  new Background(0);
         midground = new MiddleGround(1, game.getBoard());
         foreground = new Foreground(2);
         add(background).setClickable(this);
@@ -51,8 +54,8 @@ public class MapRegion extends ScreenRegion {
 
     @Override
     protected boolean limitScroll() {
-        int maxX = -GraphicsConfig.mapEdgeBufferSize.width;
-        int maxY = -GraphicsConfig.mapEdgeBufferSize.height;
+        int maxX = -borderBuffer.width;
+        int maxY = -borderBuffer.height;
         int minX = -boardSize.getWidth() + getMask().getWidth() - 2 * maxX;
         int minY = -boardSize.getHeight() + getMask().getHeight() - 2 * maxY;
         boolean changed = false;
@@ -100,8 +103,8 @@ public class MapRegion extends ScreenRegion {
 
     private class Background extends TiledBackground {
 
-        public Background(int priority, GraphicSet style) {
-            super( priority, style);
+        public Background(int priority) {
+            super(priority, UIStyle.BACKGROUND_GAME);
         }
 
         public String toString() {
@@ -165,17 +168,17 @@ public class MapRegion extends ScreenRegion {
 
             for (Map.Entry<Coordinate, Tile> e : tiles.entrySet()) {
                 Coordinate c = e.getKey();
-                ScreenObject o = new MapScreenObject(GraphicsConfig.tileToScreen(c), 0, c, e.getValue());
+                ScreenObject o = new MapScreenObject(tileToScreen(c), 0, c, e.getValue());
                 add(o);
             }
             for (Map.Entry<Coordinate, Path> e : paths.entrySet()) {
                 Coordinate c = e.getKey();
-                ScreenObject o = new MapScreenObject(GraphicsConfig.edgeToScreen(c), 1, c, e.getValue());
+                ScreenObject o = new MapScreenObject(edgeToScreen(c), 1, c, e.getValue());
                 add(o);
             }
             for (Map.Entry<Coordinate, Town> e : towns.entrySet()) {
                 Coordinate c = e.getKey();
-                ScreenObject o = new MapScreenObject(GraphicsConfig.vertexToScreen(c), 2, c, e.getValue());
+                ScreenObject o = new MapScreenObject(vertexToScreen(c), 2, c, e.getValue());
                 add(o);
             }
         }
@@ -184,7 +187,7 @@ public class MapRegion extends ScreenRegion {
             return "Middle Ground";
         }
 
-        private class MapScreenObject extends StaticObject {
+        private class MapScreenObject extends GraphicObject {
 
             private final Coordinate coordinate;
             private final BoardObject object;
@@ -227,5 +230,45 @@ public class MapRegion extends ScreenRegion {
         public String toString() {
             return "Foreground";
         }
+    }
+
+    public static final int[][] tileOffsets = {
+            {12, 112}, //Horizontal
+            {16, 72}}; //Vertical
+    public static final int[][] edgeOffsets = {
+            {0, 0, 36, 100, 100, 136}, //Horizontal
+            {9, 65, 0, 65, 9, 56}}; //Vertical
+    public static final int[][] vertOffsets = {
+            {0, 24, 100, 124}, //Horizontal
+            {56, 0, 0, 56}}; //Vertical
+
+    public static Dimension boardToScreen(Dimension size) {
+        int outW = ((size.width + 1) / 2) * unitSize.width;
+        int outH = (size.height + 1) * unitSize.height;
+        return new Dimension(outW, outH);
+    }
+
+    public static Point tileToScreen(Coordinate c) {
+        int outX = (c.x / 2) * unitSize.width;
+        int outY = (c.y) * unitSize.height;
+        outX += tileOffsets[0][c.x % 2];
+        outY += tileOffsets[1][c.x % 2];
+        return new Point(outX, outY);
+    }
+
+    public static Point edgeToScreen(Coordinate c) {
+        int outX = (c.x / 6) * unitSize.width;
+        int outY = (c.y) * unitSize.height;
+        outX += edgeOffsets[0][c.x % 6];
+        outY += edgeOffsets[1][c.x % 6];
+        return new Point(outX, outY);
+    }
+
+    public static Point vertexToScreen(Coordinate c) {
+        int outX = (c.x / 4) * unitSize.width;
+        int outY = (c.y) * unitSize.height;
+        outX += vertOffsets[0][c.x % 4];
+        outY += vertOffsets[1][c.x % 4];
+        return new Point(outX, outY);
     }
 }

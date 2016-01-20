@@ -2,6 +2,9 @@ package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Animated;
+import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
+import com.gregswebserver.catan.common.IllegalStateException;
+import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -20,8 +23,8 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
     private Graphic current;
     private boolean needsRendering;
 
-    public AnimatedObject(Point position, int priority, boolean loop) {
-        super(position, priority);
+    public AnimatedObject(int priority, boolean loop) {
+        super(priority);
         this.loop = loop;
         frames = new LinkedList<>();
         reset();
@@ -58,9 +61,12 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
         return needsRendering;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
         needsRendering = false;
+        if (current == null)
+            throw new NotYetRenderableException("No graphic assigned to animation.");
         return current;
     }
 }

@@ -1,11 +1,11 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.masks.HexagonalMask;
+import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
-
-import static com.gregswebserver.catan.client.resources.GraphicSet.BeachDouble;
-import static com.gregswebserver.catan.client.resources.GraphicSet.BeachSingle;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -13,9 +13,13 @@ import static com.gregswebserver.catan.client.resources.GraphicSet.BeachSingle;
  */
 public class BeachTile extends DirectionalTile {
 
-    private static final GraphicSet[] graphics = new GraphicSet[]{
-            BeachSingle, BeachDouble
-    };
+    private static final GraphicSet singleBeach;
+    private static final GraphicSet doubleBeach;
+
+    static {
+        singleBeach = new GraphicSet("catan.graphics.tiles.singlebeach", HexagonalMask.class);
+        doubleBeach = new GraphicSet("catan.graphics.tiles.doublebeach", HexagonalMask.class);
+    }
 
     private int sides;
 
@@ -32,8 +36,15 @@ public class BeachTile extends DirectionalTile {
         return "BeachTile n/" + sides + " d/" + getDirection();
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
-        return graphics[sides - 1].getGraphic(getDirection().ordinal());
+        switch (sides) {
+            case 1:
+                return singleBeach.getGraphic(getDirection().ordinal());
+            case 2:
+                return doubleBeach.getGraphic(getDirection().ordinal());
+        }
+        throw new NotYetRenderableException("Invalid beach tile configuration");
     }
 }

@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.client.renderer.secondary.connected;
+package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
@@ -13,13 +12,13 @@ import com.gregswebserver.catan.common.lobby.ClientPool;
  */
 public class UserListRegion extends UIScreenRegion {
 
-    ScreenRegion background;
+    private TiledBackground background;
     private final ClientPool clients;
 
-    public UserListRegion(int priority, UIStyle style, ClientPool clients) {
-        super(priority, style);
+    public UserListRegion(int priority, ClientPool clients) {
+        super(priority);
         this.clients = clients;
-        background = new TiledBackground(0, style.getBackgroundStyle()) {
+        background = new TiledBackground(0, UIStyle.BACKGROUND_USERS) {
             public String toString() {
                 return "UserListBackground";
             }
@@ -30,6 +29,11 @@ public class UserListRegion extends UIScreenRegion {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
+    }
+
+    @Override
+    protected void restyleContents(UIStyle style) {
+        background.setStyle(style);
     }
 
     public String toString() {

@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.renderer.secondary.connected;
+package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
@@ -12,18 +12,18 @@ import java.awt.*;
  * Created by Greg on 1/17/2015.
  * The list of lobbies hosted on the current server.
  */
-public class ServerScreenRegion extends UIScreenRegion {
+public class LobbyJoinMenu extends UIScreenRegion {
 
     private final MatchmakingPool pool;
 
     private LobbyListRegion lobbyList;
     private UserListRegion userList;
 
-    public ServerScreenRegion(UIStyle style, MatchmakingPool pool) {
-        super(0, style);
+    public LobbyJoinMenu(MatchmakingPool pool) {
+        super(0);
         this.pool = pool;
-        lobbyList = new LobbyListRegion(0, getStyle(), pool.getLobbyList());
-        userList = new UserListRegion(1, getStyle(), pool.getUserList());
+        lobbyList = new LobbyListRegion(0, pool.getLobbyList());
+        userList = new UserListRegion(1, pool.getUserList());
         //Add the screen contents
         add(lobbyList);
         add(userList);
@@ -45,15 +45,13 @@ public class ServerScreenRegion extends UIScreenRegion {
         userList.setMask(new RectangularMask(new Dimension(userListWidth,height)));
     }
 
+    @Override
+    protected void restyleContents(UIStyle style) {
+        lobbyList.setStyle(style);
+        userList.setStyle(style);
+    }
+
     public String toString() {
-        return "ServerScreenRegion";
-    }
-
-    public void updateLobbies() {
-        lobbyList.updateLobbies();
-    }
-
-    public void updateUsers() {
-        userList.forceRender();
+        return "LobbyJoinMenu";
     }
 }

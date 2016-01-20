@@ -6,7 +6,7 @@ package com.gregswebserver.catan.client.resources;
  */
 public enum GameInfo {
 
-    Default("default");
+    Base("base");
 
     private String name;
 
@@ -15,7 +15,8 @@ public enum GameInfo {
     }
 
     public String getPath() {
-        return "/games/" + name + ".txt";
+        //TODO: Fix this to work with new configuration schema
+        return "/config/games/" + name + ".txt";
     }
 
 }

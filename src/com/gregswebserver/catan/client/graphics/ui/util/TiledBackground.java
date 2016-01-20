@@ -1,8 +1,9 @@
 package com.gregswebserver.catan.client.graphics.ui.util;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.screen.StaticObject;
+import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
+import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
 
@@ -12,32 +13,34 @@ import java.awt.*;
  * Created by Greg on 1/2/2015.
  * Resizable graphic
  */
-public abstract class TiledBackground extends ScreenRegion {
+public abstract class TiledBackground extends UIScreenRegion {
 
-    private GraphicSet style;
+    private final String backgroundStyle;
 
+    private GraphicSet graphics;
     protected int texWidth;
     protected int texHeight;
     protected int totWidth;
     protected int totHeight;
 
-    public TiledBackground(int priority, GraphicSet style) {
+    public TiledBackground(int priority, String backgroundStyle) {
         super(priority);
-        this.style = style;
+        this.backgroundStyle = backgroundStyle;
         //TODO: add texture tiling features using 16 tile tile sets
-    }
-
-    public GraphicSet getStyle() {
-        return style;
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        RenderMask textureMask = getStyle().getMask();
-        texWidth = textureMask.getWidth();
-        texHeight = textureMask.getHeight();
         totWidth = mask.getWidth();
         totHeight = mask.getHeight();
+    }
+
+    @Override
+    protected void restyleContents(UIStyle style) {
+        graphics = style.getBackground(backgroundStyle).getGraphicSet();
+        RenderMask textureMask = graphics.getMask();
+        texWidth = textureMask.getWidth();
+        texHeight = textureMask.getHeight();
     }
 
     @Override
@@ -51,7 +54,7 @@ public abstract class TiledBackground extends ScreenRegion {
     }
 
     protected void addTile(Point position, Direction d) {
-        add(new StaticObject(d.ordinal(), style.getGraphic(d.ordinal())) {
+        add(new GraphicObject(d.ordinal(), graphics.getGraphic(d.ordinal())) {
             public String toString() {
                 return "Tile inside " + TiledBackground.this;
             }

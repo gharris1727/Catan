@@ -1,9 +1,11 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.util.Graphical;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
+import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -16,6 +18,12 @@ public enum DevelopmentCard implements Tradeable, Graphical {
     Monopoly("Monopoly", 0),
     YearOfPlenty("Year of Plenty", 0),
     RoadBuilding("Road Building", 0);
+
+    private static final GraphicSet graphics;
+
+    static {
+        graphics = new GraphicSet("catan.graphics.game.development", RoundedRectangularMask.class);
+    }
 
     private final String name;
     private final int vp;
@@ -33,8 +41,9 @@ public enum DevelopmentCard implements Tradeable, Graphical {
         return vp;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
-        return GraphicSet.Development.getGraphic(ordinal());
+        return graphics.getGraphic(ordinal());
     }
 }

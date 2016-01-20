@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common;
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
@@ -121,6 +122,7 @@ public class Startup extends CoreWindow {
     @Override
     protected void onClose() {
         dispose();
+        Main.quit();
     }
 
     public String toString() {

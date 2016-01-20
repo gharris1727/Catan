@@ -11,8 +11,7 @@ import com.gregswebserver.catan.common.event.EventType;
 public enum ClientEventType implements EventType {
 
     Startup(null), //Event that starts the client from inside its own thread.
-    Quit_All(null), //Kills all client processes and exits the game.
-    Root_Clickable_Update(Clickable.class); //Event sent from the renderThread that updates the clickable information in ClientListener.
+    Quit_All(null); //Kills all client processes and exits the game.
 
     private Class payloadType;
 

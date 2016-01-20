@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board;
 
-import com.gregswebserver.catan.client.graphics.util.Graphical;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 

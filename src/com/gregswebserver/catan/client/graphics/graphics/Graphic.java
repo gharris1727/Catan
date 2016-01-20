@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
 
+import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.resources.ResourceLoadException;
 
@@ -11,7 +12,7 @@ import java.util.Arrays;
  * Created by Greg on 8/15/2014.
  * Utility class to provide pixel-moving functions to the other image handlers.
  */
-public class Graphic {
+public class Graphic implements Maskable {
 
     public static final int transColor = 0xff00ff;
     protected String name;
@@ -23,13 +24,9 @@ public class Graphic {
     }
 
     //For creating Graphics from other Graphics (usually StaticGraphics).
-    public Graphic(Graphic source, RenderMask mask, Point start) throws ResourceLoadException {
+    public Graphic(Graphic source, RenderMask mask, Point start)  {
         this(mask);
-        try {
-            render(this, new Point(), source, start, 0, false);
-        } catch (Exception e) {
-            throw new ResourceLoadException(e);
-        }
+        render(this, new Point(), source, start, 0, false);
     }
 
     //Primary constructor for a blank Graphic object.
@@ -118,11 +115,13 @@ public class Graphic {
         }
     }
 
+    @Override
     public RenderMask getMask() {
         return mask;
     }
 
-    protected void setMask(RenderMask mask) {
+    @Override
+    public void setMask(RenderMask mask) {
         this.mask = mask;
     }
 

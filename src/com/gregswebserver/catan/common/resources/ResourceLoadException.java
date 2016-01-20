@@ -6,11 +6,11 @@ package com.gregswebserver.catan.common.resources;
  */
 public class ResourceLoadException extends RuntimeException {
 
-    public ResourceLoadException(String name) {
-        super("Problem loading resource " + name);
+    public ResourceLoadException(String message) {
+        super("Problem loading resource: " + message);
     }
 
-    public ResourceLoadException(Throwable cause) {
-        super("Problem loading resource.", cause);
+    public ResourceLoadException(String message, Throwable cause) {
+        super("Problem loading resource: " + message, cause);
     }
 }

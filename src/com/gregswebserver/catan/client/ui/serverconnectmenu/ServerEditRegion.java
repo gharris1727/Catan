@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.renderer.primary.disconnected;
+package com.gregswebserver.catan.client.ui.serverconnectmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
@@ -13,8 +13,8 @@ public class ServerEditRegion extends UIScreenRegion {
 
     ConnectionInfo info;
 
-    public ServerEditRegion(int priority, UIStyle style, ConnectionInfo info) {
-        super(priority,  style);
+    public ServerEditRegion(int priority, ConnectionInfo info) {
+        super(priority);
         this.info = info;
     }
 
@@ -22,7 +22,12 @@ public class ServerEditRegion extends UIScreenRegion {
     protected void resizeContents(RenderMask mask) {
     }
 
+    @Override
+    protected void restyleContents(UIStyle style) {
+    }
+
     public String toString() {
         return "ServerEditDialogue " + info;
     }
 }
+

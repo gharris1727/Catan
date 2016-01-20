@@ -1,12 +1,18 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.masks.DiagonalMask;
+import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
-import com.gregswebserver.catan.client.resources.RenderMaskInfo;
+import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
 import com.gregswebserver.catan.common.util.Direction;
+import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -22,6 +28,18 @@ public class TradeTile extends BeachTile {
     private static final Point[] position = new Point[]{
             new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point()
     };
+
+    private static final GraphicSet graphics;
+
+    static {
+        GraphicSourceInfo source = new GraphicSourceInfo(Main.staticConfig.get("catan.graphics.trade.bridge.path"));
+        RenderMask horizontal = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.trade.bridge.horizontal.size"));
+        RenderMask diagonalUp = new DiagonalMask(Main.staticConfig.getDimension("catan.graphics.trade.bridge.diagonal.size"));
+        RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
+        RenderMask[] masks = new RenderMask[]{null, null, null, horizontal,
+                horizontal, diagonalDown, diagonalDown, diagonalUp, diagonalUp};
+        graphics = new GraphicSet(source,masks);
+    }
 
     private TradingPost tradingPost;
     private Graphic graphic;
@@ -66,14 +84,15 @@ public class TradeTile extends BeachTile {
         return out;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
         if (graphic == null) {
-            graphic = new Graphic(RenderMaskInfo.TileMask.getMask());
+            graphic = new Graphic(tileMask);
             Graphic b = super.getGraphic();
             b.renderTo(graphic, new Point(), 0);
             for (Direction d : getTradingPostDirections()) {
-                GraphicSet.TradeBridges.getGraphic(d.ordinal()).renderTo(graphic, position[d.ordinal()], 0);
+                graphics.getGraphic(d.ordinal()).renderTo(graphic, position[d.ordinal()], 0);
             }
         }
         return graphic;

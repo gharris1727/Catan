@@ -1,8 +1,5 @@
 package com.gregswebserver.catan.client.graphics.ui.util;
 
-import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.resources.GraphicSet;
-
 import java.awt.*;
 
 import static com.gregswebserver.catan.common.util.Direction.*;
@@ -13,27 +10,15 @@ import static com.gregswebserver.catan.common.util.Direction.*;
  */
 public abstract class EdgedTiledBackground extends TiledBackground {
 
-    private int corWidth;
-    private int corHeight;
-
-    public EdgedTiledBackground(int priority, GraphicSet textures) {
-        super(priority, textures);
-    }
-
-    @Override
-    protected void resizeContents(RenderMask mask) {
-        RenderMask texMask = getStyle().getMask();
-        texWidth = texMask.getWidth();
-        texHeight = texMask.getHeight();
-        totWidth = mask.getWidth();
-        totHeight = mask.getHeight();
-        corWidth = totWidth - texWidth;
-        corHeight = totHeight - texHeight;
+    public EdgedTiledBackground(int priority, String backgroundStyle) {
+        super(priority, backgroundStyle);
     }
 
     @Override
     protected void renderContents() {
         super.renderContents();
+        int corWidth = totWidth - texWidth;
+        int corHeight = totHeight - texHeight;
         //Four corners
         addTile(new Point(), upleft);
         addTile(new Point(corWidth, 0), upright);

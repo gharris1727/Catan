@@ -19,8 +19,8 @@ public abstract class ScreenObject implements Clickable {
     private final int clickableColor;
     private Clickable redirect;
 
-    protected ScreenObject(Point position, int priority) {
-        this.position = position;
+    protected ScreenObject(int priority) {
+        this.position = new Point();
         this.priority = priority;
         clickableColor = UniqueColor.getNext();
         redirect = null;

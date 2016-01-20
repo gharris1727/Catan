@@ -24,10 +24,12 @@ public class GameType implements Comparable<GameType> {
     private HashSet<Coordinate> tradingPosts;
     private HashSet<Coordinate> resourceTiles;
 
-    public GameType(String path) throws ResourceLoadException {
+    public GameType(String path) {
         players = new HashSet<>();
         tradingPosts = new HashSet<>();
         resourceTiles = new HashSet<>();
+        //TODO: rework game loading.
+        /*
         Scanner s = null;
         try {
             s = new Scanner(new FileInputStream(path));
@@ -85,6 +87,7 @@ public class GameType implements Comparable<GameType> {
             if (s != null)
                 s.close();
         }
+        */
     }
 
     public String getName() {

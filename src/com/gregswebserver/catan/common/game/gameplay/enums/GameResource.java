@@ -1,9 +1,11 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.util.Graphical;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
+import com.gregswebserver.catan.client.graphics.masks.*;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -18,6 +20,14 @@ public enum GameResource implements Tradeable, Graphical {
     Ore("Rocks"),
     Wildcard("Any");
 
+    private static final GraphicSet graphics;
+    private static final GraphicSet icons;
+
+    static {
+        graphics = new GraphicSet("catan.graphics.game.resource", RoundedRectangularMask.class);
+        icons = new GraphicSet("catan.graphics.trade.icons", RectangularMask.class);
+    }
+
     private final String name;
 
     GameResource(String name) {
@@ -28,12 +38,13 @@ public enum GameResource implements Tradeable, Graphical {
         return name;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
-        return GraphicSet.ResourceCard.getGraphic(ordinal());
+        return graphics.getGraphic(ordinal());
     }
 
     public Graphic getIcon() {
-        return GraphicSet.TradeIcons.getGraphic(ordinal());
+        return icons.getGraphic(ordinal());
     }
 }

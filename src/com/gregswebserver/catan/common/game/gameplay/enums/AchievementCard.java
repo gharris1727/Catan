@@ -1,9 +1,11 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.util.Graphical;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.VictoryFactor;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -15,6 +17,12 @@ public enum AchievementCard implements Graphical, VictoryFactor {
     //TODO: insert the correct descriptions.
     LongestRoad("Longest Road", "Description for Longest Road"),
     LargestArmy("Largest Army", "Description for Largest Army");
+
+    private static final GraphicSet graphics;
+
+    static {
+        graphics = new GraphicSet("catan.graphics.game.achievement", RectangularMask.class);
+    }
 
     private final String name;
     private final String desc;
@@ -37,8 +45,9 @@ public enum AchievementCard implements Graphical, VictoryFactor {
         return 2;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
-        return GraphicSet.Achievement.getGraphic(ordinal());
+        return graphics.getGraphic(ordinal());
     }
 }

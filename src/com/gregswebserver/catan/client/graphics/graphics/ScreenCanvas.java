@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
-import com.gregswebserver.catan.client.graphics.util.Graphical;
+import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
+import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -43,8 +44,11 @@ public class ScreenCanvas extends Canvas implements Graphical {
         return "ScreenCanvas";
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
+        if (graphic == null)
+            throw new NotYetRenderableException("Screen does not have a graphic.");
         return graphic;
     }
 

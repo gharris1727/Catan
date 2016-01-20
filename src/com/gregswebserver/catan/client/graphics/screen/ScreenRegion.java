@@ -1,10 +1,13 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.util.Animated;
-import com.gregswebserver.catan.client.graphics.util.Graphical;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.input.Clickable;
+import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
+import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.util.*;
@@ -14,7 +17,7 @@ import java.util.List;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Graphical, Animated {
+public abstract class ScreenRegion extends ScreenObject implements Renderable, Iterable<ScreenObject>, Graphical, Animated, Maskable {
 
     private RenderMask mask;
     private Graphic graphic;
@@ -25,25 +28,30 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     //The constructor of a screen region is meant to store relevant references,
     //and create any permanent ScreenObjects needed in the render.
     public ScreenRegion(int priority) {
-        super(new Point(), priority);
+        super(priority);
         clear();
     }
 
+    @Override
     public final RenderMask getMask() {
         return mask;
     }
 
     //Sets the display size for this region, and notifies it's contents about the resizing.
-    public final ScreenRegion setMask(RenderMask mask) {
+    @Override
+    public final void setMask(RenderMask mask) {
         this.mask = mask;
-        graphic = new Graphic(mask);
-        forceRender();
-        resizeContents(mask);
-        limitScroll();
-        return this;
+        graphic = null;
+        if (mask != null) {
+            graphic = new Graphic(mask);
+            forceRender();
+            resizeContents(mask);
+            limitScroll();
+        }
     }
 
     //Force this region to re-render even if none of it's children need it.
+    @Override
     public final void forceRender() {
         needsRendering = true;
     }
@@ -154,6 +162,11 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     @Override
+    public boolean isRenderable() {
+        return mask != null && graphic != null;
+    }
+
+    @Override
     public final boolean needsRender() {
         if (limitScroll() || needsRendering) return true;
         for (ScreenObject object : this)
@@ -167,18 +180,23 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return true;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
         if (needsRender()) {
             renderContents();
-            if (graphic == null)
-                throw new IllegalStateException("Screen Region " + this + " has no size.");
+            if (!isRenderable())
+                throw new NotYetRenderableException(this + " is not renderable.");
             graphic.clear();
             for (ScreenObject object : this)
-                if (object.isGraphical())
-                    ((Graphical) object).getGraphic().renderTo(graphic, object.getPosition(), object.getClickableColor());
+                if (object.isGraphical()) {
+                    Graphic g = ((Graphical) object).getGraphic();
+                    g.renderTo(graphic, object.getPosition(), object.getClickableColor());
+                }
             needsRendering = false;
         }
+        if (!isRenderable())
+            throw new NotYetRenderableException(this + " is not renderable.");
         return graphic;
     }
 
@@ -191,5 +209,4 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     protected boolean limitScroll() {
         return false;
     }
-
 }

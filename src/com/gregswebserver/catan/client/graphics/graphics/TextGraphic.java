@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.style.TextStyle;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -20,7 +20,7 @@ public class TextGraphic extends Graphic {
 
     private TextLayout layout;
 
-    public TextGraphic(TextStyle style, String text) {
+    public TextGraphic(UIStyle.TextStyle style, String text) {
         Font f = style.getFont();
         FontRenderContext frc = new FontRenderContext(null, false, false);
         layout = new TextLayout(text, f, frc);

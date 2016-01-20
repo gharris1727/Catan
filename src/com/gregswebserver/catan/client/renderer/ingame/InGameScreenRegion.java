@@ -27,8 +27,8 @@ public class InGameScreenRegion extends UIScreenRegion {
     private final InventoryRegion inventory;
     private final ContextRegion context;
 
-    public InGameScreenRegion(UIStyle style, CatanGame game) {
-        super(0, style);
+    public InGameScreenRegion(CatanGame game) {
+        super(0);
         this.game = game;
         map = new MapRegion(0, game);
         trade = new TradeRegion(1);
@@ -52,6 +52,11 @@ public class InGameScreenRegion extends UIScreenRegion {
         trade.setMask(new RectangularMask(new Dimension(sidebarWidth, mainHeight)));
         inventory.setMask(new RectangularMask(new Dimension(mainWidth, bottomHeight)));
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, bottomHeight)));
+    }
+
+    @Override
+    protected void restyleContents(UIStyle style) {
+
     }
 
     public String toString() {

@@ -11,10 +11,10 @@ import java.awt.*;
 public class GraphicInfo {
 
     private final GraphicSourceInfo source;
-    private final RenderMaskInfo mask;
+    private final RenderMask mask;
     private final Point location;
 
-    public GraphicInfo(GraphicSourceInfo source, RenderMaskInfo mask, Point location) {
+    public GraphicInfo(GraphicSourceInfo source, RenderMask mask, Point location) {
         this.source = source;
         this.mask = mask;
         this.location = location;
@@ -25,7 +25,7 @@ public class GraphicInfo {
     }
 
     public RenderMask getMask() {
-        return mask.getMask();
+        return mask;
     }
 
     public Point getLocation() {
@@ -33,11 +33,7 @@ public class GraphicInfo {
     }
 
     public String toString() {
-        return "GraphicInfo{" +
-                "source=" + source +
-                ", mask=" + mask +
-                ", location=" + location +
-                '}';
+        return "GraphicInfo(" + source + "/" + mask + "/" + location + ")";
     }
 
     public boolean equals(Object o) {

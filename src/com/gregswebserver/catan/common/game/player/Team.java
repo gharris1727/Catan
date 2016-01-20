@@ -1,7 +1,15 @@
 package com.gregswebserver.catan.common.game.player;
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.masks.DiagonalMask;
+import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
+import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
+
+import java.awt.*;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -9,16 +17,25 @@ import com.gregswebserver.catan.client.resources.GraphicSet;
  */
 public enum Team {
 
-    None(GraphicSet.TeamEmpty),
-    Red(GraphicSet.TeamRed),
-    Orange(GraphicSet.TeamOrange),
-    Blue(GraphicSet.TeamBlue),
-    White(GraphicSet.TeamWhite);
+    None("empty"),
+    White("white"),
+    Red("red"),
+    Orange("orange"),
+    Blue("blue");
 
-    private GraphicSet graphics;
+    private final GraphicSet graphics;
 
-    Team(GraphicSet graphics) {
-        this.graphics = graphics;
+    Team(String teamConfigKey) {
+        GraphicSourceInfo source = new GraphicSourceInfo(Main.staticConfig.get("catan.graphics.teams.paths." + teamConfigKey));
+
+        RenderMask horizontal = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.horizontal.size"));
+        RenderMask diagonalUp = new DiagonalMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.size"));
+        RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
+        RenderMask settlement = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.settlement.size"));
+        RenderMask city =new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.city.size"));
+        RenderMask robber = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.robber.size"));
+        RenderMask[] masks = new RenderMask[]{horizontal, diagonalUp, diagonalDown, settlement, city, robber};
+        graphics = new GraphicSet(source, masks);
     }
 
     public Graphic getRoadGraphic(int orientation) {

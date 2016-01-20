@@ -37,7 +37,7 @@ public class InventoryRegion extends ScreenRegion {
                 Point position = new Point();
                 positions.add(position);
                 for (int i = 0; i < n; i++) {
-                    ScreenObject o = new StaticObject(position, 0, g) {
+                    ScreenObject o = new GraphicObject(position, 0, g) {
                         public UserEvent onMouseClick(MouseEvent event) {
                             return new UserEvent(this, UserEventType.Inventory_Clicked, position.x);
                         }

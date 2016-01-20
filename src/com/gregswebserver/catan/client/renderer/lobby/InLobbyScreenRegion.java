@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.renderer.secondary.lobby;
+package com.gregswebserver.catan.client.renderer.lobby;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
@@ -11,12 +11,16 @@ import com.gregswebserver.catan.common.lobby.Lobby;
  */
 public class InLobbyScreenRegion extends UIScreenRegion {
 
-    public InLobbyScreenRegion(UIStyle style, Lobby lobby) {
-        super(0, style);
+    public InLobbyScreenRegion(Lobby lobby) {
+        super(0);
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
+    }
+
+    @Override
+    protected void restyleContents(UIStyle style) {
     }
 
     public String toString() {

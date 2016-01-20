@@ -1,15 +1,12 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
-import com.gregswebserver.catan.common.resources.GraphicsConfig;
+import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
-
-import static com.gregswebserver.catan.client.resources.RenderMaskInfo.TileMask;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -54,12 +51,13 @@ public class ResourceTile extends Tile {
         return "ResourceTile " + terrain;
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
         if (graphic == null) {
-            graphic = new Graphic(TileMask.getMask());
-            GraphicSet.Land.getGraphic(terrain.ordinal()).renderTo(graphic, new Point(), 0);
-            GraphicSet.Dice.getGraphic(diceRoll.ordinal()).renderTo(graphic, GraphicsConfig.diceRollRender, 0);
+            graphic = new Graphic(tileMask);
+            terrain.gameResource.getGraphic().renderTo(graphic, new Point(), 0);
+            diceRoll.getGraphic().renderTo(graphic, diceRoll.getOffset(), 0);
             //Figure out how to render the robber.
         }
         return graphic;

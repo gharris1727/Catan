@@ -1,13 +1,12 @@
 package com.gregswebserver.catan.client.graphics.ui.style;
 
+import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
-import com.gregswebserver.catan.client.resources.TextStyleInfo;
-import com.gregswebserver.catan.common.resources.ResourceLoader;
+import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 
-import static com.gregswebserver.catan.client.resources.GraphicSet.*;
-import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueDark;
-import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueLight;
-import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueSmall;
+import java.awt.*;
+import java.util.regex.Pattern;
 
 /**
  * Created by Greg on 1/15/2015.
@@ -15,52 +14,88 @@ import static com.gregswebserver.catan.client.resources.TextStyleInfo.UIBlueSmal
  */
 public enum UIStyle {
 
-    Blue(UIBlueBackground, UIBlueWindow, UIBlueText, UIBlueButton, UIBlueLight, UIBlueDark, UIBlueSmall);
+    Blue("blue");
 
-    private final GraphicSet background;
-    private final GraphicSet windows;
-    private final GraphicSet text;
-    private final GraphicSet buttons;
-    //TODO: redefine the font loading so that it is more flexible.
-    private final TextStyleInfo light;
-    private final TextStyleInfo dark;
-    private final TextStyleInfo small;
+    public static final String FONT_HEADING = "heading";
+    public static final String FONT_PARAGRAPH = "paragraph";
 
-    UIStyle(GraphicSet background, GraphicSet windows, GraphicSet text, GraphicSet buttons,
-            TextStyleInfo light, TextStyleInfo dark, TextStyleInfo small) {
-        //TODO: abstract the background styles further, not good to expose the GraphicSet.
-        this.background = background;
-        this.windows = windows;
-        this.text = text;
-        this.buttons = buttons;
-        this.light = light;
-        this.dark = dark;
-        this.small = small;
+    public static final String BACKGROUND_WINDOW = "window";
+    public static final String BACKGROUND_INTERFACE = "interface";
+    public static final String BACKGROUND_LOBBIES = "lobbies";
+    public static final String BACKGROUND_USERS = "users";
+    public static final String BACKGROUND_GAME = "game"; //TODO: probably find a better place for this
+
+    private static final String styleRootKey = "catan.ui.";
+    private static final String fontRootKey = ".fonts.";
+    private static final String fontNameKey = ".name";
+    private static final String fontStyleKey = ".style";
+    private static final String fontSizeKey = ".size";
+    private static final String fontColorKey = ".color";
+    private static final String backgroundRootKey = ".background.";
+
+    private final String uiStyleKey;
+
+    UIStyle(String uiStyleName) {
+        this.uiStyleKey = styleRootKey + uiStyleName;
     }
 
-    public GraphicSet getBackgroundStyle() {
-        return background;
+    public TextStyle getFont(String textStyleName) {
+        String textStyleKey = uiStyleKey + fontRootKey + textStyleName;
+        return new TextStyle(textStyleKey);
     }
 
-    public GraphicSet getInterfaceStyle() {
-        return windows;
+    public BackgroundStyle getBackground(String backgroundStyleName) {
+        String backgroundStyleKey = uiStyleKey + backgroundRootKey + backgroundStyleName;
+        return new BackgroundStyle(backgroundStyleKey);
     }
 
-    public GraphicSet getTextStyle() {
-        return text;
+    /**
+     * Created by Greg on 1/17/2015.
+     * A style of text, including font, size, italics/bold, and color.
+     */
+    public static class TextStyle {
+
+        private final String textStyleKey;
+        private final Font font;
+        private final Color color;
+
+        public TextStyle(String textStyleKey) {
+            this.textStyleKey = textStyleKey;
+            String fontName = Main.staticConfig.get(textStyleKey + fontNameKey);
+            String fontStyleName = Main.staticConfig.get(textStyleKey + fontStyleKey).toUpperCase();
+            int fontSize = Main.staticConfig.getInt(textStyleKey + fontSizeKey);
+            this.color = Main.staticConfig.getColor(textStyleKey + fontColorKey);
+            this.font = new Font(fontName, getFontStyle(fontStyleName), fontSize);
+        }
+
+        private static int getFontStyle(String fontStyleName) {
+            int style = Font.PLAIN;
+            if (Pattern.matches("BOLD",fontStyleName))
+                style |= Font.BOLD;
+            if (Pattern.matches("ITALIC",fontStyleName))
+                style |= Font.ITALIC;
+            return style;
+        }
+
+        public Font getFont() {
+            return font;
+        }
+
+        public Color getColor() {
+            return color;
+        }
     }
 
-    public GraphicSet getButtonStyle() {
-        return buttons;
-    }
+    public class BackgroundStyle {
 
-    public TextStyle getLightTextStyle() {
-        return ResourceLoader.getTextStyle(light);
-    }
+        private final GraphicSet graphicSet;
 
-    public TextStyle getDarkTextStyle() {
-        return ResourceLoader.getTextStyle(dark);
-    }
+        public BackgroundStyle(String backgroundStyleKey) {
+            graphicSet = new GraphicSet(backgroundStyleKey, RectangularMask.class);
+        }
 
-    public TextStyle getSmallTextStyle() { return ResourceLoader.getTextStyle(small); }
+        public GraphicSet getGraphicSet() {
+            return graphicSet;
+        }
+    }
 }

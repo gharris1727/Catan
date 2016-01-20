@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common;
 
 /**
  * Created by greg on 1/10/16.
- * Thrown whenever
+ * Thrown whenever something awful happened and serious debugging is needed.
  */
 public class IllegalStateException extends RuntimeException {
 

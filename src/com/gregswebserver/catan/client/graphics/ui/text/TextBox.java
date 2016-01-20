@@ -21,8 +21,8 @@ public abstract class TextBox extends UIScreenRegion {
     private int selectStart;
     private int selectEnd;
 
-    public TextBox(int priority,  UIStyle style) {
-        super(priority, style);
+    public TextBox(int priority) {
+        super(priority);
         state = EditableState.Deselected;
         previous = state;
         //TODO: implement.

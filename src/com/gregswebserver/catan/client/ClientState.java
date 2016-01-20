@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.state;
+package com.gregswebserver.catan.client;
 
 /**
  * Created by Greg on 10/16/2014.

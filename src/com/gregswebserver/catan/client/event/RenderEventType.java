@@ -14,13 +14,6 @@ import com.gregswebserver.catan.common.lobby.MatchmakingPool;
  */
 public enum RenderEventType implements EventType {
 
-    ConnectionListCreate(ServerPool.class), // Disconnected
-    ConnectProgress(Integer.class),
-    MatchmakingPoolCreate(MatchmakingPool.class), // Connected
-    MatchmakingPoolUpdate(null),
-    DisconnectMessage(String.class),// Disconnecting
-    GameCreate(CatanGame.class), //InGame
-    Game_Update(null),
     Canvas_Update(ScreenCanvas.class),
     Animation_Step(null);
 

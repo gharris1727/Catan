@@ -2,10 +2,10 @@ package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.*;
-import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.input.InputListener;
+import com.gregswebserver.catan.client.renderer.RenderManager;
 import com.gregswebserver.catan.client.renderer.RenderThread;
-import com.gregswebserver.catan.client.state.ClientState;
 import com.gregswebserver.catan.client.ui.primary.ServerPool;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
@@ -25,7 +25,7 @@ import com.gregswebserver.catan.common.crypto.Username;
 
 import java.net.UnknownHostException;
 
-import static com.gregswebserver.catan.client.state.ClientState.*;
+import static com.gregswebserver.catan.client.ClientState.*;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -36,11 +36,13 @@ import static com.gregswebserver.catan.client.state.ClientState.*;
 public class Client extends CoreThread {
 
     private ClientWindow window;
-    private InputListener listener;
     private ClientState state;
     private ChatThread chatThread;
     private GameThread gameThread;
     private RenderThread renderThread;
+
+    private RenderManager manager;
+    private InputListener listener;
     private ClientConnection connection;
     private Username username;
     private MatchmakingPool matchmakingPool;
@@ -89,13 +91,11 @@ public class Client extends CoreThread {
                 loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
                 loginList.add(new ConnectionInfo("localhost", "25000", "", "password3"));
                 loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
-                renderThread.addEvent(new RenderEvent(this, RenderEventType.ConnectionListCreate, loginList));
+                manager.setServerList(loginList);
+                manager.display(manager.serverConnectMenu);
                 break;
             case Quit_All:
                 shutdown();
-                break;
-            case Root_Clickable_Update:
-                listener.setClickable((ScreenObject) event.getPayload());
                 break;
         }
     }
@@ -106,7 +106,8 @@ public class Client extends CoreThread {
             case Net_Connect:
                 //Connect to remote server
                 state = Connecting;
-                addEvent(new RenderEvent(this, RenderEventType.ConnectProgress, 0));
+                manager.setConnectProgress(0);
+                manager.display(manager.connectingScreen);
                 ConnectionInfo info = (ConnectionInfo) event.getPayload();
                 try {
                     ServerLogin login = info.createServerLogin();
@@ -115,7 +116,8 @@ public class Client extends CoreThread {
                     connection.connect();
                 } catch (UnknownHostException | NumberFormatException e) {
                     logger.log(e, LogLevel.WARN);
-                    addEvent(new RenderEvent(this, RenderEventType.DisconnectMessage, e.getMessage()));
+                    manager.setDisconnectError(e.getMessage());
+                    manager.display(manager.disconnectingScreen);
                     state = Disconnecting;
                 }
                 break;
@@ -123,6 +125,7 @@ public class Client extends CoreThread {
                 state = Disconnecting;
                 disconnect("Quitting");
                 state = Disconnected;
+                manager.display(manager.serverConnectMenu);
                 break;
             case Lobby_Create:
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Create, new LobbyConfig(username));
@@ -174,7 +177,8 @@ public class Client extends CoreThread {
             case Client_Pool_Sync:
                 matchmakingPool = (MatchmakingPool) event.getPayload();
                 matchmakingPool.setHost(this);
-                addEvent(new RenderEvent(this, RenderEventType.MatchmakingPoolCreate, matchmakingPool));
+                manager.setMatchmakingPool(matchmakingPool);
+                manager.display(manager.lobbyJoinMenu);
                 break;
             case User_Disconnect:
             case Name_Change:
@@ -192,7 +196,7 @@ public class Client extends CoreThread {
                 } catch (EventConsumerException e) {
                     logger.log(e, LogLevel.ERROR);
                 }
-                renderThread.addEvent(new RenderEvent(this, RenderEventType.MatchmakingPoolUpdate, null));
+                manager.lobbyJoinMenu.forceRender();
                 break;
             case Game_Start:
                 state = Starting;
@@ -238,7 +242,8 @@ public class Client extends CoreThread {
             case Disconnect:
             case Link_Error:
                 state = Disconnecting;
-                addEvent(new RenderEvent(this, RenderEventType.DisconnectMessage, event.getPayload()));
+                manager.setDisconnectError((String) event.getPayload());
+                manager.display(manager.disconnectingScreen);
                 logger.log("Unable to connect to remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case External_Event:
@@ -249,9 +254,11 @@ public class Client extends CoreThread {
 
     private void startup() {
         window = new ClientWindow(this);
-        listener = new InputListener(this);
+        manager = new RenderManager(this);
+        manager.setStyle(UIStyle.Blue);
+        listener = new InputListener(this, manager);
         window.setListener(listener);
-        renderThread = new RenderThread(this);
+        renderThread = new RenderThread(this, manager);
         renderThread.start();
     }
 
@@ -283,9 +290,5 @@ public class Client extends CoreThread {
 
     public String toString() {
         return "Client";
-    }
-
-    public ClientState getState() {
-        return state;
     }
 }

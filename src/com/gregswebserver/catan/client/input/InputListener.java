@@ -14,53 +14,54 @@ import java.awt.event.*;
  * Generates GameEvents, ChatEvents, and ClientEvents, based on hitboxes.
  * Added as a listener to the ClientWindow.
  */
-public class InputListener implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, Clickable {
+public class InputListener implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private final Logger logger;
     private final Client client;
     private final Clickable nullClickable;
-    private Clickable rootClickable;
+    private final Clickable root;
     private Clickable selected;
     private Point dragStart;
 
-    public InputListener(Client client) {
-        logger = client.logger;
+    public InputListener(Client client, Clickable root) {
+        this.logger = client.logger;
         this.client = client;
+        this.root = root;
         this.nullClickable = new Clickable() {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                return log("Mouse clicked");
+                return log("Mouse clicked on null");
             }
 
             @Override
             public UserEvent onKeyTyped(KeyEvent event) {
-                return log("Key typed");
+                return log("Key typed on null");
             }
 
             @Override
             public UserEvent onMouseScroll(int rot) {
-                return log("Mouse scrolled");
+                return log("Mouse scrolled on null");
             }
 
             @Override
             public UserEvent onMouseDrag(Point p) {
-                return log("Mouse dragged");
+                return log("Mouse dragged on null");
             }
 
             @Override
             public UserEvent onSelect() {
-                return log("Selected");
+                return log("Selected null");
             }
 
             @Override
             public UserEvent onDeselect() {
-                return log("Deselected");
+                return log("Deselected null");
             }
 
             @Override
             public Clickable getClickable(Point p) {
-                log("Getting clickable from");
-                return null;
+                log("Getting clickable from null");
+                return this;
             }
 
             private UserEvent log(String message) {
@@ -72,44 +73,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
                 return "nullClickable";
             }
         };
-        selected = nullClickable;
-        rootClickable = nullClickable;
-    }
-
-    @Override
-    public UserEvent onMouseClick(MouseEvent event) {
-        return selected.onMouseClick(event);
-    }
-
-    @Override
-    public UserEvent onKeyTyped(KeyEvent event) {
-        return selected.onKeyTyped(event);
-    }
-
-    @Override
-    public UserEvent onMouseScroll(int rot) {
-        return selected.onMouseScroll(rot);
-    }
-
-    @Override
-    public UserEvent onMouseDrag(Point p) {
-        return selected.onMouseDrag(p);
-    }
-
-    @Override
-    public UserEvent onSelect() {
-        return selected.onSelect();
-    }
-
-    @Override
-    public UserEvent onDeselect() {
-        return selected.onDeselect();
-    }
-
-    @Override
-    public Clickable getClickable(Point p) {
-        Clickable found = rootClickable.getClickable(p);
-        return (found == null) ? nullClickable : found;
+        this.selected = nullClickable;
     }
 
     private void sendEvent(UserEvent event) {
@@ -117,25 +81,20 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             client.addEvent(event);
     }
 
-    public void setClickable(Clickable clickable) {
-        this.rootClickable = (clickable == null) ? nullClickable : clickable;
-    }
-
     private void updateClickable(MouseEvent e) {
-        if (rootClickable != null) {
-            Clickable next = getClickable(e.getPoint());
-            if (selected != next) {
-                logger.log("Clickable changed to " + next, LogLevel.DEBUG);
-                sendEvent(onDeselect());
-                selected = next;
-                sendEvent(onSelect());
-            }
+        Clickable found = root.getClickable(e.getPoint());
+        Clickable next = (found == null) ? nullClickable : found;
+        if (selected != next) {
+            logger.log("Clickable changed to " + next, LogLevel.DEBUG);
+            sendEvent(selected.onDeselect());
+            selected = next;
+            sendEvent(selected.onSelect());
         }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        sendEvent(onKeyTyped(e));
+        sendEvent(selected.onKeyTyped(e));
     }
 
     @Override
@@ -149,7 +108,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     @Override
     public void mouseClicked(MouseEvent e) {
         updateClickable(e);
-        sendEvent(onMouseClick(e));
+        sendEvent(selected.onMouseClick(e));
     }
 
     @Override
@@ -175,7 +134,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         Point dragEnd = e.getPoint();
         dragEnd.translate(-dragStart.x, -dragStart.y);
         dragStart = e.getPoint();
-        sendEvent(onMouseDrag(dragEnd));
+        sendEvent(selected.onMouseDrag(dragEnd));
     }
 
     @Override
@@ -184,7 +143,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        sendEvent(onMouseScroll(e.getWheelRotation()));
+        sendEvent(selected.onMouseScroll(e.getWheelRotation()));
     }
 
     public String toString() {

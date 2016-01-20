@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.board.towns;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.common.game.player.Team;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -22,6 +23,7 @@ public class EmptyTown extends Town {
         return "Empty Building";
     }
 
+    @NotNull
     @Override
     public Graphic getGraphic() {
         return getTeam().getSettlementGraphic();
