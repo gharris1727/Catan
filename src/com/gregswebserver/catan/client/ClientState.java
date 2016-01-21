@@ -21,7 +21,7 @@ public enum ClientState {
     Finishing(InPostGame),
     Spectating(null);
 
-    private ClientState next;
+    private final ClientState next;
 
     ClientState(ClientState next) {
         this.next = next;

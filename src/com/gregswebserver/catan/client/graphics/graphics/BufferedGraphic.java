@@ -2,7 +2,7 @@ package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
@@ -12,7 +12,7 @@ import java.awt.image.DataBufferInt;
  */
 public class BufferedGraphic extends Graphic {
 
-    private BufferedImage image;
+    private final BufferedImage image;
 
     public BufferedGraphic(BufferedImage image) {
         this.image = image;

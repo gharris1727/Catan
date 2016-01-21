@@ -12,12 +12,13 @@ import com.gregswebserver.catan.common.game.CatanGame;
  */
 public class GameThread extends QueuedInputThread<GameEvent> {
 
-    private QueuedInputThread<GenericEvent> host;
-    private CatanGame game;
+    private final QueuedInputThread<GenericEvent> host;
+    private final CatanGame game;
 
     public GameThread(QueuedInputThread<GenericEvent> host) {
         super(host.logger);
         this.host = host;
+        game = new CatanGame();
     }
 
     //Process GameEvents from the event queue.

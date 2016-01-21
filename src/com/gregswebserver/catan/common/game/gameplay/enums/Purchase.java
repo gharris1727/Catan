@@ -15,7 +15,7 @@ public enum Purchase {
     City(new Tradeable[]{Grain, Grain, Ore, Ore, Ore}),
     DevelopmentCard(new Tradeable[]{Wool, Grain, Ore});
 
-    private Tradeable[] cost;
+    private final Tradeable[] cost;
 
     Purchase(Tradeable[] cost) {
         this.cost = cost;

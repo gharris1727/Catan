@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class UserDatabase {
 
-    private Logger logger;
+    private final Logger logger;
     private HashMap<Username, UserAccount> users;
 
     public UserDatabase(Logger logger) {

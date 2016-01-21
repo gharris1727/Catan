@@ -2,7 +2,6 @@ package com.gregswebserver.catan.client.graphics.ui.text;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

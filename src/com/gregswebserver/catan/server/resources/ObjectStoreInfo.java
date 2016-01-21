@@ -8,7 +8,7 @@ public enum ObjectStoreInfo {
 
     UserInfo("users");
 
-    private String name;
+    private final String name;
 
     ObjectStoreInfo(String name) {
         this.name = name;

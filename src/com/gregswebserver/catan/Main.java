@@ -21,7 +21,7 @@ public class Main {
         // Create a logger to begin storing log information
         logger = new Logger();
         // Create the static root configuration
-        staticConfig = new ConfigFile(logger, "config/static.properties", "Static root configuration");
+        staticConfig = new ConfigFile("config/static.properties", "Static root configuration");
         // Attempt to load the static configuration from file
         try {
             staticConfig.open();

@@ -11,7 +11,7 @@ import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
  */
 public class ServerEditRegion extends UIScreenRegion {
 
-    ConnectionInfo info;
+    private final ConnectionInfo info;
 
     public ServerEditRegion(int priority, ConnectionInfo info) {
         super(priority);

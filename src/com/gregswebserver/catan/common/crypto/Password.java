@@ -8,7 +8,7 @@ import com.gregswebserver.catan.common.event.EventPayload;
  */
 public final class Password extends EventPayload {
 
-    private String password;
+    private final String password;
 
     public Password(String password) {
         this.password = password;

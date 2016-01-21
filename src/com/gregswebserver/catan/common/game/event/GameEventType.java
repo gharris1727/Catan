@@ -19,7 +19,7 @@ public enum GameEventType implements EventType {
     Build_City(Coordinate.class),
     Build_Road(Coordinate.class);
 
-    private Class payloadType;
+    private final Class payloadType;
 
     GameEventType(Class payloadType) {
         this.payloadType = payloadType;

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.resources;
 
 import com.gregswebserver.catan.ExternalResource;
-import com.gregswebserver.catan.common.log.Logger;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 
 import java.awt.*;
 import java.io.*;
@@ -14,14 +14,12 @@ import java.util.Properties;
  */
 public class ConfigFile {
 
-    private final Logger logger;
     private final String path;
     private final String comment;
     private final Properties config;
     private boolean needsSaving;
 
-    public ConfigFile(Logger logger, String path, String comment) {
-        this.logger = logger;
+    public ConfigFile(String path, String comment) {
         this.path = path;
         this.comment = comment;
         config = new Properties();
@@ -39,9 +37,9 @@ public class ConfigFile {
     public void close() throws IOException {
         File file = new File(ExternalResource.getUserDataDirectory() + path);
         if (needsSaving) {
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
+            if (!file.exists() && file.getParentFile().mkdirs()) {
+                if (!file.createNewFile())
+                    throw new IOException("Unable to create new file to save.");
             }
             config.store(new BufferedWriter(new FileWriter(file)), comment);
         }
@@ -101,6 +99,10 @@ public class ConfigFile {
 
     public Point getPoint(String key) {
         return new Point(getInt(key + ".x"), getInt(key + ".y"));
+    }
+
+    public Coordinate getCoord(String key) {
+        return new Coordinate(getInt(key + ".x"), getInt(key + ".y"));
     }
 
     public Dimension getDimension(String key) {

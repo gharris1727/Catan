@@ -5,7 +5,6 @@ import com.gregswebserver.catan.client.graphics.masks.HexagonalMask;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
-import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/22/2014.
@@ -21,7 +20,7 @@ public class BeachTile extends DirectionalTile {
         doubleBeach = new GraphicSet("catan.graphics.tiles.doublebeach", HexagonalMask.class);
     }
 
-    private int sides;
+    private final int sides;
 
     public BeachTile(Direction direction, int sides) {
         super(direction);
@@ -36,7 +35,6 @@ public class BeachTile extends DirectionalTile {
         return "BeachTile n/" + sides + " d/" + getDirection();
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         switch (sides) {

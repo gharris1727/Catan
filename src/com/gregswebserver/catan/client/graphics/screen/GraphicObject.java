@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.graphics.screen;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/19/2014.
@@ -44,7 +43,6 @@ public abstract class GraphicObject extends ScreenObject implements Graphical {
         return needsRender;
     }
 
-    @NotNull
     @Override
     public final Graphic getGraphic() {
         needsRender = false;

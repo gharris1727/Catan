@@ -11,7 +11,7 @@ import com.gregswebserver.catan.common.log.Logger;
  */
 public class ChatThread extends QueuedInputThread<ChatEvent> {
 
-    private ChatLog chatLog;
+    private final ChatLog chatLog;
 
     public ChatThread(Logger logger) {
         super(logger);

@@ -10,7 +10,7 @@ import javax.swing.text.DocumentFilter;
  */
 public class ProtectedDocumentFilter extends DocumentFilter {
 
-    private UserInput userInput;
+    private final UserInput userInput;
 
     public ProtectedDocumentFilter(UserInput userInput) {
         this.userInput = userInput;

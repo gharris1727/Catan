@@ -39,12 +39,8 @@ public class GraphicInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         GraphicInfo that = (GraphicInfo) o;
-
-        if (!location.equals(that.location)) return false;
-        if (mask != that.mask) return false;
-        return source == that.source;
+        return location.equals(that.location) && mask == that.mask && source == that.source;
 
     }
 

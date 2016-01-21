@@ -12,7 +12,7 @@ import com.gregswebserver.catan.common.lobby.ClientPool;
  */
 public class UserListRegion extends UIScreenRegion {
 
-    private TiledBackground background;
+    private final TiledBackground background;
     private final ClientPool clients;
 
     public UserListRegion(int priority, ClientPool clients) {

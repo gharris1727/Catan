@@ -10,7 +10,7 @@ public class DiagonalMask extends RenderMask {
 
     //TODO: Re-implement.
 
-    private int thickness;
+    private final int thickness;
 
     public DiagonalMask(Dimension d) {
         thickness = d.width;

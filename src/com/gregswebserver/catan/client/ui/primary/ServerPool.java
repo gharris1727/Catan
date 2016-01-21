@@ -12,7 +12,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     //TODO: rework this to allow drag-swapping of ServerLogin objects.
 
-    private List<ConnectionInfo> list;
+    private final List<ConnectionInfo> list;
 
     public ServerPool() {
         list = new LinkedList<>();

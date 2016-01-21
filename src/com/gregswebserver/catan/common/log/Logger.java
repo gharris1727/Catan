@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Logger {
 
-    private List<LogListener> listeners;
+    private final List<LogListener> listeners;
 
     public Logger() {
         listeners = new LinkedList<>();

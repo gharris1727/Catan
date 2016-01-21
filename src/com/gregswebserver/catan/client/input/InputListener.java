@@ -11,7 +11,7 @@ import java.awt.event.*;
 /**
  * Created by Greg on 8/12/2014.
  * Dispatcher to take in keyboard/mouse events and dispatch them to the client as GenericEvents.
- * Generates GameEvents, ChatEvents, and ClientEvents, based on hitboxes.
+ * Generates GameEvents, ChatEvents, and ClientEvents, based on color hit maps.
  * Added as a listener to the ClientWindow.
  */
 public class InputListener implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {

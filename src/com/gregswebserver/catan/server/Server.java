@@ -27,9 +27,9 @@ import java.security.SecureRandom;
 public class Server extends CoreThread {
 
     private final ServerWindow window;
-    private UserDatabase database;
-    private ConnectionPool connectionPool;
-    private MatchmakingPool matchmakingPool;
+    private final UserDatabase database;
+    private final ConnectionPool connectionPool;
+    private final MatchmakingPool matchmakingPool;
 
     private ServerSocket socket;
     private boolean listening;

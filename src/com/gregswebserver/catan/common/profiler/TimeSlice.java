@@ -8,8 +8,8 @@ import java.util.HashMap;
  */
 public class TimeSlice {
 
-    private String name;
-    private HashMap<String, TimeSlice> slices;
+    private final String name;
+    private final HashMap<String, TimeSlice> slices;
     private long time;
 
     public TimeSlice(String name) {

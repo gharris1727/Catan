@@ -13,9 +13,9 @@ import com.gregswebserver.catan.client.ui.primary.ServerPool;
  */
 public class ServerConnectMenu extends UIScreenRegion {
 
-    private TiledBackground background;
-    private ServerListRegion servers;
-    private ServerEditRegion edit;
+    private final TiledBackground background;
+    private final ServerListRegion servers;
+    private final ServerEditRegion edit;
 
     public ServerConnectMenu(ServerPool list) {
         super(0);
@@ -26,6 +26,7 @@ public class ServerConnectMenu extends UIScreenRegion {
                 return "ConnectMenuBackground";
             }
         };
+        edit = new ServerEditRegion(0,null);
         //Add the regions to the render
         add(servers);
         add(background).setClickable(this);

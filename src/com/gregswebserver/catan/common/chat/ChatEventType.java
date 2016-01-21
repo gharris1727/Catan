@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.chat;
 
-import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.EventType;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -14,7 +14,7 @@ public enum ChatEventType implements EventType {
     Lobby(null), //Message should be rebroadcast to only the clients in a local Group.
     Private(Username.class); //Message should be forwarded to only the destination client.
 
-    private Class payloadType;
+    private final Class payloadType;
 
     ChatEventType(Class payloadType) {
         this.payloadType = payloadType;

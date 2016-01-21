@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class TerrainGenerator implements FeatureGenerator<Terrain> {
 
-    private ArrayList<Terrain> terrain;
+    private final ArrayList<Terrain> terrain;
 
     public TerrainGenerator(int numTiles) {
         terrain = new ArrayList<>(numTiles);

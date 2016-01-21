@@ -19,8 +19,8 @@ public enum TradingPost implements Trader {
     Ore(GameResource.Ore),
     Wildcard(null);
 
-    private HashSet<Trade> trades;
-    private GameResource gameResource;
+    private final HashSet<Trade> trades;
+    private final GameResource gameResource;
 
     TradingPost(GameResource r) {
         gameResource = r;

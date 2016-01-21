@@ -9,8 +9,8 @@ import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.*;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
+import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.client.resources.GraphicSet;
@@ -18,8 +18,7 @@ import com.gregswebserver.catan.common.lobby.Lobby;
 import com.gregswebserver.catan.common.lobby.LobbyPool;
 import com.gregswebserver.catan.common.lobby.LobbySortOption;
 
-import java.awt.Point;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
@@ -53,10 +52,10 @@ public class LobbyListRegion extends UIScreenRegion {
     private Point currentClientsPosition;
     private Point openSlotsPosition;
 
-    private TiledBackground background;
-    private LobbyListHeader header;
-    private LobbyListScroll scroll;
-    private LobbyListFooter footer;
+    private final TiledBackground background;
+    private final LobbyListHeader header;
+    private final LobbyListScroll scroll;
+    private final LobbyListFooter footer;
 
     private final LobbyPool lobbies;
     private LobbySortOption sortOption;
@@ -137,11 +136,11 @@ public class LobbyListRegion extends UIScreenRegion {
 
     private class LobbyListHeader extends UIScreenRegion {
 
-        private LobbyListHeaderElement lobbyNameHeader;
-        private LobbyListHeaderElement lobbyOwnerHeader;
-        private LobbyListHeaderElement gameTypeHeader;
-        private LobbyListHeaderElement currentClientsHeader;
-        private LobbyListHeaderElement openSlotsHeader;
+        private final LobbyListHeaderElement lobbyNameHeader;
+        private final LobbyListHeaderElement lobbyOwnerHeader;
+        private final LobbyListHeaderElement gameTypeHeader;
+        private final LobbyListHeaderElement currentClientsHeader;
+        private final LobbyListHeaderElement openSlotsHeader;
 
         public LobbyListHeader(int priority) {
             super(priority);
@@ -193,10 +192,10 @@ public class LobbyListRegion extends UIScreenRegion {
 
         private class LobbyListHeaderElement extends UIScreenRegion {
 
-            private TiledBackground background;
-            private TextLabel labelGraphic;
-            private GraphicObject upArrow;
-            private GraphicObject downArrow;
+            private final TiledBackground background;
+            private final TextLabel labelGraphic;
+            private final GraphicObject upArrow;
+            private final GraphicObject downArrow;
 
             public LobbyListHeaderElement(int priority, LobbySortOption ascend, LobbySortOption descend) {
                 super(priority);
@@ -300,13 +299,13 @@ public class LobbyListRegion extends UIScreenRegion {
 
         private class LobbyListScrollElement extends UIScreenRegion {
 
-            private TiledBackground background;
+            private final TiledBackground background;
 
-            private TextLabel lobbyNameText;
-            private TextLabel lobbyOwnerText;
-            private TextLabel gameTypeText;
-            private TextLabel currentClientsText;
-            private TextLabel openSlotsText;
+            private final TextLabel lobbyNameText;
+            private final TextLabel lobbyOwnerText;
+            private final TextLabel gameTypeText;
+            private final TextLabel currentClientsText;
+            private final TextLabel openSlotsText;
 
             private final Lobby lobby;
 
@@ -399,9 +398,9 @@ public class LobbyListRegion extends UIScreenRegion {
 
     private class LobbyListFooter extends UIScreenRegion {
 
-        private TiledBackground background;
-        private Button joinButton;
-        private Button createButton;
+        private final TiledBackground background;
+        private final Button joinButton;
+        private final Button createButton;
 
         public LobbyListFooter(int priority) {
             super(priority);

@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -13,9 +12,9 @@ import java.awt.image.BufferedImage;
  */
 public class ScreenCanvas extends Canvas implements Graphical {
 
-    private Dimension size;
-    private BufferedImage image;
-    private BufferedGraphic graphic;
+    private final Dimension size;
+    private final BufferedImage image;
+    private final BufferedGraphic graphic;
     private BufferStrategy buffer;
 
     public ScreenCanvas(Dimension size) {
@@ -44,7 +43,6 @@ public class ScreenCanvas extends Canvas implements Graphical {
         return "ScreenCanvas";
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         if (graphic == null)

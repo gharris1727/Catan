@@ -18,7 +18,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  */
 public class TextGraphic extends Graphic {
 
-    private TextLayout layout;
+    private final TextLayout layout;
 
     public TextGraphic(UIStyle.TextStyle style, String text) {
         Font f = style.getFont();

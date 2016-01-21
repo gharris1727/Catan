@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.event;
 
-import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.common.event.EventType;
 
 /**
@@ -13,7 +12,7 @@ public enum ClientEventType implements EventType {
     Startup(null), //Event that starts the client from inside its own thread.
     Quit_All(null); //Kills all client processes and exits the game.
 
-    private Class payloadType;
+    private final Class payloadType;
 
     ClientEventType(Class payloadType) {
         this.payloadType = payloadType;

@@ -16,8 +16,8 @@ public class LobbyJoinMenu extends UIScreenRegion {
 
     private final MatchmakingPool pool;
 
-    private LobbyListRegion lobbyList;
-    private UserListRegion userList;
+    private final LobbyListRegion lobbyList;
+    private final UserListRegion userList;
 
     public LobbyJoinMenu(MatchmakingPool pool) {
         super(0);

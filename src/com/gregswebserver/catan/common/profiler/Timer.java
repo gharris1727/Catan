@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class Timer {
 
-    private TimeSlice rootSlice;
+    private final TimeSlice rootSlice;
 
     public Timer() {
         rootSlice = new TimeSlice("root");

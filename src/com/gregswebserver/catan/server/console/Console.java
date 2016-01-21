@@ -19,8 +19,8 @@ import java.awt.event.KeyEvent;
  */
 public class Console extends JPanel implements UserInput, LogListener {
 
-    private Logger logger;
-    private JTextArea textArea;
+    private final Logger logger;
+    private final JTextArea textArea;
     private int userInputStart = 0;
     private Server server;
 

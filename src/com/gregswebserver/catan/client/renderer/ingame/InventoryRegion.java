@@ -25,36 +25,6 @@ public class InventoryRegion extends ScreenRegion {
     @Override
     protected void renderContents() {
         //TODO: handle rendering the inventory screen.
-        /*
-        clear();
-        HashMap<Tradeable, Integer> inventory = player.getInventory();
-        List<Point> positions = new ArrayList<>();
-        for (Map.Entry<Tradeable, Integer> e : inventory.entrySet()) {
-            Tradeable t = e.getKey();
-            int n = e.getValue();
-            if (t instanceof Graphical) {
-                Graphic g = ((Graphical) t).getGraphic();
-                Point position = new Point();
-                positions.add(position);
-                for (int i = 0; i < n; i++) {
-                    ScreenObject o = new GraphicObject(position, 0, g) {
-                        public UserEvent onMouseClick(MouseEvent event) {
-                            return new UserEvent(this, UserEventType.Inventory_Clicked, position.x);
-                        }
-
-                        public String toString() {
-                            return "Inventory Item #" + position.x;
-                        }
-                    };
-                    add(o);
-                }
-            }
-        }
-        int divX = (getMask().getWidth() - 128) / positions.size();
-        for (int i = 0; i < positions.size(); i++) {
-            positions.get(i).setLocation(divX * (i + 1), 16);
-        }
-        */
     }
 
     public String toString() {

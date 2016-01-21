@@ -2,7 +2,6 @@ package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.ExternalResource;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.common.resources.ResourceLoadException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

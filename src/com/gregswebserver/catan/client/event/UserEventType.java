@@ -1,10 +1,10 @@
 package com.gregswebserver.catan.client.event;
 
 import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.lobby.LobbyConfig;
-import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.lobby.LobbySortOption;
 
 /**
@@ -27,7 +27,7 @@ public enum UserEventType implements EventType {
     Inventory_Clicked(Integer.class),
     Server_Clicked(Integer.class);
 
-    private Class payloadType;
+    private final Class payloadType;
 
     UserEventType(Class payloadType) {
         this.payloadType = payloadType;

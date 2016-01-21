@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class ServerConnection extends NetConnection {
 
-    private int connectionID;
+    private final int connectionID;
 
     public ServerConnection(Server server, Socket socket, int connectionID) {
         super(server);

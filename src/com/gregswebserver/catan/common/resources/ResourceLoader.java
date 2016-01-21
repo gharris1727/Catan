@@ -7,9 +7,6 @@ import com.gregswebserver.catan.client.resources.GameInfo;
 import com.gregswebserver.catan.client.resources.GraphicInfo;
 import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 import com.gregswebserver.catan.common.game.gameplay.GameType;
-import com.gregswebserver.catan.server.resources.ObjectStoreInfo;
-
-import java.io.*;
 
 /**
  * Created by Greg on 1/7/2015.

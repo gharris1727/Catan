@@ -16,7 +16,7 @@ public enum NetEventType implements EventType {
     Link_Error(String.class),
     External_Event(ExternalEvent.class);
 
-    private Class payloadType;
+    private final Class payloadType;
 
     NetEventType(Class payloadType) {
         this.payloadType = payloadType;

@@ -5,7 +5,6 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.RoundedMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
-import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 
@@ -60,7 +59,6 @@ public enum DiceRoll implements Graphical {
         return rank;
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         return graphics.getGraphic(ordinal());

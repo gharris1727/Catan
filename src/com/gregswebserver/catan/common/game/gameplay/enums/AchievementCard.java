@@ -5,8 +5,6 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.VictoryFactor;
-import com.sun.istack.internal.NotNull;
-
 /**
  * Created by Greg on 8/9/2014.
  * Enum storing the different achievement cards.
@@ -45,7 +43,6 @@ public enum AchievementCard implements Graphical, VictoryFactor {
         return 2;
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         return graphics.getGraphic(ordinal());

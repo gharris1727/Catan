@@ -4,7 +4,6 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
-import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 
@@ -14,8 +13,8 @@ import java.awt.*;
  */
 public class ResourceTile extends Tile {
 
-    private DiceRoll diceRoll;
-    private Terrain terrain;
+    private final DiceRoll diceRoll;
+    private final Terrain terrain;
     private Graphic graphic;
     private boolean robber;
 
@@ -51,7 +50,6 @@ public class ResourceTile extends Tile {
         return "ResourceTile " + terrain;
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         if (graphic == null) {

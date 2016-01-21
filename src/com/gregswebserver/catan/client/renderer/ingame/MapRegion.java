@@ -118,7 +118,7 @@ public class MapRegion extends ScreenRegion {
         private HashMap<Coordinate, MapScreenObject> roads;
         private HashMap<Coordinate, MapScreenObject> towns;
 
-        private GameBoard board;
+        private final GameBoard board;
 
         public MiddleGround(int priority, GameBoard board) {
             super(priority);

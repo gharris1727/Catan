@@ -2,10 +2,10 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
-import com.gregswebserver.catan.client.graphics.masks.*;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
-import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -38,7 +38,6 @@ public enum GameResource implements Tradeable, Graphical {
         return name;
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         return graphics.getGraphic(ordinal());

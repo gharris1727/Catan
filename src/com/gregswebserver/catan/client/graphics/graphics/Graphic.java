@@ -1,9 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
-
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.common.resources.ResourceLoadException;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -130,7 +128,7 @@ public class Graphic implements Maskable {
         clickable = new int[pixels.length];
     }
 
-    public int getHitboxColor(Point p) {
+    public int getClickableColor(Point p) {
         return clickable[mask.getIndex(p)];
     }
 
@@ -150,7 +148,7 @@ public class Graphic implements Maskable {
         return name;
     }
 
-    public void displayHitbox() {
+    public void displayClickableColor() {
         pixels = clickable;
     }
 }

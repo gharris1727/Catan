@@ -11,8 +11,8 @@ import java.awt.*;
  */
 public class ServerWindow extends CoreWindow {
 
-    private Server server;
-    private Console console;
+    private final Server server;
+    private final Console console;
 
     public ServerWindow(Server server) {
         super("Settlers of Catan - Server", new Dimension(800, 600), true, server.logger);

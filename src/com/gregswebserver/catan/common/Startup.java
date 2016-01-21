@@ -8,8 +8,6 @@ import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.InetAddress;
 
 /**
@@ -58,24 +56,18 @@ public class Startup extends CoreWindow {
             j++;
         }
 
-        buttons[0].addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    startClient(getHost(), getPort(), getUsername(), getPassword());
-                } catch (Exception ex) {
-                    logger.log("Link_Error starting client", ex, LogLevel.ERROR);
-                }
+        buttons[0].addActionListener(e -> {
+            try {
+                startClient(getHost(), getPort(), getUsername(), getPassword());
+            } catch (Exception ex) {
+                logger.log("Link_Error starting client", ex, LogLevel.ERROR);
             }
         });
-        buttons[1].addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    startServer(getPort(), getPassword());
-                } catch (Exception ex) {
-                    logger.log("Link_Error while starting server", ex, LogLevel.ERROR);
-                }
+        buttons[1].addActionListener(e -> {
+            try {
+                startServer(getPort(), getPassword());
+            } catch (Exception ex) {
+                logger.log("Link_Error while starting server", ex, LogLevel.ERROR);
             }
         });
         setVisible(true);

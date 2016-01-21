@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class TradeGenerator implements FeatureGenerator<TradingPost> {
 
-    private ArrayList<TradingPost> posts;
+    private final ArrayList<TradingPost> posts;
 
     public TradeGenerator(int numTradingPosts) {
         posts = new ArrayList<>(numTradingPosts);

@@ -8,7 +8,7 @@ import com.gregswebserver.catan.common.game.board.BoardObject;
  */
 public abstract class TeamOwned extends BoardObject {
 
-    private Team owner;
+    private final Team owner;
 
     protected TeamOwned(Team owner) {
         this.owner = owner;

@@ -5,8 +5,6 @@ import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
-import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
@@ -16,8 +14,7 @@ import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
 import com.gregswebserver.catan.client.ui.primary.ServerPool;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 
@@ -41,7 +38,7 @@ public class ServerListRegion extends UIScreenRegion {
     private int scroll;
     private ConnectionInfo selected;
 
-    UIScreenRegion footer;
+    private final UIScreenRegion footer;
 
     public ServerListRegion(int priority, ServerPool list) {
         super(priority);
@@ -81,9 +78,9 @@ public class ServerListRegion extends UIScreenRegion {
     protected void renderContents() {
         //Completely re-render all children
         clear();
-        Iterator<ConnectionInfo> iter = list.iterator();
+        Iterator<ConnectionInfo> iterator = list.iterator();
         for (int i = 0; i < serverLocations.length && i + scroll < list.size(); i++) {
-            ServerListItem item = new ServerListItem(0, iter.next());
+            ServerListItem item = new ServerListItem(0, iterator.next());
             item.setMask(serverSize);
             item.setStyle(getStyle());
             item.setPosition(serverLocations[i]);
@@ -100,9 +97,9 @@ public class ServerListRegion extends UIScreenRegion {
 
         private final ConnectionInfo info;
 
-        private TiledBackground background;
-        private TextLabel address;
-        private TextLabel login;
+        private final TiledBackground background;
+        private final TextLabel address;
+        private final TextLabel login;
 
         public ServerListItem(int priority, ConnectionInfo info) {
             super(priority);
@@ -159,8 +156,8 @@ public class ServerListRegion extends UIScreenRegion {
 
     private class ServerListFooter extends UIScreenRegion {
 
-        private TiledBackground background;
-        private Button connectButton;
+        private final TiledBackground background;
+        private final Button connectButton;
 
         public ServerListFooter(int priority) {
             super(priority);

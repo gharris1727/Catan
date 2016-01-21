@@ -12,7 +12,7 @@ import java.util.LinkedList;
 public class ChatLog implements Iterable<String> {
     private int maxLines = 50;
     private int maxWidth = 50;
-    private LinkedList<String> lines;
+    private final LinkedList<String> lines;
 
     public ChatLog() {
         lines = new LinkedList<>();

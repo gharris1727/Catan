@@ -3,7 +3,6 @@ package com.gregswebserver.catan.common.game.board.towns;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.common.game.gameplay.VictoryFactor;
 import com.gregswebserver.catan.common.game.player.Team;
-import com.sun.istack.internal.NotNull;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -29,7 +28,6 @@ public class Settlement extends Town implements VictoryFactor {
         return "Settlement: " + getTeam();
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         return getTeam().getSettlementGraphic();

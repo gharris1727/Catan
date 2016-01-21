@@ -14,7 +14,7 @@ public enum ServerEventType implements EventType {
     Client_Disconnect(Username.class), //Removes a connection from the server after a disconnect.
     Client_Connect(UserInfo.class); //Connection has authenticated and confirmed the connection.
 
-    private Class payloadType;
+    private final Class payloadType;
 
     ServerEventType(Class payloadType) {
         this.payloadType = payloadType;

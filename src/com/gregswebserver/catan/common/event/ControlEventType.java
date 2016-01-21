@@ -1,10 +1,10 @@
 package com.gregswebserver.catan.common.event;
 
 import com.gregswebserver.catan.common.crypto.Password;
-import com.gregswebserver.catan.common.lobby.MatchmakingPool;
-import com.gregswebserver.catan.common.lobby.LobbyConfig;
-import com.gregswebserver.catan.common.lobby.UserInfo;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.lobby.LobbyConfig;
+import com.gregswebserver.catan.common.lobby.MatchmakingPool;
+import com.gregswebserver.catan.common.lobby.UserInfo;
 
 /**
  * Created by Greg on 10/16/2014.
@@ -36,7 +36,7 @@ public enum ControlEventType implements EventType {
     Spectate_Start(Username.class),
     Spectate_Quit(null);
 
-    private Class payloadType;
+    private final Class payloadType;
 
     ControlEventType(Class payloadType) {
         this.payloadType = payloadType;

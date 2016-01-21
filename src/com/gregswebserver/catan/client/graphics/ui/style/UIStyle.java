@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.graphics.ui.style;
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
-import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 
 import java.awt.*;
 import java.util.regex.Pattern;

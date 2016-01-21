@@ -3,6 +3,7 @@ package com.gregswebserver.catan.client.renderer;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.Renderable;
@@ -10,7 +11,6 @@ import com.gregswebserver.catan.client.graphics.ui.style.Styled;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.util.Animated;
-import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.renderer.connecting.ConnectingScreen;
 import com.gregswebserver.catan.client.renderer.disconnecting.DisconnectingScreen;
@@ -18,12 +18,10 @@ import com.gregswebserver.catan.client.ui.lobbyjoinmenu.LobbyJoinMenu;
 import com.gregswebserver.catan.client.ui.primary.ServerPool;
 import com.gregswebserver.catan.client.ui.serverconnectmenu.ServerConnectMenu;
 import com.gregswebserver.catan.common.lobby.MatchmakingPool;
-import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.EnumMap;
 
 /**
  * Created by greg on 1/15/16.
@@ -31,7 +29,7 @@ import java.util.EnumMap;
  */
 public class RenderManager implements Renderable, Graphical, Animated, Clickable, Maskable, Styled {
 
-    private Client client;
+    private final Client client;
 
     private RenderMask mask;
     private UIStyle style;
@@ -109,7 +107,6 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
         return live != null && live.isRenderable();
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         return (live == null) ? null : live.getGraphic();

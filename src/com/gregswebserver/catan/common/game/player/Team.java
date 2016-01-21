@@ -9,8 +9,6 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
 
-import java.awt.*;
-
 /**
  * Created by Greg on 8/9/2014.
  * Enum pertaining to the team allegiance of each player.

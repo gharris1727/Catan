@@ -17,12 +17,12 @@ import java.net.SocketException;
 public abstract class NetConnection implements Runnable {
 
     protected final Logger logger;
-    protected CoreThread host;
+    protected final CoreThread host;
     protected NetID local;
     protected NetID remote;
 
     protected Socket socket;
-    protected Thread connect, disconnect, receive;
+    protected final Thread connect, disconnect, receive;
     protected ObjectInputStream in;
     protected ObjectOutputStream out;
     protected boolean open;

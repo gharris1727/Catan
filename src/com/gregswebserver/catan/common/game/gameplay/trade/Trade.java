@@ -9,8 +9,8 @@ import java.util.Map;
  */
 public class Trade {
 
-    public HashMap<Tradeable, Integer> offer;
-    public HashMap<Tradeable, Integer> request;
+    public final HashMap<Tradeable, Integer> offer;
+    public final HashMap<Tradeable, Integer> request;
 
     public Trade() {
         offer = new HashMap<>();

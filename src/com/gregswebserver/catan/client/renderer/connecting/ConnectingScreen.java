@@ -13,8 +13,8 @@ import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
  */
 public class ConnectingScreen extends UIScreenRegion {
 
-    private TiledBackground background;
-    private TextLabel text;
+    private final TiledBackground background;
+    private final TextLabel text;
 
     public ConnectingScreen() {
         super(0);

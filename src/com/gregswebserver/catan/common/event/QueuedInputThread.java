@@ -13,9 +13,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class QueuedInputThread<T extends GenericEvent> {
 
-    public Logger logger;
-    private LinkedBlockingQueue<T> eventQueue;
-    private Thread run;
+    public final Logger logger;
+    private final LinkedBlockingQueue<T> eventQueue;
+    private final Thread run;
     private boolean running;
 
     public QueuedInputThread(Logger logger) {

@@ -3,10 +3,7 @@ package com.gregswebserver.catan.client.graphics.screen;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.gregswebserver.catan.common.IllegalStateException;
-import com.sun.istack.internal.NotNull;
 
-import java.awt.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,7 +58,6 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
         return needsRendering;
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         needsRendering = false;

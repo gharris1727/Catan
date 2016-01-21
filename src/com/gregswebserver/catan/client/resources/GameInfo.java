@@ -8,15 +8,14 @@ public enum GameInfo {
 
     Base("base");
 
-    private String name;
+    private final String name;
 
     GameInfo(String name) {
         this.name = name;
     }
 
     public String getPath() {
-        //TODO: Fix this to work with new configuration schema
-        return "/config/games/" + name + ".txt";
+        return "config/games/" + name + ".properties";
     }
 
 }

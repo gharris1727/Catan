@@ -1,13 +1,12 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.util.Animated;
-import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.util.*;
@@ -23,7 +22,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     private Graphic graphic;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
-    private Map<Integer, ScreenObject> hitboxMap;
+    private Map<Integer, ScreenObject> clickableColorMap;
 
     //The constructor of a screen region is meant to store relevant references,
     //and create any permanent ScreenObjects needed in the render.
@@ -59,7 +58,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     //Clear the screen of any objects. A render after this will not have anything visible.
     protected void clear() {
         priorityMap = new TreeMap<>();
-        hitboxMap = new HashMap<>();
+        clickableColorMap = new HashMap<>();
     }
 
     //Gets the clickable object under a certain point in the screen.
@@ -68,8 +67,8 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
         if (result == this) { //There was no redirect object specified.
-            int color = getGraphic().getHitboxColor(p);
-            ScreenObject object = hitboxMap.get(color);
+            int color = getGraphic().getClickableColor(p);
+            ScreenObject object = clickableColorMap.get(color);
             if (object != null) { //There was something clicked on
                 Point position = object.getPosition();
                 Point subPosition = new Point(p.x - position.x, p.y - position.y);
@@ -82,7 +81,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     //Add an object to be rendered on the next render pass.
     public final ScreenObject add(ScreenObject object) {
         if (object != null) {
-            hitboxMap.put(object.getClickableColor(), object);
+            clickableColorMap.put(object.getClickableColor(), object);
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
             if (objects == null) {
                 objects = new LinkedList<>();
@@ -98,7 +97,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     //This operation can be inefficient if there are many objects at the same render priority.
     public final ScreenObject remove(ScreenObject object) {
         if (object != null) {
-            hitboxMap.remove(object.getClickableColor());
+            clickableColorMap.remove(object.getClickableColor());
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
             if (objects != null) {
                 objects.remove(object);
@@ -120,7 +119,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     public final Iterator<ScreenObject> iterator() {
         return new Iterator<ScreenObject>() {
 
-            private Iterator<List<ScreenObject>> treeIterator = priorityMap.values().iterator();
+            private final Iterator<List<ScreenObject>> treeIterator = priorityMap.values().iterator();
             private Iterator<ScreenObject> listIterator;
 
             @Override
@@ -180,7 +179,6 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         return true;
     }
 
-    @NotNull
     @Override
     public Graphic getGraphic() {
         if (needsRender()) {

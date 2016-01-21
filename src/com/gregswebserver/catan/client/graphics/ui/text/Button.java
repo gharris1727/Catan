@@ -13,8 +13,7 @@ import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 public abstract class Button extends UIScreenRegion {
 
     private final TiledBackground background;
-
-    private TextLabel text;
+    private final TextLabel text;
 
     public Button(int priority, String label) {
         super(priority);
