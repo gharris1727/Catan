@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.renderer.ingame;
+package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.UserEvent;

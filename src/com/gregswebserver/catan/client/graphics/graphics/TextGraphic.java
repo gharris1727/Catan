@@ -18,12 +18,10 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  */
 public class TextGraphic extends Graphic {
 
-    private final TextLayout layout;
-
     public TextGraphic(UIStyle.TextStyle style, String text) {
         Font f = style.getFont();
         FontRenderContext frc = new FontRenderContext(null, false, false);
-        layout = new TextLayout(text, f, frc);
+        TextLayout layout = new TextLayout(text, f, frc);
         Rectangle2D bounds = f.getStringBounds(text, frc);
         int width = (int) bounds.getWidth();
         int height = (int) layout.getAscent() + (int) layout.getDescent();
@@ -35,10 +33,6 @@ public class TextGraphic extends Graphic {
         g.setColor(style.getColor());
         layout.draw((Graphics2D) g, 0, (int) layout.getAscent());
         g.dispose();
-    }
-
-    public TextLayout getLayout() {
-        return layout;
     }
 
 }

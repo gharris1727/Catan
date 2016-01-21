@@ -19,6 +19,7 @@ public enum UserEventType implements EventType {
     Lobby_Join(Username.class),
     Lobby_Leave(null),
     Lobby_Modify(LobbyConfig.class),
+    Lobby_Make_Leader(Username.class),
     Lobby_Start(null),
     Lobby_Sort(LobbySortOption.class),
     Tile_Clicked(Coordinate.class),

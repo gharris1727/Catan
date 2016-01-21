@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.common.lobby;
 
 import com.gregswebserver.catan.common.CoreThread;
-import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.*;
 
 /**
  * Created by Greg on 12/29/2014.
@@ -149,7 +149,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
         return "MatchmakingPool";
     }
 
-    public ClientPool getUserList() {
+    public ClientPool getClientList() {
         return clients;
     }
 

@@ -115,4 +115,8 @@ public class ConfigFile {
             needsSaving = true;
         }
     }
+
+    public void clear() {
+        config.clear();
+    }
 }

@@ -12,6 +12,7 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.lobby.Lobby;
@@ -113,19 +114,13 @@ public class LobbyListRegion extends UIScreenRegion {
         background.setMask(new RectangularMask(new Dimension(width,windowHeight)));
         footer.setMask(new RectangularMask(new Dimension(width,footerHeight)));
         lobbySize = new RectangularMask(new Dimension(width,lobbyHeight));
-    }
-
-    @Override
-    protected void restyleContents(UIStyle style) {
-        header.setStyle(style);
-        scroll.setStyle(style);
-        background.setStyle(style);
-        footer.setStyle(style);
+        //Tell the scrolling window about our new size.
+        scroll.setHostMask(mask);
     }
 
     @Override
     public UserEvent onMouseScroll(int rot) {
-        scroll.getPosition().translate(0,rot);
+        scroll.scroll(0,rot);
         return null;
     }
 
@@ -174,15 +169,6 @@ public class LobbyListRegion extends UIScreenRegion {
             currentClientsHeader.setPosition(currentClientsPosition);
             openSlotsHeader.setMask(openSlotsSize);
             openSlotsHeader.setPosition(openSlotsPosition);
-        }
-
-        @Override
-        protected void restyleContents(UIStyle style) {
-            lobbyNameHeader.setStyle(style);
-            lobbyOwnerHeader.setStyle(style);
-            gameTypeHeader.setStyle(style);
-            currentClientsHeader.setStyle(style);
-            openSlotsHeader.setStyle(style);
         }
 
         @Override
@@ -236,8 +222,8 @@ public class LobbyListRegion extends UIScreenRegion {
                     }
                 };
                 //Add the objects to the screen.
-                add(background);
-                add(labelGraphic);
+                add(background).setClickable(this);
+                add(labelGraphic).setClickable(this);
                 add(upArrow);
                 add(downArrow);
             }
@@ -250,15 +236,14 @@ public class LobbyListRegion extends UIScreenRegion {
             }
 
             @Override
-            protected void restyleContents(UIStyle style) {
-                background.setStyle(style);
-                labelGraphic.setStyle(style);
-            }
-
-            @Override
             protected void renderContents() {
                 Point centered = getCenteredPosition(labelGraphic.getGraphic().getMask());
                 labelGraphic.setPosition(new Point(0,centered.y));
+            }
+
+            @Override
+            public UserEvent onMouseScroll(int rot) {
+                return scroll.onMouseScroll(rot);
             }
 
             @Override
@@ -268,7 +253,7 @@ public class LobbyListRegion extends UIScreenRegion {
         }
     }
 
-    private class LobbyListScroll extends UIScreenRegion {
+    private class LobbyListScroll extends ScrollingScreenRegion {
 
         public LobbyListScroll(int priority) {
             super(priority);
@@ -276,10 +261,6 @@ public class LobbyListRegion extends UIScreenRegion {
 
         @Override
         protected void resizeContents(RenderMask mask) {
-        }
-
-        @Override
-        protected void restyleContents(UIStyle style) {
         }
 
         @Override
@@ -369,20 +350,14 @@ public class LobbyListRegion extends UIScreenRegion {
             }
 
             @Override
-            protected void restyleContents(UIStyle style) {
-                background.setStyle(style);
-                lobbyNameText.setStyle(style);
-                gameTypeText.setStyle(style);
-                lobbyOwnerText.setStyle(style);
-                gameTypeText.setStyle(style);
-                currentClientsText.setStyle(style);
-                openSlotsText.setStyle(style);
-            }
-
-            @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 selected = this.lobby;
                 return null;
+            }
+
+            @Override
+            public UserEvent onMouseScroll(int rot) {
+                return LobbyListScroll.this.onMouseScroll(rot);
             }
 
             @Override
@@ -444,10 +419,8 @@ public class LobbyListRegion extends UIScreenRegion {
         }
 
         @Override
-        protected void restyleContents(UIStyle style) {
-            background.setStyle(style);
-            joinButton.setStyle(style);
-            createButton.setStyle(style);
+        public UserEvent onMouseScroll(int rot) {
+            return scroll.onMouseScroll(rot);
         }
 
         @Override

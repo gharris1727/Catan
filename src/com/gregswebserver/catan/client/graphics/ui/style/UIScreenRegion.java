@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics.ui.style;
 
+import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 
 /**
@@ -17,7 +18,10 @@ public abstract class UIScreenRegion extends ScreenRegion implements Styled {
     @Override
     public void setStyle(UIStyle style) {
         this.style = style;
-        restyleContents(style);
+        for (ScreenObject o : this) {
+            if (o instanceof Styled)
+                ((Styled) o).setStyle(style);
+        }
         forceRender();
     }
 
@@ -30,6 +34,4 @@ public abstract class UIScreenRegion extends ScreenRegion implements Styled {
     public boolean isRenderable() {
         return super.isRenderable() && style != null;
     }
-
-    protected abstract void restyleContents(UIStyle style);
 }

@@ -1,10 +1,9 @@
 package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.common.lobby.MatchmakingPool;
+import com.gregswebserver.catan.client.renderer.ClientScreen;
 
 import java.awt.*;
 
@@ -12,18 +11,15 @@ import java.awt.*;
  * Created by Greg on 1/17/2015.
  * The list of lobbies hosted on the current server.
  */
-public class LobbyJoinMenu extends UIScreenRegion {
-
-    private final MatchmakingPool pool;
+public class LobbyJoinMenu extends ClientScreen {
 
     private final LobbyListRegion lobbyList;
     private final UserListRegion userList;
 
-    public LobbyJoinMenu(MatchmakingPool pool) {
-        super(0);
-        this.pool = pool;
-        lobbyList = new LobbyListRegion(0, pool.getLobbyList());
-        userList = new UserListRegion(1, pool.getUserList());
+    public LobbyJoinMenu(Client client) {
+        super(client);
+        lobbyList = new LobbyListRegion(0, client.getLobbyList());
+        userList = new UserListRegion(1, client.getClientList());
         //Add the screen contents
         add(lobbyList);
         add(userList);
@@ -43,12 +39,6 @@ public class LobbyJoinMenu extends UIScreenRegion {
         //Create new render masks.
         lobbyList.setMask(new RectangularMask(new Dimension(lobbyListWidth,height)));
         userList.setMask(new RectangularMask(new Dimension(userListWidth,height)));
-    }
-
-    @Override
-    protected void restyleContents(UIStyle style) {
-        lobbyList.setStyle(style);
-        userList.setStyle(style);
     }
 
     public String toString() {

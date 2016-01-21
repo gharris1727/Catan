@@ -14,9 +14,9 @@ import java.net.UnknownHostException;
  */
 public class ConnectionInfo {
 
-    private String remote;
-    private String port;
-    private String username;
+    private final String remote;
+    private final String port;
+    private final String username;
     private Password password;
 
     public ConnectionInfo(ConnectionInfo other) {
@@ -26,30 +26,18 @@ public class ConnectionInfo {
         this.password = other.password;
     }
 
-    public ConnectionInfo(String remote, String port, String username, String password) {
+    public ConnectionInfo(String remote, String port, String username) {
         this.remote = remote;
         this.port = port;
         this.username = username;
-        this.password = new Password(password);
-    }
-
-    public ConnectionInfo() {
     }
 
     public String getRemote() {
         return remote;
     }
 
-    public void setRemote(String remote) {
-        this.remote = remote;
-    }
-
     public String getPort() {
         return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
     }
 
     public void setPassword(String password) {
@@ -58,10 +46,6 @@ public class ConnectionInfo {
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public ServerLogin createServerLogin() throws NumberFormatException, UnknownHostException {

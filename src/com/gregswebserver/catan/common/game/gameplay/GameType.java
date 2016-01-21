@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.game.gameplay.generator.RandomBoardGenera
 import com.gregswebserver.catan.common.resources.ConfigFile;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.HashSet;
 
 /**
@@ -21,11 +22,12 @@ public class GameType implements Comparable<GameType> {
     private final HashSet<Coordinate> tradingPosts;
     private final HashSet<Coordinate> resourceTiles;
 
-    public GameType(String path) {
+    public GameType(String path) throws IOException {
         players = new HashSet<>();
         tradingPosts = new HashSet<>();
         resourceTiles = new HashSet<>();
         ConfigFile file = new ConfigFile(path,"Base catan game details");
+        file.open();
         name = file.get("name");
         author = file.get("author");
         size = file.getDimension("size");

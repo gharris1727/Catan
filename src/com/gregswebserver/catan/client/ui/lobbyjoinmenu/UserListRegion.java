@@ -31,11 +31,6 @@ public class UserListRegion extends UIScreenRegion {
         background.setMask(mask);
     }
 
-    @Override
-    protected void restyleContents(UIStyle style) {
-        background.setStyle(style);
-    }
-
     public String toString() {
         return "UserListRegion";
     }

@@ -26,7 +26,7 @@ public enum ControlEventType implements EventType {
     Lobby_Change_Owner(Username.class), //Client -> Server -> Broadcast, when a lobby's owner is changed.
     Lobby_Delete(null), //Client -> Server -> Broadcast, when a lobby is deleted.
     Lobby_Join(Username.class), //Client -> Server -> Broadcast, when a client joins a lobby, stores owner of lobby.
-    Lobby_Leave(null), //Client -> Server -> Broadcast, when a client leaves a lobby.
+    Lobby_Leave(Username.class), //Client -> Server -> Broadcast, when a client leaves a lobby.
     Game_Start(null),
     Game_Quit(null),
     Game_End(null),

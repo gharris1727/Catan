@@ -3,11 +3,13 @@ package com.gregswebserver.catan.client.ui.serverconnectmenu;
 import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
+import com.gregswebserver.catan.client.graphics.ui.text.TextBox;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
@@ -46,6 +48,7 @@ public class ServerListRegion extends UIScreenRegion {
         scroll = 0;
         selected = null;
         footer = new ServerListFooter(0);
+        add(footer);
     }
 
     @Override
@@ -70,11 +73,6 @@ public class ServerListRegion extends UIScreenRegion {
     }
 
     @Override
-    protected void restyleContents(UIStyle style) {
-        footer.setStyle(style);
-    }
-
-    @Override
     protected void renderContents() {
         //Completely re-render all children
         clear();
@@ -90,7 +88,7 @@ public class ServerListRegion extends UIScreenRegion {
     }
 
     public String toString() {
-        return "ServerListArea";
+        return "ServerListRegion";
     }
 
     private class ServerListItem extends UIScreenRegion {
@@ -107,19 +105,19 @@ public class ServerListRegion extends UIScreenRegion {
             //Create all of the screen objects.
             background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
                 public String toString() {
-                    return "ServerListItem Background";
+                    return "ServerListItemBackground";
                 }
             };
             address = new TextLabel(1, UIStyle.FONT_PARAGRAPH,
                     "Remote Address : " + info.getRemote() + ":" + info.getPort()) {
                 public String toString() {
-                    return "ServerListItem Remote Address";
+                    return "ServerListItemRemoteAddress";
                 }
             };
             login = new TextLabel(2, UIStyle.FONT_PARAGRAPH,
                     "Username: " + info.getUsername()) {
                 public String toString() {
-                    return "ServerListItem Username";
+                    return "ServerListItemUsername";
                 }
             };
             //Add everything to the screen.
@@ -133,13 +131,6 @@ public class ServerListRegion extends UIScreenRegion {
             background.setMask(mask);
             address.setPosition(new Point(16,16));
             login.setPosition(new Point(16,40));
-        }
-
-        @Override
-        protected void restyleContents(UIStyle style) {
-            background.setStyle(style);
-            address.setStyle(style);
-            login.setStyle(style);
         }
 
         @Override
@@ -158,28 +149,48 @@ public class ServerListRegion extends UIScreenRegion {
 
         private final TiledBackground background;
         private final Button connectButton;
+        private final TextBox passwordBox;
 
         public ServerListFooter(int priority) {
             super(priority);
             background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
                 public String toString() {
-                    return "ServerListItem Background";
+                    return "ServerListFooterBackground";
                 }
             };
             connectButton = new Button(1, "Connect") {
                 public String toString() {
-                    return "Connect Button";
+                    return "ServerListFooterConnectButton";
                 }
 
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return (selected == null) ? null : new UserEvent(this, UserEventType.Net_Connect, selected);
+                    return connect();
+                }
+            };
+            passwordBox = new TextBox(1) {
+                @Override
+                public UserEvent onAccept() {
+                    return connect();
+                }
+
+                @Override
+                public String toString() {
+                    return "ServerListFooterPasswordBox";
                 }
             };
             //Add the objects to the screen
             add(background).setClickable(this);
             add(connectButton);
-            setMask(footerSize);
+            add(passwordBox);
+        }
+
+        private UserEvent connect() {
+            if (selected != null) {
+                selected.setPassword(passwordBox.getString());
+                return new UserEvent(this, UserEventType.Net_Connect, selected);
+            }
+            return null;
         }
 
         @Override
@@ -187,16 +198,12 @@ public class ServerListRegion extends UIScreenRegion {
             background.setMask(mask);
             connectButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
             connectButton.setPosition(new Point(16, 16));
-        }
-
-        @Override
-        protected void restyleContents(UIStyle style) {
-            background.setStyle(style);
-            connectButton.setStyle(style);
+            passwordBox.setMask(new RectangularMask(new Dimension(128,32)));
+            passwordBox.setPosition(new Point(16,56));
         }
 
         public String toString() {
-            return "ButtonPanelArea";
+            return "ServerListFooter";
         }
     }
 }

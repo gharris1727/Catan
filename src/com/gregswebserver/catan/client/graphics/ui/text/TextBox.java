@@ -1,11 +1,12 @@
 package com.gregswebserver.catan.client.graphics.ui.text;
 
 import com.gregswebserver.catan.client.event.UserEvent;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 
 /**
  * Created by Greg on 1/3/2015.
@@ -13,50 +14,62 @@ import java.awt.event.MouseEvent;
  */
 public abstract class TextBox extends UIScreenRegion {
 
-    private EditableState state;
-    private EditableState previous;
-    private String text;
-    private int cursorPos;
-    private int selectStart;
-    private int selectEnd;
+    private final StringBuilder text;
+
+    private final TiledBackground background;
+    private final TextLabel label;
 
     public TextBox(int priority) {
         super(priority);
-        state = EditableState.Deselected;
-        previous = state;
-        //TODO: implement.
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public UserEvent onMouseClick(MouseEvent event) {
-        return super.onMouseClick(event);
-    }
-
-    @Override
-    public UserEvent onMouseDrag(Point p) {
-        return super.onMouseDrag(p);
-    }
-
-    @Override
-    public UserEvent onSelect() {
-        return super.onSelect();
-    }
-
-    @Override
-    public UserEvent onDeselect() {
-        return super.onDeselect();
+        text = new StringBuilder();
+        background = new TiledBackground(0, UIStyle.BACKGROUND_TEXT) {
+            @Override
+            public String toString() {
+                return "TextBoxBackground";
+            }
+        };
+        label = new TextLabel(1, UIStyle.FONT_PARAGRAPH, "") {
+            @Override
+            public String toString() {
+                return "TextBoxTextLabel";
+            }
+        };
+        add(background).setClickable(this);
+        add(label).setClickable(this);
     }
 
     @Override
     public UserEvent onKeyTyped(KeyEvent event) {
-        return super.onKeyTyped(event);
+        char typed = event.getKeyChar();
+        if (typed == '\n')
+            return onAccept();
+        else if (typed == '\b') {
+            int len = text.length();
+            if (len < 0)
+                len = 0;
+            text.setLength(len);
+        } else if (Character.isAlphabetic(typed)) {
+            text.append(typed);
+        }
+        label.setText(text.toString());
+        forceRender();
+        return null;
     }
 
-    private enum EditableState {
-        Deselected, SingleChar, DragSelect, DragMove,
+    public abstract UserEvent onAccept();
+
+    @Override
+    protected void resizeContents(RenderMask mask) {
+        background.setMask(mask);
     }
+
+    @Override
+    protected void renderContents() {
+        label.setPosition(getCenteredPosition(label.getGraphic().getMask()));
+    }
+
+    public String getString() {
+        return text.toString();
+    }
+
 }

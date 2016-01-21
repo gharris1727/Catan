@@ -12,12 +12,11 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.client.renderer.connecting.ConnectingScreen;
-import com.gregswebserver.catan.client.renderer.disconnecting.DisconnectingScreen;
+import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
+import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
+import com.gregswebserver.catan.client.ui.lobby.LobbyScreen;
 import com.gregswebserver.catan.client.ui.lobbyjoinmenu.LobbyJoinMenu;
-import com.gregswebserver.catan.client.ui.primary.ServerPool;
 import com.gregswebserver.catan.client.ui.serverconnectmenu.ServerConnectMenu;
-import com.gregswebserver.catan.common.lobby.MatchmakingPool;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -38,6 +37,7 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     public ConnectingScreen connectingScreen;
     public DisconnectingScreen disconnectingScreen;
     public LobbyJoinMenu lobbyJoinMenu;
+    public LobbyScreen lobbyScreen;
 
     private UIScreenRegion live;
 
@@ -46,25 +46,32 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
         live = null;
     }
 
-    public void setServerList(ServerPool loginList) {
-        serverConnectMenu = new ServerConnectMenu(loginList);
+    public void displayServerConnectMenu() {
+        serverConnectMenu = new ServerConnectMenu(client);
+        display(serverConnectMenu);
     }
 
-    public void setConnectProgress(int i) {
-        if (connectingScreen == null)
-            connectingScreen = new ConnectingScreen();
-        connectingScreen.setProgress(i);
+    public void displayServerConnectingScreen() {
+        connectingScreen = new ConnectingScreen(client);
+        display(connectingScreen);
     }
 
-    public void setDisconnectError(String message) {
-        disconnectingScreen = new DisconnectingScreen(message);
+    public void displayServerDisconnectingScreen() {
+        disconnectingScreen = new DisconnectingScreen(client);
+        display(disconnectingScreen);
     }
 
-    public void setMatchmakingPool(MatchmakingPool matchmakingPool) {
-        lobbyJoinMenu = new LobbyJoinMenu(matchmakingPool);
+    public void displayLobbyJoinMenu() {
+        lobbyJoinMenu = new LobbyJoinMenu(client);
+        display(lobbyJoinMenu);
     }
 
-    public void display(UIScreenRegion region) {
+    public void displayInLobbyScreen() {
+        lobbyScreen = new LobbyScreen(client);
+        display(lobbyScreen);
+    }
+
+    private void display(UIScreenRegion region) {
         region.setStyle(style);
         region.setMask(mask);
         live = region;

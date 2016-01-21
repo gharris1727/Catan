@@ -1,9 +1,9 @@
-package com.gregswebserver.catan.client.renderer.ingame;
+package com.gregswebserver.catan.client.ui.ingame;
 
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.renderer.ClientScreen;
 import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
@@ -12,7 +12,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * The area that renders all features visible while the client is in a game.
  */
-public class InGameScreenRegion extends UIScreenRegion {
+public class InGameScreenRegion extends ClientScreen {
 
     private final static int sidebarWidth = 256;
     private final static int bottomHeight = 256;
@@ -27,8 +27,8 @@ public class InGameScreenRegion extends UIScreenRegion {
     private final InventoryRegion inventory;
     private final ContextRegion context;
 
-    public InGameScreenRegion(CatanGame game) {
-        super(0);
+    public InGameScreenRegion(Client client, CatanGame game) {
+        super(client);
         this.game = game;
         map = new MapRegion(0, game);
         trade = new TradeRegion(1);
@@ -54,16 +54,7 @@ public class InGameScreenRegion extends UIScreenRegion {
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, bottomHeight)));
     }
 
-    @Override
-    protected void restyleContents(UIStyle style) {
-
-    }
-
     public String toString() {
         return "InGameScreen " + game;
-    }
-
-    public void update() {
-        map.forceRender();
     }
 }

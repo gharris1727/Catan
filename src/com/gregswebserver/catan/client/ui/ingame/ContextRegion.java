@@ -1,15 +1,15 @@
-package com.gregswebserver.catan.client.renderer.ingame;
+package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 
 /**
  * Created by Greg on 1/6/2015.
- * A trading screen that appears on the sidebar of the in-game screen.
+ * A screen region that lives in the bottom corner of the in-game screen.
  */
-public class TradeRegion extends ScreenRegion {
+public class ContextRegion extends ScreenRegion {
 
-    public TradeRegion(int priority) {
+    public ContextRegion(int priority) {
         super(priority);
     }
 
@@ -18,6 +18,6 @@ public class TradeRegion extends ScreenRegion {
     }
 
     public String toString() {
-        return "TradeScreenArea";
+        return "ContextScreenArea";
     }
 }

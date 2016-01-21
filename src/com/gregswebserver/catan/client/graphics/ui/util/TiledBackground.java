@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.graphics.ui.util;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
 
@@ -36,16 +35,12 @@ public abstract class TiledBackground extends UIScreenRegion {
     }
 
     @Override
-    protected void restyleContents(UIStyle style) {
-        graphics = style.getBackground(backgroundStyle).getGraphicSet();
+    protected void renderContents() {
+        clear();
+        graphics = getStyle().getBackground(backgroundStyle).getGraphicSet();
         RenderMask textureMask = graphics.getMask();
         texWidth = textureMask.getWidth();
         texHeight = textureMask.getHeight();
-    }
-
-    @Override
-    protected void renderContents() {
-        clear();
         for (int x = 0; x < totWidth; x += texWidth) {
             for (int y = 0; y < totHeight; y += texHeight) {
                 addTile(new Point(x, y), Direction.center);

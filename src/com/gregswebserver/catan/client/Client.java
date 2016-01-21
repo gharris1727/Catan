@@ -1,28 +1,31 @@
 package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.client.event.*;
+import com.gregswebserver.catan.client.event.ClientEvent;
+import com.gregswebserver.catan.client.event.ClientEventType;
+import com.gregswebserver.catan.client.event.RenderEvent;
+import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderManager;
 import com.gregswebserver.catan.client.renderer.RenderThread;
+import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
+import com.gregswebserver.catan.client.ui.primary.ServerLogin;
 import com.gregswebserver.catan.client.ui.primary.ServerPool;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
 import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
-import com.gregswebserver.catan.client.ui.primary.ServerLogin;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
-import com.gregswebserver.catan.common.lobby.MatchmakingPool;
-import com.gregswebserver.catan.common.lobby.LobbyConfig;
+import com.gregswebserver.catan.common.lobby.*;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.network.ClientConnection;
-import com.gregswebserver.catan.common.crypto.Username;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 import static com.gregswebserver.catan.client.ClientState.*;
@@ -44,14 +47,54 @@ public class Client extends CoreThread {
     private RenderManager manager;
     private InputListener listener;
     private ClientConnection connection;
+
+    private ServerPool serverPool;
     private Username username;
     private MatchmakingPool matchmakingPool;
+    private String disconnectReason;
 
     public Client() {
         super(Main.logger); //TODO: Create a separate logger for the client.
         state = Disconnected;
         addEvent(new ClientEvent(this, ClientEventType.Startup, null));
         start();
+    }
+
+    public ServerPool getServerList() {
+        return serverPool;
+    }
+
+    public ClientPool getClientList() {
+        return matchmakingPool.getClientList();
+    }
+
+    public LobbyPool getLobbyList() {
+        return matchmakingPool.getLobbyList();
+    }
+
+    public Lobby getActiveLobby() {
+        return matchmakingPool.getLobbyList().userGetLobby(username);
+    }
+
+    public String getDisconnectMessage() {
+        return disconnectReason;
+    }
+
+    public Username getUsername() {
+        return username;
+    }
+
+    private void updatePool(ControlEvent event) {
+        try {
+            if (matchmakingPool.test(event))
+                matchmakingPool.execute(event);
+        } catch (EventConsumerException e) {
+            logger.log(e, LogLevel.ERROR);
+        }
+        if (manager.lobbyJoinMenu != null)
+            manager.lobbyJoinMenu.forceRender();
+        if (manager.lobbyScreen != null)
+            manager.lobbyScreen.forceRender();
     }
 
     @Override
@@ -80,19 +123,11 @@ public class Client extends CoreThread {
 
     }
 
+    // Client maintenance events, for startup shutdown etc.
     private void clientEvent(ClientEvent event) {
         switch (event.getType()) {
             case Startup:
                 startup();
-                //TODO: remove this testing data.
-                ServerPool loginList = new ServerPool();
-                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "incorrect"));
-                loginList.add(new ConnectionInfo("invalid", "25000", "Jeff", "password1"));
-                loginList.add(new ConnectionInfo("localhost", "NaN", "Brian", "password2"));
-                loginList.add(new ConnectionInfo("localhost", "25000", "", "password3"));
-                loginList.add(new ConnectionInfo("localhost", "25000", "Greg", "password"));
-                manager.setServerList(loginList);
-                manager.display(manager.serverConnectMenu);
                 break;
             case Quit_All:
                 shutdown();
@@ -100,14 +135,14 @@ public class Client extends CoreThread {
         }
     }
 
+    // Interpreting events from user input to go to the server.
     private void userEvent(UserEvent event) {
         ExternalEvent outgoing;
         switch (event.getType()) {
             case Net_Connect:
                 //Connect to remote server
                 state = Connecting;
-                manager.setConnectProgress(0);
-                manager.display(manager.connectingScreen);
+                manager.displayServerConnectingScreen();
                 ConnectionInfo info = (ConnectionInfo) event.getPayload();
                 try {
                     ServerLogin login = info.createServerLogin();
@@ -116,8 +151,8 @@ public class Client extends CoreThread {
                     connection.connect();
                 } catch (UnknownHostException | NumberFormatException e) {
                     logger.log(e, LogLevel.WARN);
-                    manager.setDisconnectError(e.getMessage());
-                    manager.display(manager.disconnectingScreen);
+                    disconnectReason = e.getMessage();
+                    manager.displayServerDisconnectingScreen();
                     state = Disconnecting;
                 }
                 break;
@@ -125,7 +160,7 @@ public class Client extends CoreThread {
                 state = Disconnecting;
                 disconnect("Quitting");
                 state = Disconnected;
-                manager.display(manager.serverConnectMenu);
+                manager.displayServerDisconnectingScreen();
                 break;
             case Lobby_Create:
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Create, new LobbyConfig(username));
@@ -162,6 +197,7 @@ public class Client extends CoreThread {
         }
     }
 
+    // Control events sent by the server to affect the local client.
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
             case Server_Disconnect:
@@ -177,8 +213,7 @@ public class Client extends CoreThread {
             case Client_Pool_Sync:
                 matchmakingPool = (MatchmakingPool) event.getPayload();
                 matchmakingPool.setHost(this);
-                manager.setMatchmakingPool(matchmakingPool);
-                manager.display(manager.lobbyJoinMenu);
+                manager.displayLobbyJoinMenu();
                 break;
             case User_Disconnect:
             case Name_Change:
@@ -188,15 +223,19 @@ public class Client extends CoreThread {
             case Lobby_Change_Config:
             case Lobby_Change_Owner:
             case Lobby_Delete:
+                updatePool(event);
+                break;
             case Lobby_Join:
-            case Lobby_Leave:
-                try {
-                    if (matchmakingPool.test(event))
-                        matchmakingPool.execute(event);
-                } catch (EventConsumerException e) {
-                    logger.log(e, LogLevel.ERROR);
+                updatePool(event);
+                if (username.equals(event.getOrigin())) {
+                    manager.displayInLobbyScreen();
                 }
-                manager.lobbyJoinMenu.forceRender();
+                break;
+            case Lobby_Leave:
+                updatePool(event);
+                if (username.equals(event.getOrigin())) {
+                    manager.displayLobbyJoinMenu();
+                }
                 break;
             case Game_Start:
                 state = Starting;
@@ -227,6 +266,7 @@ public class Client extends CoreThread {
         }
     }
 
+    // Manage events coming from the network connection.
     @Override
     public void netEvent(NetEvent event) {
         ClientConnection connection = (ClientConnection) event.getConnection();
@@ -242,8 +282,8 @@ public class Client extends CoreThread {
             case Disconnect:
             case Link_Error:
                 state = Disconnecting;
-                manager.setDisconnectError((String) event.getPayload());
-                manager.display(manager.disconnectingScreen);
+                disconnectReason = (String) event.getPayload();
+                manager.displayServerDisconnectingScreen();
                 logger.log("Unable to connect to remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case External_Event:
@@ -260,6 +300,8 @@ public class Client extends CoreThread {
         window.setListener(listener);
         renderThread = new RenderThread(this, manager);
         renderThread.start();
+        serverPool = new ServerPool();
+        manager.displayServerConnectMenu();
     }
 
     public void shutdown() {
@@ -271,6 +313,11 @@ public class Client extends CoreThread {
 //            chatThread.stop();
         if (gameThread != null && gameThread.isRunning())
             gameThread.stop();
+        try {
+            serverPool.save();
+        } catch (IOException e) {
+            logger.log("Unable to save server list.", e, LogLevel.WARN);
+        }
         stop();
     }
 

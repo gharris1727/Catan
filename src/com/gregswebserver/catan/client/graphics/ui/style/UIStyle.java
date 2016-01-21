@@ -20,6 +20,7 @@ public enum UIStyle {
 
     public static final String BACKGROUND_WINDOW = "window";
     public static final String BACKGROUND_INTERFACE = "interface";
+    public static final String BACKGROUND_TEXT = "text";
     public static final String BACKGROUND_LOBBIES = "lobbies";
     public static final String BACKGROUND_USERS = "users";
     public static final String BACKGROUND_GAME = "game"; //TODO: probably find a better place for this

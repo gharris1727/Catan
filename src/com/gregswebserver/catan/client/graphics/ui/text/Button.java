@@ -1,10 +1,13 @@
 package com.gregswebserver.catan.client.graphics.ui.text;
 
+import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+
+import java.awt.event.MouseEvent;
 
 /**
  * Created by Greg on 1/16/2015.
@@ -37,12 +40,7 @@ public abstract class Button extends UIScreenRegion {
     }
 
     @Override
-    protected void restyleContents(UIStyle style) {
-        //Restyle the background
-        background.setStyle(style);
-        //Restyle the text label
-        text.setStyle(style);
-    }
+    public abstract UserEvent onMouseClick(MouseEvent event);
 
     @Override
     protected void renderContents() {
