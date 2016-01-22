@@ -44,7 +44,6 @@ public class LobbyUserList extends UIScreenRegion {
     @Override
     protected void resizeContents(RenderMask mask) {
         listElementMask = new RectangularMask(new Dimension(mask.getWidth(),elementHeight));
-
     }
 
     @Override
@@ -54,6 +53,7 @@ public class LobbyUserList extends UIScreenRegion {
         for (Username user : lobby) {
             LobbyUserListElement elt = new LobbyUserListElement(1,user,local,lobby);
             add(elt).setPosition(new Point(0, height));
+            elt.setStyle(getStyle());
             elt.setMask(listElementMask);
             height += elementHeight;
         }
@@ -87,7 +87,7 @@ public class LobbyUserList extends UIScreenRegion {
                     return "LobbyUserListElementOwnerTag";
                 }
             };
-            makeLeader = new Button(2, UIStyle.BACKGROUND_INTERFACE) {
+            makeLeader = new Button(2, "Make Leader") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return new UserEvent(this, UserEventType.Lobby_Make_Leader, username);
@@ -98,7 +98,7 @@ public class LobbyUserList extends UIScreenRegion {
                     return "LobbyUserListElementMakeLeaderButton";
                 }
             };
-            kickClient = new Button(2, UIStyle.BACKGROUND_INTERFACE) {
+            kickClient = new Button(2, "Kick") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return new UserEvent(this, UserEventType.Lobby_Leave, username);
@@ -144,12 +144,12 @@ public class LobbyUserList extends UIScreenRegion {
 
         @Override
         public String toString() {
-            return null;
+            return "LobbyUserListElement";
         }
     }
 
     @Override
     public String toString() {
-        return null;
+        return "LobbyUserList";
     }
 }

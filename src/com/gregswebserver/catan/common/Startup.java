@@ -70,6 +70,7 @@ public class Startup extends CoreWindow {
                 logger.log("Link_Error while starting server", ex, LogLevel.ERROR);
             }
         });
+        display();
         setVisible(true);
     }
 

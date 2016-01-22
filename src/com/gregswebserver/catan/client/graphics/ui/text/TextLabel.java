@@ -22,7 +22,7 @@ public abstract class TextLabel extends GraphicObject implements Styled {
     protected TextLabel(int priority, String font, String text) {
         super(priority);
         this.font = font;
-        this.text = text;
+        setText(text);
     }
 
     @Override

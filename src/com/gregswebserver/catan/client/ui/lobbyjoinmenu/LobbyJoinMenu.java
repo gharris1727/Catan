@@ -44,4 +44,9 @@ public class LobbyJoinMenu extends ClientScreen {
     public String toString() {
         return "LobbyJoinMenu";
     }
+
+    public void update() {
+        lobbyList.update();
+        userList.forceRender();
+    }
 }

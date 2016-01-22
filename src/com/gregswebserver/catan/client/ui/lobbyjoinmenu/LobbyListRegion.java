@@ -129,6 +129,10 @@ public class LobbyListRegion extends UIScreenRegion {
         return "LobbyListRegion";
     }
 
+    public void update() {
+        scroll.forceRender();
+    }
+
     private class LobbyListHeader extends UIScreenRegion {
 
         private final LobbyListHeaderElement lobbyNameHeader;

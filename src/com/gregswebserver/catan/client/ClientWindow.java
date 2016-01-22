@@ -5,8 +5,9 @@ import com.gregswebserver.catan.client.event.RenderEventType;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.common.CoreWindow;
+import com.gregswebserver.catan.common.log.LogLevel;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -16,26 +17,21 @@ import java.awt.Dimension;
 public class ClientWindow extends CoreWindow {
 
     private final Client client;
+    private final InputListener listener;
     private ScreenCanvas canvas;
-    private InputListener listener;
     //Field to prevent the onResize function from spamming setMask requests when there is one still processing.
     private boolean resizing = false;
 
-    public ClientWindow(Client client) {
+    public ClientWindow(Client client, InputListener listener) {
         super("Settlers of Catan - Client", new Dimension(640, 480), true, client.logger);
         this.client = client;
-    }
-
-    public void setListener(InputListener listener) {
-        if (canvas != null) {
-            removeListeners();
-        }
         this.listener = listener;
-        addListeners();
+        display();
     }
 
     private void removeListeners() {
-        if (canvas != null && listener != null) {
+        client.logger.log("Removing listeners", LogLevel.DEBUG);
+        if (canvas != null) {
             canvas.removeKeyListener(listener);
             canvas.removeMouseListener(listener);
             canvas.removeMouseMotionListener(listener);
@@ -44,7 +40,8 @@ public class ClientWindow extends CoreWindow {
     }
 
     private void addListeners() {
-        if (canvas != null && listener != null) {
+        client.logger.log("Adding listeners", LogLevel.DEBUG);
+        if (canvas != null) {
             canvas.addKeyListener(listener);
             canvas.addMouseListener(listener);
             canvas.addMouseMotionListener(listener);
@@ -59,22 +56,36 @@ public class ClientWindow extends CoreWindow {
 
     @Override
     protected void onResize(Dimension size) {
-        if (!resizing) {
-            resizing = true;
+        // This event can get spammed when the window is actually resizing, so we need to guard against that.
+        // The shouldResize variable is set to true for the one first function call when we weren't already resizing.
+        boolean shouldResize = false;
+        // This synchronization block ensures that the decision on running the real resize is atomic.
+        synchronized (this) {
+            if (!resizing)
+                shouldResize = resizing = true;
+        }
+        // Now the slow code that actually does the resizing can happen asynchronously.
+        if (shouldResize) {
+            // Make sure if there is an existing canvas it isn't currently rendering.
             if (canvas != null)
-                synchronized (canvas) { //Make sure the existing canvas isn't currently rendering.
+                synchronized (canvas) {
                     removeListeners();
                     remove(canvas);
                 }
+            // Create a new screen canvas of the proper size.
             canvas = new ScreenCanvas(size);
+            // Add it to the JFrame for rendering
             add(canvas);
+            // Add all of the input listeners.
             addListeners();
+            // This only takes effect on startup, but ensure that the frame is visible to the user.
             setVisible(true);
-            //This null check is for when the window changes size before the constructor finishes (idk lol)
-            //This shouldn't be damaging to the resizing flow, but maybe revisit this.
-            if (client != null)
-                client.addEvent(new RenderEvent(this, RenderEventType.Canvas_Update, canvas));
-            resizing = false;
+            // Now tell the renderer about the new canvas.
+            client.addEvent(new RenderEvent(this, RenderEventType.Canvas_Update, canvas));
+            // Finally update the resizing variable when we are finished resizing.
+            synchronized (this) {
+                resizing = false;
+            }
         }
     }
 

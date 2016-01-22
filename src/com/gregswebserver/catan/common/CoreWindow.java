@@ -16,7 +16,10 @@ import java.awt.event.WindowEvent;
  */
 public abstract class CoreWindow extends JFrame {
 
-    protected CoreWindow(String title, Dimension d, boolean resizable, Logger logger) {
+    private final Dimension size;
+
+    protected CoreWindow(String title, Dimension size, boolean resizable, Logger logger) {
+        this.size = size;
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -46,11 +49,14 @@ public abstract class CoreWindow extends JFrame {
             }
         });
         setTitle(title);
-        setSize(d);
-        setMinimumSize(d);
-        setLocationRelativeTo(null);
         setResizable(resizable);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    protected void display() {
+        setSize(size);
+        setMinimumSize(size);
+        setLocationRelativeTo(null);
     }
 
     // Gracefully close any pertinent threads when the window is closed.

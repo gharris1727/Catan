@@ -22,6 +22,7 @@ public class ServerWindow extends CoreWindow {
         console.setServer(server);
         getContentPane().add(console);
         server.logger.addListener(console);
+        display();
         setVisible(true);
     }
 

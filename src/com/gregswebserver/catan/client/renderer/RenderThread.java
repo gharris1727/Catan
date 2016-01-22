@@ -8,7 +8,7 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 
-import java.awt.Point;
+import java.awt.*;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -40,13 +40,14 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                     break;
             }
         } else { //No event to be processed this round.
-            if (canvas != null) {
-                Graphic screen = canvas.getGraphic();
-                screen.clear();
-                Graphic graphic = manager.getGraphic();
-                if (graphic != null) graphic.renderTo(screen, new Point(), 0);
-                canvas.render();
-            }
+            if (canvas != null)
+                synchronized (canvas) {
+                    Graphic screen = canvas.getGraphic();
+                    screen.clear();
+                    Graphic graphic = manager.getGraphic();
+                    if (graphic != null) graphic.renderTo(screen, new Point(), 0);
+                    canvas.render();
+                }
         }
     }
 

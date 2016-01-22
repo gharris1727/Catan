@@ -44,7 +44,7 @@ public abstract class TextBox extends UIScreenRegion {
         if (typed == '\n')
             return onAccept();
         else if (typed == '\b') {
-            int len = text.length();
+            int len = text.length() - 1;
             if (len < 0)
                 len = 0;
             text.setLength(len);

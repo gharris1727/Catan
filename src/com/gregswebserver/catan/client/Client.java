@@ -92,9 +92,9 @@ public class Client extends CoreThread {
             logger.log(e, LogLevel.ERROR);
         }
         if (manager.lobbyJoinMenu != null)
-            manager.lobbyJoinMenu.forceRender();
+            manager.lobbyJoinMenu.update();
         if (manager.lobbyScreen != null)
-            manager.lobbyScreen.forceRender();
+            manager.lobbyScreen.update();
     }
 
     @Override
@@ -293,11 +293,10 @@ public class Client extends CoreThread {
     }
 
     private void startup() {
-        window = new ClientWindow(this);
         manager = new RenderManager(this);
         manager.setStyle(UIStyle.Blue);
         listener = new InputListener(this, manager);
-        window.setListener(listener);
+        window = new ClientWindow(this, listener);
         renderThread = new RenderThread(this, manager);
         renderThread.start();
         serverPool = new ServerPool();

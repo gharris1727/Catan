@@ -47,7 +47,7 @@ public abstract class GraphicObject extends ScreenObject implements Graphical {
     public final Graphic getGraphic() {
         needsRender = false;
         if (graphic == null)
-            throw new NotYetRenderableException("No graphic assigned to graphic object");
+            throw new NotYetRenderableException("No graphic assigned to " + this);
         return graphic;
     }
 
