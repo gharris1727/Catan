@@ -37,7 +37,7 @@ public abstract class TiledBackground extends UIScreenRegion {
     @Override
     protected void renderContents() {
         clear();
-        graphics = getStyle().getBackground(backgroundStyle).getGraphicSet();
+        graphics = getStyle().getBackgroundStyle(backgroundStyle).getGraphicSet();
         RenderMask textureMask = graphics.getMask();
         texWidth = textureMask.getWidth();
         texHeight = textureMask.getHeight();

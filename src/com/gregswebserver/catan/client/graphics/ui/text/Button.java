@@ -20,7 +20,7 @@ public abstract class Button extends UIScreenRegion {
 
     public Button(int priority, String label) {
         super(priority);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_BUTTON) {
             public String toString() {
                 return "ButtonBackground";
             }

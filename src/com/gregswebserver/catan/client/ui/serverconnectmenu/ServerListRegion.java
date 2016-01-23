@@ -198,8 +198,8 @@ public class ServerListRegion extends UIScreenRegion {
             background.setMask(mask);
             connectButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
             connectButton.setPosition(new Point(16, 16));
-            passwordBox.setMask(new RectangularMask(new Dimension(128,32)));
-            passwordBox.setPosition(new Point(16,56));
+            passwordBox.setMask(new RectangularMask(new Dimension(200,32)));
+            passwordBox.setPosition(new Point(150,16));
         }
 
         public String toString() {

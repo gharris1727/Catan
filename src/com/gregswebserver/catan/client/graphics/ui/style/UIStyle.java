@@ -20,6 +20,7 @@ public enum UIStyle {
 
     public static final String BACKGROUND_WINDOW = "window";
     public static final String BACKGROUND_INTERFACE = "interface";
+    public static final String BACKGROUND_BUTTON = "button";
     public static final String BACKGROUND_TEXT = "text";
     public static final String BACKGROUND_LOBBIES = "lobbies";
     public static final String BACKGROUND_USERS = "users";
@@ -39,12 +40,12 @@ public enum UIStyle {
         this.uiStyleKey = styleRootKey + uiStyleName;
     }
 
-    public TextStyle getFont(String textStyleName) {
+    public TextStyle getTextStyle(String textStyleName) {
         String textStyleKey = uiStyleKey + fontRootKey + textStyleName;
         return new TextStyle(textStyleKey);
     }
 
-    public BackgroundStyle getBackground(String backgroundStyleName) {
+    public BackgroundStyle getBackgroundStyle(String backgroundStyleName) {
         String backgroundStyleKey = uiStyleKey + backgroundRootKey + backgroundStyleName;
         return new BackgroundStyle(backgroundStyleKey);
     }

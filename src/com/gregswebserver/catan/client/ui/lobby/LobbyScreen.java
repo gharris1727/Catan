@@ -39,10 +39,11 @@ public class LobbyScreen extends ClientScreen {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-        int allUsersWidth = mask.getWidth()*2/3;
-        int lobbyUsersWidth = mask.getWidth() - allUsersWidth;
+        int lobbyUsersWidth = mask.getWidth()*2/3;
+        int allUsersWidth = mask.getWidth() - lobbyUsersWidth;
         allUsers.setMask(new RectangularMask(new Dimension(allUsersWidth,mask.getHeight())));
         lobbyUsers.setMask(new RectangularMask(new Dimension(lobbyUsersWidth,mask.getHeight())));
+        allUsers.setPosition(new Point(lobbyUsersWidth,0));
     }
 
     public String toString() {

@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by Greg on 1/3/2015.
@@ -32,6 +33,11 @@ public abstract class TextBox extends UIScreenRegion {
             @Override
             public String toString() {
                 return "TextBoxTextLabel";
+            }
+
+            @Override
+            public UserEvent onMouseClick(MouseEvent event) {
+                return super.onMouseClick(event);
             }
         };
         add(background).setClickable(this);
@@ -66,6 +72,7 @@ public abstract class TextBox extends UIScreenRegion {
     @Override
     protected void renderContents() {
         label.setPosition(getCenteredPosition(label.getGraphic().getMask()));
+        label.getPosition().x = 16;
     }
 
     public String getString() {

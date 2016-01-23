@@ -5,7 +5,6 @@ import com.gregswebserver.catan.client.event.RenderEventType;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.common.CoreWindow;
-import com.gregswebserver.catan.common.log.LogLevel;
 
 import java.awt.*;
 
@@ -30,7 +29,6 @@ public class ClientWindow extends CoreWindow {
     }
 
     private void removeListeners() {
-        client.logger.log("Removing listeners", LogLevel.DEBUG);
         if (canvas != null) {
             canvas.removeKeyListener(listener);
             canvas.removeMouseListener(listener);
@@ -40,7 +38,6 @@ public class ClientWindow extends CoreWindow {
     }
 
     private void addListeners() {
-        client.logger.log("Adding listeners", LogLevel.DEBUG);
         if (canvas != null) {
             canvas.addKeyListener(listener);
             canvas.addMouseListener(listener);

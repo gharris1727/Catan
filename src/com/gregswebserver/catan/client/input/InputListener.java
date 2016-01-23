@@ -2,7 +2,6 @@ package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
 import java.awt.*;
@@ -85,7 +84,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         Clickable found = root.getClickable(e.getPoint());
         Clickable next = (found == null) ? nullClickable : found;
         if (selected != next) {
-            logger.log("Clickable changed to " + next, LogLevel.DEBUG);
+            //logger.log("Clickable changed to " + next, LogLevel.DEBUG);
             sendEvent(selected.onDeselect());
             selected = next;
             sendEvent(selected.onSelect());

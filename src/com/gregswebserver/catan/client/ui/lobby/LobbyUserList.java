@@ -101,7 +101,7 @@ public class LobbyUserList extends UIScreenRegion {
             kickClient = new Button(2, "Kick") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Lobby_Leave, username);
+                    return new UserEvent(this, UserEventType.Lobby_Quit, username);
                 }
 
                 @Override

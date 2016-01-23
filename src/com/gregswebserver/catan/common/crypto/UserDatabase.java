@@ -24,7 +24,8 @@ public class UserDatabase {
         //users = (HashMap<Username, UserAccount>) ResourceLoader.getObjectStore(UserInfo);
         //TODO: handle this better, remove dummy data
         users = new HashMap<>();
-        registerAccount(new UserLogin(new Username("Greg"),new Password("password")));
+        registerAccount(new UserLogin(new Username("Greg"), new Password("password")));
+        registerAccount(new UserLogin(new Username("Bob"), new Password("pw")));
     }
 
     public void dumpResources() {

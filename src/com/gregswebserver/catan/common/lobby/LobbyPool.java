@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.common.lobby;
 
+import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.log.LogLevel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -22,6 +24,7 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
     }
 
     public void add(Username host, LobbyConfig config) {
+        Main.logger.log("Adding lobby U(" + host + ") C(" + config +")", LogLevel.DEBUG);
         Lobby lobby = new Lobby(host,config);
         userMap.put(host, lobby);
         //Concurrent write, but inserting on the head of the list should be safe.
@@ -29,17 +32,21 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
     }
 
     public void join(Username user, Username host) {
+        Main.logger.log("Joining lobby U(" + user + ") H(" + host +")", LogLevel.DEBUG);
         Lobby lobby = userMap.get(host);
         lobby.add(user);
         userMap.put(user, lobby);
     }
 
     public void leave(Username user) {
+        Main.logger.log("Leaving lobby U(" + user + ")", LogLevel.DEBUG);
         Lobby lobby = userMap.remove(user);
         lobby.remove(user);
         //Concurrent write, removing may cause issues.
-        if (lobby.size() == 0)
+        if (lobby.size() == 0) {
+            Main.logger.log("Removing lobby L(" + lobby + ")", LogLevel.DEBUG);
             list.remove(lobby);
+        }
     }
 
     public boolean userInLobby(Username username) {

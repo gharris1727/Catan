@@ -170,12 +170,20 @@ public class Client extends CoreThread {
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Join, event.getPayload());
                 sendEvent(outgoing);
                 break;
-            case Lobby_Leave:
+            case Lobby_Quit:
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Leave, null);
                 sendEvent(outgoing);
                 break;
-            case Lobby_Modify:
+            case Lobby_Edit:
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Change_Config, event.getPayload());
+                sendEvent(outgoing);
+                break;
+            case Lobby_Make_Leader:
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Change_Owner, event.getPayload());
+                sendEvent(outgoing);
+                break;
+            case Lobby_Kick:
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Leave, event.getPayload());
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
@@ -202,7 +210,6 @@ public class Client extends CoreThread {
         switch (event.getType()) {
             case Server_Disconnect:
                 state = Disconnected;
-                logger.log("Server disconnected: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case Pass_Change:
                 throw new IllegalStateException();
@@ -219,12 +226,12 @@ public class Client extends CoreThread {
             case Name_Change:
             case User_Connect:
             case Client_Disconnect:
-            case Lobby_Create:
             case Lobby_Change_Config:
             case Lobby_Change_Owner:
             case Lobby_Delete:
                 updatePool(event);
                 break;
+            case Lobby_Create:
             case Lobby_Join:
                 updatePool(event);
                 if (username.equals(event.getOrigin())) {
@@ -276,7 +283,6 @@ public class Client extends CoreThread {
             case Log_In_Success:
                 state = Connected;
                 token = (AuthToken) event.getPayload();
-                logger.log("Connected to remote server", LogLevel.DEBUG);
                 break;
             case Log_In_Failure:
             case Disconnect:
@@ -284,7 +290,6 @@ public class Client extends CoreThread {
                 state = Disconnecting;
                 disconnectReason = (String) event.getPayload();
                 manager.displayServerDisconnectingScreen();
-                logger.log("Unable to connect to remote server: " + event.getPayload(), LogLevel.DEBUG);
                 break;
             case External_Event:
                 externalEvent((ExternalEvent) event.getPayload());
