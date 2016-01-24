@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
@@ -30,28 +30,19 @@ public class LobbyListRegion extends UIScreenRegion {
 
     private static final GraphicSet arrows = new GraphicSet("catan.ui.blue.icons.arrows", RectangularMask.class);
 
-    private static final int lobbyHeight = 2*arrows.getMask().getHeight();
-    private static final int footerHeight = Main.staticConfig.getInt("catan.graphics.interface.lobbylist.footer.height");
+    private static final int headerHeight = 2*arrows.getMask().getHeight();
+    private static final int lobbyHeight = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.lobby.height");
+    private static final int footerHeight = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.footer.height");
+    private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.spacing");
 
+    private static final int lobbyOwnerColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.owner.width");
+    private static final int gameTypeColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.type.width");
+    private static final int currentClientsColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.current.width");
+    private static final int openSlotsColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.open.width");
     private static final int arrowWidth = arrows.getMask().getWidth();
-    private static final int openSlotsLabelSize = Main.staticConfig.getInt("catan.graphics.interface.lobbylist.header.open.width");
-    private static final int currentClientsLabelSize = Main.staticConfig.getInt("catan.graphics.interface.lobbylist.header.current.width");
-    private static final int gameTypeLabelSize = Main.staticConfig.getInt("catan.graphics.interface.lobbylist.header.type.width");
-    private static final int lobbyOwnerLabelSize = Main.staticConfig.getInt("catan.graphics.interface.lobbylist.header.owner.width");
 
+    private int lobbyNameColumnWidth;
     private RenderMask lobbySize;
-
-    private RenderMask lobbyNameSize;
-    private RenderMask lobbyOwnerSize;
-    private RenderMask gameTypeSize;
-    private RenderMask currentClientsSize;
-    private RenderMask openSlotsSize;
-
-    private Point lobbyNamePosition;
-    private Point lobbyOwnerPosition;
-    private Point gameTypePosition;
-    private Point currentClientsPosition;
-    private Point openSlotsPosition;
 
     private final TiledBackground background;
     private final LobbyListHeader header;
@@ -86,36 +77,20 @@ public class LobbyListRegion extends UIScreenRegion {
         int width = mask.getWidth();
         int height = mask.getHeight();
         //Calculate intermediate dimensions
-        int windowHeight = (height - lobbyHeight - footerHeight);
-        int lobbyNameLabelSize = width - arrowWidth
-                - (arrowWidth + openSlotsLabelSize)
-                - (arrowWidth + currentClientsLabelSize)
-                - (arrowWidth + gameTypeLabelSize)
-                - (arrowWidth + lobbyOwnerLabelSize);
+        int windowHeight = (height - headerHeight - footerHeight);
+        lobbyNameColumnWidth = mask.getWidth()
+                - openSlotsColumnWidth - currentClientsColumnWidth - gameTypeColumnWidth - lobbyOwnerColumnWidth;
         //Set the window locations
         header.setPosition(new Point());
-        background.setPosition(new Point(0,lobbyHeight));
+        background.setPosition(new Point(0,headerHeight));
+        scroll.setPosition(background.getPosition());
         footer.setPosition(new Point(0,height-footerHeight));
-        scroll.setPosition(new Point(0,lobbyHeight));
-        //Create the new render masks.
-        lobbyNameSize = new RectangularMask(new Dimension(arrowWidth + lobbyNameLabelSize, lobbyHeight));
-        lobbyOwnerSize = new RectangularMask(new Dimension(arrowWidth + lobbyOwnerLabelSize, lobbyHeight));
-        gameTypeSize = new RectangularMask(new Dimension(arrowWidth + gameTypeLabelSize, lobbyHeight));
-        currentClientsSize = new RectangularMask(new Dimension(arrowWidth + currentClientsLabelSize, lobbyHeight));
-        openSlotsSize = new RectangularMask(new Dimension(arrowWidth + openSlotsLabelSize, lobbyHeight));
-        // Calculate the positions of the tiles
-        lobbyNamePosition = new Point();
-        lobbyOwnerPosition = new Point(lobbyNameLabelSize + arrowWidth, 0);
-        gameTypePosition = new Point(lobbyOwnerPosition.x+ lobbyOwnerLabelSize + arrowWidth, 0);
-        currentClientsPosition = new Point(gameTypePosition.x + gameTypeLabelSize + arrowWidth, 0);
-        openSlotsPosition = new Point(currentClientsPosition.x + currentClientsLabelSize + arrowWidth, 0);
         //Resize the windows
-        header.setMask(new RectangularMask(new Dimension(width,lobbyHeight)));
         background.setMask(new RectangularMask(new Dimension(width,windowHeight)));
+        scroll.setHostView(background.getMask());
+        header.setMask(new RectangularMask(new Dimension(width,headerHeight)));
         footer.setMask(new RectangularMask(new Dimension(width,footerHeight)));
         lobbySize = new RectangularMask(new Dimension(width,lobbyHeight));
-        //Tell the scrolling window about our new size.
-        scroll.setHostMask(mask);
     }
 
     @Override
@@ -163,16 +138,16 @@ public class LobbyListRegion extends UIScreenRegion {
         @Override
         protected void resizeContents(RenderMask mask) {
             //Resized contents is already available from the outer class
-            lobbyNameHeader.setMask(lobbyNameSize);
-            lobbyNameHeader.setPosition(lobbyNamePosition);
-            lobbyOwnerHeader.setMask(lobbyOwnerSize);
-            lobbyOwnerHeader.setPosition(lobbyOwnerPosition);
-            gameTypeHeader.setMask(gameTypeSize);
-            gameTypeHeader.setPosition(gameTypePosition);
-            currentClientsHeader.setMask(currentClientsSize);
-            currentClientsHeader.setPosition(currentClientsPosition);
-            openSlotsHeader.setMask(openSlotsSize);
-            openSlotsHeader.setPosition(openSlotsPosition);
+            lobbyNameHeader.setMask(new RectangularMask(new Dimension(lobbyNameColumnWidth, mask.getHeight())));
+            lobbyNameHeader.setPosition(new Point());
+            lobbyOwnerHeader.setMask(new RectangularMask(new Dimension(lobbyOwnerColumnWidth, mask.getHeight())));
+            lobbyOwnerHeader.setPosition(new Point(lobbyNameColumnWidth, 0));
+            gameTypeHeader.setMask(new RectangularMask(new Dimension(gameTypeColumnWidth, mask.getHeight())));
+            gameTypeHeader.setPosition(new Point(lobbyNameColumnWidth + lobbyOwnerColumnWidth, 0));
+            currentClientsHeader.setMask(new RectangularMask(new Dimension(currentClientsColumnWidth, mask.getHeight())));
+            currentClientsHeader.setPosition(new Point(lobbyNameColumnWidth + lobbyOwnerColumnWidth + gameTypeColumnWidth, 0));
+            openSlotsHeader.setMask(new RectangularMask(new Dimension(openSlotsColumnWidth, mask.getHeight())));
+            openSlotsHeader.setPosition(new Point(lobbyNameColumnWidth + lobbyOwnerColumnWidth + gameTypeColumnWidth + currentClientsColumnWidth, 0));
         }
 
         @Override
@@ -189,7 +164,7 @@ public class LobbyListRegion extends UIScreenRegion {
 
             public LobbyListHeaderElement(int priority, LobbySortOption ascend, LobbySortOption descend) {
                 super(priority);
-                background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
+                background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_LOBBIES) {
                     @Override
                     public String toString() {
                         return "LobbyListHeaderElementBackground";
@@ -208,7 +183,19 @@ public class LobbyListRegion extends UIScreenRegion {
                     }
 
                     @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
+                    public UserEvent onMousePress(MouseEvent event) {
+                        setGraphic(arrows.getGraphic(2));
+                        return null;
+                    }
+
+                    @Override
+                    public UserEvent onMouseRelease(MouseEvent event) {
+                        lobbyNameHeader.clearArrows();
+                        lobbyOwnerHeader.clearArrows();
+                        gameTypeHeader.clearArrows();
+                        currentClientsHeader.clearArrows();
+                        openSlotsHeader.clearArrows();
+                        setGraphic(arrows.getGraphic(4));
                         sortOption = ascend;
                         return new UserEvent(this, UserEventType.Lobby_Sort, ascend);
                     }
@@ -220,7 +207,19 @@ public class LobbyListRegion extends UIScreenRegion {
                     }
 
                     @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
+                    public UserEvent onMousePress(MouseEvent event) {
+                        setGraphic(arrows.getGraphic(3));
+                        return null;
+                    }
+
+                    @Override
+                    public UserEvent onMouseRelease(MouseEvent event) {
+                        lobbyNameHeader.clearArrows();
+                        lobbyOwnerHeader.clearArrows();
+                        gameTypeHeader.clearArrows();
+                        currentClientsHeader.clearArrows();
+                        openSlotsHeader.clearArrows();
+                        setGraphic(arrows.getGraphic(5));
                         sortOption = descend;
                         return new UserEvent(this,UserEventType.Lobby_Sort, descend);
                     }
@@ -234,20 +233,25 @@ public class LobbyListRegion extends UIScreenRegion {
 
             @Override
             protected void resizeContents(RenderMask mask) {
-                background.setMask(mask);
-                upArrow.setPosition(new Point(mask.getWidth()-arrowWidth, 0));
-                downArrow.setPosition(new Point(mask.getWidth()-arrowWidth, lobbyHeight/2));
+                background.setMask(new RectangularMask(new Dimension(mask.getWidth() - arrowWidth, mask.getHeight())));
             }
 
             @Override
             protected void renderContents() {
+                upArrow.setPosition(new Point(getMask().getWidth()-arrowWidth, 0));
+                downArrow.setPosition(new Point(getMask().getWidth()-arrowWidth, getMask().getHeight()/2));
                 Point centered = getCenteredPosition(labelGraphic.getGraphic().getMask());
-                labelGraphic.setPosition(new Point(0,centered.y));
+                labelGraphic.setPosition(new Point(spacing, centered.y));
             }
 
             @Override
             public UserEvent onMouseScroll(int rot) {
                 return scroll.onMouseScroll(rot);
+            }
+
+            public void clearArrows() {
+                upArrow.setGraphic(arrows.getGraphic(0));
+                downArrow.setGraphic(arrows.getGraphic(1));
             }
 
             @Override
@@ -264,20 +268,15 @@ public class LobbyListRegion extends UIScreenRegion {
         }
 
         @Override
-        protected void resizeContents(RenderMask mask) {
-        }
-
-        @Override
         protected void renderContents() {
             clear();
             int height = 0;
-            synchronized (lobbies) {
-                for (Lobby lobby : lobbies) {
-                    LobbyListScrollElement elt = new LobbyListScrollElement(0, lobby);
-                    elt.setStyle(getStyle());
-                    add(elt).setPosition(new Point(0,height));
-                    height += lobbyHeight;
-                }
+            for (Lobby lobby : lobbies) {
+                LobbyListScrollElement elt = new LobbyListScrollElement(0, lobby);
+                elt.setStyle(getStyle());
+                elt.setMask(lobbySize);
+                add(elt).setPosition(new Point(0,height));
+                height += lobbyHeight;
             }
             setMask(new RectangularMask(new Dimension(LobbyListRegion.this.getMask().getWidth(),height)));
         }
@@ -339,17 +338,30 @@ public class LobbyListRegion extends UIScreenRegion {
                 add(gameTypeText).setClickable(this);
                 add(currentClientsText).setClickable(this);
                 add(openSlotsText).setClickable(this);
-                //Set the size computed from above.
-                setMask(lobbySize);
             }
 
             @Override
             protected void resizeContents(RenderMask mask) {
                 background.setMask(mask);
+            }
+
+            @Override
+            protected void renderContents() {
+                // Calculate the positions of the tiles
+                Point lobbyNamePosition = getCenteredPosition(lobbyNameText.getGraphic().getMask());
+                lobbyNamePosition.x = spacing;
                 lobbyNameText.setPosition(lobbyNamePosition);
+                Point lobbyOwnerPosition = getCenteredPosition(lobbyOwnerText.getGraphic().getMask());
+                lobbyOwnerPosition.x = lobbyNamePosition.x + lobbyNameColumnWidth;
                 lobbyOwnerText.setPosition(lobbyOwnerPosition);
+                Point gameTypePosition = getCenteredPosition(gameTypeText.getGraphic().getMask());
+                gameTypePosition.x = lobbyOwnerPosition.x + lobbyOwnerColumnWidth;
                 gameTypeText.setPosition(gameTypePosition);
+                Point currentClientsPosition = getCenteredPosition(currentClientsText.getGraphic().getMask());
+                currentClientsPosition.x = gameTypePosition.x + gameTypeColumnWidth;
                 currentClientsText.setPosition(currentClientsPosition);
+                Point openSlotsPosition = getCenteredPosition(openSlotsText.getGraphic().getMask());
+                openSlotsPosition.x = currentClientsPosition.x + currentClientsColumnWidth;
                 openSlotsText.setPosition(openSlotsPosition);
             }
 

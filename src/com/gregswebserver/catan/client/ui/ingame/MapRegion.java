@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
@@ -30,8 +30,8 @@ import java.util.Map;
  */
 public class MapRegion extends ScreenRegion {
 
-    private static final Dimension unitSize = Main.staticConfig.getDimension("catan.graphics.tiles.unit.size");
-    private static final Dimension borderBuffer = Main.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
+    private static final Dimension unitSize = Client.staticConfig.getDimension("catan.graphics.tiles.unit.size");
+    private static final Dimension borderBuffer = Client.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
     
     private final CatanGame game;
     private final RenderMask boardSize;

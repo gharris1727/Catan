@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.graphics.ui.style;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.resources.GraphicSet;
 
@@ -62,10 +62,10 @@ public enum UIStyle {
 
         public TextStyle(String textStyleKey) {
             this.textStyleKey = textStyleKey;
-            String fontName = Main.staticConfig.get(textStyleKey + fontNameKey);
-            String fontStyleName = Main.staticConfig.get(textStyleKey + fontStyleKey).toUpperCase();
-            int fontSize = Main.staticConfig.getInt(textStyleKey + fontSizeKey);
-            this.color = Main.staticConfig.getColor(textStyleKey + fontColorKey);
+            String fontName = Client.staticConfig.get(textStyleKey + fontNameKey);
+            String fontStyleName = Client.staticConfig.get(textStyleKey + fontStyleKey).toUpperCase();
+            int fontSize = Client.staticConfig.getInt(textStyleKey + fontSizeKey);
+            this.color = Client.staticConfig.getColor(textStyleKey + fontColorKey);
             this.font = new Font(fontName, getFontStyle(fontStyleName), fontSize);
         }
 

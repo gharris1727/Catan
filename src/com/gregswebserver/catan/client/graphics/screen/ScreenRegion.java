@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
+import com.gregswebserver.catan.common.profiler.TimeSlice;
 
 import java.awt.*;
 import java.util.*;
@@ -23,6 +24,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
     private Map<Integer, ScreenObject> clickableColorMap;
+    private TimeSlice timeSlice;
 
     //The constructor of a screen region is meant to store relevant references,
     //and create any permanent ScreenObjects needed in the render.
@@ -66,8 +68,9 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     public Clickable getClickable(Point p) {
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
-        if (result == this) { //There was no redirect object specified.
-            int color = getGraphic().getClickableColor(p);
+        if (result == this && graphic != null) {
+            //There was no redirect object specified, and we are already rendered.
+            int color = graphic.getClickableColor(p);
             ScreenObject object = clickableColorMap.get(color);
             if (object != null) { //There was something clicked on
                 Point position = object.getPosition();
@@ -133,7 +136,12 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
                     throw new NoSuchElementException();
                 if (listIterator == null || !listIterator.hasNext())
                     listIterator = treeIterator.next().iterator();
-                return listIterator.next();
+                try {
+                    return listIterator.next();
+                } catch (ConcurrentModificationException e) {
+                    System.out.println("CME in " + ScreenRegion.this);
+                    throw e;
+                }
             }
         };
     }
@@ -181,6 +189,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     @Override
     public Graphic getGraphic() {
+        timeSlice = new TimeSlice(this.toString());
         if (needsRender()) {
             renderContents();
             if (!isRenderable())
@@ -190,12 +199,20 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
                 if (object.isGraphical()) {
                     Graphic g = ((Graphical) object).getGraphic();
                     g.renderTo(graphic, object.getPosition(), object.getClickableColor());
+                    if (object instanceof Renderable)
+                        timeSlice.addChild(((Renderable) object).getRenderTime());
                 }
             needsRendering = false;
         }
         if (!isRenderable())
             throw new NotYetRenderableException(this + " is not renderable.");
+        timeSlice.markTime();
         return graphic;
+    }
+
+    @Override
+    public TimeSlice getRenderTime() {
+        return timeSlice;
     }
 
     //Notify all children of this region's size, and take the necessary steps to resize them.

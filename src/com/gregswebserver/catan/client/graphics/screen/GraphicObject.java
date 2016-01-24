@@ -23,7 +23,7 @@ public abstract class GraphicObject extends ScreenObject implements Graphical {
         setGraphic(graphic);
     }
 
-    protected final void setGraphic(Graphic graphic) {
+    public final void setGraphic(Graphic graphic) {
         this.graphic = graphic;
         needsRender = true;
     }

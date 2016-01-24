@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.player;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.DiagonalMask;
 import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
@@ -24,14 +24,14 @@ public enum Team {
     private final GraphicSet graphics;
 
     Team(String teamConfigKey) {
-        GraphicSourceInfo source = new GraphicSourceInfo(Main.staticConfig.get("catan.graphics.teams.paths." + teamConfigKey));
+        GraphicSourceInfo source = new GraphicSourceInfo(Client.staticConfig.get("catan.graphics.teams.paths." + teamConfigKey));
 
-        RenderMask horizontal = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.horizontal.size"));
-        RenderMask diagonalUp = new DiagonalMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.size"));
+        RenderMask horizontal = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.horizontal.size"));
+        RenderMask diagonalUp = new DiagonalMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.size"));
         RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
-        RenderMask settlement = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.settlement.size"));
-        RenderMask city =new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.city.size"));
-        RenderMask robber = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.teams.masks.robber.size"));
+        RenderMask settlement = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.settlement.size"));
+        RenderMask city =new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.city.size"));
+        RenderMask robber = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.robber.size"));
         RenderMask[] masks = new RenderMask[]{horizontal, diagonalUp, diagonalDown, settlement, city, robber};
         graphics = new GraphicSet(source, masks);
     }

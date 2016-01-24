@@ -11,14 +11,27 @@ import java.awt.*;
  */
 public abstract class ScrollingScreenRegion extends UIScreenRegion {
 
+    private Point offset;
     private RenderMask hostMask;
 
     public ScrollingScreenRegion(int priority) {
         super(priority);
     }
 
-    public void setHostMask(RenderMask hostMask) {
+    public void setHostView(RenderMask hostMask) {
         this.hostMask = hostMask;
+        checkBounds();
+    }
+
+    // Rather than actually change the position, this changes the offset for scroll calculations.
+    @Override
+    public void setPosition(Point position) {
+        this.offset = position;
+        checkBounds();
+    }
+
+    @Override
+    protected void resizeContents(RenderMask mask) {
         checkBounds();
     }
 
@@ -35,14 +48,22 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
             int minX = host.width - size.width;
             int minY = host.height - size.height;
             boolean needsRender = needsRender();
-            if (needsRender |= (position.x < minX))
-                position.x = minX;
-            if (needsRender |= (position.y < minY))
-                position.y = minY;
-            if (needsRender |= (position.x > 0))
-                position.x = 0;
-            if (needsRender |= (position.y > 0))
-                position.y = 0;
+            if (position.x < minX + offset.x) {
+                position.x = minX + offset.x;
+                needsRender = true;
+            }
+            if (position.y < minY + offset.y) {
+                position.y = minY + offset.y;
+                needsRender = true;
+            }
+            if (position.x > offset.x) {
+                position.x = offset.x;
+                needsRender = true;
+            }
+            if (position.y > offset.y) {
+                position.y = offset.y;
+                needsRender = true;
+            }
             if (needsRender)
                 forceRender();
         }
@@ -50,6 +71,6 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && hostMask != null;
+        return super.isRenderable() && offset != null && hostMask != null;
     }
 }

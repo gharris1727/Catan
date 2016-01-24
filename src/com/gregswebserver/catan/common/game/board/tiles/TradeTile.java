@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.DiagonalMask;
 import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
@@ -31,9 +31,9 @@ public class TradeTile extends BeachTile {
     private static final GraphicSet graphics;
 
     static {
-        GraphicSourceInfo source = new GraphicSourceInfo(Main.staticConfig.get("catan.graphics.trade.bridge.path"));
-        RenderMask horizontal = new RectangularMask(Main.staticConfig.getDimension("catan.graphics.trade.bridge.horizontal.size"));
-        RenderMask diagonalUp = new DiagonalMask(Main.staticConfig.getDimension("catan.graphics.trade.bridge.diagonal.size"));
+        GraphicSourceInfo source = new GraphicSourceInfo(Client.staticConfig.get("catan.graphics.trade.bridge.path"));
+        RenderMask horizontal = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.trade.bridge.horizontal.size"));
+        RenderMask diagonalUp = new DiagonalMask(Client.staticConfig.getDimension("catan.graphics.trade.bridge.diagonal.size"));
         RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
         RenderMask[] masks = new RenderMask[]{null, null, null, horizontal,
                 horizontal, diagonalDown, diagonalDown, diagonalUp, diagonalUp};

@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.RoundedMask;
@@ -65,6 +65,6 @@ public enum DiceRoll implements Graphical {
     }
 
     public Point getOffset() {
-        return Main.staticConfig.getPoint("catan.graphics.game.dice.offset");
+        return Client.staticConfig.getPoint("catan.graphics.game.dice.offset");
     }
 }

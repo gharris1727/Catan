@@ -124,7 +124,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
                 lobbies.join(origin, (Username) event.getPayload());
                 break;
             case Lobby_Leave:
-                lobbies.leave(origin);
+                lobbies.leave((Username) event.getPayload());
                 break;
             case Game_Start:
                 break;

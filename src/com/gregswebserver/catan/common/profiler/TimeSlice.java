@@ -10,50 +10,48 @@ public class TimeSlice {
 
     private final String name;
     private final HashMap<String, TimeSlice> slices;
+    private final long creationTime;
     private long time;
 
     public TimeSlice(String name) {
         this.name = name;
         slices = new HashMap<>();
+        creationTime = System.nanoTime();
     }
 
-    public void addTime(String[] path, int depth, long time) {
-        if (depth == path.length)
-            this.time += time;
-        else {
-            String curr = path[depth];
-            TimeSlice child = slices.get(curr);
-            if (child == null) {
-                child = new TimeSlice(curr);
-                slices.put(curr, child);
-            }
-            child.addTime(path, depth + 1, time);
-        }
+    public void addChild(TimeSlice child) {
+        if (child != null)
+            slices.put(child.name, child);
+    }
+
+    public void markTime() {
+        time = System.nanoTime() - creationTime;
     }
 
     public long getTime() {
-        long total = time;
-        for (TimeSlice t : slices.values())
-            total += t.getTime();
-        return total;
+        return time;
     }
 
-    public HashMap<String, String> percentages() {
-        long total = getTime();
+    public HashMap<String, String> percents() {
+        long total = 0;
         HashMap<String, String> out = new HashMap<>();
         for (String s : slices.keySet()) {
             long subTime = slices.get(s).getTime();
-            out.put(s, formatPercent(((double) subTime) / total));
+            total += subTime;
+            out.put(s, formatPercent(((double) subTime) / time));
         }
-        out.put("undefined", formatPercent(((double) time) / total));
+        out.put("undefined", formatPercent(((double) time - total) / time));
         return out;
     }
 
     public HashMap<String, String> times() {
         HashMap<String, String> out = new HashMap<>();
-        for (String s : slices.keySet())
+        int total = 0;
+        for (String s : slices.keySet()) {
+            total += slices.get(s).getTime();
             out.put(s, formatTime(slices.get(s).getTime()));
-        out.put("undefined", formatTime(time));
+        }
+        out.put("undefined", formatTime(time - total));
         return out;
     }
 
@@ -83,5 +81,33 @@ public class TimeSlice {
                 out += part.substring(1, Math.min(places + 2, part.length()));
         }
         return out;
+    }
+
+    public String print(int depth, int current) {
+        if (current > depth)
+            return "";
+        StringBuilder out = new StringBuilder();
+        for(String name : slices.keySet()) {
+            for (int i = 0; i < current; i++)
+                out.append('\t');
+            out.append(times().get(name));
+            out.append('\t');
+            out.append(percents().get(name));
+            out.append('\t');
+            out.append(name);
+            out.append('\n');
+            out.append(slices.get(name).print(depth, current+1));
+        }
+        if (slices.size() > 0) {
+            for (int i = 0; i < current; i++)
+                out.append('\t');
+            out.append(times().get("undefined"));
+            out.append('\t');
+            out.append(percents().get("undefined"));
+            out.append('\t');
+            out.append("undefined");
+            out.append('\n');
+        }
+        return out.toString();
     }
 }

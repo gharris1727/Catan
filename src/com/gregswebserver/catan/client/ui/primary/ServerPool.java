@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.client.ui.primary;
 
-import com.gregswebserver.catan.Main;
-import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.resources.ConfigFile;
 
 import java.io.IOException;
@@ -22,7 +20,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     public ServerPool() {
         list = new LinkedList<>();
-        file = new ConfigFile("config/user/servers.properties", "Login details for servers");
+        file = new ConfigFile("config/client/servers.properties", "Login details for servers");
         try {
             file.open();
             int i = 0;
@@ -33,12 +31,12 @@ public class ServerPool implements Iterable<ConnectionInfo> {
                 hostname = file.get("servers." + i + ".hostname");
                 port = file.get("servers." + i + ".port");
                 username = file.get("servers." + i + ".username");
-                list.add(new ConnectionInfo(hostname,port,username));
+                if (hostname != null)
+                    list.add(new ConnectionInfo(hostname,port,username));
                 i++;
             } while (hostname != null);
         } catch (Exception e) {
-            Main.logger.log("Hit the end of the server list", e, LogLevel.DEBUG);
-            //There should be an error when we run out of data to load.
+            //If the open() function threw an exception, we merely failed to load a pool file.
         }
     }
 

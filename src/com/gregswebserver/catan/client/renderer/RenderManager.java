@@ -17,6 +17,7 @@ import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
 import com.gregswebserver.catan.client.ui.lobby.LobbyScreen;
 import com.gregswebserver.catan.client.ui.lobbyjoinmenu.LobbyJoinMenu;
 import com.gregswebserver.catan.client.ui.serverconnectmenu.ServerConnectMenu;
+import com.gregswebserver.catan.common.profiler.TimeSlice;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -115,6 +116,11 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     }
 
     @Override
+    public TimeSlice getRenderTime() {
+        return (live == null) ? null : live.getRenderTime();
+    }
+
+    @Override
     public Graphic getGraphic() {
         return (live == null) ? null : live.getGraphic();
     }
@@ -125,8 +131,28 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     }
 
     @Override
+    public UserEvent onMousePress(MouseEvent event) {
+        return (live == null) ? null : live.onMousePress(event);
+    }
+
+    @Override
+    public UserEvent onMouseRelease(MouseEvent event) {
+        return (live == null) ? null : live.onMouseRelease(event);
+    }
+
+    @Override
     public UserEvent onKeyTyped(KeyEvent event) {
         return (live == null) ? null : live.onKeyTyped(event);
+    }
+
+    @Override
+    public UserEvent onKeyPressed(KeyEvent event) {
+        return (live == null) ? null : live.onKeyTyped(event);
+    }
+
+    @Override
+    public UserEvent onKeyReleased(KeyEvent event) {
+        return (live == null) ? null : live.onKeyReleased(event);
     }
 
     @Override
@@ -137,6 +163,16 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     @Override
     public UserEvent onMouseDrag(Point p) {
         return (live == null) ? null : live.onMouseDrag(p);
+    }
+
+    @Override
+    public UserEvent onHover() {
+        return (live == null) ? null : live.onHover();
+    }
+
+    @Override
+    public UserEvent onUnHover() {
+        return (live == null) ? null : live.onUnHover();
     }
 
     @Override

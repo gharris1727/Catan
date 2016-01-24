@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.ui.serverconnectmenu;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
@@ -27,10 +27,10 @@ import java.util.Iterator;
 public class ServerListRegion extends UIScreenRegion {
 
 
-    private static final RenderMask headerSize = new RoundedRectangularMask(Main.staticConfig.getDimension("catan.graphics.interface.serverlist.header"));
-    private static final RenderMask serverSize = new RoundedRectangularMask(Main.staticConfig.getDimension("catan.graphics.interface.serverlist.server"));
-    private static final RenderMask footerSize = new RoundedRectangularMask(Main.staticConfig.getDimension("catan.graphics.interface.serverlist.footer"));
-    private static final RenderMask paddingSize = new RoundedRectangularMask(Main.staticConfig.getDimension("catan.graphics.interface.serverlist.padding"));
+    private static final RenderMask headerSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.header"));
+    private static final RenderMask serverSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.server"));
+    private static final RenderMask footerSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.footer"));
+    private static final RenderMask paddingSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.padding"));
 
     private final ServerPool list;
 

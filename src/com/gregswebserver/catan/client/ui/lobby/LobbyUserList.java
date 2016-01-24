@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.client.ui.lobby;
 
-import com.gregswebserver.catan.Main;
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
@@ -23,12 +23,12 @@ import java.awt.event.MouseEvent;
  */
 public class LobbyUserList extends UIScreenRegion {
 
-    private static final int spacing = Main.staticConfig.getInt("catan.graphics.interface.inlobby.spacing");
-    private static final int elementHeight = Main.staticConfig.getInt("catan.graphics.interface.inlobby.height");
+    private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.inlobby.spacing");
+    private static final int elementHeight = Client.staticConfig.getInt("catan.graphics.interface.inlobby.height");
     private static final RenderMask leaderButtonMask =
-            new RoundedRectangularMask(Main.staticConfig.getDimension("catan.graphics.interface.inlobby.buttons.leader.size"));
+            new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.inlobby.buttons.leader.size"));
     private static final RenderMask kickButtonMask =
-            new RoundedRectangularMask(Main.staticConfig.getDimension("catan.graphics.interface.inlobby.buttons.kick.size"));
+            new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.inlobby.buttons.kick.size"));
 
     private final Lobby lobby;
     private final Username local;
@@ -101,7 +101,7 @@ public class LobbyUserList extends UIScreenRegion {
             kickClient = new Button(2, "Kick") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Lobby_Quit, username);
+                    return new UserEvent(this, UserEventType.Lobby_Kick, username);
                 }
 
                 @Override

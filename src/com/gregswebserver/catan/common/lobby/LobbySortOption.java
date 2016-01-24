@@ -5,16 +5,16 @@ package com.gregswebserver.catan.common.lobby;
  * Different options for sorting the list of lobbies.
  */
 public enum LobbySortOption {
-    Lobby_Name_Asc("Lobby Name"),
-    Lobby_Name_Desc("Lobby Name"),
-    Host_Name_Asc("Host Name"),
-    Host_Name_Desc("Host Name"),
-    Game_Type_Asc("Game Type"),
-    Game_Type_Desc("Game Type"),
-    Num_Clients_Asc("Clients Connected"),
-    Num_Clients_Desc("Clients Connected"),
-    Open_Spaces_Asc("Open Spaces"),
-    Open_Spaces_Desc("Open Spaces"),;
+    Lobby_Name_Asc("Lobby"),
+    Lobby_Name_Desc("Lobby"),
+    Host_Name_Asc("Host"),
+    Host_Name_Desc("Host"),
+    Game_Type_Asc("Game"),
+    Game_Type_Desc("Game"),
+    Num_Clients_Asc("# Clients"),
+    Num_Clients_Desc("# Clients"),
+    Open_Spaces_Asc("# Open"),
+    Open_Spaces_Desc("# Open"),;
 
     private final String title;
 

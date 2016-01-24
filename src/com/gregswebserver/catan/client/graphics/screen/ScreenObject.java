@@ -38,7 +38,7 @@ public abstract class ScreenObject implements Clickable {
     }
 
     //Set render position relative to the parent.
-    public final void setPosition(Point position) { this.position.setLocation(position);}
+    public void setPosition(Point position) { this.position.setLocation(position);}
 
     //Returns the render priority of this object. Used for layering.
     public final int getRenderPriority() {
@@ -56,8 +56,28 @@ public abstract class ScreenObject implements Clickable {
     }
 
     @Override
+    public UserEvent onMousePress(MouseEvent event) {
+        return (redirect == null) ? null : redirect.onMousePress(event);
+    }
+
+    @Override
+    public UserEvent onMouseRelease(MouseEvent event) {
+        return (redirect == null) ? null : redirect.onMouseRelease(event);
+    }
+
+    @Override
     public UserEvent onKeyTyped(KeyEvent event) {
         return (redirect == null) ? null : redirect.onKeyTyped(event);
+    }
+
+    @Override
+    public UserEvent onKeyPressed(KeyEvent event) {
+        return (redirect == null) ? null : redirect.onKeyPressed(event);
+    }
+
+    @Override
+    public UserEvent onKeyReleased(KeyEvent event) {
+        return (redirect == null) ? null : redirect.onKeyReleased(event);
     }
 
     @Override
@@ -78,6 +98,16 @@ public abstract class ScreenObject implements Clickable {
     @Override
     public UserEvent onDeselect() {
         return (redirect == null) ? null : redirect.onDeselect();
+    }
+
+    @Override
+    public UserEvent onHover() {
+        return (redirect == null) ? null : redirect.onHover();
+    }
+
+    @Override
+    public UserEvent onUnHover() {
+        return (redirect == null) ? null : redirect.onUnHover();
     }
 
     @Override

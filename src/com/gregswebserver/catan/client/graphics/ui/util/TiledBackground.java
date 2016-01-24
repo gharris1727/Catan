@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.graphics.ui.util;
 
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
@@ -14,13 +15,9 @@ import java.awt.*;
  */
 public abstract class TiledBackground extends UIScreenRegion {
 
-    private final String backgroundStyle;
+    protected final String backgroundStyle;
+    protected GraphicSet graphics;
 
-    private GraphicSet graphics;
-    protected int texWidth;
-    protected int texHeight;
-    protected int totWidth;
-    protected int totHeight;
 
     public TiledBackground(int priority, String backgroundStyle) {
         super(priority);
@@ -30,29 +27,28 @@ public abstract class TiledBackground extends UIScreenRegion {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        totWidth = mask.getWidth();
-        totHeight = mask.getHeight();
     }
 
     @Override
     protected void renderContents() {
-        clear();
         graphics = getStyle().getBackgroundStyle(backgroundStyle).getGraphicSet();
-        RenderMask textureMask = graphics.getMask();
-        texWidth = textureMask.getWidth();
-        texHeight = textureMask.getHeight();
-        for (int x = 0; x < totWidth; x += texWidth) {
-            for (int y = 0; y < totHeight; y += texHeight) {
-                addTile(new Point(x, y), Direction.center);
-            }
-        }
+        clear();
+        renderFillerTiles(0,0,getMask().getWidth(),getMask().getHeight());
     }
 
-    protected void addTile(Point position, Direction d) {
-        add(new GraphicObject(d.ordinal(), graphics.getGraphic(d.ordinal())) {
-            public String toString() {
-                return "Tile inside " + TiledBackground.this;
+    protected void renderFillerTiles(int xStart, int yStart, int xStop, int yStop) {
+        RenderMask textureMask = graphics.getMask();
+        int texWidth = textureMask.getWidth();
+        int texHeight = textureMask.getHeight();
+        Graphic center = graphics.getGraphic(Direction.center.ordinal());
+        for (int x = xStart; x < xStop; x += texWidth) {
+            for (int y = yStart; y < yStop; y += texHeight) {
+                add(new GraphicObject(0, center) {
+                    public String toString() {
+                        return "Tile inside " + TiledBackground.this;
+                    }
+                }).setClickable(this).setPosition(new Point(x,y));
             }
-        }).setClickable(this).setPosition(position);
+        }
     }
 }

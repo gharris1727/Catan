@@ -7,6 +7,8 @@ import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
+import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.profiler.TimeSlice;
 
 import java.awt.*;
 
@@ -48,6 +50,11 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                     if (graphic != null) graphic.renderTo(screen, new Point(), 0);
                     canvas.render();
                 }
+            TimeSlice root = manager.getRenderTime();
+            if (root != null && root.getTime() > 33e6) {
+                String message = "Warning! Rendering at less than 30Hz\n" + root.print(3, 0);
+                logger.log(message, LogLevel.DEBUG);
+            }
         }
     }
 

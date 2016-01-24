@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client;
 
-import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
@@ -23,7 +22,9 @@ import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.lobby.*;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ClientConnection;
+import com.gregswebserver.catan.common.resources.ConfigFile;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -37,6 +38,18 @@ import static com.gregswebserver.catan.client.ClientState.*;
  * Client events are intercepted and acted upon.
  */
 public class Client extends CoreThread {
+
+    //TODO: change/remove all references to this outside the client package.
+    public static final ConfigFile staticConfig;
+
+    static {
+        staticConfig = new ConfigFile("config/client/static.properties", "Static root configuration");
+        try {
+            staticConfig.open();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private ClientWindow window;
     private ClientState state;
@@ -54,7 +67,11 @@ public class Client extends CoreThread {
     private String disconnectReason;
 
     public Client() {
-        super(Main.logger); //TODO: Create a separate logger for the client.
+        this(new Logger());
+    }
+
+    public Client(Logger logger) {
+        super(logger);
         state = Disconnected;
         addEvent(new ClientEvent(this, ClientEventType.Startup, null));
         start();
@@ -160,7 +177,7 @@ public class Client extends CoreThread {
                 state = Disconnecting;
                 disconnect("Quitting");
                 state = Disconnected;
-                manager.displayServerDisconnectingScreen();
+                manager.displayServerConnectMenu();
                 break;
             case Lobby_Create:
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Create, new LobbyConfig(username));
@@ -171,7 +188,7 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Quit:
-                outgoing = new ControlEvent(username, ControlEventType.Lobby_Leave, null);
+                outgoing = new ControlEvent(username, ControlEventType.Lobby_Leave, username);
                 sendEvent(outgoing);
                 break;
             case Lobby_Edit:
@@ -240,7 +257,7 @@ public class Client extends CoreThread {
                 break;
             case Lobby_Leave:
                 updatePool(event);
-                if (username.equals(event.getOrigin())) {
+                if (username.equals(event.getPayload())) {
                     manager.displayLobbyJoinMenu();
                 }
                 break;

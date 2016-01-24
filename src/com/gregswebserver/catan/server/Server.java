@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.server;
 
 
-import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.*;
@@ -9,6 +8,7 @@ import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.lobby.MatchmakingPool;
 import com.gregswebserver.catan.common.lobby.UserInfo;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ConnectionPool;
 import com.gregswebserver.catan.common.network.ServerConnection;
 import com.gregswebserver.catan.server.event.ServerEvent;
@@ -36,7 +36,11 @@ public class Server extends CoreThread {
     private Thread listen;
 
     public Server() {
-        super(Main.logger); //TODO: Create new logger for the server.
+        this(new Logger());
+    }
+
+    public Server(Logger logger) {
+        super(logger);
         token = new AuthToken(new Username("Server"),new SecureRandom().nextInt()); //For use in chat and sending events originating here.
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);

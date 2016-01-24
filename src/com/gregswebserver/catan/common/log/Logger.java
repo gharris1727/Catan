@@ -15,8 +15,10 @@ public class Logger {
 
     public Logger() {
         listeners = new LinkedList<>();
+    }
+
+    public void useStdOut() {
         addListener(new StdOutListener());
-        //TODO: remove when deployed, prints to IDE console.
     }
 
     public void addListener(LogListener listener) {

@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common;
 
-import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
@@ -21,7 +20,7 @@ public class Startup extends CoreWindow {
     private JButton[] buttons = new JButton[ActionButton.values().length];
 
     public Startup(final Logger logger) {
-        //TODO: rewrite this whole thing.
+        //TODO: rewrite this whole thing. this whole thing is an abomination.
         super("Settlers of Catan - Startup", new Dimension(300, 500), false, logger);
         contentPane = new JPanel();
         setContentPane(contentPane);
@@ -115,7 +114,6 @@ public class Startup extends CoreWindow {
     @Override
     protected void onClose() {
         dispose();
-        Main.quit();
     }
 
     public String toString() {

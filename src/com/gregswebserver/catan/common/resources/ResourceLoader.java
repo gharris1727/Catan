@@ -50,7 +50,7 @@ public class ResourceLoader {
         }
     };
 
-    public ResourceLoader() {
+    static {
         gameCache.clear();
         graphicCache.clear();
         graphicSourceCache.clear();

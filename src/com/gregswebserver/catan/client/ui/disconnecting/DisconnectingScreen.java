@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.disconnecting;
 
-import com.gregswebserver.catan.Main;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
@@ -22,8 +21,8 @@ import java.awt.event.MouseEvent;
  */
 public class DisconnectingScreen extends ClientScreen {
 
-    private final int spacing = Main.staticConfig.getInt("catan.graphics.interface.disconnecting.spacing");
-    private final Dimension buttonSize = Main.staticConfig.getDimension("catan.graphics.interface.disconnecting.button.size");
+    private final int spacing = Client.staticConfig.getInt("catan.graphics.interface.disconnecting.spacing");
+    private final Dimension buttonSize = Client.staticConfig.getDimension("catan.graphics.interface.disconnecting.button.size");
 
     private final TiledBackground background;
     private final TextLabel text;

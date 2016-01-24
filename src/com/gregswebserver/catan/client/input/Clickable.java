@@ -15,16 +15,27 @@ public interface Clickable {
 
     UserEvent onMouseClick(MouseEvent event);
 
+    UserEvent onMousePress(MouseEvent event);
+
+    UserEvent onMouseRelease(MouseEvent event);
+
     UserEvent onKeyTyped(KeyEvent event);
+
+    UserEvent onKeyPressed(KeyEvent event);
+
+    UserEvent onKeyReleased(KeyEvent event);
 
     UserEvent onMouseScroll(int rot);
 
     UserEvent onMouseDrag(Point p);
+
+    UserEvent onHover();
+
+    UserEvent onUnHover();
 
     UserEvent onSelect();
 
     UserEvent onDeselect();
 
     Clickable getClickable(Point p);
-
 }
