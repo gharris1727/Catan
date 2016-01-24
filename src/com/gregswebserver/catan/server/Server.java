@@ -139,8 +139,6 @@ public class Server extends CoreThread {
             case User_Disconnect:
             case Lobby_Create:
             case Lobby_Change_Config:
-            case Lobby_Change_Owner:
-            case Lobby_Delete:
             case Lobby_Join:
             case Lobby_Leave:
                 try {

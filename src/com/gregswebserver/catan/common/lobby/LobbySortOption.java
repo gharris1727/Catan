@@ -7,8 +7,6 @@ package com.gregswebserver.catan.common.lobby;
 public enum LobbySortOption {
     Lobby_Name_Asc("Lobby"),
     Lobby_Name_Desc("Lobby"),
-    Host_Name_Asc("Host"),
-    Host_Name_Desc("Host"),
     Game_Type_Asc("Game"),
     Game_Type_Desc("Game"),
     Num_Clients_Asc("# Clients"),

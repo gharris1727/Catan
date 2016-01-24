@@ -41,6 +41,11 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     protected void resizeContents(RenderMask mask) {
         int mainWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - bottomHeight;
@@ -55,6 +60,6 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     public String toString() {
-        return "InGameScreen " + game;
+        return "InGameScreen";
     }
 }

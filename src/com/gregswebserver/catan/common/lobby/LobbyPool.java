@@ -22,7 +22,8 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
     }
 
     public void add(Username host, LobbyConfig config) {
-        Lobby lobby = new Lobby(host,config);
+        Lobby lobby = new Lobby(config);
+        lobby.add(host);
         userMap.put(host, lobby);
         //Concurrent write, but inserting on the head of the list should be safe.
         list.add(0, lobby);
@@ -55,10 +56,6 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
         userMap.get(username).setConfig(config);
     }
 
-    public void changeOwner(Username username, Username owner) {
-        userMap.get(username).setOwner(owner);
-    }
-
     private class LobbyComparator implements Comparator<Lobby> {
 
         private final LobbySortOption sortOption;
@@ -74,14 +71,10 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
                     return f.getConfig().getLobbyName().compareTo(s.getConfig().getLobbyName());
                 case Lobby_Name_Desc:
                     return -f.getConfig().getLobbyName().compareTo(s.getConfig().getLobbyName());
-                case Host_Name_Asc:
-                    return f.getOwner().username.compareTo(s.getOwner().username);
-                case Host_Name_Desc:
-                    return -f.getOwner().username.compareTo(s.getOwner().username);
                 case Game_Type_Asc:
-                    return f.getConfig().getMapGenerator().compareTo(s.getConfig().getMapGenerator());
+                    return f.getConfig().getGameType().compareTo(s.getConfig().getGameType());
                 case Game_Type_Desc:
-                    return -f.getConfig().getMapGenerator().compareTo(s.getConfig().getMapGenerator());
+                    return -f.getConfig().getGameType().compareTo(s.getConfig().getGameType());
                 case Num_Clients_Asc:
                     return f.size() - s.size();
                 case Num_Clients_Desc:

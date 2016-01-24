@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.lobby;
 
-import com.gregswebserver.catan.common.event.EventPayload;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.EventPayload;
 
 /**
  * Created by Greg on 12/29/2014.
@@ -9,19 +9,22 @@ import com.gregswebserver.catan.common.crypto.Username;
  */
 public class LobbyConfig extends EventPayload {
 
-    private String lobbyName;
-    private String mapGenerator;
-    private int maxPlayers;
+    private final String lobbyName;
+    private final String gameType;
+    private final String generator;
+    private final int maxPlayers;
 
-    public LobbyConfig(String lobbyName, String mapGenerator, int maxPlayers) {
+    public LobbyConfig(String lobbyName, String gameType, String generator, int maxPlayers) {
         this.lobbyName = lobbyName;
-        this.mapGenerator = mapGenerator;
+        this.gameType = gameType;
+        this.generator = generator;
         this.maxPlayers = maxPlayers;
     }
 
     public LobbyConfig(Username username) {
         lobbyName = username.username + "'s Game";
-        mapGenerator = "default";
+        gameType = "default";
+        generator = "random";
         maxPlayers = 3;
     }
 
@@ -29,8 +32,12 @@ public class LobbyConfig extends EventPayload {
         return lobbyName;
     }
 
-    public String getMapGenerator() {
-        return mapGenerator;
+    public String getGameType() {
+        return gameType;
+    }
+
+    public String getGenerator() {
+        return generator;
     }
 
     public int getMaxPlayers() {

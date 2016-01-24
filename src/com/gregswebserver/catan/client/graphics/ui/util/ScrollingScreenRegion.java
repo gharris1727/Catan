@@ -2,6 +2,7 @@ package com.gregswebserver.catan.client.graphics.ui.util;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
+import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 import java.awt.*;
 
@@ -72,5 +73,14 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
     @Override
     public boolean isRenderable() {
         return super.isRenderable() && offset != null && hostMask != null;
+    }
+
+    @Override
+    public void assertRenderable() {
+        super.assertRenderable();
+        if (offset == null)
+            throw new NotYetRenderableException(this + " has no offset");
+        if (hostMask == null)
+            throw new NotYetRenderableException(this + " has no host mask");
     }
 }

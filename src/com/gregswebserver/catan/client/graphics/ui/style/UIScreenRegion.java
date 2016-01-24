@@ -2,6 +2,7 @@ package com.gregswebserver.catan.client.graphics.ui.style;
 
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
+import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 /**
  * Created by Greg on 1/16/2015.
@@ -33,5 +34,12 @@ public abstract class UIScreenRegion extends ScreenRegion implements Styled {
     @Override
     public boolean isRenderable() {
         return super.isRenderable() && style != null;
+    }
+
+    @Override
+    public void assertRenderable() {
+        super.assertRenderable();
+        if (style == null)
+            throw new NotYetRenderableException(this + " has no style.");
     }
 }

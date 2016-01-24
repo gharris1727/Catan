@@ -195,14 +195,6 @@ public class Client extends CoreThread {
                 outgoing = new ControlEvent(username, ControlEventType.Lobby_Change_Config, event.getPayload());
                 sendEvent(outgoing);
                 break;
-            case Lobby_Make_Leader:
-                outgoing = new ControlEvent(username, ControlEventType.Lobby_Change_Owner, event.getPayload());
-                sendEvent(outgoing);
-                break;
-            case Lobby_Kick:
-                outgoing = new ControlEvent(username, ControlEventType.Lobby_Leave, event.getPayload());
-                sendEvent(outgoing);
-                break;
             case Lobby_Start:
                 outgoing = new ControlEvent(username, ControlEventType.Game_Start, null);
                 sendEvent(outgoing);
@@ -244,8 +236,6 @@ public class Client extends CoreThread {
             case User_Connect:
             case Client_Disconnect:
             case Lobby_Change_Config:
-            case Lobby_Change_Owner:
-            case Lobby_Delete:
                 updatePool(event);
                 break;
             case Lobby_Create:

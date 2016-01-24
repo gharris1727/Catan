@@ -20,7 +20,7 @@ public abstract class TextBox extends UIScreenRegion {
     private final TiledBackground background;
     private final TextLabel label;
 
-    public TextBox(int priority) {
+    public TextBox(int priority, String prepopulate) {
         super(priority);
         text = new StringBuilder();
         background = new TiledBackground(0, UIStyle.BACKGROUND_TEXT) {
@@ -29,7 +29,7 @@ public abstract class TextBox extends UIScreenRegion {
                 return "TextBoxBackground";
             }
         };
-        label = new TextLabel(1, UIStyle.FONT_PARAGRAPH, "") {
+        label = new TextLabel(1, UIStyle.FONT_PARAGRAPH, prepopulate) {
             @Override
             public String toString() {
                 return "TextBoxTextLabel";
@@ -54,7 +54,7 @@ public abstract class TextBox extends UIScreenRegion {
             if (len < 0)
                 len = 0;
             text.setLength(len);
-        } else if (Character.isAlphabetic(typed)) {
+        } else {
             text.append(typed);
         }
         label.setText(text.toString());
@@ -71,12 +71,25 @@ public abstract class TextBox extends UIScreenRegion {
 
     @Override
     protected void renderContents() {
-        label.setPosition(getCenteredPosition(label.getGraphic().getMask()));
-        label.getPosition().x = 16;
+        center(label).x = 16;
     }
 
-    public String getString() {
+    public void setText(String text) {
+        this.text.setLength(0);
+        this.text.append(text);
+        label.setText(text);
+    }
+
+    public String getText() {
         return text.toString();
+    }
+
+    public int getInt() {
+        return Integer.parseInt(text.toString());
+    }
+
+    public double getDouble() {
+        return Double.parseDouble(text.toString());
     }
 
 }

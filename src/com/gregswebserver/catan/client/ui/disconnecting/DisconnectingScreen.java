@@ -50,7 +50,6 @@ public class DisconnectingScreen extends ClientScreen {
                 return new UserEvent(this, UserEventType.Net_Disconnect, null);
             }
         };
-        button.setMask(new RoundedRectangularMask(buttonSize));
         //Add the elements to the screen.
         add(background).setClickable(this);
         add(text).setClickable(this);
@@ -58,21 +57,20 @@ public class DisconnectingScreen extends ClientScreen {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
+        button.setMask(new RoundedRectangularMask(buttonSize));
     }
 
     @Override
     protected void renderContents() {
-        Point textPosition = text.getPosition();
-        Point textCenter = getCenteredPosition(text.getGraphic().getMask());
-        textPosition.x = textCenter.x;
-        textPosition.y = textCenter.y - spacing;
-
-        Point buttonPosition = button.getPosition();
-        Point buttonCenter = getCenteredPosition(button.getMask());
-        buttonPosition.x = buttonCenter.x;
-        buttonPosition.y = buttonCenter.y + spacing;
+        center(text).y -= spacing;
+        center(button).y += spacing;
     }
 
     public String toString() {

@@ -44,14 +44,10 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
                 return exists;
             case Lobby_Create:
                 return exists && !inLobby;
-            case Lobby_Change_Config:
-            case Lobby_Change_Owner:
-            case Lobby_Delete:
-                //Must be owner of lobby.
-                return inLobby && lobbies.userGetLobby(origin).getOwner().equals(origin);
             case Lobby_Join:
                 //Lobby in payload must exist.
                 return exists && !inLobby && lobbies.userInLobby((Username) event.getPayload());
+            case Lobby_Change_Config:
             case Lobby_Leave:
                 return inLobby;
             case Game_Start:
@@ -89,7 +85,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
                 username = (Username) event.getPayload();
                 clients.removeUserConnection(username);
                 if (lobbies.userInLobby(username))
-                    host.addEvent(new ControlEvent(username, ControlEventType.Lobby_Delete,null));
+                    host.addEvent(new ControlEvent(username, ControlEventType.Lobby_Leave, username));
                 break;
             case User_Connect:
             case Name_Change:
@@ -111,14 +107,6 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
                 break;
             case Lobby_Change_Config:
                 lobbies.changeConfig(origin, (LobbyConfig) event.getPayload());
-                break;
-            case Lobby_Change_Owner:
-                lobbies.changeOwner(origin, (Username) event.getPayload());
-                break;
-            case Lobby_Delete:
-                lobby = lobbies.userGetLobby(origin);
-                for (Username user : lobby)
-                    host.addEvent(new ControlEvent(event.getOrigin(),ControlEventType.Lobby_Leave,user));
                 break;
             case Lobby_Join:
                 lobbies.join(origin, (Username) event.getPayload());

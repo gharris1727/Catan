@@ -13,5 +13,7 @@ public interface Renderable extends Graphical {
 
     boolean isRenderable();
 
+    void assertRenderable();
+
     TimeSlice getRenderTime();
 }

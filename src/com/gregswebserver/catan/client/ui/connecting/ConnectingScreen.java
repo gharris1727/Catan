@@ -34,20 +34,21 @@ public class ConnectingScreen extends ClientScreen {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
     }
 
     @Override
     protected void renderContents() {
-        text.getPosition().setLocation(getCenteredPosition(text.getGraphic().getMask()));
+        center(text);
     }
 
     public String toString() {
         return "ConnectingScreen";
-    }
-
-    public void setProgress(int i) {
-
     }
 }

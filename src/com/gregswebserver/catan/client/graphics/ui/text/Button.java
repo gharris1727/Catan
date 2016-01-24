@@ -44,6 +44,6 @@ public abstract class Button extends UIScreenRegion {
 
     @Override
     protected void renderContents() {
-        text.getPosition().setLocation(getCenteredPosition(text.getGraphic().getMask()));
+        center(text);
     }
 }

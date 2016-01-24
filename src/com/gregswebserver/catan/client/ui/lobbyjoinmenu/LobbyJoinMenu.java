@@ -31,7 +31,7 @@ public class LobbyJoinMenu extends ClientScreen {
         int width = mask.getWidth();
         int height = mask.getHeight();
         //Calculate intermediate dimensions
-        int lobbyListWidth = (width*2)/3;
+        int lobbyListWidth = (width*3)/4;
         int userListWidth = width - lobbyListWidth;
         //Create new positions
         lobbyList.setPosition(new Point());
@@ -45,6 +45,7 @@ public class LobbyJoinMenu extends ClientScreen {
         return "LobbyJoinMenu";
     }
 
+    @Override
     public void update() {
         lobbyList.update();
         userList.forceRender();

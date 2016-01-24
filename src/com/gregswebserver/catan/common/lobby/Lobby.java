@@ -10,21 +10,10 @@ import java.util.HashSet;
  */
 public class Lobby extends HashSet<Username> {
 
-    private Username owner;
     private LobbyConfig config;
 
-    public Lobby(Username owner, LobbyConfig config) {
-        setOwner(owner);
+    public Lobby(LobbyConfig config) {
         setConfig(config);
-    }
-
-    public Username getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Username owner) {
-        this.owner = owner;
-        add(owner);
     }
 
     public LobbyConfig getConfig() {
@@ -36,6 +25,6 @@ public class Lobby extends HashSet<Username> {
     }
 
     public String toString() {
-        return "Lobby UID: " + owner;
+        return "Lobby " + config;
     }
 }

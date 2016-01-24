@@ -8,7 +8,6 @@ import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.Renderable;
 import com.gregswebserver.catan.client.graphics.ui.style.Styled;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.input.Clickable;
@@ -40,7 +39,7 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     public LobbyJoinMenu lobbyJoinMenu;
     public LobbyScreen lobbyScreen;
 
-    private UIScreenRegion live;
+    private ClientScreen live;
 
     public RenderManager(Client client) {
         this.client = client;
@@ -72,7 +71,7 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
         display(lobbyScreen);
     }
 
-    private void display(UIScreenRegion region) {
+    private void display(ClientScreen region) {
         region.setStyle(style);
         region.setMask(mask);
         live = region;
@@ -113,6 +112,12 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     @Override
     public boolean isRenderable() {
         return live != null && live.isRenderable();
+    }
+
+    @Override
+    public void assertRenderable() {
+        if (live == null)
+            throw new NotYetRenderableException(this + " has no renderable ClientScreen");
     }
 
     @Override

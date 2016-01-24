@@ -15,4 +15,6 @@ public abstract class ClientScreen extends UIScreenRegion {
         super(0);
         this.client = client;
     }
+
+    public abstract void update();
 }

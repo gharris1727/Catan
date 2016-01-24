@@ -3,11 +3,8 @@ package com.gregswebserver.catan.client.ui.lobby;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.client.renderer.ClientScreen;
-import com.gregswebserver.catan.client.ui.lobbyjoinmenu.UserListRegion;
+import com.gregswebserver.catan.common.lobby.Lobby;
 
 import java.awt.*;
 
@@ -17,41 +14,46 @@ import java.awt.*;
  */
 public class LobbyScreen extends ClientScreen {
 
-    private final TiledBackground background;
-    private final UserListRegion allUsers;
-    private final LobbyUserList lobbyUsers;
+    private static final int buttonsHeight = Client.staticConfig.getInt("catan.graphics.interface.inlobby.panel.height");
+
+    private final LobbyUserList userList;
+    private final LobbySettings settings;
+    private final LobbyButtons buttons;
 
     public LobbyScreen(Client client) {
         super(client);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW) {
-            @Override
-            public String toString() {
-                return "LobbyScreenBackground";
-            }
-        };
-        allUsers = new UserListRegion(1, client.getClientList());
-        lobbyUsers = new LobbyUserList(2, client.getActiveLobby(), client.getUsername());
-        add(background).setClickable(this);
-        add(allUsers);
-        add(lobbyUsers);
+        settings = new LobbySettings(1);
+        buttons = new LobbyButtons(2);
+        userList = new LobbyUserList(2, client.getActiveLobby());
+        add(settings);
+        add(buttons);
+        add(userList);
+        update();
+    }
+
+    @Override
+    public void update() {
+        Lobby lobby = client.getActiveLobby();
+        if (lobby != null)
+            settings.setLobbyConfig(lobby.getConfig());
+        settings.forceRender();
+        userList.forceRender();
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        background.setMask(mask);
-        int lobbyUsersWidth = mask.getWidth()*2/3;
-        int allUsersWidth = mask.getWidth() - lobbyUsersWidth;
-        allUsers.setMask(new RectangularMask(new Dimension(allUsersWidth,mask.getHeight())));
-        lobbyUsers.setMask(new RectangularMask(new Dimension(lobbyUsersWidth,mask.getHeight())));
-        allUsers.setPosition(new Point(lobbyUsersWidth,0));
+        int userListWidth = mask.getWidth()*2/3;
+        int sidebarWidth = mask.getWidth() - userListWidth;
+        int settingsHeight = mask.getHeight() - buttonsHeight;
+        userList.setMask(new RectangularMask(new Dimension(userListWidth, mask.getHeight())));
+        settings.setMask(new RectangularMask(new Dimension(sidebarWidth, settingsHeight)));
+        buttons.setMask(new RectangularMask(new Dimension(sidebarWidth, buttonsHeight)));
+        userList.setPosition(new Point());
+        settings.setPosition(new Point(userListWidth, 0));
+        buttons.setPosition(new Point(userListWidth, settingsHeight));
     }
 
     public String toString() {
         return "LobbyScreen";
-    }
-
-    public void update() {
-        allUsers.forceRender();
-        lobbyUsers.forceRender();
     }
 }

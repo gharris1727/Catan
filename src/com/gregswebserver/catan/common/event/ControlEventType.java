@@ -23,8 +23,6 @@ public enum ControlEventType implements EventType {
     Client_Pool_Sync(MatchmakingPool.class), //Server -> Client, when first joining to send the current client pool state.
     Lobby_Create(LobbyConfig.class), //Client -> Server -> Broadcast, when a lobby is created.
     Lobby_Change_Config(LobbyConfig.class), //Client -> Server -> Broadcast, when a lobby is modified.
-    Lobby_Change_Owner(Username.class), //Client -> Server -> Broadcast, when a lobby's owner is changed.
-    Lobby_Delete(null), //Client -> Server -> Broadcast, when a lobby is deleted.
     Lobby_Join(Username.class), //Client -> Server -> Broadcast, when a client joins a lobby, stores owner of lobby.
     Lobby_Leave(Username.class), //Client -> Server -> Broadcast, when a client leaves a lobby.
     Game_Start(null),

@@ -33,6 +33,11 @@ public class ServerConnectMenu extends ClientScreen {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     public void resizeContents(RenderMask mask) {
         //Resize the background region
         background.setMask(mask);

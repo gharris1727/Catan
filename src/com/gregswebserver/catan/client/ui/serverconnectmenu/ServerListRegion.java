@@ -168,7 +168,7 @@ public class ServerListRegion extends UIScreenRegion {
                     return connect();
                 }
             };
-            passwordBox = new TextBox(1) {
+            passwordBox = new TextBox(1, "Password") {
                 @Override
                 public UserEvent onAccept() {
                     return connect();
@@ -187,7 +187,7 @@ public class ServerListRegion extends UIScreenRegion {
 
         private UserEvent connect() {
             if (selected != null) {
-                selected.setPassword(passwordBox.getString());
+                selected.setPassword(passwordBox.getText());
                 return new UserEvent(this, UserEventType.Net_Connect, selected);
             }
             return null;

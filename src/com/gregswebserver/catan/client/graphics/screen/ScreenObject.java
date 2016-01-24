@@ -72,7 +72,7 @@ public abstract class ScreenObject implements Clickable {
 
     @Override
     public UserEvent onKeyPressed(KeyEvent event) {
-        return (redirect == null) ? null : redirect.onKeyPressed(event);
+        return (redirect == null) ? null : redirect.onKeyTyped(event);
     }
 
     @Override

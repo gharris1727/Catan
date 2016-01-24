@@ -110,11 +110,17 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         return object;
     }
 
-    // Get the coordinate that a child needs to be at to be centered in this region.
-    public final Point getCenteredPosition(RenderMask other) {
-        int x = (mask.getWidth() - other.getWidth()) / 2;
-        int y = (mask.getHeight() - other.getHeight()) / 2;
-        return new Point(x, y);
+    public final Point center(ScreenObject other) {
+        if (other != null && other.isGraphical()) {
+            if (other instanceof Renderable)
+                ((Renderable) other).assertRenderable();
+            RenderMask mask = ((Graphical) other).getGraphic().getMask();
+            int x = (this.mask.getWidth() - mask.getWidth()) / 2;
+            int y = (this.mask.getHeight() - mask.getHeight()) / 2;
+            other.setPosition(new Point(x, y));
+            return other.getPosition();
+        }
+        return null;
     }
 
     //Iterator over every object in the screen in order of priority.
@@ -174,6 +180,14 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     }
 
     @Override
+    public void assertRenderable() {
+        if (mask == null)
+            throw new NotYetRenderableException(this + " has no mask");
+        if (graphic == null)
+            throw new NotYetRenderableException(this + " has no graphic");
+    }
+
+    @Override
     public final boolean needsRender() {
         if (limitScroll() || needsRendering) return true;
         for (ScreenObject object : this)
@@ -192,8 +206,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         timeSlice = new TimeSlice(this.toString());
         if (needsRender()) {
             renderContents();
-            if (!isRenderable())
-                throw new NotYetRenderableException(this + " is not renderable.");
+            assertRenderable();
             graphic.clear();
             for (ScreenObject object : this)
                 if (object.isGraphical()) {
@@ -204,8 +217,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
                 }
             needsRendering = false;
         }
-        if (!isRenderable())
-            throw new NotYetRenderableException(this + " is not renderable.");
+        assertRenderable();
         timeSlice.markTime();
         return graphic;
     }
