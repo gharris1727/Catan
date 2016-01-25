@@ -10,7 +10,7 @@ import java.util.HashSet;
  * Class containing information about the trades offered at a trading post.
  * Used in a HashMap where two locations point to the same object.
  */
-public enum TradingPost implements Trader {
+public enum TradingPostType implements Trader {
 
     Brick(GameResource.Brick),
     Lumber(GameResource.Lumber),
@@ -22,7 +22,7 @@ public enum TradingPost implements Trader {
     private final HashSet<Trade> trades;
     private final GameResource gameResource;
 
-    TradingPost(GameResource r) {
+    TradingPostType(GameResource r) {
         gameResource = r;
         trades = new HashSet<>();
         for (GameResource a : GameResource.values()) {

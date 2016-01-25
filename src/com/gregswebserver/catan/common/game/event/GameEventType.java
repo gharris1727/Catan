@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 
 /**
@@ -11,6 +12,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
  */
 public enum GameEventType implements EventType {
 
+    Create_Game(GameSettings.class),
     Turn_Advance(null),
     Player_Roll_Dice(Coordinate.class),
     Player_Move_Robber(Coordinate.class),

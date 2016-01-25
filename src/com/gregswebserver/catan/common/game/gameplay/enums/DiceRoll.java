@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.RoundedMask;
-import com.gregswebserver.catan.client.resources.GraphicSet;
+import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
 

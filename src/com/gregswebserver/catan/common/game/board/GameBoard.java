@@ -7,14 +7,11 @@ import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
+import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -22,10 +19,10 @@ import java.util.Map;
  */
 public class GameBoard {
 
-    private final HexagonalArray hexArray;
     private final Dimension size;
+    private final HexagonalArray hexArray;
     private final HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
-    private final HashMap<Coordinate, TradingPost> tradingPosts;
+    private final HashMap<Coordinate, TradingPostType> tradingPosts;
     private Coordinate robberLocation;
 
     public GameBoard(Dimension size) {
@@ -46,8 +43,8 @@ public class GameBoard {
         coordinates.add(c);
     }
 
-    public void setTradingPostCoordinate(Coordinate coordinate, TradingPost tradingPost) {
-        tradingPosts.put(coordinate, tradingPost);
+    public void setTradingPostCoordinate(Coordinate coordinate, TradingPostType tradingPostType) {
+        tradingPosts.put(coordinate, tradingPostType);
     }
 
     public Dimension getSize() {
@@ -98,30 +95,24 @@ public class GameBoard {
         return hexArray.vertices.toHashMap();
     }
 
-    public HashSet<Coordinate> getBeachTiles(HashSet<Coordinate> landTiles) {
-        HashSet<Coordinate> out = new HashSet<>();
+    public Set<Coordinate> getBeachTiles(Set<Coordinate> landTiles) {
+        Set<Coordinate> out = new HashSet<>();
         for (Coordinate c : landTiles)
             out.addAll(hexArray.getAdjacentSpacesFromSpace(c).values());
         out.removeAll(landTiles);
         return out;
     }
 
-    public HashSet<Coordinate> getValidVertices(HashSet<Coordinate> landTiles) {
-        HashSet<Coordinate> out = new HashSet<>();
-        for (Coordinate c : landTiles)
-            out.addAll(hexArray.getAdjacentVerticesFromSpace(c).values());
-        return out;
+    public Set<Coordinate> getAdjacentVertices(Coordinate coordinate) {
+        return new HashSet<>(hexArray.getAdjacentVerticesFromSpace(coordinate).values());
     }
 
-    public HashSet<Coordinate> getValidEdges(HashSet<Coordinate> landTiles) {
-        HashSet<Coordinate> out = new HashSet<>();
-        for (Coordinate c : landTiles)
-            out.addAll(hexArray.getAdjacentEdgesFromSpace(c).values());
-        return out;
+    public Set<Coordinate> getAdjacentEdges(Coordinate coordinate) {
+        return new HashSet<>(hexArray.getAdjacentEdgesFromSpace(coordinate).values());
     }
 
-    public HashSet<Direction> getAdjacentResourceTiles(Coordinate coordinate) {
-        HashSet<Direction> found = new HashSet<>();
+    public Set<Direction> getDirectionsOfAdjacentTiles(Coordinate coordinate) {
+        Set<Direction> found = EnumSet.noneOf(Direction.class);
         for (Map.Entry<Direction, Coordinate> e : hexArray.getAdjacentSpacesFromSpace(coordinate).entrySet()) {
             Tile t = getTile(e.getValue());
             if (t != null && t instanceof ResourceTile)

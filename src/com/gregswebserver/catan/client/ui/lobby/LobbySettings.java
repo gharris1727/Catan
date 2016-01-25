@@ -49,8 +49,8 @@ class LobbySettings extends UIScreenRegion {
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
                         this.getText(),
-                        LobbySettings.this.config.getGameType(),
-                        LobbySettings.this.config.getGenerator(),
+                        LobbySettings.this.config.getLayoutName(),
+                        LobbySettings.this.config.getGeneratorName(),
                         LobbySettings.this.config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -66,7 +66,7 @@ class LobbySettings extends UIScreenRegion {
                 LobbyConfig newConfig = new LobbyConfig(
                         LobbySettings.this.config.getLobbyName(),
                         this.getText(),
-                        LobbySettings.this.config.getGenerator(),
+                        LobbySettings.this.config.getGeneratorName(),
                         LobbySettings.this.config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -81,7 +81,7 @@ class LobbySettings extends UIScreenRegion {
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
                         LobbySettings.this.config.getLobbyName(),
-                        LobbySettings.this.config.getGameType(),
+                        LobbySettings.this.config.getLayoutName(),
                         this.getText(),
                         LobbySettings.this.config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
@@ -97,8 +97,8 @@ class LobbySettings extends UIScreenRegion {
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
                         LobbySettings.this.config.getLobbyName(),
-                        LobbySettings.this.config.getGameType(),
-                        LobbySettings.this.config.getGenerator(),
+                        LobbySettings.this.config.getLayoutName(),
+                        LobbySettings.this.config.getGeneratorName(),
                         this.getInt());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -118,8 +118,8 @@ class LobbySettings extends UIScreenRegion {
     public void setLobbyConfig(LobbyConfig config) {
         this.config = config;
         name.setText(config.getLobbyName());
-        type.setText(config.getGameType());
-        generator.setText(config.getGenerator());
+        type.setText(config.getLayoutName());
+        generator.setText(config.getGeneratorName());
         clients.setText(""+config.getMaxPlayers());
     }
 

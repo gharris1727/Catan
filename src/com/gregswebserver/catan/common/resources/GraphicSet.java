@@ -1,12 +1,9 @@
-package com.gregswebserver.catan.client.resources;
+package com.gregswebserver.catan.common.resources;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.gregswebserver.catan.common.resources.ConfigurationException;
-import com.gregswebserver.catan.common.resources.ResourceLoadException;
-import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.sun.istack.internal.NotNull;
 
 import java.awt.*;

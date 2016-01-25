@@ -5,7 +5,8 @@ import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.util.Direction;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -188,16 +189,15 @@ public class HexagonalArray {
 
     //Edge Orientation
     public int getEdgeOrientation(Coordinate c) {
-        if (c.x % 3 == 2) return 0;
         if (c.x % 6 == 0 || c.x % 6 == 4) return 1;
         if (c.x % 6 == 1 || c.x % 6 == 3) return 2;
-        return 3; //Will end up returning a settlement graphic, should never happen.
+        return 0;
     }
 
     //Multi-translation functions
 
-    public HashMap<Direction, Coordinate> getAdjacentSpacesFromSpace(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(6);
+    public Map<Direction, Coordinate> getAdjacentSpacesFromSpace(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getSpaceCoordinateFromSpace(c, d));
@@ -208,8 +208,8 @@ public class HexagonalArray {
         return out;
     }
 
-    public HashMap<Direction, Coordinate> getAdjacentEdgesFromEdge(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(4);
+    public Map<Direction, Coordinate> getAdjacentEdgesFromEdge(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getEdgeCoordinateFromEdge(c, d));
@@ -220,8 +220,8 @@ public class HexagonalArray {
         return out;
     }
 
-    public HashMap<Direction, Coordinate> getAdjacentVerticesFromVertex(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(3);
+    public Map<Direction, Coordinate> getAdjacentVerticesFromVertex(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getVertexCoordinateFromVertex(c, d));
@@ -232,8 +232,8 @@ public class HexagonalArray {
         return out;
     }
 
-    public HashMap<Direction, Coordinate> getAdjacentEdgesFromSpace(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(6);
+    public Map<Direction, Coordinate> getAdjacentEdgesFromSpace(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getEdgeCoordinateFromSpace(c, d));
@@ -244,8 +244,8 @@ public class HexagonalArray {
         return out;
     }
 
-    public HashMap<Direction, Coordinate> getAdjacentVerticesFromSpace(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(6);
+    public Map<Direction, Coordinate> getAdjacentVerticesFromSpace(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getVertexCoordinateFromSpace(c, d));
@@ -257,8 +257,8 @@ public class HexagonalArray {
     }
 
     @Deprecated
-    public HashMap<Direction, Coordinate> getAdjacentSpacesFromEdge(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(2);
+    public Map<Direction, Coordinate> getAdjacentSpacesFromEdge(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getSpaceCoordinateFromEdge(c, d));
@@ -270,8 +270,8 @@ public class HexagonalArray {
     }
 
     @Deprecated
-    public HashMap<Direction, Coordinate> getAdjacentVerticesFromEdge(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(2);
+    public Map<Direction, Coordinate> getAdjacentVerticesFromEdge(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getVertexCoordinateFromEdge(c, d));
@@ -283,8 +283,8 @@ public class HexagonalArray {
     }
 
     @Deprecated
-    public HashMap<Direction, Coordinate> getAdjacentSpacesFromVertex(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(3);
+    public Map<Direction, Coordinate> getAdjacentSpacesFromVertex(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getSpaceCoordinateFromVertex(c, d));
@@ -296,8 +296,8 @@ public class HexagonalArray {
     }
 
     @Deprecated
-    public HashMap<Direction, Coordinate> getAdjacentEdgesFromVertex(Coordinate c) {
-        HashMap<Direction, Coordinate> out = new HashMap<>(3);
+    public Map<Direction, Coordinate> getAdjacentEdgesFromVertex(Coordinate c) {
+        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
         for (Direction d : Direction.values()) {
             try {
                 out.put(d, getEdgeCoordinateFromVertex(c, d));

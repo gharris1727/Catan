@@ -119,6 +119,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             sendEvent(selected.onUnHover());
             hover = next;
             sendEvent(selected.onHover());
+//            logger.log("Hovered "+ hover, LogLevel.DEBUG);
         }
     }
 
@@ -128,6 +129,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             sendEvent(selected.onDeselect());
             selected = hover;
             sendEvent(selected.onSelect());
+//            logger.log("Selected "+ selected, LogLevel.DEBUG);
         }
     }
 

@@ -14,10 +14,10 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.client.resources.GraphicSet;
 import com.gregswebserver.catan.common.lobby.Lobby;
 import com.gregswebserver.catan.common.lobby.LobbyPool;
 import com.gregswebserver.catan.common.lobby.LobbySortOption;
+import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -259,7 +259,7 @@ public class LobbyListRegion extends UIScreenRegion {
         @Override
         protected void renderContents() {
             clear();
-            int height = 0;
+            int height = 1;
             for (Lobby lobby : lobbies) {
                 LobbyListScrollElement elt = new LobbyListScrollElement(0, lobby);
                 elt.setStyle(getStyle());
@@ -296,7 +296,7 @@ public class LobbyListRegion extends UIScreenRegion {
                         return "LobbyListScrollElementLobbyName";
                     }
                 };
-                gameTypeText = new TextLabel(1, UIStyle.FONT_PARAGRAPH, lobby.getConfig().getGameType()) {
+                gameTypeText = new TextLabel(1, UIStyle.FONT_PARAGRAPH, lobby.getConfig().getLayoutName()) {
                     @Override
                     public String toString() {
                         return "LobbyListScrollElementGameType";

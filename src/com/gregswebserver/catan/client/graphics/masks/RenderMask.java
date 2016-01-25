@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.masks;
 
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Created by Greg on 8/14/2014.
@@ -53,9 +54,7 @@ public abstract class RenderMask {
     public int getIndex(int x, int y) {
         if (!containsPoint(x, y))
             throw new IllegalArgumentException("Coordinate outside of mask bounds.");
-        int index = x - padding[y];
-        if (y > 0) index += cumulative[y - 1];
-        return index;
+        return y*getWidth() + x;
     }
 
     public boolean containsPoint(Point p) {
@@ -70,7 +69,30 @@ public abstract class RenderMask {
         return x >= minX && x < maxX;
     }
 
-    public int getPixelCount() {
-        return (height > 0) ? cumulative[height - 1] : 0;
+    @Override
+    public int hashCode() {
+        int hash = width;
+        hash = 31 * hash + height;
+        hash = 31 * hash + Arrays.hashCode(padding);
+        hash = 31 * hash + Arrays.hashCode(widths);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (o instanceof RenderMask) {
+            RenderMask mask = (RenderMask) o;
+            return width == mask.width && height == mask.height
+                    && Arrays.equals(padding, mask.padding)
+                    && Arrays.equals(widths, mask.widths);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "RenderMask(" + width + "/" + height + ")";
     }
 }

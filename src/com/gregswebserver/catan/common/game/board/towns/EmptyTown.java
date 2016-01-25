@@ -13,11 +13,6 @@ public class EmptyTown extends Town {
         super(Team.None);
     }
 
-    @Override
-    public int getResourceNumber() {
-        return 0;
-    }
-
     public String toString() {
         return "Empty Building";
     }

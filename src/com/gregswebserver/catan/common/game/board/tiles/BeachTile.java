@@ -3,7 +3,7 @@ package com.gregswebserver.catan.common.game.board.tiles;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.HexagonalMask;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.gregswebserver.catan.client.resources.GraphicSet;
+import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
 
 /**

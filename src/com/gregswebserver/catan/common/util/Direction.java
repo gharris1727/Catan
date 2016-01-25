@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.util;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -36,7 +36,7 @@ public enum Direction {
         this.y = a.y + b.y;
     }
 
-    public static Direction getAverage(HashSet<Direction> input) {
+    public static Direction getAverage(Set<Direction> input) {
         int sumX = 0, sumY = 0;
         Direction out = null;
         for (Direction d : input) {

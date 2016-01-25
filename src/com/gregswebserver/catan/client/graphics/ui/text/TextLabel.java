@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.graphics.ui.text;
 
-import com.gregswebserver.catan.client.graphics.graphics.BufferedGraphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
@@ -25,7 +24,6 @@ public abstract class TextLabel extends GraphicObject implements Styled {
     private UIStyle style;
     private String text;
 
-    private BufferedGraphic graphic;
     private TextLayout layout;
 
     public TextLabel(int priority, String textStyleName, String text) {
@@ -50,14 +48,12 @@ public abstract class TextLabel extends GraphicObject implements Styled {
             int width = (int) bounds.getWidth() + 1;
             int height = (int) layout.getAscent() + (int) layout.getDescent() + 1;
             RenderMask mask = new RectangularMask(new Dimension(width, height));
-            graphic = new BufferedGraphic(mask);
-            Graphics g = graphic.getDrawGraphics();
+            Graphic graphic = new Graphic(mask);
+            graphic.clear();
+            Graphics g = graphic.getBuffer().getGraphics();
             g.setColor(style.getTextStyle(textStyleName).getColor());
             layout.draw((Graphics2D) g, 0, (int) layout.getAscent());
-            g.dispose();
             setGraphic(graphic);
-        } else {
-            setGraphic(new Graphic(new RectangularMask(new Dimension(0, 0))));
         }
     }
 

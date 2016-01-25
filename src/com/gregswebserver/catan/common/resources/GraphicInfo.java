@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.resources;
+package com.gregswebserver.catan.common.resources;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 
@@ -39,8 +39,8 @@ public class GraphicInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GraphicInfo that = (GraphicInfo) o;
-        return location.equals(that.location) && mask == that.mask && source == that.source;
+        GraphicInfo info = (GraphicInfo) o;
+        return location.equals(info.location) && mask.equals(info.mask) && source.equals(info.source);
 
     }
 

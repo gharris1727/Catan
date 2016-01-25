@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.resources;
+package com.gregswebserver.catan.common.resources;
 
 import com.gregswebserver.catan.ExternalResource;
 
@@ -16,6 +16,16 @@ public class GraphicSourceInfo {
 
     public String getPath() {
         return ExternalResource.getResourceDataDirectory() + path;
+    }
+
+    @Override
+    public int hashCode() {
+        return path.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || o instanceof GraphicSourceInfo && ((GraphicSourceInfo)o).path.equals(path);
     }
 
     @Override

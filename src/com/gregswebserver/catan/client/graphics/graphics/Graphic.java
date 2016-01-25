@@ -4,7 +4,11 @@ import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.util.Arrays;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 /**
  * Created by Greg on 8/15/2014.
@@ -13,26 +17,44 @@ import java.util.Arrays;
 public class Graphic implements Maskable {
 
     public static final int transColor = 0xff00ff;
-    protected String name;
-    protected int[] pixels, clickable;
+    protected int[] pixels = null, clickable = null;
     private RenderMask mask;
+    private BufferedImage buffer;
 
-    //For subclasses to do their own instantiation.
     protected Graphic() {
+    }
+
+    public Graphic(Graphic graphic) {
+        this(graphic, graphic.getMask(), new Point());
+        this.clickable = graphic.clickable;
     }
 
     //For creating Graphics from other Graphics (usually StaticGraphics).
     public Graphic(Graphic source, RenderMask mask, Point start)  {
         this(mask);
-        render(this, new Point(), source, start, 0, false);
+        BufferedImage part = source.buffer.getSubimage(start.x, start.y, mask.getWidth(), mask.getHeight());
+        buffer.getGraphics().drawImage(part, 0, 0, mask.getWidth(), mask.getHeight(), null);
     }
 
     //Primary constructor for a blank Graphic object.
     public Graphic(RenderMask mask) {
-        this.pixels = new int[mask.getPixelCount()];
-        this.clickable = new int[mask.getPixelCount()];
+        this(mask, new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB));
+    }
+
+    public Graphic(RenderMask mask, BufferedImage buffer) {
+        init(mask, buffer);
+    }
+
+    protected void init(RenderMask mask, BufferedImage buffer) {
         this.mask = mask;
-        this.name = "Graphic " + mask + " Pixels: " + mask.getPixelCount();
+        this.buffer = buffer;
+    }
+
+    protected void loadRaster() {
+        if (pixels == null)
+            pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
+        if (clickable == null)
+            clickable = new int[pixels.length];
     }
 
     private static void render(Graphic to, Point toStart, Graphic from, Point fromStart, int color, boolean trans) {
@@ -120,24 +142,24 @@ public class Graphic implements Maskable {
 
     @Override
     public void setMask(RenderMask mask) {
-        this.mask = mask;
-    }
-
-    protected void setPixels(int[] pixels) {
-        this.pixels = pixels;
-        clickable = new int[pixels.length];
+        throw new RuntimeException("You cant resize a graphic dummy.");
     }
 
     public int getClickableColor(Point p) {
+        if (clickable == null)
+            return 0;
         return clickable[mask.getIndex(p)];
     }
 
     public void renderTo(Graphic to, Point toPos, int color) {
+        //to.buffer.getGraphics().drawImage(buffer,toPos.x,toPos.y,mask.getWidth(),mask.getHeight(),null);
         //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
+        loadRaster();
         render(to, toPos, this, new Point(), color, true);
     }
 
     public void clear() {
+        loadRaster();
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = transColor;
             clickable[i] = 0;
@@ -145,10 +167,15 @@ public class Graphic implements Maskable {
     }
 
     public String toString() {
-        return name;
+        return "Graphic(" + mask.getWidth() + "/" + mask.getHeight() + ")";
     }
 
     public void displayClickableColor() {
-        pixels = clickable;
+        loadRaster();
+        pixelCopy(clickable, 0, 1, pixels, 0, 1, clickable.length, false);
+    }
+
+    public Image getBuffer() {
+        return buffer;
     }
 }

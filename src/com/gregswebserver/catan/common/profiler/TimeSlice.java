@@ -8,15 +8,24 @@ import java.util.HashMap;
  */
 public class TimeSlice {
 
+    public static final long THOUSAND = 1000L;
+    public static final long MILLION = THOUSAND*THOUSAND;
+    public static final long BILLION = THOUSAND*MILLION;
+    public static final long TRILLION = THOUSAND*BILLION;
+
     private final String name;
     private final HashMap<String, TimeSlice> slices;
-    private final long creationTime;
+    private long startTime;
     private long time;
 
     public TimeSlice(String name) {
         this.name = name;
         slices = new HashMap<>();
-        creationTime = System.nanoTime();
+    }
+
+    public void reset() {
+        startTime = System.nanoTime();
+        slices.clear();
     }
 
     public void addChild(TimeSlice child) {
@@ -24,8 +33,8 @@ public class TimeSlice {
             slices.put(child.name, child);
     }
 
-    public void markTime() {
-        time = System.nanoTime() - creationTime;
+    public void mark() {
+        time = System.nanoTime() - startTime;
     }
 
     public long getTime() {
@@ -56,11 +65,11 @@ public class TimeSlice {
     }
 
     private String formatTime(long in) {
-        if (in < 1e3)
+        if (in < 10*THOUSAND)
             return in + "ns";
-        if (in < 1e6)
+        if (in < 10*MILLION)
             return formatDouble(in / 1e3, 3) + "us";
-        if (in < 1e9)
+        if (in < 10*TRILLION)
             return formatDouble(in / 1e6, 3) + "ms";
         return formatDouble(in / 1e9, 3) + "s";
     }
@@ -109,5 +118,15 @@ public class TimeSlice {
             out.append('\n');
         }
         return out.toString();
+    }
+
+    public void waitUntil(long total) {
+        long diff = total - time;
+        if (diff > 5*MILLION)
+            try {
+                Thread.sleep(diff/MILLION);
+            } catch (InterruptedException e) {
+                // We got interrupted from our sleep. Oh well.
+            }
     }
 }

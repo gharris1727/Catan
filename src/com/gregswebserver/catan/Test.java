@@ -30,6 +30,6 @@ public class Test {
         bobLogin.setPassword("pw");
         //Add the events to the client event queues.
         greg.addEvent(new UserEvent("Test", UserEventType.Net_Connect, gregLogin));
-        bob.addEvent(new UserEvent("Test", UserEventType.Net_Connect, bobLogin));
+        //bob.addEvent(new UserEvent("Test", UserEventType.Net_Connect, bobLogin));
     }
 }

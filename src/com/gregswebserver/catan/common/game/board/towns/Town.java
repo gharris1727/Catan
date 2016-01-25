@@ -12,6 +12,4 @@ public abstract class Town extends TeamOwned {
     public Town(Team owner) {
         super(owner);
     }
-
-    public abstract int getResourceNumber();
 }

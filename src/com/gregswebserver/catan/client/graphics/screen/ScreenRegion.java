@@ -19,17 +19,18 @@ import java.util.List;
  */
 public abstract class ScreenRegion extends ScreenObject implements Renderable, Iterable<ScreenObject>, Graphical, Animated, Maskable {
 
+    private final TimeSlice timeSlice;
     private RenderMask mask;
     private Graphic graphic;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
     private Map<Integer, ScreenObject> clickableColorMap;
-    private TimeSlice timeSlice;
 
     //The constructor of a screen region is meant to store relevant references,
     //and create any permanent ScreenObjects needed in the render.
     public ScreenRegion(int priority) {
         super(priority);
+        timeSlice = new TimeSlice(this.toString());
         clear();
     }
 
@@ -176,15 +177,13 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     @Override
     public boolean isRenderable() {
-        return mask != null && graphic != null;
+        return mask != null;
     }
 
     @Override
     public void assertRenderable() {
         if (mask == null)
             throw new NotYetRenderableException(this + " has no mask");
-        if (graphic == null)
-            throw new NotYetRenderableException(this + " has no graphic");
     }
 
     @Override
@@ -203,7 +202,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     @Override
     public Graphic getGraphic() {
-        timeSlice = new TimeSlice(this.toString());
+        timeSlice.reset();
         if (needsRender()) {
             renderContents();
             assertRenderable();
@@ -216,9 +215,10 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
                         timeSlice.addChild(((Renderable) object).getRenderTime());
                 }
             needsRendering = false;
+            graphic = new Graphic(graphic);
         }
         assertRenderable();
-        timeSlice.markTime();
+        timeSlice.mark();
         return graphic;
     }
 

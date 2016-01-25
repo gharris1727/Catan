@@ -3,13 +3,12 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.resources.GraphicSet;
-import com.gregswebserver.catan.common.game.gameplay.VictoryFactor;
+import com.gregswebserver.catan.common.resources.GraphicSet;
 /**
  * Created by Greg on 8/9/2014.
  * Enum storing the different achievement cards.
  */
-public enum AchievementCard implements Graphical, VictoryFactor {
+public enum AchievementCard implements Graphical {
 
 
     //TODO: insert the correct descriptions.
@@ -36,11 +35,6 @@ public enum AchievementCard implements Graphical, VictoryFactor {
 
     public String getDescription() {
         return desc;
-    }
-
-    @Override
-    public int getVictoryPoints() {
-        return 2;
     }
 
     @Override

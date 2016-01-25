@@ -1,12 +1,15 @@
 package com.gregswebserver.catan.common.game.board.hexarray;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Created by Greg on 8/9/2014.
  * Management class for a 2d-hexArray
  */
-public class TwoDimensionalArray<T> extends AbstractCollection<T> {
+public class TwoDimensionalArray<T> implements Iterable<T> {
 
     public static final int MAX_SIZE = Integer.MAX_VALUE - 8;
     public final int sizeX, sizeY;
@@ -148,7 +151,6 @@ public class TwoDimensionalArray<T> extends AbstractCollection<T> {
         };
     }
 
-    @Override
     public int size() {
         return size;
     }

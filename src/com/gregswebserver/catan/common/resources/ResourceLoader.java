@@ -3,10 +3,9 @@ package com.gregswebserver.catan.common.resources;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.GraphicSource;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.resources.GameInfo;
-import com.gregswebserver.catan.client.resources.GraphicInfo;
-import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
-import com.gregswebserver.catan.common.game.gameplay.GameType;
+import com.gregswebserver.catan.common.game.board.layout.BoardLayout;
+import com.gregswebserver.catan.common.game.board.layout.DynamicBoardLayout;
+import com.gregswebserver.catan.common.game.board.layout.StaticBoardLayout;
 
 /**
  * Created by Greg on 1/7/2015.
@@ -14,12 +13,15 @@ import com.gregswebserver.catan.common.game.gameplay.GameType;
  */
 public class ResourceLoader {
 
-    //TODO: rename GameType to match the other Info schemas.
-    private static final ResourceCache<GameInfo, GameType> gameCache = new ResourceCache<GameInfo, GameType>() {
+    //TODO: rename StaticBoardLayout to match the other Info schemas.
+    private static final ResourceCache<BoardLayoutInfo, BoardLayout> boardLayoutCache = new ResourceCache<BoardLayoutInfo, BoardLayout>() {
         @Override
-        protected GameType load(GameInfo info) throws ResourceLoadException {
+        protected BoardLayout load(BoardLayoutInfo info) throws ResourceLoadException {
             try {
-                return new GameType(info.getPath());
+                if (info.isDynamic())
+                    return new DynamicBoardLayout(info.getSeed());
+                else
+                    return new StaticBoardLayout(info.getPath());
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }
@@ -51,13 +53,13 @@ public class ResourceLoader {
     };
 
     static {
-        gameCache.clear();
+        boardLayoutCache.clear();
         graphicCache.clear();
         graphicSourceCache.clear();
     }
 
-    public static GameType getGame(GameInfo info) throws ResourceLoadException {
-        return gameCache.get(info);
+    public static BoardLayout getBoardLayout(BoardLayoutInfo info) throws ResourceLoadException {
+        return boardLayoutCache.get(info);
     }
 
     public static Graphic getGraphic(GraphicInfo info) throws ResourceLoadException {

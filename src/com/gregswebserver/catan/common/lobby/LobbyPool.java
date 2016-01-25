@@ -72,9 +72,9 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
                 case Lobby_Name_Desc:
                     return -f.getConfig().getLobbyName().compareTo(s.getConfig().getLobbyName());
                 case Game_Type_Asc:
-                    return f.getConfig().getGameType().compareTo(s.getConfig().getGameType());
+                    return f.getConfig().getLayoutName().compareTo(s.getConfig().getLayoutName());
                 case Game_Type_Desc:
-                    return -f.getConfig().getGameType().compareTo(s.getConfig().getGameType());
+                    return -f.getConfig().getLayoutName().compareTo(s.getConfig().getLayoutName());
                 case Num_Clients_Asc:
                     return f.size() - s.size();
                 case Num_Clients_Desc:

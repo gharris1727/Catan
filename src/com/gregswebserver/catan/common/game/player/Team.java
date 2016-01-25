@@ -6,8 +6,8 @@ import com.gregswebserver.catan.client.graphics.masks.DiagonalMask;
 import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.resources.GraphicSet;
-import com.gregswebserver.catan.client.resources.GraphicSourceInfo;
+import com.gregswebserver.catan.common.resources.GraphicSet;
+import com.gregswebserver.catan.common.resources.GraphicSourceInfo;
 
 /**
  * Created by Greg on 8/9/2014.

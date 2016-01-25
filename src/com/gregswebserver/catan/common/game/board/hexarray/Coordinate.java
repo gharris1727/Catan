@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Coordinate class for referring to object locations.
  * Used in HexagonalArray and TwoDimensionalArray classes.
  */
-public class Coordinate implements Serializable {
+public final class Coordinate implements Serializable {
 
     public final int x, y;
 
@@ -30,6 +30,8 @@ public class Coordinate implements Serializable {
     }
 
     public boolean equals(Object o) {
+        if (o == this)
+            return true;
         if (o instanceof Coordinate) {
             Coordinate c = (Coordinate) o;
             return c.x == x && c.y == y;

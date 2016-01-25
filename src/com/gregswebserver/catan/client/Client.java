@@ -18,7 +18,9 @@ import com.gregswebserver.catan.common.chat.ChatThread;
 import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.*;
+import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.lobby.*;
 import com.gregswebserver.catan.common.log.LogLevel;
@@ -124,7 +126,6 @@ public class Client extends CoreThread {
             controlEvent((ControlEvent) event);
         else
             throw new IllegalStateException();
-
     }
 
     @Override
@@ -253,7 +254,8 @@ public class Client extends CoreThread {
                 break;
             case Game_Start:
                 state = Starting;
-                //TODO: create a new game.
+                GameSettings settings = ((LobbyConfig) event.getPayload()).getGameSettings();
+                gameThread.addEvent(new GameEvent(username, GameEventType.Create_Game, settings));
                 gameThread.start();
                 break;
             case Game_Quit:
@@ -311,6 +313,8 @@ public class Client extends CoreThread {
         window = new ClientWindow(this, listener);
         renderThread = new RenderThread(this, manager);
         renderThread.start();
+        gameThread = new GameThread(this);
+        gameThread.start();
         serverPool = new ServerPool();
         manager.displayServerConnectMenu();
     }

@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.game;
 
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.GameBoard;
@@ -13,7 +14,6 @@ import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.player.Player;
 import com.gregswebserver.catan.common.game.player.Team;
-import com.gregswebserver.catan.common.crypto.Username;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -24,11 +24,14 @@ import java.util.HashMap;
  */
 public class CatanGame implements EventConsumer<GameEvent> {
 
-    private GameBoard board;
+    private final GameSettings settings;
+    private final GameBoard board;
     private HashMap<Username, Player> players;
     private Player localPlayer;
 
-    public CatanGame() {
+    public CatanGame(GameSettings settings) {
+        this.settings = settings;
+        board = settings.getGenerator().generate(settings.getLayout());
     }
 
     @Override

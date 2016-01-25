@@ -1,6 +1,7 @@
-package com.gregswebserver.catan.common.game.gameplay.generator;
+package com.gregswebserver.catan.common.game.gameplay.generator.random;
 
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
+import com.gregswebserver.catan.common.game.gameplay.generator.FeatureGenerator;
 
 import java.util.ArrayList;
 import java.util.Collections;

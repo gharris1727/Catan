@@ -1,6 +1,7 @@
-package com.gregswebserver.catan.common.game.gameplay.generator;
+package com.gregswebserver.catan.common.game.gameplay.generator.random;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPost;
+import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.gameplay.generator.FeatureGenerator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,9 +11,9 @@ import java.util.Iterator;
  * Created by Greg on 8/13/2014.
  * Helper class to generate TradingPosts.
  */
-public class TradeGenerator implements FeatureGenerator<TradingPost> {
+public class TradeGenerator implements FeatureGenerator<TradingPostType> {
 
-    private final ArrayList<TradingPost> posts;
+    private final ArrayList<TradingPostType> posts;
 
     public TradeGenerator(int numTradingPosts) {
         posts = new ArrayList<>(numTradingPosts);
@@ -37,10 +38,10 @@ public class TradeGenerator implements FeatureGenerator<TradingPost> {
         }
         int randPosts = numTradingPosts - specPosts * 5;
         for (int i = 0; i < specPosts * 5; i++) {
-            posts.add(TradingPost.values()[i % 5]);
+            posts.add(TradingPostType.values()[i % 5]);
         }
         for (int i = 0; i < randPosts; i++) {
-            posts.add(TradingPost.Wildcard);
+            posts.add(TradingPostType.Wildcard);
         }
     }
 
@@ -50,7 +51,7 @@ public class TradeGenerator implements FeatureGenerator<TradingPost> {
     }
 
     @Override
-    public Iterator<TradingPost> iterator() {
+    public Iterator<TradingPostType> iterator() {
         return posts.iterator();
     }
 }
