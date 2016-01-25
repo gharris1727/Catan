@@ -11,7 +11,7 @@ public abstract class ClientScreen extends UIScreenRegion {
 
     protected final Client client;
 
-    public ClientScreen(Client client) {
+    protected ClientScreen(Client client) {
         super(0);
         this.client = client;
     }

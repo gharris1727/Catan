@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 /**
  * Created by greg on 1/24/16.
- * A board layout that is dynamically generated from a procgen seed.
+ * A board layout that is procedurally generated from a seed.
  */
 public class DynamicBoardLayout implements BoardLayout {
 

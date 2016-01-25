@@ -6,11 +6,11 @@ package com.gregswebserver.catan.common.event;
  */
 public abstract class InternalEvent<T extends EventType> extends GenericEvent {
 
-    protected final Object origin;
-    protected final T type;
-    protected final Object payload;
+    private final Object origin;
+    private final T type;
+    private final Object payload;
 
-    public InternalEvent(Object origin, T type, Object payload) {
+    protected InternalEvent(Object origin, T type, Object payload) {
         this.origin = origin;
         this.type = type;
         this.payload = payload;

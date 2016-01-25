@@ -21,6 +21,7 @@ import com.gregswebserver.catan.common.profiler.TimeSlice;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * Created by greg on 1/15/16.
@@ -161,8 +162,8 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     }
 
     @Override
-    public UserEvent onMouseScroll(int rot) {
-        return (live == null) ? null : live.onMouseScroll(rot);
+    public UserEvent onMouseScroll(MouseWheelEvent event) {
+        return (live == null) ? null : live.onMouseScroll(event);
     }
 
     @Override

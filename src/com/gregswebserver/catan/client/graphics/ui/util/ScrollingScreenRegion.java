@@ -41,7 +41,7 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
         checkBounds();
     }
 
-    protected void checkBounds() {
+    private void checkBounds() {
         if (isRenderable()){
             Point position = getPosition();
             Dimension size = getMask().getSize();

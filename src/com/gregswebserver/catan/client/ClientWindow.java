@@ -51,6 +51,7 @@ public class ClientWindow extends CoreWindow {
         client.shutdown();
     }
 
+    @SuppressWarnings("SynchronizeOnNonFinalField")
     @Override
     protected void onResize(Dimension size) {
         // This event can get spammed when the window is actually resizing, so we need to guard against that.

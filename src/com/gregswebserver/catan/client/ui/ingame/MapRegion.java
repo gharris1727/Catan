@@ -168,17 +168,17 @@ public class MapRegion extends ScreenRegion {
 
             for (Map.Entry<Coordinate, Tile> e : tiles.entrySet()) {
                 Coordinate c = e.getKey();
-                ScreenObject o = new MapScreenObject(tileToScreen(c), 0, c, e.getValue());
+                ScreenObject o = new MapScreenObject(0, c, e.getValue());
                 add(o);
             }
             for (Map.Entry<Coordinate, Path> e : paths.entrySet()) {
                 Coordinate c = e.getKey();
-                ScreenObject o = new MapScreenObject(edgeToScreen(c), 1, c, e.getValue());
+                ScreenObject o = new MapScreenObject(1, c, e.getValue());
                 add(o);
             }
             for (Map.Entry<Coordinate, Town> e : towns.entrySet()) {
                 Coordinate c = e.getKey();
-                ScreenObject o = new MapScreenObject(vertexToScreen(c), 2, c, e.getValue());
+                ScreenObject o = new MapScreenObject(2, c, e.getValue());
                 add(o);
             }
         }
@@ -192,7 +192,7 @@ public class MapRegion extends ScreenRegion {
             private final Coordinate coordinate;
             private final BoardObject object;
 
-            public MapScreenObject(Point position, int priority, Coordinate coordinate, BoardObject object) {
+            public MapScreenObject(int priority, Coordinate coordinate, BoardObject object) {
                 super(priority, object.getGraphic());
                 this.coordinate = coordinate;
                 this.object = object;
@@ -232,13 +232,13 @@ public class MapRegion extends ScreenRegion {
         }
     }
 
-    public static final int[][] tileOffsets = {
+    private static final int[][] tileOffsets = {
             {12, 112}, //Horizontal
             {16, 72}}; //Vertical
-    public static final int[][] edgeOffsets = {
+    private static final int[][] edgeOffsets = {
             {0, 0, 36, 100, 100, 136}, //Horizontal
             {9, 65, 0, 65, 9, 56}}; //Vertical
-    public static final int[][] vertOffsets = {
+    private static final int[][] vertOffsets = {
             {0, 24, 100, 124}, //Horizontal
             {56, 0, 0, 56}}; //Vertical
 

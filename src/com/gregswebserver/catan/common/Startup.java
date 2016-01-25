@@ -7,7 +7,6 @@ import com.gregswebserver.catan.server.Server;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.InetAddress;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -15,9 +14,8 @@ import java.net.InetAddress;
  */
 public class Startup extends CoreWindow {
 
-    private JPanel contentPane;
-    private JTextField[] fields = new JTextField[TextField.values().length];
-    private JButton[] buttons = new JButton[ActionButton.values().length];
+    private final JPanel contentPane;
+    private final JButton[] buttons = new JButton[ActionButton.values().length];
 
     public Startup(final Logger logger) {
         //TODO: rewrite this whole thing. this whole thing is an abomination.
@@ -25,25 +23,6 @@ public class Startup extends CoreWindow {
         contentPane = new JPanel();
         setContentPane(contentPane);
         setLayout(null);
-
-        int i = 0;
-        for (TextField tf : TextField.values()) {
-            JTextField field = new JTextField();
-            JLabel label = new JLabel(tf.label);
-            JLabel example = new JLabel("Ex: " + tf.example);
-            field.setBounds(tf.getBounds());
-            label.setSize(tf.size);
-            example.setSize(tf.size);
-            label.setLocation(tf.position.x, tf.position.y - 20);
-            example.setLocation(tf.position.x, tf.position.y + 20);
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            example.setHorizontalAlignment(SwingConstants.CENTER);
-            contentPane.add(field);
-            contentPane.add(label);
-            contentPane.add(example);
-            fields[i] = field;
-            i++;
-        }
 
         int j = 0;
         for (ActionButton ab : ActionButton.values()) {
@@ -57,14 +36,14 @@ public class Startup extends CoreWindow {
 
         buttons[0].addActionListener(e -> {
             try {
-                startClient(getHost(), getPort(), getUsername(), getPassword());
+                startClient();
             } catch (Exception ex) {
                 logger.log("Link_Error starting client", ex, LogLevel.ERROR);
             }
         });
         buttons[1].addActionListener(e -> {
             try {
-                startServer(getPort(), getPassword());
+                startServer();
             } catch (Exception ex) {
                 logger.log("Link_Error while starting server", ex, LogLevel.ERROR);
             }
@@ -73,42 +52,13 @@ public class Startup extends CoreWindow {
         setVisible(true);
     }
 
-    private int getPort() {
-        try {
-            return 25000;//TODO: REMOVE ME!
-//            return Integer.parseInt(fields[3].getText());
-        } catch (Exception e) {
-//            logger.log("Invalid port entered", e, LogLevel.POPUP);
-        }
-        return 0;
+
+    private void startClient() {
+        new Client();
     }
 
-    private InetAddress getHost() {
-        try {
-            return InetAddress.getByName("localhost"); //TODO: REMOVE ME!
-//            return InetAddress.getByName(fields[2].getText());
-        } catch (Exception e) {
-//            logger.log("Hostname Field Link_Error", e, LogLevel.POPUP);
-        }
-        return null;
-    }
-
-    private String getPassword() {
-        return fields[1].getText();
-    }
-
-    private String getUsername() {
-        return fields[0].getText();
-    }
-
-    private void startClient(InetAddress host, int port, String username, String password) {
-        Client client = new Client();
-//        client.addEvent(new ControlEvent(new Username("Startup"), ControlEventType.Game_Start, null));
-    }
-
-    private void startServer(int port, String password) {
-        Server server = new Server();
-        server.start(25000);
+    private void startServer() {
+        new Server().start(25000);
     }
 
     @Override
@@ -120,39 +70,15 @@ public class Startup extends CoreWindow {
         return "Startup";
     }
 
-    private enum TextField {
-
-        Username("Username", "bob", 150, 64, 150, 24),
-        Password("Password", "hunter2", 150, 128, 150, 24),
-        Hostname("Hostname", "google.com", 150, 192, 150, 24),
-        Port("Port", "25332", 150, 256, 150, 24);
-
-        private String label;
-        private String example;
-        private Point position;
-        private Dimension size;
-
-
-        TextField(String label, String example, int x, int y, int w, int h) {
-            this.label = label;
-            this.example = example;
-            this.position = new Point(x - w / 2, y - h / 2);
-            this.size = new Dimension(w, h);
-        }
-
-        public Rectangle getBounds() {
-            return new Rectangle(position, size);
-        }
-    }
 
     private enum ActionButton {
 
         Client("Start Client", 100, 350, 80, 24),
         Server("Start Server", 200, 350, 80, 24);
 
-        private String label;
-        private Point position;
-        private Dimension size;
+        private final String label;
+        private final Point position;
+        private final Dimension size;
 
         ActionButton(String label, int x, int y, int w, int h) {
             this.label = label;

@@ -336,14 +336,14 @@ public class Client extends CoreThread {
         stop();
     }
 
-    public void disconnect(String reason) {
+    private void disconnect(String reason) {
         if (connection != null && connection.isOpen()) {
             connection.sendEvent(new NetEvent(token, NetEventType.Disconnect, reason));
             connection.disconnect();
         }
     }
 
-    public void sendEvent(ExternalEvent event) {
+    private void sendEvent(ExternalEvent event) {
         if (connection != null && connection.isOpen()) {
             NetEvent out = new NetEvent(token, NetEventType.External_Event, event);
             connection.sendEvent(out);

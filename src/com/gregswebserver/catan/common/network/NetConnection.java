@@ -22,7 +22,9 @@ public abstract class NetConnection implements Runnable {
     protected NetID remote;
 
     protected Socket socket;
-    protected final Thread connect, disconnect, receive;
+    private final Thread connect;
+    private final Thread disconnect;
+    protected final Thread receive;
     protected ObjectInputStream in;
     protected ObjectOutputStream out;
     protected boolean open;

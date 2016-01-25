@@ -10,7 +10,7 @@ import com.gregswebserver.catan.common.game.player.Player;
  */
 public class InventoryRegion extends ScreenRegion {
 
-    private Player player;
+    private final Player player;
 
     public InventoryRegion(int priority, Player player) {
         super(priority);

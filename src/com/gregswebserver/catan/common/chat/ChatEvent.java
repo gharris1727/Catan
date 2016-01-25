@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.chat;
 
-import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.ExternalEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class ChatEvent extends ExternalEvent<ChatEventType> {
 
-    public final String message;
+    private final String message;
 
     //General purpose constructor.
     public ChatEvent(Username origin, String message) {

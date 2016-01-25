@@ -12,7 +12,7 @@ public abstract class UIScreenRegion extends ScreenRegion implements Styled {
 
     private UIStyle style;
 
-    public UIScreenRegion(int priority) {
+    protected UIScreenRegion(int priority) {
         super(priority);
     }
 

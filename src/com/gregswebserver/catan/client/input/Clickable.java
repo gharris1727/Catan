@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.event.UserEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * Created by Greg on 8/14/2014.
@@ -25,7 +26,7 @@ public interface Clickable {
 
     UserEvent onKeyReleased(KeyEvent event);
 
-    UserEvent onMouseScroll(int rot);
+    UserEvent onMouseScroll(MouseWheelEvent event);
 
     UserEvent onMouseDrag(Point p);
 

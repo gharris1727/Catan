@@ -28,7 +28,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     //The constructor of a screen region is meant to store relevant references,
     //and create any permanent ScreenObjects needed in the render.
-    public ScreenRegion(int priority) {
+    protected ScreenRegion(int priority) {
         super(priority);
         timeSlice = new TimeSlice(this.toString());
         clear();
@@ -83,7 +83,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     }
 
     //Add an object to be rendered on the next render pass.
-    public final ScreenObject add(ScreenObject object) {
+    protected final ScreenObject add(ScreenObject object) {
         if (object != null) {
             clickableColorMap.put(object.getClickableColor(), object);
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
@@ -99,7 +99,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     //Remove a specific object from the screen.
     //This operation can be inefficient if there are many objects at the same render priority.
-    public final ScreenObject remove(ScreenObject object) {
+    protected final ScreenObject remove(ScreenObject object) {
         if (object != null) {
             clickableColorMap.remove(object.getClickableColor());
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
@@ -111,7 +111,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         return object;
     }
 
-    public final Point center(ScreenObject other) {
+    protected final Point center(ScreenObject other) {
         if (other != null && other.isGraphical()) {
             if (other instanceof Renderable)
                 ((Renderable) other).assertRenderable();

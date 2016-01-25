@@ -14,7 +14,7 @@ public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
 
     protected AuthToken token;
 
-    public CoreThread(Logger logger) {
+    protected CoreThread(Logger logger) {
         super(logger);
     }
 

@@ -60,6 +60,7 @@ public enum UIStyle {
         private final Font font;
         private final Color color;
 
+        @SuppressWarnings("MagicConstant")
         public TextStyle(String textStyleKey) {
             this.textStyleKey = textStyleKey;
             String fontName = Client.staticConfig.get(textStyleKey + fontNameKey);

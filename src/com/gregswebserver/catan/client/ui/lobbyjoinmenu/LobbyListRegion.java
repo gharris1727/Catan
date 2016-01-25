@@ -21,6 +21,7 @@ import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * Created by greg on 1/10/16.
@@ -92,8 +93,8 @@ public class LobbyListRegion extends UIScreenRegion {
     }
 
     @Override
-    public UserEvent onMouseScroll(int rot) {
-        scroll.scroll(0,rot);
+    public UserEvent onMouseScroll(MouseWheelEvent event) {
+        scroll.scroll(0,event.getScrollAmount());
         return null;
     }
 
@@ -234,8 +235,8 @@ public class LobbyListRegion extends UIScreenRegion {
             }
 
             @Override
-            public UserEvent onMouseScroll(int rot) {
-                return scroll.onMouseScroll(rot);
+            public UserEvent onMouseScroll(MouseWheelEvent event) {
+                return scroll.onMouseScroll(event);
             }
 
             public void clearArrows() {
@@ -342,8 +343,8 @@ public class LobbyListRegion extends UIScreenRegion {
             }
 
             @Override
-            public UserEvent onMouseScroll(int rot) {
-                return LobbyListScroll.this.onMouseScroll(rot);
+            public UserEvent onMouseScroll(MouseWheelEvent event) {
+                return LobbyListScroll.this.onMouseScroll(event);
             }
 
             @Override
@@ -405,8 +406,8 @@ public class LobbyListRegion extends UIScreenRegion {
         }
 
         @Override
-        public UserEvent onMouseScroll(int rot) {
-            return scroll.onMouseScroll(rot);
+        public UserEvent onMouseScroll(MouseWheelEvent event) {
+            return scroll.onMouseScroll(event);
         }
 
         @Override

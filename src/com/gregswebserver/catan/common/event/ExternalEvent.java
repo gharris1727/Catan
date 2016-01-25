@@ -12,9 +12,9 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
 
     public static final long serialVersionUID = 1L;
 
-    protected final Username origin;
-    protected final T type;
-    protected final Object payload;
+    private final Username origin;
+    private final T type;
+    private final Object payload;
 
     protected ExternalEvent(Username origin, T type, Object payload) {
         this.origin = origin;

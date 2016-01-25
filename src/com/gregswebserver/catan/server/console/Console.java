@@ -62,7 +62,7 @@ public class Console extends JPanel implements UserInput, LogListener {
         append(e.toString());
     }
 
-    public void append(String text) {
+    private void append(String text) {
         SwingUtilities.invokeLater(new AppendTask(textArea, text));
     }
 

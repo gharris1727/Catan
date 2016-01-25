@@ -41,7 +41,7 @@ public class TimeSlice {
         return time;
     }
 
-    public HashMap<String, String> percents() {
+    private HashMap<String, String> percents() {
         long total = 0;
         HashMap<String, String> out = new HashMap<>();
         for (String s : slices.keySet()) {
@@ -53,7 +53,7 @@ public class TimeSlice {
         return out;
     }
 
-    public HashMap<String, String> times() {
+    private HashMap<String, String> times() {
         HashMap<String, String> out = new HashMap<>();
         int total = 0;
         for (String s : slices.keySet()) {

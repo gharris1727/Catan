@@ -16,7 +16,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  */
 public class Graphic implements Maskable {
 
-    public static final int transColor = 0xff00ff;
+    private static final int transColor = 0xff00ff;
     protected int[] pixels = null, clickable = null;
     private RenderMask mask;
     private BufferedImage buffer;

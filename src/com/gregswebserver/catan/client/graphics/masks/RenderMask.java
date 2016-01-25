@@ -12,19 +12,14 @@ import java.util.Arrays;
 public abstract class RenderMask {
 
     protected int width, height;
-    protected int[] padding, widths, cumulative;
+    protected int[] padding;
+    protected int[] widths;
 
     protected void init() {
         if (padding == null || widths == null)
             throw new IllegalStateException("Mask arrays not instantiated.");
         if (height != padding.length || height != widths.length)
             throw new IllegalStateException("Mask height inconsistent");
-        cumulative = new int[height];
-        int sum = 0;
-        for (int i = 0; i < height; i++) {
-            sum += padding[i] + widths[i];
-            cumulative[i] = sum;
-        }
     }
 
     public int getWidth() {

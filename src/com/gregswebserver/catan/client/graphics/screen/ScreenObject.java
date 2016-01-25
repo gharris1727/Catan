@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.input.Clickable;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * Created by Greg on 8/19/2014.
@@ -81,8 +82,8 @@ public abstract class ScreenObject implements Clickable {
     }
 
     @Override
-    public UserEvent onMouseScroll(int rot) {
-        return (redirect == null) ? null : redirect.onMouseScroll(rot);
+    public UserEvent onMouseScroll(MouseWheelEvent event) {
+        return (redirect == null) ? null : redirect.onMouseScroll(event);
     }
 
     @Override
