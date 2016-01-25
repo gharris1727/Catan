@@ -86,7 +86,7 @@ public class TradeTile extends BeachTile {
     @Override
     public Graphic getGraphic() {
         if (graphic == null) {
-            graphic = new Graphic(tileMask);
+            graphic = new Graphic(tileMask, false);
             Graphic b = super.getGraphic();
             b.renderTo(graphic, new Point(), 0);
             for (Direction d : getTradingPostDirections()) {

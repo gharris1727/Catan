@@ -54,7 +54,6 @@ public abstract class CoreWindow extends JFrame {
     }
 
     protected void display() {
-        setSize(size);
         setMinimumSize(size);
         setLocationRelativeTo(null);
     }

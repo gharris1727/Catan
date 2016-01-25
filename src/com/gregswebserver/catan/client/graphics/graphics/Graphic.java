@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 
 import java.awt.*;
@@ -19,45 +20,43 @@ public class Graphic implements Maskable {
     private static final int transColor = 0xff00ff;
     protected int[] pixels = null, clickable = null;
     private RenderMask mask;
-    private BufferedImage buffer;
+    protected BufferedImage buffer;
+    private boolean transparency;
 
+    //Constructor to allow subclasses to do their own instantiation.
     protected Graphic() {
     }
 
-    public Graphic(Graphic graphic) {
-        this(graphic, graphic.getMask(), new Point());
-        this.clickable = graphic.clickable;
-    }
-
-    //For creating Graphics from other Graphics (usually StaticGraphics).
-    public Graphic(Graphic source, RenderMask mask, Point start)  {
-        this(mask);
+    //Resource constructor, for cutting graphics from larger graphics.
+    public Graphic(Graphic source, RenderMask mask, Point start, boolean transparency)  {
+        this(mask, transparency);
         BufferedImage part = source.buffer.getSubimage(start.x, start.y, mask.getWidth(), mask.getHeight());
         buffer.getGraphics().drawImage(part, 0, 0, mask.getWidth(), mask.getHeight(), null);
     }
 
     //Primary constructor for a blank Graphic object.
-    public Graphic(RenderMask mask) {
-        this(mask, new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB));
+    public Graphic(RenderMask mask, boolean transparency) {
+        init(mask, transparency);
+        clear();
     }
 
-    public Graphic(RenderMask mask, BufferedImage buffer) {
-        init(mask, buffer);
-    }
-
-    protected void init(RenderMask mask, BufferedImage buffer) {
+    protected void init(RenderMask mask, boolean transparency) {
         this.mask = mask;
-        this.buffer = buffer;
+        this.buffer = new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB);
+        this.clickable = new int[mask.getWidth() * mask.getHeight()];
+        this.transparency = transparency;
     }
 
     protected void loadRaster() {
         if (pixels == null)
             pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
-        if (clickable == null)
-            clickable = new int[pixels.length];
     }
 
-    private static void render(Graphic to, Point toStart, Graphic from, Point fromStart, int color, boolean trans) {
+    public boolean accelerated() {
+        return pixels == null && !transparency && mask instanceof RectangularMask;
+    }
+
+    private static void maskRender(Graphic to, Point toStart, Graphic from, Point fromStart, int color, boolean trans) {
         RenderMask toMask = to.mask;
         RenderMask fromMask = from.mask;
         //Check for upper bounds, if any of these are out of spec, nothing will get copied anyway.
@@ -106,7 +105,7 @@ public class Graphic implements Maskable {
             if (length < 1) continue;
             //Copy
             pixelCopy(from.pixels, from.mask.getIndex(currX, currY), 1, to.pixels, to.mask.getIndex(currX + diffX, currY + diffY), 1, length, trans);
-            colorCopy(to.clickable, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
+            fillColor(to.clickable, to.mask.getIndex(currX + diffX, currY + diffY), 1, color, length);
         }
     }
 
@@ -124,7 +123,7 @@ public class Graphic implements Maskable {
         }
     }
 
-    private static void colorCopy(int[] dst, int dstPos, int dstStep, int color, int length) {
+    private static void fillColor(int[] dst, int dstPos, int dstStep, int color, int length) {
         if (dstStep == 1)
             Arrays.fill(dst, dstPos, dstPos + length, color);
         else {
@@ -146,24 +145,34 @@ public class Graphic implements Maskable {
     }
 
     public int getClickableColor(Point p) {
-        if (clickable == null)
-            return 0;
         return clickable[mask.getIndex(p)];
     }
 
+    //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
     public void renderTo(Graphic to, Point toPos, int color) {
-        //to.buffer.getGraphics().drawImage(buffer,toPos.x,toPos.y,mask.getWidth(),mask.getHeight(),null);
-        //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
-        loadRaster();
-        render(to, toPos, this, new Point(), color, true);
+        if (accelerated()) {
+            //If we are accelerated then do the hardware acceleration render.
+            to.buffer.getGraphics().drawImage(buffer, toPos.x, toPos.y, mask.getWidth(), mask.getHeight(), null);
+            for (int i = 0; i < mask.getHeight(); i++)
+                fillColor(to.clickable, to.getMask().getIndex(toPos.x, toPos.y + i), 1, color, mask.getWidth());
+        } else {
+            //Otherwise we need to do the traditional render.
+            loadRaster();
+            to.loadRaster();
+            maskRender(to, toPos, this, new Point(), color, transparency);
+        }
     }
 
     public void clear() {
-        loadRaster();
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = transColor;
-            clickable[i] = 0;
+        if (accelerated()) {
+            Graphics graphics = buffer.getGraphics();
+            graphics.setColor(Color.black);
+            graphics.drawRect(0, 0, mask.getWidth(), mask.getHeight());
+        } else {
+            loadRaster();
+            Arrays.fill(pixels, transColor);
         }
+        Arrays.fill(clickable, 0);
     }
 
     public String toString() {

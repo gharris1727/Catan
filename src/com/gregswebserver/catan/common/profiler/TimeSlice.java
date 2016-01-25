@@ -64,7 +64,7 @@ public class TimeSlice {
         return out;
     }
 
-    private String formatTime(long in) {
+    public static String formatTime(long in) {
         if (in < 10*THOUSAND)
             return in + "ns";
         if (in < 10*MILLION)
@@ -74,12 +74,12 @@ public class TimeSlice {
         return formatDouble(in / 1e9, 3) + "s";
     }
 
-    private String formatPercent(double in) {
+    public static String formatPercent(double in) {
         in *= 100;
         return formatDouble(in, 2) + "%";
     }
 
-    private String formatDouble(double in, int places) {
+    public static String formatDouble(double in, int places) {
         int whole = (int) in;
         double decimal = in - whole;
         String part = ("" + decimal);

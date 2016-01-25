@@ -128,6 +128,7 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
 
     @Override
     public Graphic getGraphic() {
+        assertRenderable();
         return (live == null) ? null : live.getGraphic();
     }
 

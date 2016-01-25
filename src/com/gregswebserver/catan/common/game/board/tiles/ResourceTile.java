@@ -53,7 +53,7 @@ public class ResourceTile extends Tile {
     @Override
     public Graphic getGraphic() {
         if (graphic == null) {
-            graphic = new Graphic(tileMask);
+            graphic = new Graphic(tileMask, false);
             terrain.gameResource.getGraphic().renderTo(graphic, new Point(), 0);
             diceRoll.getGraphic().renderTo(graphic, diceRoll.getOffset(), 0);
             //Figure out how to render the robber.

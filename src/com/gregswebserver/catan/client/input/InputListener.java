@@ -112,7 +112,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             sendEvent(hover.onUnHover(), null);
             hover = next;
             sendEvent(hover.onHover(), null);
-//            logger.log("Hovered "+ hover, LogLevel.DEBUG);
+//            client.logger.log("Hovered "+ hover, LogLevel.DEBUG);
         }
     }
 
@@ -122,23 +122,23 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             sendEvent(selected.onDeselect(), null);
             selected = hover;
             sendEvent(selected.onSelect(), null);
-//            logger.log("Selected "+ selected, LogLevel.DEBUG);
+//            client.logger.log("Selected "+ selected, LogLevel.DEBUG);
         }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        sendEvent(selected.onKeyTyped(e), hover.onKeyTyped(e));
+        sendEvent(selected.onKeyTyped(e), null);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        sendEvent(selected.onKeyPressed(e), hover.onKeyPressed(e));
+        sendEvent(selected.onKeyPressed(e), null);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        sendEvent(selected.onKeyReleased(e), hover.onKeyReleased(e));
+        sendEvent(selected.onKeyReleased(e), null);
     }
 
     @Override

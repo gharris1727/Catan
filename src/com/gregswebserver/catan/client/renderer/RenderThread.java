@@ -19,11 +19,13 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
     private final RenderManager manager;
     private final TimeSlice root;
     private ScreenCanvas canvas;
+    private final TimeSlice events;
 
     public RenderThread(Client client, RenderManager manager) {
         super(client.logger);
         this.manager = manager;
         root = new TimeSlice("root");
+        events = new TimeSlice("Events");
     }
 
     @Override
@@ -32,6 +34,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         RenderEvent event = getEvent(false);
         root.reset();
         if (event != null) {
+            events.reset();
             switch (event.getType()) {
                 case Canvas_Update:
                     canvas = (ScreenCanvas) event.getPayload();
@@ -41,22 +44,18 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                     manager.step();
                     break;
             }
+            events.mark();
+            root.addChild(events);
         } else { //No event to be processed this round.
             if (canvas != null) {
-                manager.assertRenderable();
-                boolean accelerated = canvas.render(manager.getGraphic());
-                //TODO: find where the slow graphics are coming from and fix.
-                if (!accelerated)
-                    logger.log("Slow graphic sent to the screen.", LogLevel.WARN);
+                canvas.render(manager.getGraphic());
+                root.addChild(manager.getRenderTime());
+                root.addChild(canvas.getRenderTime());
             }
         }
         root.mark();
-        root.addChild(manager.getRenderTime());
-        if (canvas != null)
-            root.addChild(canvas.getRenderTime());
-        root.waitUntil(33*TimeSlice.MILLION);
-        if (root.getTime() > 33*TimeSlice.MILLION) {
-            String message = "Rendering at less than 30Hz\n" + root.print(2, 0);
+        if (root.getTime() > 100*TimeSlice.MILLION) {
+            String message = "Slow Render!\n" + root.print(1, 0);
             logger.log(message, LogLevel.WARN);
         }
     }

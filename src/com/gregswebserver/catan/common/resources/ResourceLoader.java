@@ -34,7 +34,7 @@ public class ResourceLoader {
             try {
                 GraphicSource s = getGraphicSource(info.getSource());
                 RenderMask m = info.getMask();
-                return new Graphic(s, m, info.getLocation());
+                return new Graphic(s, m, info.getLocation(), true);
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }

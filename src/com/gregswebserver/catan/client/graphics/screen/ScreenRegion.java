@@ -22,6 +22,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     private final TimeSlice timeSlice;
     private RenderMask mask;
     private Graphic graphic;
+    private Graphic cache;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
     private Map<Integer, ScreenObject> clickableColorMap;
@@ -45,7 +46,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         this.mask = mask;
         graphic = null;
         if (mask != null) {
-            graphic = new Graphic(mask);
+            graphic = new Graphic(mask, false);
             forceRender();
             resizeContents(mask);
             limitScroll();
@@ -69,7 +70,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     public Clickable getClickable(Point p) {
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
-        if (result == this && graphic != null) {
+        if (result == this && graphic != null && mask.containsPoint(p)) {
             //There was no redirect object specified, and we are already rendered.
             int color = graphic.getClickableColor(p);
             ScreenObject object = clickableColorMap.get(color);
@@ -215,7 +216,6 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
                         timeSlice.addChild(((Renderable) object).getRenderTime());
                 }
             needsRendering = false;
-            graphic = new Graphic(graphic);
         }
         assertRenderable();
         timeSlice.mark();

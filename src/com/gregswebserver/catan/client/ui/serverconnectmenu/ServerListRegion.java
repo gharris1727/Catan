@@ -40,6 +40,7 @@ public class ServerListRegion extends UIScreenRegion {
     private int scroll;
     private ConnectionInfo selected;
 
+    private final TiledBackground background;
     private final UIScreenRegion footer;
 
     public ServerListRegion(int priority, ServerPool list) {
@@ -47,12 +48,20 @@ public class ServerListRegion extends UIScreenRegion {
         this.list = list;
         scroll = 0;
         selected = null;
-        footer = new ServerListFooter(0);
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW) {
+            public String toString() {
+                return "ConnectMenuBackground";
+            }
+        };
+        footer = new ServerListFooter(2);
+        add(background).setClickable(this);
         add(footer);
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
+        //Resize the background region
+        background.setMask(mask);
         //Get the new overall size of the window.
         int width = mask.getWidth();
         int height = mask.getHeight();
@@ -78,12 +87,13 @@ public class ServerListRegion extends UIScreenRegion {
         clear();
         Iterator<ConnectionInfo> iterator = list.iterator();
         for (int i = 0; i < serverLocations.length && i + scroll < list.size(); i++) {
-            ServerListItem item = new ServerListItem(0, iterator.next());
+            ServerListItem item = new ServerListItem(1, iterator.next());
             item.setMask(serverSize);
             item.setStyle(getStyle());
             item.setPosition(serverLocations[i]);
             add(item);
         }
+        add(background);
         add(footer);
     }
 
