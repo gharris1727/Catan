@@ -1,9 +1,9 @@
-package com.gregswebserver.catan.client.ui.primary;
+package com.gregswebserver.catan.client.structure;
 
 import com.gregswebserver.catan.common.crypto.Password;
-import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.network.NetID;
+import com.gregswebserver.catan.common.structure.UserLogin;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

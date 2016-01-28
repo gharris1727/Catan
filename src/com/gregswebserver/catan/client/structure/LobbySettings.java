@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.lobby;
+package com.gregswebserver.catan.client.structure;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
@@ -10,13 +10,13 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.TextBox;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.common.lobby.LobbyConfig;
+import com.gregswebserver.catan.common.structure.LobbyConfig;
 
 /**
  * Created by greg on 1/23/16.
  * Panel with editable lobby settings.
  */
-class LobbySettings extends UIScreenRegion {
+public class LobbySettings extends UIScreenRegion {
 
     private static final RenderMask nameSize = new RectangularMask(
             Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.name"));

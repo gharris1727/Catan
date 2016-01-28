@@ -4,7 +4,8 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.ClientScreen;
-import com.gregswebserver.catan.common.lobby.Lobby;
+import com.gregswebserver.catan.client.structure.LobbySettings;
+import com.gregswebserver.catan.common.structure.Lobby;
 
 import java.awt.*;
 

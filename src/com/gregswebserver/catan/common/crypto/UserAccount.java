@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.crypto;
 
-import com.gregswebserver.catan.common.lobby.UserInfo;
+import com.gregswebserver.catan.common.resources.ConfigurationException;
+import com.gregswebserver.catan.common.structure.UserInfo;
 
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
@@ -12,16 +13,27 @@ import java.security.spec.InvalidKeySpecException;
  * This class stores all of the cryptographic and session details for a client that has connected to the server.
  * Needs to be serialized for long-term storage.
  */
-public class UserAccount implements Serializable {
+public final class UserAccount implements Serializable {
 
     private final Username username;
-    private String passwordHash;
     private String displayName;
+    private String passwordHash;
     private transient AuthToken token;
 
-    public UserAccount(Username username) {
+    public UserAccount(Username username, String parse) {
+        this.username = username;
+        String[] keys = parse.split(",");
+        if (keys.length != 2)
+            throw new ConfigurationException("User account malformed: " + parse);
+        displayName = keys[0];
+        passwordHash = keys[1];
+        invalidateSession();
+    }
+
+    public UserAccount(Username username, Password password) {
         this.username = username;
         this.displayName = username.username;
+        setPassword(password);
         invalidateSession();
     }
 
@@ -59,5 +71,9 @@ public class UserAccount implements Serializable {
 
     public UserInfo getUserInfo() {
         return new UserInfo(username, displayName);
+    }
+
+    public String toString() {
+        return displayName + "," + passwordHash;
     }
 }

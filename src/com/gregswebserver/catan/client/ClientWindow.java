@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client;
 
+import com.gregswebserver.catan.client.event.ClientEvent;
+import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.RenderEventType;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
@@ -48,7 +50,7 @@ public class ClientWindow extends CoreWindow {
 
     @Override
     protected void onClose() {
-        client.shutdown();
+        client.addEvent(new ClientEvent(this, ClientEventType.Quit_All, null));
     }
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
@@ -88,6 +90,6 @@ public class ClientWindow extends CoreWindow {
     }
 
     public String toString() {
-        return client + "ClientWindow";
+        return "ClientWindow";
     }
 }

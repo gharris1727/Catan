@@ -1,12 +1,12 @@
 package com.gregswebserver.catan.client.renderer;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.profiler.TimeSlice;
 
 /**
@@ -21,8 +21,8 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
     private ScreenCanvas canvas;
     private final TimeSlice events;
 
-    public RenderThread(Client client, RenderManager manager) {
-        super(client.logger);
+    public RenderThread(Logger logger, RenderManager manager) {
+        super(logger);
         this.manager = manager;
         root = new TimeSlice("root");
         events = new TimeSlice("Events");

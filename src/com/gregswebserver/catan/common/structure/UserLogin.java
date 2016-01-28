@@ -1,5 +1,7 @@
-package com.gregswebserver.catan.common.crypto;
+package com.gregswebserver.catan.common.structure;
 
+import com.gregswebserver.catan.common.crypto.Password;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventPayload;
 
 /**

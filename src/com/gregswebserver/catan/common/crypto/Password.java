@@ -14,7 +14,7 @@ public final class Password extends EventPayload {
         this.password = password;
     }
 
-    protected String getPassword() {
+    String getPassword() {
         return password;
     }
 

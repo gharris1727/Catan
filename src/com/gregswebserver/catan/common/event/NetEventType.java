@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.event;
 
 import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.common.crypto.UserLogin;
+import com.gregswebserver.catan.common.structure.UserLogin;
 
 /**
  * Created by Greg on 1/18/2015.

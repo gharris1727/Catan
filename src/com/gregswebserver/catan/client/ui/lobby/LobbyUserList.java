@@ -9,7 +9,7 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.lobby.Lobby;
+import com.gregswebserver.catan.common.structure.Lobby;
 
 import java.awt.*;
 

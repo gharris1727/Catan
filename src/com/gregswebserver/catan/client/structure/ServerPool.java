@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.client.ui.primary;
+package com.gregswebserver.catan.client.structure;
 
-import com.gregswebserver.catan.common.resources.ConfigFile;
+import com.gregswebserver.catan.common.resources.PropertiesFile;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -16,11 +16,11 @@ public class ServerPool implements Iterable<ConnectionInfo> {
     //TODO: rework this to allow drag-swapping of ServerLogin objects.
 
     private final List<ConnectionInfo> list;
-    private final ConfigFile file;
+    private final PropertiesFile file;
 
     public ServerPool() {
         list = new LinkedList<>();
-        file = new ConfigFile("config/client/servers.properties", "Login details for servers");
+        file = new PropertiesFile("config/client/servers.properties", "Login details for servers");
         try {
             file.open();
             int i = 0;

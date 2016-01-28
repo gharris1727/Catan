@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.resources;
 
 /**
  * Created by greg on 1/20/16.
- * Exception thrown when there is invalid data seen when a resource is being loaded from a ConfigFile
+ * Exception thrown when there is invalid data seen when a resource is being loaded from a PropertiesFile
  */
 public class ConfigurationException extends RuntimeException {
 

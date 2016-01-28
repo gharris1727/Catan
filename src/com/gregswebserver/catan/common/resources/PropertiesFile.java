@@ -6,20 +6,22 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * Created by greg on 1/18/16.
  * Class to access the static.properties configuration details
  */
-public class ConfigFile {
+public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
 
     private final String path;
     private final String comment;
     private final Properties config;
     private boolean needsSaving;
 
-    public ConfigFile(String path, String comment) {
+    public PropertiesFile(String path, String comment) {
         this.path = path;
         this.comment = comment;
         config = new Properties();
@@ -61,7 +63,6 @@ public class ConfigFile {
                 return null;
             String recurse = get(found);
             return (recurse == null) ? found : recurse;
-
         }
         return null;
     }
@@ -118,5 +119,39 @@ public class ConfigFile {
 
     public void clear() {
         config.clear();
+    }
+
+    @Override
+    public Iterator<Map.Entry<String, String>> iterator() {
+        //Get the iterator from the internal storage
+        Iterator<Map.Entry<Object, Object>> objIterator = config.entrySet().iterator();
+        //We cant cast, so we need to cast everything individually.
+        return new Iterator<Map.Entry<String, String>>() {
+            @Override
+            public boolean hasNext() {
+                return objIterator.hasNext();
+            }
+
+            @Override
+            public Map.Entry<String, String> next() {
+                Map.Entry<Object, Object> objEntry = objIterator.next();
+                return new Map.Entry<String, String>() {
+                    @Override
+                    public String getKey() {
+                        return (String) objEntry.getKey();
+                    }
+
+                    @Override
+                    public String getValue() {
+                        return (String) objEntry.getValue();
+                    }
+
+                    @Override
+                    public String setValue(String s) {
+                        return (String) objEntry.setValue(s);
+                    }
+                };
+            }
+        };
     }
 }

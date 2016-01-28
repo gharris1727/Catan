@@ -1,7 +1,7 @@
-package com.gregswebserver.catan.client.ui.primary;
+package com.gregswebserver.catan.client.structure;
 
-import com.gregswebserver.catan.common.crypto.UserLogin;
 import com.gregswebserver.catan.common.network.NetID;
+import com.gregswebserver.catan.common.structure.UserLogin;
 
 /**
  * Created by Greg on 12/28/2014.

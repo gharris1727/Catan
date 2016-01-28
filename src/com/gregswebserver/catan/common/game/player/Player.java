@@ -3,7 +3,7 @@ package com.gregswebserver.catan.common.game.player;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trader;
-import com.gregswebserver.catan.common.lobby.UserInfo;
+import com.gregswebserver.catan.common.structure.UserInfo;
 
 import java.util.HashMap;
 

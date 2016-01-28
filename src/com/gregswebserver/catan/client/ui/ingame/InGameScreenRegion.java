@@ -27,9 +27,9 @@ public class InGameScreenRegion extends ClientScreen {
     private final InventoryRegion inventory;
     private final ContextRegion context;
 
-    public InGameScreenRegion(Client client, CatanGame game) {
+    public InGameScreenRegion(Client client) {
         super(client);
-        this.game = game;
+        this.game = client.getActiveGame();
         map = new MapRegion(0, game);
         trade = new TradeRegion(1);
         inventory = new InventoryRegion(2, game.getLocalPlayer());

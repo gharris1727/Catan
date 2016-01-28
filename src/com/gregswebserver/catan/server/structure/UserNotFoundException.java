@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.crypto;
+package com.gregswebserver.catan.server.structure;
 
 /**
  * Created by greg on 1/10/16.

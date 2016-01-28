@@ -1,10 +1,15 @@
-package com.gregswebserver.catan.common.crypto;
+package com.gregswebserver.catan.server.structure;
 
-import com.gregswebserver.catan.common.lobby.UserInfo;
+import com.gregswebserver.catan.common.crypto.*;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
+import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.structure.UserInfo;
+import com.gregswebserver.catan.common.structure.UserLogin;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Greg on 1/8/2015.
@@ -13,38 +18,46 @@ import java.util.HashMap;
 public class UserDatabase {
 
     private final Logger logger;
-    private HashMap<Username, UserAccount> users;
+    private final PropertiesFile database;
+    private final Map<Username, UserAccount> accounts;
 
     public UserDatabase(Logger logger) {
         this.logger = logger;
-        loadResources();
+        database = new PropertiesFile("config/server/accounts.properties", "User account information");
+        accounts = new HashMap<>();
+        try {
+            database.open();
+        } catch (IOException e) {
+            this.logger.log("Unable to load user database.", e, LogLevel.ERROR);
+        }
+        for (Map.Entry<String, String> entry : database) {
+            Username username = new Username(entry.getKey());
+            UserAccount account = new UserAccount(username, entry.getValue());
+            accounts.put(username, account);
+        }
     }
 
-    public void loadResources() {
-        //users = (HashMap<Username, UserAccount>) ResourceLoader.getObjectStore(UserInfo);
-        //TODO: handle this better, remove dummy data
-        users = new HashMap<>();
-        registerAccount(new UserLogin(new Username("Greg"), new Password("password")));
-        registerAccount(new UserLogin(new Username("Bob"), new Password("pw")));
-    }
-
-    public void dumpResources() {
-        //TODO: save the database properly.
-        //ResourceLoader.saveObjectStore(UserInfo);
+    public void save() {
+        for (Map.Entry<Username, UserAccount> entry : accounts.entrySet())
+            database.set(entry.getKey().username, entry.getValue().toString());
+        try {
+            database.close();
+        } catch (IOException e) {
+            logger.log("Unable to save user database.", e, LogLevel.ERROR);
+        }
     }
 
     public void registerAccount(UserLogin login) {
         try {
-            UserAccount user = new UserAccount(login.username);
-            user.setPassword(login.password);
-            users.put(login.username, user);
+            UserAccount user = new UserAccount(login.username, login.password);
+            accounts.put(login.username, user);
         } catch (Exception e) {
             logger.log(e, LogLevel.ERROR);
         }
     }
 
     public AuthToken authenticate(UserLogin login) throws UserNotFoundException, AuthenticationException {
-        UserAccount user = users.get(login.username);
+        UserAccount user = accounts.get(login.username);
         if (user == null)
             throw new UserNotFoundException();
         if (!user.validatePassword(login.password))
@@ -53,7 +66,7 @@ public class UserDatabase {
     }
 
     private void validateAuthToken(AuthToken token) throws UserNotFoundException, AuthenticationException {
-        UserAccount user = users.get(token.username);
+        UserAccount user = accounts.get(token.username);
         if (user == null)
             throw new UserNotFoundException();
         if (!user.validateToken(token))
@@ -61,32 +74,32 @@ public class UserDatabase {
     }
 
     private void invalidateSession(Username username) throws UserNotFoundException {
-        UserAccount user = users.get(username);
+        UserAccount user = accounts.get(username);
         if (user == null)
             throw new UserNotFoundException();
         user.invalidateSession();
     }
 
     public void removeAccount(Username username) throws UserNotFoundException {
-        if (users.remove(username) == null)
+        if (accounts.remove(username) == null)
             throw new UserNotFoundException();
     }
 
     public void changePassword(Username username, Password password) throws UserNotFoundException {
-        UserAccount user = users.get(username);
+        UserAccount user = accounts.get(username);
         if (user == null)
             throw new UserNotFoundException();
         user.setPassword(password);
     }
 
     public UserInfo getUserInfo(Username username) throws UserNotFoundException {
-        UserAccount user = users.get(username);
+        UserAccount user = accounts.get(username);
         if (user == null)
             throw new UserNotFoundException();
         return user.getUserInfo();
     }
     public void changeDisplayName(Username username, String displayName) throws UserNotFoundException {
-        UserAccount user = users.get(username);
+        UserAccount user = accounts.get(username);
         if (user == null)
             throw new UserNotFoundException();
         user.setDisplayName(displayName);

@@ -14,12 +14,17 @@ import java.net.Socket;
  */
 public class ServerConnection extends NetConnection {
 
+    private static final Object nextIDLock = new Object();
+    private static int nextID = 1;
+
     private final int connectionID;
 
-    public ServerConnection(Server server, Socket socket, int connectionID) {
+    public ServerConnection(Server server, Socket socket) {
         super(server);
+        synchronized (nextIDLock) {
+            this.connectionID = nextID++;
+        }
         this.socket = socket;
-        this.connectionID = connectionID;
         local = new NetID(socket);
         remote = new NetID((InetSocketAddress) socket.getRemoteSocketAddress());
     }

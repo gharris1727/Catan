@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.common.CoreThread;
+import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.NetEvent;
 import com.gregswebserver.catan.common.event.NetEventType;
 import com.gregswebserver.catan.common.log.LogLevel;
@@ -87,6 +88,10 @@ public abstract class NetConnection implements Runnable {
             onDisconnect("Send failure: " + e.getMessage() + ".");
             logger.log("Send Failure", e, LogLevel.ERROR);
         }
+    }
+
+    public void sendEvent(ExternalEvent event) {
+        sendEvent(new NetEvent(host.getToken(), NetEventType.External_Event, event));
     }
 
     public void connect() {

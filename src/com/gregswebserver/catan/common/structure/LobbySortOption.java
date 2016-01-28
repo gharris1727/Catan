@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.lobby;
+package com.gregswebserver.catan.common.structure;
 
 /**
  * Created by greg on 1/12/16.

@@ -14,10 +14,10 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.common.lobby.Lobby;
-import com.gregswebserver.catan.common.lobby.LobbyPool;
-import com.gregswebserver.catan.common.lobby.LobbySortOption;
 import com.gregswebserver.catan.common.resources.GraphicSet;
+import com.gregswebserver.catan.common.structure.Lobby;
+import com.gregswebserver.catan.common.structure.LobbyPool;
+import com.gregswebserver.catan.common.structure.LobbySortOption;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

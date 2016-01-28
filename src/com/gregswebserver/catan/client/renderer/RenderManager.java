@@ -13,6 +13,7 @@ import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
 import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
+import com.gregswebserver.catan.client.ui.ingame.InGameScreenRegion;
 import com.gregswebserver.catan.client.ui.lobby.LobbyScreen;
 import com.gregswebserver.catan.client.ui.lobbyjoinmenu.LobbyJoinMenu;
 import com.gregswebserver.catan.client.ui.serverconnectmenu.ServerConnectMenu;
@@ -39,6 +40,7 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     public DisconnectingScreen disconnectingScreen;
     public LobbyJoinMenu lobbyJoinMenu;
     public LobbyScreen lobbyScreen;
+    public InGameScreenRegion gameScreen;
 
     private ClientScreen live;
 
@@ -70,6 +72,11 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     public void displayInLobbyScreen() {
         lobbyScreen = new LobbyScreen(client);
         display(lobbyScreen);
+    }
+
+    public void displayGameScreen() {
+        gameScreen = new InGameScreenRegion(client);
+        display(gameScreen);
     }
 
     private void display(ClientScreen region) {

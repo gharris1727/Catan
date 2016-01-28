@@ -1,42 +1,32 @@
-package com.gregswebserver.catan.common.lobby;
+package com.gregswebserver.catan.common.structure;
 
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.event.*;
+import com.gregswebserver.catan.common.event.EventConsumer;
+import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventPayload;
+import com.gregswebserver.catan.common.event.LobbyEvent;
 
 /**
  * Created by Greg on 12/29/2014.
  * Pool of clients
  */
-public class MatchmakingPool extends EventPayload implements EventConsumer<ControlEvent>{
+public class MatchmakingPool extends EventPayload implements EventConsumer<LobbyEvent>{
 
     private final ClientPool clients;
     private final LobbyPool lobbies;
-    private transient CoreThread host;
 
     public MatchmakingPool(CoreThread host) {
         this.clients = new ClientPool();
         this.lobbies = new LobbyPool();
-        this.host = host;
-    }
-
-    public void setHost(CoreThread host) {
-        this.host = host;
     }
 
     @Override
-    public boolean test(ControlEvent event) {
+    public boolean test(LobbyEvent event) {
         Username origin = event.getOrigin();
         boolean exists = clients.hasUser(origin);
         boolean inLobby = exists && lobbies.userInLobby(origin);
         switch (event.getType()) {
-            case Client_Disconnect:
-            case Client_Pool_Sync:
-            case Server_Disconnect:
-            case Pass_Change_Success:
-            case Pass_Change_Failure:
-            case Pass_Change:
-                throw new IllegalStateException();
             case User_Connect:
                 return !exists;
             case User_Disconnect:
@@ -71,7 +61,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
     }
 
     @Override
-    public void execute(ControlEvent event) throws EventConsumerException {
+    public void execute(LobbyEvent event) throws EventConsumerException {
         if (!test(event))
             throw new EventConsumerException(event);
         Username origin = event.getOrigin();
@@ -79,28 +69,13 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Contr
         Username username;
         Lobby lobby;
         switch (event.getType()) {
-            case Client_Disconnect:
-                break;
             case User_Disconnect:
                 username = (Username) event.getPayload();
-                clients.removeUserConnection(username);
-                if (lobbies.userInLobby(username))
-                    host.addEvent(new ControlEvent(username, ControlEventType.Lobby_Leave, username));
                 break;
             case User_Connect:
             case Name_Change:
                 userInfo = (UserInfo) event.getPayload();
                 clients.updateUserInfo(origin, userInfo);
-                break;
-            case Pass_Change:
-                break;
-            case Pass_Change_Success:
-                break;
-            case Pass_Change_Failure:
-                break;
-            case Server_Disconnect:
-                break;
-            case Client_Pool_Sync:
                 break;
             case Lobby_Create:
                 lobbies.add(origin, (LobbyConfig) event.getPayload());

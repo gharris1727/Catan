@@ -24,14 +24,12 @@ import java.util.HashMap;
  */
 public class CatanGame implements EventConsumer<GameEvent> {
 
-    private final GameSettings settings;
-    private final GameBoard board;
+    private GameSettings settings;
+    private GameBoard board;
     private HashMap<Username, Player> players;
     private Player localPlayer;
 
-    public CatanGame(GameSettings settings) {
-        this.settings = settings;
-        board = settings.getGenerator().generate(settings.getLayout());
+    public CatanGame() {
     }
 
     @Override
@@ -50,6 +48,10 @@ public class CatanGame implements EventConsumer<GameEvent> {
             case Player_Move_Robber:
                 Tile tile = board.getTile((Coordinate) event.getPayload());
                 return (tile instanceof ResourceTile);
+            case Create_Game:
+                return settings == null && board == null;
+            case Turn_Advance:
+                break;
             case Player_Roll_Dice:
                 //TODO: turn checks
                 return true;
@@ -66,6 +68,10 @@ public class CatanGame implements EventConsumer<GameEvent> {
         Team team = player.getTeam();
         Coordinate coordinate;
         switch (event.getType()) {
+            case Create_Game:
+                this.settings = (GameSettings) event.getPayload();
+                board = settings.getGenerator().generate(settings.getLayout());
+                break;
             case Build_Settlement:
                 coordinate = (Coordinate) event.getPayload();
                 Settlement settlement = new Settlement(team);

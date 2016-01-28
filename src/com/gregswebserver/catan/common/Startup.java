@@ -58,7 +58,7 @@ public class Startup extends CoreWindow {
     }
 
     private void startServer() {
-        new Server().start(25000);
+        new Server(25000);
     }
 
     @Override

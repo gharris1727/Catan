@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.common.lobby.ClientPool;
+import com.gregswebserver.catan.common.structure.ClientPool;
 
 /**
  * Created by greg on 1/10/16.

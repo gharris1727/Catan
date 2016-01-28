@@ -13,8 +13,8 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextBox;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.client.ui.primary.ConnectionInfo;
-import com.gregswebserver.catan.client.ui.primary.ServerPool;
+import com.gregswebserver.catan.client.structure.ConnectionInfo;
+import com.gregswebserver.catan.client.structure.ServerPool;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

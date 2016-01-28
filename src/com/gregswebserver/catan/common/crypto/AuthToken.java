@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Greg on 1/18/2015.
  * A secret token generated from the server to verify the client's identity.
  */
-public class AuthToken implements Serializable {
+public final class AuthToken implements Serializable {
 
     public final Username username;
     private final int sessionID;

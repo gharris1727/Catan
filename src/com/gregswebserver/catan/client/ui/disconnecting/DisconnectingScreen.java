@@ -47,7 +47,7 @@ public class DisconnectingScreen extends ClientScreen {
 
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                return new UserEvent(this, UserEventType.Net_Disconnect, null);
+                return new UserEvent(this, UserEventType.Net_Clear, null);
             }
         };
         //Add the elements to the screen.

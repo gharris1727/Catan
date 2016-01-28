@@ -2,6 +2,8 @@ package com.gregswebserver.catan.server;
 
 import com.gregswebserver.catan.common.CoreWindow;
 import com.gregswebserver.catan.server.console.Console;
+import com.gregswebserver.catan.server.event.ServerEvent;
+import com.gregswebserver.catan.server.event.ServerEventType;
 
 import java.awt.*;
 
@@ -29,6 +31,10 @@ public class ServerWindow extends CoreWindow {
     @Override
     protected void onClose() {
         server.logger.removeListener(console);
-        server.shutdown();
+        server.addEvent(new ServerEvent(this, ServerEventType.Quit_All, null));
+    }
+
+    public String toString() {
+        return "ServerWindow";
     }
 }
