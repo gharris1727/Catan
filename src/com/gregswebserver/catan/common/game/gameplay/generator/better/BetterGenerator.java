@@ -10,7 +10,7 @@ import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
  */
 public class BetterGenerator implements BoardGenerator {
 
-    public static BetterGenerator instance = new BetterGenerator();
+    public static final BetterGenerator instance = new BetterGenerator();
 
     private BetterGenerator() {
     }

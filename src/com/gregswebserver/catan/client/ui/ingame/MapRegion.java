@@ -93,10 +93,6 @@ public class MapRegion extends ScreenRegion {
     }
 
     @Override
-    protected void renderContents() {
-    }
-
-    @Override
     public String toString() {
         return "MapScreenArea " + game;
     }

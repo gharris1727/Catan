@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.structure;
 
-import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
@@ -16,7 +15,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
     private final ClientPool clients;
     private final LobbyPool lobbies;
 
-    public MatchmakingPool(CoreThread host) {
+    public MatchmakingPool() {
         this.clients = new ClientPool();
         this.lobbies = new LobbyPool();
     }

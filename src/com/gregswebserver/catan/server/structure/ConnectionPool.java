@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.server.structure;
 
-import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.NetEvent;
 import com.gregswebserver.catan.common.event.NetEventType;
@@ -20,16 +19,12 @@ public class ConnectionPool {
     private final Map<Integer, ServerConnection> connections;
     private final Map<Username, Integer> usernameConnectionIDs;
     private final Map<Integer, Username> connectionUsers;
-    private int totalClients;
-    private int disconnectedClients;
 
     public ConnectionPool(Server server) {
         this.server = server;
         connections = new HashMap<>();
         usernameConnectionIDs = new HashMap<>();
         connectionUsers = new HashMap<>();
-        totalClients = 0;
-        disconnectedClients = 0;
     }
 
     public void addConnection(ServerConnection connection) {
@@ -58,16 +53,12 @@ public class ConnectionPool {
         connectionUsers.remove(id);
         if (id != null && connections.containsKey(id))
             connections.get(id).sendEvent(new NetEvent(server.getToken(), NetEventType.Disconnect, reason));
-        else
-            throw new IllegalStateException();
     }
 
     public void disconnect(int connectionID) {
         ServerConnection connection = connections.remove(connectionID);
         if (connection != null && connection.isOpen())
             connection.disconnect();
-        else
-            throw new IllegalStateException();
     }
 
     public void disconnectAll(String reason) {
@@ -75,9 +66,5 @@ public class ConnectionPool {
             disconnectUser(entry.getKey(), reason);
             disconnect(entry.getValue());
         }
-    }
-
-    public int size() {
-        return totalClients - disconnectedClients;
     }
 }

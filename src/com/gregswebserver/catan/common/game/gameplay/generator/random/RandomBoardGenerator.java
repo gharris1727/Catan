@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public class RandomBoardGenerator implements BoardGenerator {
 
-    public static RandomBoardGenerator instance = new RandomBoardGenerator();
+    public static final RandomBoardGenerator instance = new RandomBoardGenerator();
 
     private RandomBoardGenerator() {
     }
@@ -49,7 +49,7 @@ public class RandomBoardGenerator implements BoardGenerator {
             validVertices.addAll(board.getAdjacentVertices(c));
             validEdges.addAll(board.getAdjacentEdges(c));
             Terrain t = terrain.next();
-            ResourceTile tile = null;
+            ResourceTile tile;
             if (t.equals(Terrain.Desert)) {
                 tile = new ResourceTile(t, DiceRoll.Seven);
                 tile.placeRobber();

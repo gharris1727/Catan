@@ -53,10 +53,10 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
             }
         }
         root.mark();
-        if (root.getTime() > 100*TimeSlice.MILLION) {
-            String message = "Slow Render!\n" + root.print(1, 0);
-            //logger.log(message, LogLevel.WARN);
-        }
+        /*
+        if (root.getTime() > 100*TimeSlice.MILLION)
+            logger.log("Slow Render!\n" + root.print(1, 0), LogLevel.WARN);
+        */
     }
 
     public String toString() {

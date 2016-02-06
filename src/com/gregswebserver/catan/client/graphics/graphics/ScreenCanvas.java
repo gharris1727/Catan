@@ -46,7 +46,7 @@ public class ScreenCanvas extends Canvas {
         return "ScreenCanvas";
     }
 
-    public synchronized boolean render(Graphic graphic) {
+    public synchronized void render(Graphic graphic) {
         canvasRender.reset();
         if (isDisplayable()) {
             bufferCreate.reset();
@@ -64,7 +64,6 @@ public class ScreenCanvas extends Canvas {
         canvasRender.mark();
         canvasRender.addChild(bufferCreate);
         canvasRender.addChild(screenRender);
-        return graphic.getBuffer().getCapabilities(config).isAccelerated();
     }
 
     public TimeSlice getRenderTime() {

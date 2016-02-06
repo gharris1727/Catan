@@ -17,7 +17,7 @@ import java.util.Iterator;
  */
 public class CopyGenerator implements BoardGenerator {
 
-    public static CopyGenerator instance = new CopyGenerator();
+    public static final CopyGenerator instance = new CopyGenerator();
 
     private CopyGenerator() {
     }

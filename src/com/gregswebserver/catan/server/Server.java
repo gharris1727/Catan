@@ -223,7 +223,7 @@ public class Server extends CoreThread {
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
         database = new UserDatabase(logger);
-        matchmakingPool = new MatchmakingPool(this);
+        matchmakingPool = new MatchmakingPool();
         gamePool = new GamePool(this);
         try {
             if (port <= 1024) throw new IOException("Port Number Reserved");

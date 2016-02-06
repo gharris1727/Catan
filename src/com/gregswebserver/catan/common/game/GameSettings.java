@@ -14,7 +14,7 @@ public class GameSettings {
     private final BoardLayout layout;
     private final BoardGenerator generator;
     private final GameRuleSet rules;
-    private PlayerPool teams;
+    private final PlayerPool teams;
 
     public GameSettings(BoardLayout layout, BoardGenerator generator, GameRuleSet rules, PlayerPool teams) {
         this.layout = layout;
