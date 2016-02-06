@@ -19,7 +19,6 @@ import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.*;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.event.GameThread;
@@ -104,24 +103,12 @@ public class Client extends CoreThread {
         return username;
     }
 
-    private void updatePool(LobbyEvent event) {
-        try {
-            matchmakingPool.execute(event);
-        } catch (EventConsumerException e) {
-            logger.log(e, LogLevel.ERROR);
-        }
-        if (manager.lobbyJoinMenu != null)
-            manager.lobbyJoinMenu.update();
-        if (manager.lobbyScreen != null)
-            manager.lobbyScreen.update();
-    }
-
     @Override
     protected void externalEvent(ExternalEvent event) {
         if (event instanceof ChatEvent && chatThread != null)
             chatThread.addEvent((ChatEvent) event);
-        else if (event instanceof GameEvent && gameThread != null)
-            gameThread.addEvent((GameEvent) event);
+        else if (event instanceof GameEvent)
+            gameEvent((GameEvent) event);
         else if (event instanceof ControlEvent)
             controlEvent((ControlEvent) event);
         else if (event instanceof LobbyEvent)
@@ -189,7 +176,7 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Quit:
-                outgoing = new LobbyEvent(username, LobbyEventType.Lobby_Leave, username);
+                outgoing = new LobbyEvent(username, LobbyEventType.Lobby_Leave, null);
                 sendEvent(outgoing);
                 break;
             case Lobby_Edit:
@@ -197,22 +184,41 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
-                outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, null);
+                outgoing = new GameEvent(username, GameEventType.Game_Create, null);
                 sendEvent(outgoing);
                 break;
             case Lobby_Sort:
                 manager.lobbyJoinMenu.update();
                 break;
             case Tile_Clicked:
-                break;
+                throw new RuntimeException("Unimplemented");
             case Edge_Clicked:
-                break;
+                throw new RuntimeException("Unimplemented");
             case Vertex_Clicked:
-                break;
+                throw new RuntimeException("Unimplemented");
             case Inventory_Clicked:
-                break;
+                throw new RuntimeException("Unimplemented");
             case Server_Clicked:
+                throw new RuntimeException("Unimplemented");
+        }
+    }
+
+    private void gameEvent(GameEvent event) {
+        switch(event.getType()) {
+            case Game_Create:
+                Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(username);
+                gameThread = new GameThread(this, lobby.getGameSettings());
+                manager.displayGameScreen();
                 break;
+            case Turn_Advance:
+            case Player_Roll_Dice:
+            case Player_Move_Robber:
+            case Player_Select_Location:
+            case Build_Settlement:
+            case Build_City:
+            case Build_Road:
+                if (gameThread != null)
+                    gameThread.addEvent(event);
         }
     }
 
@@ -220,66 +226,52 @@ public class Client extends CoreThread {
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
             case Server_Disconnect:
-                break;
+                throw new RuntimeException("Unimplemented");
+            case Name_Change:
             case Pass_Change:
                 throw new IllegalStateException();
             case Pass_Change_Success:
-                break;
+                throw new RuntimeException("Unimplemented");
             case Pass_Change_Failure:
-                break;
+                throw new RuntimeException("Unimplemented");
             case User_Pool_Sync:
                 matchmakingPool = (MatchmakingPool) event.getPayload();
                 manager.displayLobbyJoinMenu();
                 break;
             case Client_Disconnect:
-                break;
+                throw new IllegalStateException();
         }
     }
 
     private void lobbyEvent(LobbyEvent event) {
-        switch (event.getType()) {
-            case Lobby_Change_Config:
-                updatePool(event);
-                break;
-            case User_Connect:
-                break;
-            case User_Disconnect:
-                break;
-            case Name_Change:
-                break;
-            case Lobby_Create:
-            case Lobby_Join:
-                updatePool(event);
-                if (username.equals(event.getOrigin())) {
-                    manager.displayInLobbyScreen();
-                }
-                break;
-            case Lobby_Leave:
-                updatePool(event);
-                if (username.equals(event.getPayload())) {
-                    manager.displayLobbyJoinMenu();
-                }
-                break;
-            case Game_Start:
-                gameThread = new GameThread(this);
-                GameSettings settings = ((LobbyConfig) event.getPayload()).getGameSettings();
-                gameThread.addEvent(new GameEvent(username, GameEventType.Create_Game, settings));
-                gameThread.start();
-                break;
-            case Game_Quit:
-                break;
-            case Game_End:
-                break;
-            case Game_Replay:
-                break;
-            case Replay_Start:
-                break;
-            case Replay_Quit:
-                break;
-            case Spectate_Start:
-                break;
-            case Spectate_Quit:
-                break;
+        try {
+            //Update the matchmaking pool
+            matchmakingPool.execute(event);
+            //Check for anything to do locally.
+            switch (event.getType()) {
+                case User_Connect:
+                    break;
+                case User_Disconnect:
+                    break;
+                case Lobby_Change_Config:
+                    break;
+                case Lobby_Create:
+                case Lobby_Join:
+                    if (username.equals(event.getOrigin()))
+                        manager.displayInLobbyScreen();
+                    break;
+                case Lobby_Leave:
+                    if (username.equals(event.getPayload()))
+                        manager.displayLobbyJoinMenu();
+                    break;
+            }
+            //Force update any relevant screens
+            if (manager.lobbyJoinMenu != null)
+                manager.lobbyJoinMenu.update();
+            if (manager.lobbyScreen != null)
+                manager.lobbyScreen.update();
+        } catch (EventConsumerException e) {
+            logger.log(e, LogLevel.ERROR);
         }
 
     }
@@ -287,10 +279,9 @@ public class Client extends CoreThread {
     // Manage events coming from the network connection.
     @Override
     public void netEvent(NetEvent event) {
-        ClientConnection connection = (ClientConnection) event.getConnection();
         switch (event.getType()) {
             case Log_In:
-                break;
+                throw new IllegalStateException();
             case Log_In_Success:
                 token = (AuthToken) event.getPayload();
                 break;
@@ -347,6 +338,6 @@ public class Client extends CoreThread {
     }
 
     public String toString() {
-        return "Client";
+        return "Client(" + username + ")";
     }
 }

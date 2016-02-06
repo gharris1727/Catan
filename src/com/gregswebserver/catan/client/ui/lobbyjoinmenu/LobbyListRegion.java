@@ -374,7 +374,7 @@ public class LobbyListRegion extends UIScreenRegion {
             joinButton = new Button(1, "Join") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.iterator().next());
+                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getUsers().iterator().next());
                 }
                 public String toString() {
                     return "LobbyListJoinButton";

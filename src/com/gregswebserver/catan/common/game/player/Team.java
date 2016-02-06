@@ -9,6 +9,9 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.resources.GraphicSourceInfo;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Created by Greg on 8/9/2014.
  * Enum pertaining to the team allegiance of each player.
@@ -20,6 +23,11 @@ public enum Team {
     Red("red"),
     Orange("orange"),
     Blue("blue");
+    //TODO: add more teams to support 6 distinct teams at least.
+
+    public static Set<Team> getTeamSet() {
+        return EnumSet.range(White, values()[values().length-1]);
+    }
 
     private final GraphicSet graphics;
 
@@ -51,5 +59,4 @@ public enum Team {
     public Graphic getRobberGraphic() {
         return graphics.getGraphic(6);
     }
-
 }

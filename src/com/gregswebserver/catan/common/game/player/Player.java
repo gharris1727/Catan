@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.common.game.player;
 
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trader;
-import com.gregswebserver.catan.common.structure.UserInfo;
 
 import java.util.HashMap;
 
@@ -13,18 +13,18 @@ import java.util.HashMap;
  */
 public class Player implements Trader {
 
-    private final String name;
+    private final Username name;
     private final Team team;
     private HashMap<Tradeable, Integer> inventory;
     private Coordinate selected;
 
-    public Player(UserInfo client, Team team) {
-        this.name = client.getDisplayName();
+    public Player(Username name, Team team) {
+        this.name = name;
         this.team = team;
     }
 
 
-    public String getName() {
+    public Username getName() {
         return name;
     }
 

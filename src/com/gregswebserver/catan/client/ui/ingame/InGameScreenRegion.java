@@ -32,7 +32,7 @@ public class InGameScreenRegion extends ClientScreen {
         this.game = client.getActiveGame();
         map = new MapRegion(0, game);
         trade = new TradeRegion(1);
-        inventory = new InventoryRegion(2, game.getLocalPlayer());
+        inventory = new InventoryRegion(2, game.getTeams().getLocalPlayer());
         context = new ContextRegion(3);
         add(map);
         add(trade);

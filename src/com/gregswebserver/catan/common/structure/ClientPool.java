@@ -1,17 +1,18 @@
 package com.gregswebserver.catan.common.structure;
 
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.EventPayload;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Created by greg on 1/10/16.
- * Pool of clients and their connection info to the server.
+ * List of clients for use in sending over the network.
  */
-public class ClientPool implements Serializable, Iterable<Username>  {
+public class ClientPool extends EventPayload implements Iterable<Username>  {
+
     // Map from username to the information about that user.
     private final Map<Username, UserInfo> clients;
 
@@ -28,7 +29,11 @@ public class ClientPool implements Serializable, Iterable<Username>  {
         return clients.containsKey(username);
     }
 
-    public void updateUserInfo(Username username, UserInfo userInfo) {
+    public void add(Username username, UserInfo userInfo) {
         clients.put(username,userInfo);
+    }
+
+    public void remove(Username username) {
+        clients.remove(username);
     }
 }

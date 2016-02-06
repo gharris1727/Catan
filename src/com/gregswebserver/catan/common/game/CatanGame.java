@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.game;
 
+import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
@@ -14,9 +15,9 @@ import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.player.Player;
 import com.gregswebserver.catan.common.game.player.Team;
+import com.gregswebserver.catan.common.structure.PlayerPool;
 
 import java.awt.*;
-import java.util.HashMap;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -24,23 +25,25 @@ import java.util.HashMap;
  */
 public class CatanGame implements EventConsumer<GameEvent> {
 
-    private GameSettings settings;
-    private GameBoard board;
-    private HashMap<Username, Player> players;
-    private Player localPlayer;
+    private final GameSettings settings;
+    private final GameBoard board;
 
-    public CatanGame() {
+    public CatanGame(GameSettings settings) {
+        this.settings = settings;
+        board = settings.getGenerator().generate(settings.getLayout());
     }
 
     @Override
     public boolean test(GameEvent event) {
         switch (event.getType()) {
             //TODO: turn checks
+            case Game_Create:
+                return false;
             case Build_Settlement:
                 return board.getBuilding((Coordinate) event.getPayload()) == null;
             case Build_City:
                 Town b = board.getBuilding((Coordinate) event.getPayload());
-                return (b instanceof Settlement && b.getTeam() == players.get(event.getOrigin()).getTeam());
+                return (b instanceof Settlement && b.getTeam() == settings.getTeams().getPlayer(event.getOrigin()).getTeam());
             case Build_Road:
                 return board.getPath((Coordinate) event.getPayload()) == null;
             case Player_Select_Location:
@@ -48,8 +51,6 @@ public class CatanGame implements EventConsumer<GameEvent> {
             case Player_Move_Robber:
                 Tile tile = board.getTile((Coordinate) event.getPayload());
                 return (tile instanceof ResourceTile);
-            case Create_Game:
-                return settings == null && board == null;
             case Turn_Advance:
                 break;
             case Player_Roll_Dice:
@@ -64,14 +65,12 @@ public class CatanGame implements EventConsumer<GameEvent> {
         if (!test(event))
             throw new EventConsumerException(event);
         Username origin = event.getOrigin();
-        Player player = players.get(origin);
+        Player player = settings.getTeams().getPlayer(origin);
         Team team = player.getTeam();
         Coordinate coordinate;
         switch (event.getType()) {
-            case Create_Game:
-                this.settings = (GameSettings) event.getPayload();
-                board = settings.getGenerator().generate(settings.getLayout());
-                break;
+            case Game_Create:
+                throw new IllegalStateException();
             case Build_Settlement:
                 coordinate = (Coordinate) event.getPayload();
                 Settlement settlement = new Settlement(team);
@@ -106,11 +105,11 @@ public class CatanGame implements EventConsumer<GameEvent> {
         return board;
     }
 
-    public Player getLocalPlayer() {
-        return localPlayer;
-    }
-
     public Dimension getBoardSize() {
         return board.getSize();
+    }
+
+    public PlayerPool getTeams() {
+        return settings.getTeams();
     }
 }

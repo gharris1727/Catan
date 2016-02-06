@@ -30,32 +30,14 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
             case User_Connect:
                 return !exists;
             case User_Disconnect:
-            case Name_Change:
                 return exists;
             case Lobby_Create:
                 return exists && !inLobby;
             case Lobby_Join:
-                //Lobby in payload must exist.
                 return exists && !inLobby && lobbies.userInLobby((Username) event.getPayload());
             case Lobby_Change_Config:
             case Lobby_Leave:
                 return inLobby;
-            case Game_Start:
-                break;
-            case Game_Quit:
-                break;
-            case Game_End:
-                break;
-            case Game_Replay:
-                break;
-            case Replay_Start:
-                break;
-            case Replay_Quit:
-                break;
-            case Spectate_Start:
-                break;
-            case Spectate_Quit:
-                break;
         }
         return false;
     }
@@ -65,17 +47,13 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
         if (!test(event))
             throw new EventConsumerException(event);
         Username origin = event.getOrigin();
-        UserInfo userInfo;
-        Username username;
-        Lobby lobby;
         switch (event.getType()) {
             case User_Disconnect:
-                username = (Username) event.getPayload();
+                lobbies.leave(origin);
+                clients.remove(origin);
                 break;
             case User_Connect:
-            case Name_Change:
-                userInfo = (UserInfo) event.getPayload();
-                clients.updateUserInfo(origin, userInfo);
+                clients.add(origin, (UserInfo) event.getPayload());
                 break;
             case Lobby_Create:
                 lobbies.add(origin, (LobbyConfig) event.getPayload());
@@ -87,23 +65,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
                 lobbies.join(origin, (Username) event.getPayload());
                 break;
             case Lobby_Leave:
-                lobbies.leave((Username) event.getPayload());
-                break;
-            case Game_Start:
-                break;
-            case Game_Quit:
-                break;
-            case Game_End:
-                break;
-            case Game_Replay:
-                break;
-            case Replay_Start:
-                break;
-            case Replay_Quit:
-                break;
-            case Spectate_Start:
-                break;
-            case Spectate_Quit:
+                lobbies.leave(origin);
                 break;
         }
     }

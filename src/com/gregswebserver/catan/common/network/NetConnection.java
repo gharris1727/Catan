@@ -82,6 +82,7 @@ public abstract class NetConnection implements Runnable {
     public void sendEvent(NetEvent event) {
         try {
             out.writeObject(event);
+            out.flush();
         } catch (SocketException ignored) {
             onDisconnect("Send failure: connection closed.");
         } catch (IOException e) {
@@ -111,5 +112,10 @@ public abstract class NetConnection implements Runnable {
         NetEvent error = new NetEvent(host.getToken(), NetEventType.Link_Error, message);
         error.setConnection(this);
         host.addEvent(error);
+    }
+
+    @Override
+    public String toString() {
+        return "NetConnection(" + host + ")";
     }
 }

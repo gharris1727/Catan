@@ -5,7 +5,6 @@ import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.event.ThreadStop;
-import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.profiler.TimeSlice;
 
@@ -56,7 +55,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         root.mark();
         if (root.getTime() > 100*TimeSlice.MILLION) {
             String message = "Slow Render!\n" + root.print(1, 0);
-            logger.log(message, LogLevel.WARN);
+            //logger.log(message, LogLevel.WARN);
         }
     }
 

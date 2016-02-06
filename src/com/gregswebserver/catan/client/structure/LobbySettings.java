@@ -24,6 +24,8 @@ public class LobbySettings extends UIScreenRegion {
             Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.type"));
     private static final RenderMask generatorSize = new RectangularMask(
             Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.generator"));
+    private static final RenderMask rulesetSize = new RectangularMask(
+            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.ruleset"));
     private static final RenderMask clientsSize = new RectangularMask(
             Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.clients"));
     private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.inlobby.settings.spacing");
@@ -32,6 +34,7 @@ public class LobbySettings extends UIScreenRegion {
     private final TextBox name;
     private final TextBox type;
     private final TextBox generator;
+    private final TextBox ruleset;
     private final TextBox clients;
 
     private LobbyConfig config;
@@ -51,6 +54,7 @@ public class LobbySettings extends UIScreenRegion {
                         this.getText(),
                         LobbySettings.this.config.getLayoutName(),
                         LobbySettings.this.config.getGeneratorName(),
+                        LobbySettings.this.config.getRulesetName(),
                         LobbySettings.this.config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -67,6 +71,7 @@ public class LobbySettings extends UIScreenRegion {
                         LobbySettings.this.config.getLobbyName(),
                         this.getText(),
                         LobbySettings.this.config.getGeneratorName(),
+                        LobbySettings.this.config.getRulesetName(),
                         LobbySettings.this.config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -83,6 +88,7 @@ public class LobbySettings extends UIScreenRegion {
                         LobbySettings.this.config.getLobbyName(),
                         LobbySettings.this.config.getLayoutName(),
                         this.getText(),
+                        LobbySettings.this.config.getRulesetName(),
                         LobbySettings.this.config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -92,6 +98,23 @@ public class LobbySettings extends UIScreenRegion {
                 return "LobbySettingsGeneratorTextBox";
             }
         };
+        ruleset = new TextBox(1, "RuleSet") {
+            @Override
+            public UserEvent onAccept() {
+                LobbyConfig newConfig = new LobbyConfig(
+                        LobbySettings.this.config.getLobbyName(),
+                        LobbySettings.this.config.getLayoutName(),
+                        LobbySettings.this.config.getGeneratorName(),
+                        this.getText(),
+                        LobbySettings.this.config.getMaxPlayers());
+                return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
+            }
+
+            @Override
+            public String toString() {
+                return "LobbySettingsRuleSetTextBox";
+            }
+        };
         clients = new TextBox(1, "# Clients") {
             @Override
             public UserEvent onAccept() {
@@ -99,6 +122,7 @@ public class LobbySettings extends UIScreenRegion {
                         LobbySettings.this.config.getLobbyName(),
                         LobbySettings.this.config.getLayoutName(),
                         LobbySettings.this.config.getGeneratorName(),
+                        LobbySettings.this.config.getRulesetName(),
                         this.getInt());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -112,6 +136,7 @@ public class LobbySettings extends UIScreenRegion {
         add(name);
         add(type);
         add(generator);
+        add(ruleset);
         add(clients);
     }
 
@@ -120,6 +145,7 @@ public class LobbySettings extends UIScreenRegion {
         name.setText(config.getLobbyName());
         type.setText(config.getLayoutName());
         generator.setText(config.getGeneratorName());
+        ruleset.setText(config.getRulesetName());
         clients.setText(""+config.getMaxPlayers());
     }
 
@@ -129,6 +155,7 @@ public class LobbySettings extends UIScreenRegion {
         name.setMask(nameSize);
         type.setMask(typeSize);
         generator.setMask(generatorSize);
+        ruleset.setMask(rulesetSize);
         clients.setMask(clientsSize);
     }
 
@@ -137,7 +164,8 @@ public class LobbySettings extends UIScreenRegion {
         center(name).y = spacing;
         center(type).y = name.getPosition().y + nameSize.getHeight() + spacing;
         center(generator).y = type.getPosition().y + typeSize.getHeight() + spacing;
-        center(clients).y = generator.getPosition().y + generatorSize.getHeight() + spacing;
+        center(ruleset).y = generator.getPosition().y + generatorSize.getHeight() + spacing;
+        center(clients).y = ruleset.getPosition().y + rulesetSize.getHeight() + spacing;
     }
 
     @Override

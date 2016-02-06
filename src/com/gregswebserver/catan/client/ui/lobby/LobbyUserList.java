@@ -48,7 +48,7 @@ public class LobbyUserList extends UIScreenRegion {
     protected void renderContents() {
         clear();
         int height = spacing;
-        for (Username user : lobby) {
+        for (Username user : lobby.getUsers()) {
             LobbyUserListElement elt = new LobbyUserListElement(1,user);
             add(elt).setPosition(new Point(0, height));
             elt.setStyle(getStyle());

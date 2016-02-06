@@ -17,6 +17,11 @@ import java.util.Iterator;
  */
 public class CopyGenerator implements BoardGenerator {
 
+    public static CopyGenerator instance = new CopyGenerator();
+
+    private CopyGenerator() {
+    }
+
     @Override
     public GameBoard generate(BoardLayout layout) {
         GameBoard board = new GameBoard(layout.getSize());

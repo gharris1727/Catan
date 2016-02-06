@@ -21,6 +21,11 @@ import java.util.Set;
  */
 public class RandomBoardGenerator implements BoardGenerator {
 
+    public static RandomBoardGenerator instance = new RandomBoardGenerator();
+
+    private RandomBoardGenerator() {
+    }
+
     @Override
     public GameBoard generate(BoardLayout layout) {
         GameBoard board = new GameBoard(layout.getSize());

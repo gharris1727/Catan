@@ -28,6 +28,17 @@ public class ResourceLoader {
         }
     };
 
+    private static final ResourceCache<GameRuleSetInfo, GameRuleSet> gameRuleSetCache = new ResourceCache<GameRuleSetInfo, GameRuleSet>() {
+        @Override
+        protected GameRuleSet load(GameRuleSetInfo info) throws ResourceLoadException {
+            try {
+                return new GameRuleSet(info.getPath());
+            } catch (Exception e) {
+                throw new ResourceLoadException(info.toString(), e);
+            }
+        }
+    };
+
     private static final ResourceCache<GraphicInfo, Graphic> graphicCache = new ResourceCache<GraphicInfo, Graphic>() {
         @Override
         protected Graphic load(GraphicInfo info) throws ResourceLoadException {
@@ -54,6 +65,7 @@ public class ResourceLoader {
 
     static {
         boardLayoutCache.clear();
+        gameRuleSetCache.clear();
         graphicCache.clear();
         graphicSourceCache.clear();
     }
@@ -68,5 +80,9 @@ public class ResourceLoader {
 
     private static GraphicSource getGraphicSource(GraphicSourceInfo info) throws ResourceLoadException {
         return graphicSourceCache.get(info);
+    }
+
+    public static GameRuleSet getGameRuleSet(GameRuleSetInfo info) throws ResourceLoadException{
+        return gameRuleSetCache.get(info);
     }
 }

@@ -9,6 +9,7 @@ import com.gregswebserver.catan.common.structure.MatchmakingPool;
  */
 public enum ControlEventType implements EventType {
 
+    Name_Change(String.class), //Client -> Server, when a client changes their display name.
     Pass_Change(Password.class), //Client -> Server, when the client requests a password change.
     Pass_Change_Success(null), //Server -> Client, when a password change succeeds.
     Pass_Change_Failure(null), //Server -> Client, when a password change fails.

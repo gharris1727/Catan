@@ -22,6 +22,10 @@ public class BoardLayoutInfo {
         this.seed = seed;
     }
 
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
     public String getPath() {
         return "config/games/" + name + ".properties";
     }
@@ -49,9 +53,5 @@ public class BoardLayoutInfo {
     @Override
     public String toString() {
         return "BoardLayoutInfo(" + name + ")";
-    }
-
-    public boolean isDynamic() {
-        return dynamic;
     }
 }

@@ -12,12 +12,14 @@ import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ServerConnection;
+import com.gregswebserver.catan.common.structure.Lobby;
 import com.gregswebserver.catan.common.structure.MatchmakingPool;
 import com.gregswebserver.catan.common.structure.UserInfo;
 import com.gregswebserver.catan.common.structure.UserLogin;
 import com.gregswebserver.catan.server.event.ServerEvent;
 import com.gregswebserver.catan.server.event.ServerEventType;
 import com.gregswebserver.catan.server.structure.ConnectionPool;
+import com.gregswebserver.catan.server.structure.GamePool;
 import com.gregswebserver.catan.server.structure.UserDatabase;
 import com.gregswebserver.catan.server.structure.UserNotFoundException;
 
@@ -37,6 +39,7 @@ public class Server extends CoreThread {
     private UserDatabase database;
     private ConnectionPool connectionPool;
     private MatchmakingPool matchmakingPool;
+    private GamePool gamePool;
 
     private ServerSocket socket;
     private boolean listening;
@@ -94,7 +97,7 @@ public class Server extends CoreThread {
                     //Get their info out of the server database.
                     UserInfo userInfo = database.getUserInfo(username);
                     //Tell the rest of the server about their join.
-                    addEvent(new LobbyEvent(token.username, LobbyEventType.User_Connect, userInfo));
+                    lobbyEvent(new LobbyEvent(username, LobbyEventType.User_Connect, userInfo));
                 } catch (Exception e) {
                     addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, connection.getConnectionID()));
                     logger.log("Unable to synchronize with a newly connected client.", e, LogLevel.ERROR);
@@ -111,6 +114,13 @@ public class Server extends CoreThread {
 
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
+            case Name_Change:
+                try {
+                    database.changeDisplayName(event.getOrigin(), (String) event.getPayload());
+                } catch (UserNotFoundException e) {
+                    logger.log(e, LogLevel.WARN);
+                }
+                break;
             case Pass_Change:
                 try {
                     database.changePassword(event.getOrigin(), (Password) event.getPayload());
@@ -130,53 +140,40 @@ public class Server extends CoreThread {
     }
 
     private void lobbyEvent(LobbyEvent event) {
-        switch (event.getType()) {
-            case Name_Change:
-                try {
-                    database.changeDisplayName(event.getOrigin(), (String) event.getPayload());
-                } catch (UserNotFoundException e) {
-                    logger.log(e, LogLevel.WARN);
-                }
-                break;
-            case User_Connect:
-            case User_Disconnect:
-            case Lobby_Create:
-            case Lobby_Change_Config:
-            case Lobby_Join:
-            case Lobby_Leave:
-                try {
-                    matchmakingPool.execute(event);
-                    //Rebroadcast the event to everyone connected.
-                    for (Username user : matchmakingPool.getClientList()) {
-                        ServerConnection connection = connectionPool.get(user);
-                        if (connection != null)
-                            connection.sendEvent(event);
-                    }
-                } catch (EventConsumerException e) {
-                    logger.log(e, LogLevel.ERROR);
-                }
-                break;
-            case Game_Start:
-                break;
-            case Game_Quit:
-                break;
-            case Game_End:
-                break;
-            case Game_Replay:
-                break;
-            case Replay_Start:
-                break;
-            case Replay_Quit:
-                break;
-            case Spectate_Start:
-                break;
-            case Spectate_Quit:
-                break;
+        try {
+            //Try to execute the event locally.
+            matchmakingPool.execute(event);
+            //Rebroadcast the event to everyone connected.
+            for (Username user : matchmakingPool.getClientList()) {
+                ServerConnection connection = connectionPool.get(user);
+                if (connection != null)
+                    connection.sendEvent(event);
+            }
+            switch(event.getType()) {
+                case User_Connect:
+                    break;
+                case User_Disconnect:
+                    break;
+                case Lobby_Create:
+                    break;
+                case Lobby_Change_Config:
+                    break;
+                case Lobby_Join:
+                    break;
+                case Lobby_Leave:
+                    break;
+            }
+        } catch (EventConsumerException e) {
+            logger.log(e, LogLevel.ERROR);
         }
     }
 
     private void gameEvent(GameEvent event) {
-
+        try {
+            gamePool.execute(event);
+        } catch (EventConsumerException e) {
+            logger.log("Unable to run game event on the server side.", e, LogLevel.ERROR);
+        }
     }
 
     @Override
@@ -216,7 +213,7 @@ public class Server extends CoreThread {
                 break;
             case External_Event:
                 //Forward external events to be handled.
-                externalEvent((ExternalEvent) event.getPayload());
+                addEvent((ExternalEvent) event.getPayload());
                 break;
         }
     }
@@ -227,6 +224,7 @@ public class Server extends CoreThread {
         connectionPool = new ConnectionPool(this);
         database = new UserDatabase(logger);
         matchmakingPool = new MatchmakingPool(this);
+        gamePool = new GamePool(this);
         try {
             if (port <= 1024) throw new IOException("Port Number Reserved");
             socket = new ServerSocket(port);
@@ -254,6 +252,18 @@ public class Server extends CoreThread {
         }
     }
 
+    public void sendToUser(Username username, ExternalEvent event) {
+        ServerConnection connection = connectionPool.get(username);
+        if (connection != null)
+            connection.sendEvent(event);
+        else
+            logger.log("Unable to send event to user: no user found.", LogLevel.WARN);
+    }
+
+    public Lobby getUserLobby(Username username) {
+        return matchmakingPool.getLobbyList().userGetLobby(username);
+    }
+
     private void shutdown() {
         database.save();
         window.dispose();
@@ -275,5 +285,4 @@ public class Server extends CoreThread {
     public String toString() {
         return "Server";
     }
-
 }
