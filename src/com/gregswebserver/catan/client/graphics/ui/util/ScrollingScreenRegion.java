@@ -14,13 +14,15 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
 
     private Point offset;
     private RenderMask hostMask;
+    private Insets insets;
 
     public ScrollingScreenRegion(int priority) {
         super(priority);
     }
 
-    public void setHostView(RenderMask hostMask) {
+    public void setHostView(RenderMask hostMask, Insets insets) {
         this.hostMask = hostMask;
+        this.insets = insets;
         checkBounds();
     }
 
@@ -48,25 +50,15 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
             Dimension host = hostMask.getSize();
             int minX = host.width - size.width;
             int minY = host.height - size.height;
-            boolean needsRender = needsRender();
-            if (position.x < minX + offset.x) {
-                position.x = minX + offset.x;
-                needsRender = true;
-            }
-            if (position.y < minY + offset.y) {
-                position.y = minY + offset.y;
-                needsRender = true;
-            }
-            if (position.x > offset.x) {
-                position.x = offset.x;
-                needsRender = true;
-            }
-            if (position.y > offset.y) {
-                position.y = offset.y;
-                needsRender = true;
-            }
-            if (needsRender)
-                forceRender();
+            if (position.x < minX + offset.x + insets.left)
+                position.x = minX + offset.x + insets.left;
+            if (position.y < minY + offset.y + insets.top)
+                position.y = minY + offset.y + insets.top;
+            if (position.x > offset.x - insets.right)
+                position.x = offset.x - insets.right;
+            if (position.y > offset.y - insets.bottom)
+                position.y = offset.y - insets.bottom;
+            forceRender();
         }
     }
 

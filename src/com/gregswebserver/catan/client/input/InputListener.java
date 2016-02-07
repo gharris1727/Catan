@@ -24,139 +24,68 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     public InputListener(Client client, Clickable root) {
         this.client = client;
         this.root = root;
-        this.nullClickable = new Clickable() {
-            @Override
-            public UserEvent onMouseClick(MouseEvent event) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onMousePress(MouseEvent e) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onMouseRelease(MouseEvent e) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onKeyTyped(KeyEvent event) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onKeyPressed(KeyEvent e) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onKeyReleased(KeyEvent e) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onMouseDrag(Point p) {
-                return null;
-            }
-
-            @Override
-            public UserEvent onHover() {
-                return null;
-            }
-
-            @Override
-            public UserEvent onUnHover() {
-                return null;
-            }
-
-            @Override
-            public UserEvent onSelect() {
-                return null;
-            }
-
-            @Override
-            public UserEvent onDeselect() {
-                return null;
-            }
-
-            @Override
-            public Clickable getClickable(Point p) {
-                return this;
-            }
-
-            public String toString() {
-                return "nullClickable";
-            }
-        };
+        this.nullClickable = new NullClickable();
         this.selected = nullClickable;
         this.hover = nullClickable;
     }
 
-    private void sendEvent(UserEvent event, UserEvent fallback) {
+    private void sendEvent(UserEvent event) {
         if (event != null)
             client.addEvent(event);
-        else if (fallback != null)
-            client.addEvent(fallback);
     }
 
     private void update(MouseEvent e) {
         Clickable found = root.getClickable(e.getPoint());
         Clickable next = (found == null) ? nullClickable : found;
         if (hover != next) {
-            sendEvent(hover.onUnHover(), null);
+            sendEvent(hover.onUnHover());
             hover = next;
-            sendEvent(hover.onHover(), null);
-//            client.logger.log("Hovered "+ hover, LogLevel.DEBUG);
+            sendEvent(hover.onHover());
+            //client.logger.log("Hovered "+ hover, LogLevel.DEBUG);
         }
     }
 
     private void select(MouseEvent e) {
         update(e);
         if (selected != hover) {
-            sendEvent(selected.onDeselect(), null);
+            sendEvent(selected.onDeselect());
             selected = hover;
-            sendEvent(selected.onSelect(), null);
-//            client.logger.log("Selected "+ selected, LogLevel.DEBUG);
+            sendEvent(selected.onSelect());
+            //client.logger.log("Selected "+ selected, LogLevel.DEBUG);
         }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        sendEvent(selected.onKeyTyped(e), null);
+        sendEvent(selected.onKeyTyped(e));
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        sendEvent(selected.onKeyPressed(e), null);
+        sendEvent(selected.onKeyPressed(e));
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        sendEvent(selected.onKeyReleased(e), null);
+        sendEvent(selected.onKeyReleased(e));
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         select(e);
-        sendEvent(selected.onMouseClick(e), null);
+        sendEvent(selected.onMouseClick(e));
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         select(e);
-        sendEvent(selected.onMousePress(e), null);
+        sendEvent(selected.onMousePress(e));
         dragStart = e.getPoint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        sendEvent(selected.onMouseRelease(e), null);
+        sendEvent(selected.onMouseRelease(e));
     }
 
     @Override
@@ -173,7 +102,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         Point dragEnd = e.getPoint();
         dragEnd.translate(-dragStart.x, -dragStart.y);
         dragStart = e.getPoint();
-        sendEvent(selected.onMouseDrag(dragEnd), null);
+        sendEvent(selected.onMouseDrag(dragEnd));
     }
 
     @Override
@@ -183,10 +112,11 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        sendEvent(selected.onMouseScroll(e), hover.onMouseScroll(e));
+        sendEvent(selected.onMouseScroll(e));
     }
 
     public String toString() {
         return "InputListener";
     }
+
 }

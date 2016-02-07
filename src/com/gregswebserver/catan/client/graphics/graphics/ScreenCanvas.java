@@ -12,7 +12,6 @@ import java.awt.image.BufferStrategy;
 public class ScreenCanvas extends Canvas {
 
     private final Dimension size;
-    private final GraphicsConfiguration config;
     private final TimeSlice canvasRender;
     private final TimeSlice bufferCreate;
     private final TimeSlice screenRender;
@@ -21,7 +20,6 @@ public class ScreenCanvas extends Canvas {
 
     public ScreenCanvas(Dimension size) {
         this.size = size;
-        config = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         canvasRender = new TimeSlice(toString());
         bufferCreate = new TimeSlice("Buffer");
         screenRender = new TimeSlice("Screen");

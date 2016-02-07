@@ -163,4 +163,9 @@ public class GameRuleSet {
     public int getMaxCities() {
         return maxCities;
     }
+
+    @Override
+    public String toString() {
+        return "GameRuleSet";
+    }
 }

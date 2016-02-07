@@ -1,6 +1,8 @@
-package com.gregswebserver.catan.common.event;
+package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.common.crypto.AuthToken;
+import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.structure.UserLogin;
 
 /**

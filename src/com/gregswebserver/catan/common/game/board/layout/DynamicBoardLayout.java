@@ -14,7 +14,10 @@ import java.util.Iterator;
  */
 public class DynamicBoardLayout implements BoardLayout {
 
+    private final long seed;
+
     public DynamicBoardLayout(long seed) {
+        this.seed = seed;
         //TODO: explore procedurally generating game boards.
         throw new RuntimeException("Unimplemented");
     }
@@ -72,5 +75,10 @@ public class DynamicBoardLayout implements BoardLayout {
     @Override
     public Iterator<DiceRoll> getRolls() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicBoardLayout(" + seed + ")";
     }
 }

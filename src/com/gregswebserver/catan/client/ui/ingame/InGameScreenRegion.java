@@ -3,7 +3,7 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.renderer.ClientScreen;
+import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
@@ -16,10 +16,6 @@ public class InGameScreenRegion extends ClientScreen {
 
     private final static int sidebarWidth = 256;
     private final static int bottomHeight = 256;
-    private final static Point main = new Point();
-    private final static Point side = new Point();
-    private final static Point bottom = new Point();
-    private final static Point corner = new Point();
 
     private final CatanGame game;
     private final MapRegion map;
@@ -42,17 +38,16 @@ public class InGameScreenRegion extends ClientScreen {
 
     @Override
     public void update() {
-
+        map.update();
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
         int mainWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - bottomHeight;
-        side.x = mainWidth;
-        bottom.y = mainHeight;
-        corner.x = mainWidth;
-        corner.y = mainHeight;
+        trade.setPosition(new Point(mainWidth,0));
+        inventory.setPosition(new Point(0,mainHeight));
+        context.setPosition(new Point(mainWidth,mainHeight));
         map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
         trade.setMask(new RectangularMask(new Dimension(sidebarWidth, mainHeight)));
         inventory.setMask(new RectangularMask(new Dimension(mainWidth, bottomHeight)));
@@ -60,6 +55,6 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     public String toString() {
-        return "InGameScreen";
+        return "InGameScreenRegion";
     }
 }

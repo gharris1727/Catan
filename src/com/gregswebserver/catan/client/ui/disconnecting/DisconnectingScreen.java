@@ -5,12 +5,12 @@ import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
+import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.client.renderer.ClientScreen;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

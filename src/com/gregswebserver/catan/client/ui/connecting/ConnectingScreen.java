@@ -2,11 +2,11 @@ package com.gregswebserver.catan.client.ui.connecting;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.client.renderer.ClientScreen;
 
 /**
  * Created by Greg on 1/18/2015.

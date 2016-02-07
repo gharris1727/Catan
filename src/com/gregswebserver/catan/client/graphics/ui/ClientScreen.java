@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.renderer;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;

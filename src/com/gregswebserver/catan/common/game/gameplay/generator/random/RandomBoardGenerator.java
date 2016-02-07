@@ -24,6 +24,7 @@ public class RandomBoardGenerator implements BoardGenerator {
     public static final RandomBoardGenerator instance = new RandomBoardGenerator();
 
     private RandomBoardGenerator() {
+        //TODO: make the random board generator deterministic over the network.
     }
 
     @Override
@@ -76,5 +77,10 @@ public class RandomBoardGenerator implements BoardGenerator {
             setTradingPost(board, tradingPorts.next(), trade);
 
         return board;
+    }
+
+    @Override
+    public String toString() {
+        return "RandomBoardGenerator";
     }
 }

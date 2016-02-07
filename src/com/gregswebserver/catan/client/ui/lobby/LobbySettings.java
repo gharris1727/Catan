@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.structure;
+package com.gregswebserver.catan.client.ui.lobby;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;

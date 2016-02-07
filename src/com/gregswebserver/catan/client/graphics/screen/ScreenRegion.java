@@ -49,7 +49,6 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
             graphic = new Graphic(mask, false);
             forceRender();
             resizeContents(mask);
-            limitScroll();
         }
     }
 
@@ -189,7 +188,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     @Override
     public final boolean needsRender() {
-        if (limitScroll() || needsRendering) return true;
+        if (needsRendering) return true;
         for (ScreenObject object : this)
             if (object.needsRender())
                 return true;
@@ -209,12 +208,15 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
             assertRenderable();
             graphic.clear();
             for (ScreenObject object : this)
-                if (object.isGraphical()) {
-                    Graphic g = ((Graphical) object).getGraphic();
-                    g.renderTo(graphic, object.getPosition(), object.getClickableColor());
-                    if (object instanceof Renderable)
-                        timeSlice.addChild(((Renderable) object).getRenderTime());
-                }
+                if (object.isGraphical())
+                    try {
+                        Graphic g = ((Graphical) object).getGraphic();
+                        g.renderTo(graphic, object.getPosition(), object.getClickableColor());
+                        if (object instanceof Renderable)
+                            timeSlice.addChild(((Renderable) object).getRenderTime());
+                    } catch (Exception e) {
+                        throw new NotYetRenderableException("Unable to render " + object, e);
+                    }
             needsRendering = false;
         }
         assertRenderable();
@@ -232,8 +234,4 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
 
     //Take the necessary steps to render the contents, such as adding or removing elements from the screen.
     protected void renderContents() { }
-
-    protected boolean limitScroll() {
-        return false;
-    }
 }

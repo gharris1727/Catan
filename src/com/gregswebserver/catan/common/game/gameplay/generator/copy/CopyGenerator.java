@@ -40,4 +40,9 @@ public class CopyGenerator implements BoardGenerator {
             setTradingPost(board, ports.next(), posts.next());
         return board;
     }
+
+    @Override
+    public String toString() {
+        return "CopyGenerator";
+    }
 }

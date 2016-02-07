@@ -86,7 +86,7 @@ public class LobbyListRegion extends UIScreenRegion {
         footer.setPosition(new Point(0,height-footerHeight));
         //Resize the windows
         background.setMask(new RectangularMask(new Dimension(width,windowHeight)));
-        scroll.setHostView(background.getMask());
+        scroll.setHostView(background.getMask(),new Insets(0,0,0,0));
         header.setMask(new RectangularMask(new Dimension(width,headerHeight)));
         footer.setMask(new RectangularMask(new Dimension(width,footerHeight)));
         lobbySize = new RectangularMask(new Dimension(width,lobbyHeight));

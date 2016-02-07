@@ -244,7 +244,9 @@ public class StaticBoardLayout implements BoardLayout {
         return posts.iterator();
     }
 
+    @Override
     public String toString() {
+        //TODO: fix the name not being parsed correctly.
         return "StaticBoardLayout " + name;
     }
 }

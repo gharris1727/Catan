@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.common.chat;
 
 import com.gregswebserver.catan.common.event.QueuedInputThread;
-import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.log.Logger;
 
 /**

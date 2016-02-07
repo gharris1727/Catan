@@ -16,8 +16,8 @@ public enum GameResource implements Tradeable, Graphical {
     Brick("Clay"),
     Lumber("Logs"),
     Wool("Sheep"),
-    Grain("Wheat"),
     Ore("Rocks"),
+    Grain("Wheat"),
     Wildcard("Any");
 
     private static final GraphicSet graphics;

@@ -1,7 +1,7 @@
-package com.gregswebserver.catan.common.event;
+package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.common.network.NetConnection;
+import com.gregswebserver.catan.common.event.GenericEvent;
 
 import java.io.Serializable;
 

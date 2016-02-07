@@ -12,7 +12,7 @@ public enum Terrain {
     Pasture(GameResource.Wool),
     Mountain(GameResource.Ore),
     Field(GameResource.Grain),
-    Desert(null);
+    Desert(GameResource.Wildcard);
 
     public final GameResource gameResource;
 

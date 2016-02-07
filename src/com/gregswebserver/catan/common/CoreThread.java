@@ -1,9 +1,13 @@
 package com.gregswebserver.catan.common;
 
 import com.gregswebserver.catan.common.crypto.AuthToken;
-import com.gregswebserver.catan.common.event.*;
+import com.gregswebserver.catan.common.event.ExternalEvent;
+import com.gregswebserver.catan.common.event.GenericEvent;
+import com.gregswebserver.catan.common.event.InternalEvent;
+import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
+import com.gregswebserver.catan.common.network.NetEvent;
 
 /**
  * Created by greg on 1/7/16.

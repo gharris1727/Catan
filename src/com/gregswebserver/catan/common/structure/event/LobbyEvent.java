@@ -1,6 +1,7 @@
-package com.gregswebserver.catan.common.event;
+package com.gregswebserver.catan.common.structure.event;
 
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.ExternalEvent;
 
 /**
  * Created by greg on 1/27/16.

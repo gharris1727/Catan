@@ -7,8 +7,10 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
@@ -28,87 +30,37 @@ import java.util.Map;
  * Created by Greg on 1/5/2015.
  * The region of the screen responsible for rendering the game map.
  */
-public class MapRegion extends ScreenRegion {
+public class MapRegion extends UIScreenRegion {
 
     private static final Dimension unitSize = Client.staticConfig.getDimension("catan.graphics.tiles.unit.size");
     private static final Dimension borderBuffer = Client.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
-    
-    private final CatanGame game;
-    private final RenderMask boardSize;
+    private static final Insets viewInsets = new Insets(borderBuffer.height,borderBuffer.width,borderBuffer.height,borderBuffer.width);
 
-    private final ScreenRegion background;
-    private final ScreenRegion midground;
-    private final ScreenRegion foreground;
+    private final CatanGame game;
+    private final BoardArea boardArea;
 
     public MapRegion(int priority, CatanGame game) {
         super(priority);
         this.game = game;
-        this.boardSize = new RectangularMask(boardToScreen(game.getBoardSize()));
-        background =  new Background(0);
-        midground = new MiddleGround(1, game.getBoard());
-        foreground = new Foreground(2);
-        add(background).setClickable(this);
-        add(midground).setClickable(this);
-        add(foreground).setClickable(this);
-    }
-
-    @Override
-    protected boolean limitScroll() {
-        int maxX = -borderBuffer.width;
-        int maxY = -borderBuffer.height;
-        int minX = -boardSize.getWidth() + getMask().getWidth() - 2 * maxX;
-        int minY = -boardSize.getHeight() + getMask().getHeight() - 2 * maxY;
-        boolean changed = false;
-        Point mapOffset =  midground.getPosition();
-        if (mapOffset.x < minX) {
-            changed = true;
-            mapOffset.x = minX;
-        }
-        if (mapOffset.y < minY){
-            changed = true;
-            mapOffset.y = minY;
-        }
-        if (mapOffset.x > maxX){
-            changed = true;
-            mapOffset.x = maxX;
-        }
-        if (mapOffset.y > maxY){
-            changed = true;
-            mapOffset.y = maxY;
-        }
-        return changed;
-    }
-
-    @Override
-    public UserEvent onMouseDrag(Point p) {
-        midground.getPosition().translate(p.x, p.y);
-        return null;
+        boardArea = new BoardArea(1, game.getBoard());
+        add(boardArea);
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        limitScroll();
-        background.setMask(mask);
-        foreground.setMask(mask);
+        boardArea.setHostView(mask, viewInsets);
+    }
+
+    public void update() {
+        boardArea.forceRender();
     }
 
     @Override
     public String toString() {
-        return "MapScreenArea " + game;
+        return "MapRegion";
     }
 
-    private class Background extends TiledBackground {
-
-        public Background(int priority) {
-            super(priority, UIStyle.BACKGROUND_GAME);
-        }
-
-        public String toString() {
-            return "Map Background";
-        }
-    }
-
-    private class MiddleGround extends ScreenRegion {
+    private class BoardArea extends ScrollingScreenRegion {
 
         private HashMap<Coordinate, MapScreenObject> tiles;
         private HashMap<Coordinate, MapScreenObject> roads;
@@ -116,9 +68,19 @@ public class MapRegion extends ScreenRegion {
 
         private final GameBoard board;
 
-        public MiddleGround(int priority, GameBoard board) {
+        private final TiledBackground background;
+
+        public BoardArea(int priority, GameBoard board) {
             super(priority);
             this.board = board;
+            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_GAME) {
+                public String toString() {
+                    return "BoardAreaBackground";
+                }
+            };
+            add(background).setClickable(this);
+            setPosition(new Point());
+            setMask(new RectangularMask(boardToScreen(game.getBoardSize())));
         }
 
         public ScreenObject add(MapScreenObject object) {
@@ -153,6 +115,7 @@ public class MapRegion extends ScreenRegion {
 
         @Override
         protected void resizeContents(RenderMask mask) {
+            background.setMask(mask);
         }
 
         @Override
@@ -170,17 +133,25 @@ public class MapRegion extends ScreenRegion {
             for (Map.Entry<Coordinate, Path> e : paths.entrySet()) {
                 Coordinate c = e.getKey();
                 ScreenObject o = new MapScreenObject(1, c, e.getValue());
-                add(o);
+                //add(o);
+                //TODO: unfuck the diagonal mask so this doesnt break everything.
             }
             for (Map.Entry<Coordinate, Town> e : towns.entrySet()) {
                 Coordinate c = e.getKey();
                 ScreenObject o = new MapScreenObject(2, c, e.getValue());
                 add(o);
             }
+            add(background);
+        }
+
+        @Override
+        public UserEvent onMouseDrag(Point p) {
+            scroll(p.x, p.y);
+            return null;
         }
 
         public String toString() {
-            return "Middle Ground";
+            return "BoardArea";
         }
 
         private class MapScreenObject extends GraphicObject {
@@ -192,6 +163,12 @@ public class MapRegion extends ScreenRegion {
                 super(priority, object.getGraphic());
                 this.coordinate = coordinate;
                 this.object = object;
+                if (object instanceof Tile)
+                    setPosition(tileToScreen(coordinate));
+                if (object instanceof Road)
+                    setPosition(edgeToScreen(coordinate));
+                if (object instanceof Town)
+                    setPosition(vertexToScreen(coordinate));
             }
 
             @Override
@@ -205,26 +182,15 @@ public class MapRegion extends ScreenRegion {
                 return null;
             }
 
+            @Override
+            public UserEvent onMouseDrag(Point p) {
+                return BoardArea.this.onMouseDrag(p);
+            }
 
             public String toString() {
                 return "MapScreenObject C: " + coordinate + " O: " + object;
             }
 
-        }
-    }
-
-    private class Foreground extends ScreenRegion {
-
-        public Foreground(int priority) {
-            super(priority);
-        }
-
-        @Override
-        protected void resizeContents(RenderMask mask) {
-        }
-
-        public String toString() {
-            return "Foreground";
         }
     }
 
@@ -238,13 +204,13 @@ public class MapRegion extends ScreenRegion {
             {0, 24, 100, 124}, //Horizontal
             {56, 0, 0, 56}}; //Vertical
 
-    public static Dimension boardToScreen(Dimension size) {
+    private static Dimension boardToScreen(Dimension size) {
         int outW = ((size.width + 1) / 2) * unitSize.width;
         int outH = (size.height + 1) * unitSize.height;
         return new Dimension(outW, outH);
     }
 
-    public static Point tileToScreen(Coordinate c) {
+    private static Point tileToScreen(Coordinate c) {
         int outX = (c.x / 2) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += tileOffsets[0][c.x % 2];
@@ -252,7 +218,7 @@ public class MapRegion extends ScreenRegion {
         return new Point(outX, outY);
     }
 
-    public static Point edgeToScreen(Coordinate c) {
+    private static Point edgeToScreen(Coordinate c) {
         int outX = (c.x / 6) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += edgeOffsets[0][c.x % 6];
@@ -260,7 +226,7 @@ public class MapRegion extends ScreenRegion {
         return new Point(outX, outY);
     }
 
-    public static Point vertexToScreen(Coordinate c) {
+    private static Point vertexToScreen(Coordinate c) {
         int outX = (c.x / 4) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += vertOffsets[0][c.x % 4];

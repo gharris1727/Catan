@@ -1,14 +1,11 @@
 package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.CoreThread;
-import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
-import com.gregswebserver.catan.common.event.ThreadStop;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.log.LogLevel;
-import com.gregswebserver.catan.server.Server;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -23,6 +20,7 @@ public class GameThread extends QueuedInputThread<GameEvent> {
     public GameThread(CoreThread host, GameSettings settings) {
         super(host.logger);
         this.host = host;
+        logger.log("Creating new GameThread for " + settings, LogLevel.DEBUG);
         this.game = new CatanGame(settings);
         start();
     }
@@ -37,16 +35,13 @@ public class GameThread extends QueuedInputThread<GameEvent> {
         GameEvent event = getEvent(true);
         try {
             game.execute(event);
-            if (host instanceof Server)
-                for (Username user : game.getTeams().getAllUsers())
-                    ((Server) host).sendToUser(user, event);
         } catch (EventConsumerException e) {
             logger.log(e, LogLevel.ERROR);
         }
     }
 
     public String toString() {
-        return host + "GameThread";
+        return host + " GameThread";
     }
 
 }

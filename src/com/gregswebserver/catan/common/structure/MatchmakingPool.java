@@ -4,7 +4,7 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.event.LobbyEvent;
+import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 
 /**
  * Created by Greg on 12/29/2014.

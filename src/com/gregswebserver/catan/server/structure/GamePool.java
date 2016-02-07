@@ -63,5 +63,7 @@ public class GamePool implements EventConsumer<GameEvent> {
             case Build_Road:
                 games.get(event.getOrigin()).addEvent(event);
         }
+        for (Username user : host.getUserLobby(event.getOrigin()).getUsers())
+            host.sendToUser(user, event);
     }
 }

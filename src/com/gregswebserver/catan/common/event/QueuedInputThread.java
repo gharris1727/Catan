@@ -56,7 +56,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
         try {
             eventQueue.put(event);
         } catch (InterruptedException e) {
-            logger.log("Link_Error adding to event queue", e, LogLevel.ERROR);
+            logger.log("Error adding to event queue", e, LogLevel.ERROR);
         }
     }
 
@@ -68,7 +68,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
             try {
                 obj = eventQueue.take();
             } catch (InterruptedException e) {
-                logger.log("Link_Error removing from event queue", e, LogLevel.ERROR);
+                logger.log("Error removing from event queue", e, LogLevel.ERROR);
                 throw new ThreadStop();
             }
 
@@ -87,5 +87,19 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
 
     public boolean isRunning() {
         return running;
+    }
+
+    /**
+     * Created by Greg on 8/16/2014.
+     * Event sent into the queue to signal that the thread should die (poison-pill).
+     */
+    protected static class ThreadStopEvent extends GenericEvent {
+    }
+
+    /**
+     * Created by Greg on 8/16/2014.
+     * Throwable passed through a QueuedInputThread in order to kill it.
+     */
+    protected static class ThreadStop extends Exception {
     }
 }

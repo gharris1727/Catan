@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.Renderable;
+import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.style.Styled;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.util.Animated;

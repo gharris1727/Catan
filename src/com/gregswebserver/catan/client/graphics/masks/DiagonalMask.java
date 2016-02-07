@@ -8,7 +8,7 @@ import java.awt.*;
  */
 public class DiagonalMask extends RenderMask {
 
-    //TODO: Re-implement.
+    //TODO: fix the width and height not being representative of the actual size of the mask.
 
     private final int thickness;
 

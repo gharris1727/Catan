@@ -38,4 +38,9 @@ public class GameSettings {
     public PlayerPool getTeams() {
         return teams;
     }
+
+    @Override
+    public String toString() {
+        return "GameSettings(" + layout + "/" + generator + "/" + rules + "/" + teams + ")";
+    }
 }

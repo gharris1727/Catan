@@ -31,4 +31,9 @@ public class PlayerPool {
     public Player getLocalPlayer() {
         return players.get(local);
     }
+
+    @Override
+    public String toString() {
+        return "PlayerPool(" + local + ")";
+    }
 }

@@ -20,4 +20,9 @@ public class BetterGenerator implements BoardGenerator {
         //TODO: implement the BetterSettlers generation algorithm.
         return new GameBoard(layout.getSize());
     }
+
+    @Override
+    public String toString() {
+        return "BetterGenerator";
+    }
 }
