@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.board;
 
-import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 
@@ -8,7 +7,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
  * Created by Greg on 8/19/2014.
  * A generic object that can be put into a HexArray, and has knowledge of it's position.
  */
-public abstract class BoardObject implements Graphical {
+public abstract class BoardObject {
 
     private HexagonalArray hexArray;
     private Coordinate position;

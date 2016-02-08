@@ -1,18 +1,10 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
-import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.graphics.Graphical;
-import com.gregswebserver.catan.client.graphics.masks.RoundedMask;
-import com.gregswebserver.catan.common.resources.GraphicSet;
-
-import java.awt.*;
-
 /**
  * Created by Greg on 8/10/2014.
  * All of the combinations of dice rolls and their ranks.
  */
-public enum DiceRoll implements Graphical {
+public enum DiceRoll {
 
     Two(2, 1),
     Three(3, 2),
@@ -25,12 +17,6 @@ public enum DiceRoll implements Graphical {
     Ten(10, 3),
     Eleven(11, 2),
     Twelve(12, 1);
-
-    private static final GraphicSet graphics;
-
-    static {
-        graphics = new GraphicSet("catan.graphics.game.dice", RoundedMask.class);
-    }
 
     private final int value;
     private final int rank;
@@ -57,14 +43,5 @@ public enum DiceRoll implements Graphical {
 
     public int getRank() {
         return rank;
-    }
-
-    @Override
-    public Graphic getGraphic() {
-        return graphics.getGraphic(ordinal());
-    }
-
-    public Point getOffset() {
-        return Client.staticConfig.getPoint("catan.graphics.game.dice.offset");
     }
 }

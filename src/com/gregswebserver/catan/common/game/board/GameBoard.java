@@ -83,16 +83,16 @@ public class GameBoard {
         return hexArray.getTown(c);
     }
 
-    public HashMap<Coordinate, Tile> getTileMap() {
-        return hexArray.spaces.toHashMap();
+    public Map<Coordinate, Tile> getTileMap() {
+        return hexArray.spaces.toMap();
     }
 
-    public HashMap<Coordinate, Path> getPathMap() {
-        return hexArray.edges.toHashMap();
+    public Map<Coordinate, Path> getPathMap() {
+        return hexArray.edges.toMap();
     }
 
-    public HashMap<Coordinate, Town> getTownMap() {
-        return hexArray.vertices.toHashMap();
+    public Map<Coordinate, Town> getTownMap() {
+        return hexArray.vertices.toMap();
     }
 
     public Set<Coordinate> getBeachTiles(Set<Coordinate> landTiles) {

@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.board.towns;
 
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.common.game.player.Team;
 
 /**
@@ -15,10 +14,5 @@ public class City extends Town {
 
     public String toString() {
         return "City: " + getTeam();
-    }
-
-    @Override
-    public Graphic getGraphic() {
-        return getTeam().getCityGraphic();
     }
 }

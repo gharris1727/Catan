@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.board.paths;
 
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.common.game.player.Team;
 import com.gregswebserver.catan.common.game.player.TeamOwned;
 
@@ -12,12 +11,6 @@ public abstract class Path extends TeamOwned {
 
     public Path(Team owner) {
         super(owner);
-    }
-
-    @Override
-    public Graphic getGraphic() {
-        int orientation = getHexArray().getEdgeOrientation(getPosition());
-        return getTeam().getRoadGraphic(orientation);
     }
 
 }

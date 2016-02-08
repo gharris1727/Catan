@@ -9,7 +9,7 @@ import com.gregswebserver.catan.common.game.player.TeamOwned;
  */
 public abstract class Town extends TeamOwned {
 
-    public Town(Team owner) {
+    Town(Team owner) {
         super(owner);
     }
 }

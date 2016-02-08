@@ -12,12 +12,13 @@ import java.awt.*;
  */
 public abstract class ScrollingScreenRegion extends UIScreenRegion {
 
-    private Point offset;
+    private final Point offset;
     private RenderMask hostMask;
     private Insets insets;
 
     public ScrollingScreenRegion(int priority) {
         super(priority);
+        this.offset = new Point();
     }
 
     public void setHostView(RenderMask hostMask, Insets insets) {
@@ -29,7 +30,7 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
     // Rather than actually change the position, this changes the offset for scroll calculations.
     @Override
     public void setPosition(Point position) {
-        this.offset = position;
+        this.offset.setLocation(position);
         checkBounds();
     }
 
@@ -70,9 +71,9 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
     @Override
     public void assertRenderable() {
         super.assertRenderable();
-        if (offset == null)
-            throw new NotYetRenderableException(this + " has no offset");
         if (hostMask == null)
             throw new NotYetRenderableException(this + " has no host mask");
+        if (insets == null)
+            throw new NotYetRenderableException(this + " has no insets");
     }
 }

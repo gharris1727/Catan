@@ -1,8 +1,5 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.graphics.masks.HexagonalMask;
-import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.game.board.BoardObject;
 
 /**
@@ -10,6 +7,4 @@ import com.gregswebserver.catan.common.game.board.BoardObject;
  * Generic hex tile on the Catan GameBoard.
  */
 public abstract class Tile extends BoardObject {
-
-    protected static final RenderMask tileMask = new HexagonalMask(Client.staticConfig.getDimension("catan.graphics.tiles.size"));
 }

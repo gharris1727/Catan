@@ -1,9 +1,6 @@
 package com.gregswebserver.catan.common.game.board.hexarray;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -57,8 +54,8 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
         return remove(c.x, c.y);
     }
 
-    public HashMap<Coordinate, T> toHashMap() {
-        HashMap<Coordinate, T> coordinates = new HashMap<>();
+    public Map<Coordinate, T> toMap() {
+        Map<Coordinate, T> coordinates = new HashMap<>();
         T obj;
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
