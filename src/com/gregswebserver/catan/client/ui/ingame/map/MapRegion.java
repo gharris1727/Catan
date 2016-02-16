@@ -10,6 +10,7 @@ import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 
@@ -54,8 +55,6 @@ public class MapRegion extends ScrollingScreenRegion {
                     return MapRegion.this.onMouseDrag(p);
                 }
             }).setPosition(tileToScreen(tile.getPosition()));
-        //TODO: unfuck the diagonal mask fuckery
-        /*
         for (Path path : board.getPathMap().values())
             add(new PathObject(2, path) {
                 @Override
@@ -63,7 +62,6 @@ public class MapRegion extends ScrollingScreenRegion {
                     return MapRegion.this.onMouseDrag(p);
                 }
             }).setPosition(edgeToScreen(path.getPosition()));
-        */
         for (Town town : board.getTownMap().values())
             add(new TownObject(3, town) {
                 @Override

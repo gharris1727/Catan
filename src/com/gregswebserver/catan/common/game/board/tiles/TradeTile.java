@@ -27,11 +27,17 @@ public class TradeTile extends BeachTile {
     }
 
     public Direction[] getTradingPostDirections() {
+        //TODO: generate the trading post directions before this is created.
+        //this is fine for 1-sided beach, but we need to deterministically find 2-sided.
         switch (getDirection()) {
             case up:
                 return new Direction[]{upright, upleft};
             case down:
                 return new Direction[]{downright, downleft};
+            case left:
+                return new Direction[]{downleft, left};
+            case right:
+                return new Direction[]{upright, right};
             case upleft:
                 return new Direction[]{upleft, left};
             case downleft:

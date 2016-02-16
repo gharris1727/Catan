@@ -187,13 +187,6 @@ public class HexagonalArray {
         return vertices.get(c);
     }
 
-    //Edge Orientation
-    public int getEdgeOrientation(Coordinate c) {
-        if (c.x % 6 == 0 || c.x % 6 == 4) return 1;
-        if (c.x % 6 == 1 || c.x % 6 == 3) return 2;
-        return 0;
-    }
-
     //Multi-translation functions
 
     public Map<Direction, Coordinate> getAdjacentSpacesFromSpace(Coordinate c) {

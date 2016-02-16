@@ -21,7 +21,7 @@ public class PathObject extends ScreenRegion {
     protected PathObject(int priority, Path path) {
         super(priority);
         this.path = path;
-        int orientation = path.getHexArray().getEdgeOrientation(path.getPosition());
+        int orientation = (path.getPosition().x + 1) % 3;
         Graphic background = path.getTeam().getRoadGraphic(orientation);
         add(new GraphicObject(0, background) {
             @Override

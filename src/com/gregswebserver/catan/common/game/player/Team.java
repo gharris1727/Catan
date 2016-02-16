@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.game.player;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.masks.DiagonalMask;
+import com.gregswebserver.catan.client.graphics.masks.AngleRectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
@@ -35,7 +35,8 @@ public enum Team {
         GraphicSourceInfo source = new GraphicSourceInfo(Client.staticConfig.get("catan.graphics.teams.paths." + teamConfigKey));
 
         RenderMask horizontal = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.horizontal.size"));
-        RenderMask diagonalUp = new DiagonalMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.size"));
+        RenderMask diagonalUp = new AngleRectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.size"),
+                Client.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.offset"));
         RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
         RenderMask settlement = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.settlement.size"));
         RenderMask city =new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.city.size"));
