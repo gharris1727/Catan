@@ -9,15 +9,16 @@ import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * Created by Greg on 8/10/2014.
  * Generic generator class that chooses the placement of hexagons on the board.
  */
-public interface BoardGenerator {
+public interface BoardGenerator extends Serializable {
 
-    GameBoard generate(BoardLayout layout);
+    GameBoard generate(BoardLayout layout, long seed);
 
     default void setResourceTile(GameBoard board, Coordinate c, ResourceTile tile) {
         board.setTile(c, tile);

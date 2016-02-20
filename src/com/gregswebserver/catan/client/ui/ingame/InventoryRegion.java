@@ -20,13 +20,13 @@ public class InventoryRegion extends UIScreenRegion {
     public InventoryRegion(int priority, Player player) {
         super(priority);
         this.player = player;
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_GAME) {
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
             @Override
             public String toString() {
                 return "ContextRegionBackground";
             }
         };
-        add(background);
+        add(background).setClickable(this);
     }
 
     @Override

@@ -22,9 +22,13 @@ public enum UserEventType implements EventType {
     Lobby_Edit(LobbyConfig.class),
     Lobby_Start(null),
     Lobby_Sort(LobbySortOption.class),
-    Tile_Clicked(Coordinate.class),
+    Space_Clicked(Coordinate.class),
+    Tile_Rob(Coordinate.class),
     Edge_Clicked(Coordinate.class),
+    Road_Purchase(Coordinate.class),
     Vertex_Clicked(Coordinate.class),
+    Settlement_Purchase(Coordinate.class),
+    City_Purchase(Coordinate.class),
     Inventory_Clicked(Integer.class),
     Server_Clicked(Integer.class);
 

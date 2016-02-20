@@ -1,12 +1,13 @@
 package com.gregswebserver.catan.common.resources;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by greg on 1/24/16.
  * A set of rules regarding playing the game and determining win conditions.
  */
-public class GameRuleSet {
+public class GameRuleSet implements Serializable {
 
     private int pathPoints;
     private int settlementPoints;

@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Iterator;
 
 
@@ -13,7 +14,7 @@ import java.util.Iterator;
  * Created by greg on 1/24/16.
  * A board layout containing information about the locations of game tiles, map size, and trading posts.
  */
-public interface BoardLayout {
+public interface BoardLayout extends Serializable {
 
     String getName();
 

@@ -6,7 +6,6 @@ import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.*;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
@@ -24,7 +23,7 @@ import java.awt.event.MouseEvent;
  * Created by greg on 2/7/16.
  * Class that contains the graphical representation of a Tile object.
  */
-public class TileObject extends ScreenRegion {
+public class TileObject extends MapObject {
 
     private static final RenderMask tileMask = new HexagonalMask(Client.staticConfig.getDimension("catan.graphics.tiles.size"));
 
@@ -60,8 +59,8 @@ public class TileObject extends ScreenRegion {
 
     private final Tile tile;
 
-    TileObject(int priority, Tile tile) {
-        super(priority);
+    TileObject(int priority, MapRegion container, Tile tile) {
+        super(priority, container);
         this.tile = tile;
         setMask(tileMask);
         Graphic background;
@@ -86,12 +85,8 @@ public class TileObject extends ScreenRegion {
     }
 
     @Override
-    protected void resizeContents(RenderMask mask) {
-    }
-
-    @Override
     public UserEvent onMouseClick(MouseEvent event) {
-        return new UserEvent(this, UserEventType.Tile_Clicked, tile.getPosition());
+        return new UserEvent(this, UserEventType.Space_Clicked, tile.getPosition());
     }
 
     @Override
@@ -118,6 +113,7 @@ public class TileObject extends ScreenRegion {
 
         private DiceRollGraphicObject(ResourceTile resource) {
             super(1, diceRolls.getGraphic(resource.getDiceRoll().ordinal()));
+            setClickable(TileObject.this);
         }
 
         @Override
@@ -142,6 +138,7 @@ public class TileObject extends ScreenRegion {
     private class TradeIconGraphicObject extends GraphicObject {
         public TradeIconGraphicObject(TradingPostType tradingPostType) {
             super(1, resourceIcons.getGraphic(tradingPostType.ordinal()));
+            setClickable(TileObject.this);
         }
 
         @Override

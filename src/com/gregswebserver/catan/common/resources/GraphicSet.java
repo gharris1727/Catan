@@ -53,11 +53,11 @@ public class GraphicSet {
     }
 
     @NotNull
-    public Graphic getGraphic(int ordinal) {
+    public Graphic getGraphic(int index) {
         try {
-            if (ordinal < 0 || ordinal >= graphics.length)
+            if (index < 0 || index >= graphics.length)
                 throw new IllegalArgumentException("Unable to provide selected graphic: Out of range");
-            return ResourceLoader.getGraphic(graphics[ordinal]);
+            return ResourceLoader.getGraphic(graphics[index]);
         } catch (ResourceLoadException e) {
             throw new NotYetRenderableException("Unable to load external graphic.",e);
         }

@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.game.gameplay.generator.FeatureGenerator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -25,8 +26,8 @@ public class TerrainGenerator implements FeatureGenerator<Terrain> {
     }
 
     @Override
-    public void randomize() {
-        Collections.shuffle(terrain);
+    public void randomize(Random random) {
+        Collections.shuffle(terrain, random);
     }
 
     @Override

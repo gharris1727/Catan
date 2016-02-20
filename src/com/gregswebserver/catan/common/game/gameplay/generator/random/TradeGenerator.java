@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.game.gameplay.generator.FeatureGenerator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -46,8 +47,8 @@ public class TradeGenerator implements FeatureGenerator<TradingPostType> {
     }
 
     @Override
-    public void randomize() {
-        Collections.shuffle(posts);
+    public void randomize(Random random) {
+        Collections.shuffle(posts, random);
     }
 
     @Override

@@ -21,6 +21,8 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.GameSettings;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.event.GameThread;
@@ -191,18 +193,37 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
-                outgoing = new GameEvent(username, GameEventType.Game_Create, null);
+                outgoing = new GameEvent(username, GameEventType.Game_Create,  getActiveLobby().getGameSettings());
                 sendEvent(outgoing);
                 break;
             case Lobby_Sort:
                 manager.lobbyJoinMenu.update();
                 break;
-            case Tile_Clicked:
-                throw new RuntimeException("Unimplemented");
+            case Space_Clicked:
+                manager.gameScreen.spaceClicked((Coordinate) event.getPayload());
+                break;
+            case Tile_Rob:
+                outgoing = new GameEvent(username, GameEventType.Player_Move_Robber, event.getPayload());
+                sendEvent(outgoing);
+                break;
             case Edge_Clicked:
-                throw new RuntimeException("Unimplemented");
+                manager.gameScreen.edgeClicked((Coordinate) event.getPayload());
+                break;
+            case Road_Purchase:
+                outgoing = new GameEvent(username, GameEventType.Build_Road, event.getPayload());
+                sendEvent(outgoing);
+                break;
             case Vertex_Clicked:
-                throw new RuntimeException("Unimplemented");
+                manager.gameScreen.vertexClicked((Coordinate) event.getPayload());
+                break;
+            case Settlement_Purchase:
+                outgoing = new GameEvent(username, GameEventType.Build_Settlement, event.getPayload());
+                sendEvent(outgoing);
+                break;
+            case City_Purchase:
+                outgoing = new GameEvent(username, GameEventType.Build_City, event.getPayload());
+                sendEvent(outgoing);
+                break;
             case Inventory_Clicked:
                 throw new RuntimeException("Unimplemented");
             case Server_Clicked:
@@ -213,8 +234,9 @@ public class Client extends CoreThread {
     private void gameEvent(GameEvent event) {
         switch(event.getType()) {
             case Game_Create:
-                Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(username);
-                gameThread = new GameThread(this, lobby.getGameSettings());
+                GameSettings gameSettings = (GameSettings) event.getPayload();
+                gameSettings.getTeams().setLocal(username);
+                gameThread = new GameThread(this, gameSettings);
                 manager.displayGameScreen();
                 break;
             case Turn_Advance:
@@ -302,6 +324,10 @@ public class Client extends CoreThread {
                 externalEvent((ExternalEvent) event.getPayload());
                 break;
         }
+    }
+
+    public void gameUpdate() {
+        manager.gameScreen.update();
     }
 
     private void startup() {

@@ -13,6 +13,7 @@ import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -24,19 +25,19 @@ public class RandomBoardGenerator implements BoardGenerator {
     public static final RandomBoardGenerator instance = new RandomBoardGenerator();
 
     private RandomBoardGenerator() {
-        //TODO: make the random board generator deterministic over the network.
     }
 
     @Override
-    public GameBoard generate(BoardLayout layout) {
+    public GameBoard generate(BoardLayout layout, long seed) {
+        Random random = new Random(seed);
         GameBoard board = new GameBoard(layout.getSize());
         Iterator<Coordinate> resourceTiles = layout.getTiles();
         Iterator<Coordinate> tradingPorts = layout.getPorts();
         //Prep all of the helper classes to generate map features.
         TerrainGenerator terrainGenerator = new TerrainGenerator(layout.getTileCount());
         TokenGenerator tokenGenerator = new TokenGenerator(layout.getTileCount() - layout.getDesertCount()); //Don't generate tokens for the desert.
-        terrainGenerator.randomize();
-        tokenGenerator.randomize();
+        terrainGenerator.randomize(random);
+        tokenGenerator.randomize(random);
         Iterator<Terrain> terrain = terrainGenerator.iterator();
         Iterator<DiceRoll> tokens = tokenGenerator.iterator();
 
@@ -72,7 +73,7 @@ public class RandomBoardGenerator implements BoardGenerator {
 
         //Place trading posts.
         TradeGenerator trades = new TradeGenerator(layout.getPortCount());
-        trades.randomize();
+        trades.randomize(random);
         for (TradingPostType trade : trades)
             setTradingPost(board, tradingPorts.next(), trade);
 

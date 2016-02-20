@@ -49,26 +49,11 @@ public class MapRegion extends ScrollingScreenRegion {
     protected void renderContents() {
         clear();
         for (Tile tile : board.getTileMap().values())
-            add(new TileObject(1, tile) {
-                @Override
-                public UserEvent onMouseDrag(Point p) {
-                    return MapRegion.this.onMouseDrag(p);
-                }
-            }).setPosition(tileToScreen(tile.getPosition()));
+            add(new TileObject(1, this, tile)).setPosition(tileToScreen(tile.getPosition()));
         for (Path path : board.getPathMap().values())
-            add(new PathObject(2, path) {
-                @Override
-                public UserEvent onMouseDrag(Point p) {
-                    return MapRegion.this.onMouseDrag(p);
-                }
-            }).setPosition(edgeToScreen(path.getPosition()));
+            add(new PathObject(2, this, path)).setPosition(edgeToScreen(path.getPosition()));
         for (Town town : board.getTownMap().values())
-            add(new TownObject(3, town) {
-                @Override
-                public UserEvent onMouseDrag(Point p) {
-                    return MapRegion.this.onMouseDrag(p);
-                }
-            }).setPosition(vertexToScreen(town.getPosition()));
+            add(new TownObject(3, this, town)).setPosition(vertexToScreen(town.getPosition()));
         add(background);
     }
 

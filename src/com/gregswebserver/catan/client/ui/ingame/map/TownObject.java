@@ -3,9 +3,7 @@ package com.gregswebserver.catan.client.ui.ingame.map;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
@@ -18,12 +16,12 @@ import java.awt.event.MouseEvent;
  * Created by greg on 2/7/16.
  * Class representing the graphical version of a building.
  */
-public class TownObject extends ScreenRegion {
+public class TownObject extends MapObject {
 
     private final Town town;
 
-    TownObject(int priority, Town town) {
-        super(priority);
+    TownObject(int priority, MapRegion container, Town town) {
+        super(priority, container);
         this.town = town;
         Graphic background;
         if (town instanceof Settlement || town instanceof EmptyTown) {
@@ -37,12 +35,8 @@ public class TownObject extends ScreenRegion {
             public String toString() {
                 return "TownObjectBackground";
             }
-        });
+        }).setClickable(this);
         setMask(background.getMask());
-    }
-
-    @Override
-    protected void resizeContents(RenderMask mask) {
     }
 
     @Override

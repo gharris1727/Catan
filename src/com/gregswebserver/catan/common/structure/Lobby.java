@@ -132,7 +132,7 @@ public class Lobby {
         teams = new PlayerPool(local, players);
 
         //TODO: resolve loading user data into the game.
-        return new GameSettings(layout, generator, rules, teams);
+        return new GameSettings(System.nanoTime(), layout, generator, rules, teams);
     }
 
     public String toString() {

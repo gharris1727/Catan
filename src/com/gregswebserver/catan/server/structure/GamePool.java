@@ -6,7 +6,6 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
-import com.gregswebserver.catan.common.structure.Lobby;
 import com.gregswebserver.catan.server.Server;
 
 import java.util.HashMap;
@@ -50,9 +49,10 @@ public class GamePool implements EventConsumer<GameEvent> {
             throw new EventConsumerException(event);
         switch(event.getType()) {
             case Game_Create:
-                Lobby lobby = host.getUserLobby(event.getOrigin());
-                GameSettings settings = lobby.getGameSettings();
-                games.put(event.getOrigin(),new GameThread(host, settings));
+                GameSettings gameSettings = (GameSettings) event.getPayload();
+                GameThread thread = new GameThread(host, gameSettings);
+                for (Username username : gameSettings.getTeams().getAllUsers())
+                    games.put(username, thread);
                 break;
             case Turn_Advance:
             case Player_Roll_Dice:

@@ -7,6 +7,7 @@ import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
+import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
@@ -61,6 +62,8 @@ public class GameBoard {
 
     public void setTile(Coordinate c, Tile t) {
         hexArray.setTile(c, t);
+        if (t instanceof ResourceTile && ((ResourceTile) t).getTerrain() == Terrain.Desert)
+            robberLocation = c;
     }
 
     public void setBuilding(Coordinate c, Town b) {

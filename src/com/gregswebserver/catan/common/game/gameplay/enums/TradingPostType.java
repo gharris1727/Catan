@@ -47,4 +47,11 @@ public enum TradingPostType implements Trader {
     public GameResource getGameResource() {
         return gameResource;
     }
+
+    @Override
+    public String toString() {
+        if (gameResource != null)
+            return gameResource.toString();
+        return "Any";
+    }
 }

@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenContainer;
 import com.gregswebserver.catan.client.ui.ingame.map.MapRegion;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 
 import java.awt.*;
 
@@ -39,16 +40,29 @@ public class InGameScreenRegion extends ClientScreen {
         };
         trade = new TradeRegion(1);
         inventory = new InventoryRegion(2, game.getTeams().getLocalPlayer());
-        context = new ContextRegion(3);
+        context = new ContextRegion(3, game.getTeams());
         add(map);
         add(trade);
         add(inventory);
         add(context);
     }
 
+    public void spaceClicked(Coordinate coord) {
+        context.target(game.getBoard().getTile(coord));
+    }
+
+    public void edgeClicked(Coordinate coord) {
+        context.target(game.getBoard().getPath(coord));
+    }
+
+    public void vertexClicked(Coordinate coord) {
+        context.target(game.getBoard().getBuilding(coord));
+    }
+
     @Override
     public void update() {
         map.update();
+        context.forceRender();
     }
 
     @Override

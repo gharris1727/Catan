@@ -23,7 +23,7 @@ public class CopyGenerator implements BoardGenerator {
     }
 
     @Override
-    public GameBoard generate(BoardLayout layout) {
+    public GameBoard generate(BoardLayout layout, long seed) {
         GameBoard board = new GameBoard(layout.getSize());
         Iterator<Coordinate> tiles = layout.getTiles();
         Iterator<Coordinate> ports = layout.getPorts();

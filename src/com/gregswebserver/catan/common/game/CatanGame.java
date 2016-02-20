@@ -30,7 +30,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
 
     public CatanGame(GameSettings settings) {
         this.settings = settings;
-        board = settings.getGenerator().generate(settings.getLayout());
+        board = settings.generate();
     }
 
     @Override
@@ -40,12 +40,12 @@ public class CatanGame implements EventConsumer<GameEvent> {
             case Game_Create:
                 return false;
             case Build_Settlement:
-                return board.getBuilding((Coordinate) event.getPayload()) == null;
+                return board.getBuilding((Coordinate) event.getPayload()).getTeam() == Team.None;
             case Build_City:
                 Town b = board.getBuilding((Coordinate) event.getPayload());
                 return (b instanceof Settlement && b.getTeam() == settings.getTeams().getPlayer(event.getOrigin()).getTeam());
             case Build_Road:
-                return board.getPath((Coordinate) event.getPayload()) == null;
+                return board.getPath((Coordinate) event.getPayload()).getTeam() == Team.None;
             case Player_Select_Location:
                 return true;
             case Player_Move_Robber:

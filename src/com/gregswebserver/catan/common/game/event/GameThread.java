@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.game.event;
 
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
@@ -35,6 +36,8 @@ public class GameThread extends QueuedInputThread<GameEvent> {
         GameEvent event = getEvent(true);
         try {
             game.execute(event);
+            if (host instanceof Client)
+                ((Client) host).gameUpdate();
         } catch (EventConsumerException e) {
             logger.log(e, LogLevel.ERROR);
         }

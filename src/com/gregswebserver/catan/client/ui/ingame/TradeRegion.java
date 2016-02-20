@@ -16,7 +16,7 @@ public class TradeRegion extends UIScreenRegion {
 
     public TradeRegion(int priority) {
         super(priority);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_GAME) {
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
             @Override
             public String toString() {
                 return "ContextRegionBackground";

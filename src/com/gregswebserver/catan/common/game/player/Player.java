@@ -5,13 +5,14 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trader;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  * Created by Greg on 8/8/2014.
  * A player in a game of catan, stores resource accounts, victory points, and can make moves on the catan game.
  */
-public class Player implements Trader {
+public class Player implements Trader, Serializable{
 
     private final Username name;
     private final Team team;
@@ -22,7 +23,6 @@ public class Player implements Trader {
         this.name = name;
         this.team = team;
     }
-
 
     public Username getName() {
         return name;
