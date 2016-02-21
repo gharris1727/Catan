@@ -109,7 +109,7 @@ public class ServerListRegion extends UIScreenRegion {
         private final TextLabel address;
         private final TextLabel login;
 
-        public ServerListItem(int priority, ConnectionInfo info) {
+        private ServerListItem(int priority, ConnectionInfo info) {
             super(priority);
             this.info = info;
             //Create all of the screen objects.
@@ -161,7 +161,7 @@ public class ServerListRegion extends UIScreenRegion {
         private final Button connectButton;
         private final TextBox passwordBox;
 
-        public ServerListFooter(int priority) {
+        private ServerListFooter(int priority) {
             super(priority);
             background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
                 public String toString() {

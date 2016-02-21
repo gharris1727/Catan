@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.common.game.gameplay.enums;
 
-import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
-
 import static com.gregswebserver.catan.common.game.gameplay.enums.GameResource.*;
 
 /**
@@ -10,14 +8,14 @@ import static com.gregswebserver.catan.common.game.gameplay.enums.GameResource.*
  */
 public enum Purchase {
 
-    Road(new Tradeable[]{Brick, Lumber}),
-    Settlement(new Tradeable[]{Brick, Lumber, Grain, Wool}),
-    City(new Tradeable[]{Grain, Grain, Ore, Ore, Ore}),
-    DevelopmentCard(new Tradeable[]{Wool, Grain, Ore});
+    Road(new GameResource[]{Brick, Lumber}),
+    Settlement(new GameResource[]{Brick, Lumber, Grain, Wool}),
+    City(new GameResource[]{Grain, Grain, Ore, Ore, Ore}),
+    DevelopmentCard(new GameResource[]{Wool, Grain, Ore});
 
-    private final Tradeable[] cost;
+    public final GameResource[] cost;
 
-    Purchase(Tradeable[] cost) {
+    Purchase(GameResource[] cost) {
         this.cost = cost;
     }
 }

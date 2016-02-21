@@ -22,7 +22,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
     private final TimeSlice timeSlice;
     private RenderMask mask;
     private Graphic graphic;
-    private Graphic cache;
+    private boolean transparency;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
     private Map<Integer, ScreenObject> clickableColorMap;
@@ -33,6 +33,10 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         super(priority);
         timeSlice = new TimeSlice(this.toString());
         clear();
+    }
+
+    protected final void setTransparency(boolean transparency) {
+        this.transparency = transparency;
     }
 
     @Override
@@ -46,7 +50,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         this.mask = mask;
         graphic = null;
         if (mask != null) {
-            graphic = new Graphic(mask, false);
+            graphic = new Graphic(mask, transparency);
             forceRender();
             resizeContents(mask);
         }

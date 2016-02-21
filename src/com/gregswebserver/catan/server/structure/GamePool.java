@@ -34,7 +34,6 @@ public class GamePool implements EventConsumer<GameEvent> {
             case Turn_Advance:
             case Player_Roll_Dice:
             case Player_Move_Robber:
-            case Player_Select_Location:
             case Build_Settlement:
             case Build_City:
             case Build_Road:
@@ -51,13 +50,12 @@ public class GamePool implements EventConsumer<GameEvent> {
             case Game_Create:
                 GameSettings gameSettings = (GameSettings) event.getPayload();
                 GameThread thread = new GameThread(host, gameSettings);
-                for (Username username : gameSettings.getTeams().getAllUsers())
+                for (Username username : gameSettings.teams.getAllUsers())
                     games.put(username, thread);
                 break;
             case Turn_Advance:
             case Player_Roll_Dice:
             case Player_Move_Robber:
-            case Player_Select_Location:
             case Build_Settlement:
             case Build_City:
             case Build_Road:

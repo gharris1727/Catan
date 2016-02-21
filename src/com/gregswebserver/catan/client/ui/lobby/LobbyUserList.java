@@ -59,12 +59,12 @@ public class LobbyUserList extends UIScreenRegion {
         add(background);
     }
 
-    public class LobbyUserListElement extends UIScreenRegion {
+    private class LobbyUserListElement extends UIScreenRegion {
 
         private final TiledBackground background;
         private final TextLabel name;
 
-        public LobbyUserListElement(int priority, Username username) {
+        private LobbyUserListElement(int priority, Username username) {
             super(priority);
             background = new TiledBackground(0, UIStyle.BACKGROUND_USERS) {
                 @Override

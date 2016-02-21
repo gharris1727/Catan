@@ -9,7 +9,7 @@ import com.gregswebserver.catan.common.game.player.TeamOwned;
  */
 public abstract class Path extends TeamOwned {
 
-    public Path(Team owner) {
+    protected Path(Team owner) {
         super(owner);
     }
 

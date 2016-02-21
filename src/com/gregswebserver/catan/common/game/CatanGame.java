@@ -43,11 +43,9 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 return board.getBuilding((Coordinate) event.getPayload()).getTeam() == Team.None;
             case Build_City:
                 Town b = board.getBuilding((Coordinate) event.getPayload());
-                return (b instanceof Settlement && b.getTeam() == settings.getTeams().getPlayer(event.getOrigin()).getTeam());
+                return (b instanceof Settlement && b.getTeam() == settings.teams.getPlayer(event.getOrigin()).getTeam());
             case Build_Road:
                 return board.getPath((Coordinate) event.getPayload()).getTeam() == Team.None;
-            case Player_Select_Location:
-                return true;
             case Player_Move_Robber:
                 Tile tile = board.getTile((Coordinate) event.getPayload());
                 return (tile instanceof ResourceTile);
@@ -65,7 +63,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
         if (!test(event))
             throw new EventConsumerException(event);
         Username origin = event.getOrigin();
-        Player player = settings.getTeams().getPlayer(origin);
+        Player player = settings.teams.getPlayer(origin);
         Team team = player.getTeam();
         Coordinate coordinate;
         switch (event.getType()) {
@@ -85,10 +83,6 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 coordinate = (Coordinate) event.getPayload();
                 Road road = new Road(team);
                 board.setPath(coordinate, road);
-                break;
-            case Player_Select_Location:
-                coordinate = (Coordinate) event.getPayload();
-                player.setSelected(coordinate);
                 break;
             case Player_Move_Robber:
                 coordinate = (Coordinate) event.getPayload();
@@ -110,6 +104,6 @@ public class CatanGame implements EventConsumer<GameEvent> {
     }
 
     public PlayerPool getTeams() {
-        return settings.getTeams();
+        return settings.teams;
     }
 }

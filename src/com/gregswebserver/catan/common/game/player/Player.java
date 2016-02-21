@@ -1,27 +1,38 @@
 package com.gregswebserver.catan.common.game.player;
 
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.gameplay.trade.Tradeable;
-import com.gregswebserver.catan.common.game.gameplay.trade.Trader;
+import com.gregswebserver.catan.common.game.gameplay.enums.AchievementCard;
+import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
+import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Greg on 8/8/2014.
  * A player in a game of catan, stores resource accounts, victory points, and can make moves on the catan game.
  */
-public class Player implements Trader, Serializable{
+public class Player implements Serializable{
 
     private final Username name;
     private final Team team;
-    private HashMap<Tradeable, Integer> inventory;
-    private Coordinate selected;
+    private final Map<GameResource, Integer> inventory;
+    private final Map<DevelopmentCard, Integer> development;
+    private final Set<AchievementCard> achievement;
 
     public Player(Username name, Team team) {
         this.name = name;
         this.team = team;
+        inventory = new EnumMap<>(GameResource.class);
+        for (GameResource r : GameResource.values())
+            inventory.put(r, 0);
+        development = new EnumMap<>(DevelopmentCard.class);
+        for (DevelopmentCard d: DevelopmentCard.values())
+            development.put(d, 0);
+        achievement = EnumSet.noneOf(AchievementCard.class);
     }
 
     public Username getName() {
@@ -32,15 +43,15 @@ public class Player implements Trader, Serializable{
         return team;
     }
 
-    public HashMap<Tradeable, Integer> getInventory() {
+    public Map<GameResource, Integer> getInventory() {
         return inventory;
     }
 
-    public Coordinate getSelected() {
-        return selected;
+    public Map<DevelopmentCard, Integer> getDevelopmentCards() {
+        return development;
     }
 
-    public void setSelected(Coordinate selected) {
-        this.selected = selected;
+    public Set<AchievementCard> getAchievementCards() {
+        return achievement;
     }
 }

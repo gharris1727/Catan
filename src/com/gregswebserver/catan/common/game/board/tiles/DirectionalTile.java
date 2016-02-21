@@ -10,7 +10,7 @@ public abstract class DirectionalTile extends Tile {
 
     private final Direction direction;
 
-    public DirectionalTile(Direction direction) {
+    protected DirectionalTile(Direction direction) {
         this.direction = direction;
     }
 

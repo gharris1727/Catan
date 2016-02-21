@@ -12,6 +12,7 @@ import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.player.Team;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.resources.GraphicSourceInfo;
 import com.gregswebserver.catan.common.util.Direction;
@@ -28,7 +29,10 @@ public class TileObject extends MapObject {
     private static final RenderMask tileMask = new HexagonalMask(Client.staticConfig.getDimension("catan.graphics.tiles.size"));
 
     private static final Point[] bridgePositions = new Point[]{
-            new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point(), new Point()
+            new Point(), new Point(), new Point(), // C U D
+            new Point(0,42), new Point(70,42), // L R
+            new Point(20,-3), new Point(20,65),  // UL DL
+            new Point(60,-3), new Point(55,65) // UR DR
     };
 
     private static final GraphicSet resources;
@@ -53,7 +57,7 @@ public class TileObject extends MapObject {
         RenderMask diagonalUp = new AngleRectangularMask(Client.staticConfig.getDimension("catan.graphics.trade.bridge.diagonal.size"));
         RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
         RenderMask[] masks = new RenderMask[]{null, null, null, horizontal,
-                horizontal, diagonalDown, diagonalDown, diagonalUp, diagonalUp};
+                horizontal, diagonalDown, diagonalUp, diagonalUp, diagonalDown};
         tradeBridges = new GraphicSet(source,masks);
     }
 
@@ -68,15 +72,15 @@ public class TileObject extends MapObject {
             ResourceTile resource = (ResourceTile) tile;
             background = resources.getGraphic(resource.getTerrain().ordinal());
             center(add(new DiceRollGraphicObject(resource)));
-            //TODO: render the robber
+            if (resource.hasRobber())
+                center(add(new RobberGraphicObject(Team.None.getRobberGraphic())));
         } else if (tile instanceof BeachTile) {
             BeachTile beach = (BeachTile) tile;
             background = ( beach.getSides() == 1 ? singleBeach : doubleBeach).getGraphic(beach.getDirection().ordinal());
             if (tile instanceof TradeTile) {
                 TradeTile trade = (TradeTile) tile;
-                //TODO: the trading posts need offsets to actually touch the beach.
                 for (Direction d : trade.getTradingPostDirections())
-                    center(add(new TradeBridgeGraphicObject(d)));
+                    add(new TradeBridgeGraphicObject(d));
                 center(add(new TradeIconGraphicObject(trade.getTradingPostType())));
             }
         } else
@@ -136,7 +140,7 @@ public class TileObject extends MapObject {
     }
 
     private class TradeIconGraphicObject extends GraphicObject {
-        public TradeIconGraphicObject(TradingPostType tradingPostType) {
+        private TradeIconGraphicObject(TradingPostType tradingPostType) {
             super(1, resourceIcons.getGraphic(tradingPostType.ordinal()));
             setClickable(TileObject.this);
         }
@@ -144,6 +148,17 @@ public class TileObject extends MapObject {
         @Override
         public String toString() {
             return "TradeIconGraphicObject";
+        }
+    }
+
+    private class RobberGraphicObject extends GraphicObject {
+        private RobberGraphicObject(Graphic robberGraphic) {
+            super(2, robberGraphic);
+        }
+
+        @Override
+        public String toString() {
+            return "TileRobberGraphicObject";
         }
     }
 }

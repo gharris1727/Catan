@@ -114,7 +114,7 @@ public class LobbyListRegion extends UIScreenRegion {
         private final LobbyListHeaderElement currentClientsHeader;
         private final LobbyListHeaderElement openSlotsHeader;
 
-        public LobbyListHeader(int priority) {
+        private LobbyListHeader(int priority) {
             super(priority);
             lobbyNameHeader = new LobbyListHeaderElement(0,
                     LobbySortOption.Lobby_Name_Asc, LobbySortOption.Lobby_Name_Desc);
@@ -253,7 +253,7 @@ public class LobbyListRegion extends UIScreenRegion {
 
     private class LobbyListScroll extends ScrollingScreenRegion {
 
-        public LobbyListScroll(int priority) {
+        private LobbyListScroll(int priority) {
             super(priority);
         }
 
@@ -364,7 +364,7 @@ public class LobbyListRegion extends UIScreenRegion {
         private final Button joinButton;
         private final Button createButton;
 
-        public LobbyListFooter(int priority) {
+        private LobbyListFooter(int priority) {
             super(priority);
             background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
                 public String toString() {

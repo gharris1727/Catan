@@ -65,16 +65,21 @@ public class StaticBoardLayout implements BoardLayout {
 
     //Depends on parseTerrain(), parseTiles()
     private Coordinate parseRobber(PropertiesFile file) {
-        Iterator<Coordinate> tiles = getTiles();
-        Iterator<Terrain> terrain = getTerrain();
-        //Look through all of the terrain tiles
-        while (tiles.hasNext() && terrain.hasNext()) {
-            Coordinate c = tiles.next();
-            if (terrain.next().equals(Terrain.Desert))
-                return c;
+        try {
+            //Look for an explicit robber location first
+            return file.getCoord("robber");
+        } catch (Exception e) {
+            Iterator<Coordinate> tiles = getTiles();
+            Iterator<Terrain> terrain = getTerrain();
+            //Look through all of the terrain tiles
+            while (tiles.hasNext() && terrain.hasNext()) {
+                Coordinate c = tiles.next();
+                if (terrain.next().equals(Terrain.Desert))
+                    return c;
+            }
+            //We looked through all of the tiles and didn't find a desert. No robber in file.
+            return null;
         }
-        //We looked through all of the tiles and didn't find a desert. No robber in file.
-        return null;
     }
 
     @Override
@@ -89,17 +94,17 @@ public class StaticBoardLayout implements BoardLayout {
 
     //Depends on parseTerrain()
     private int parseDesertCount(PropertiesFile file) {
-        int count = 0;
         try {
             //Check for explicit desert count.
-            count = file.getInt("deserts");
+            return file.getInt("deserts");
         } catch (Exception e) {
+            int count = 0;
             //If the user didn't specify the number of deserts, it must be implicit
             for (Terrain t : terrain)
                 if (t.equals(Terrain.Desert))
                     count++;
+            return count;
         }
-        return count;
     }
 
     @Override

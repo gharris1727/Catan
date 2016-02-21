@@ -51,14 +51,12 @@ public class RandomBoardGenerator implements BoardGenerator {
             validVertices.addAll(board.getAdjacentVertices(c));
             validEdges.addAll(board.getAdjacentEdges(c));
             Terrain t = terrain.next();
-            ResourceTile tile;
             if (t.equals(Terrain.Desert)) {
-                tile = new ResourceTile(t, DiceRoll.Seven);
-                tile.placeRobber();
+                setResourceTile(board, c, new ResourceTile(t, DiceRoll.Seven));
+                board.moveRobber(c);
             } else {
-                tile = new ResourceTile(t, tokens.next());
+                setResourceTile(board, c, new ResourceTile(t, tokens.next()));
             }
-            setResourceTile(board, c, tile);
         }
 
         //Place all of the empty features that fill the rest of the valid map.

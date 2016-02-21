@@ -174,16 +174,13 @@ public class ContextRegion extends UIScreenRegion {
     }
 
     public void target(Object target) {
-        if (target != this.target) {
-            this.target = target;
-            forceRender();
-        }
+        this.target = target;
+        forceRender();
     }
 
     private abstract class ContextButton extends GraphicObject {
-        protected ContextButton(int priority, int icon) {
-            super(priority);
-            setGraphic(graphics.getGraphic(icon));
+        private ContextButton(int priority, int icon) {
+            super(priority, graphics.getGraphic(icon));
         }
     }
 }

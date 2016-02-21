@@ -28,7 +28,7 @@ public abstract class NetConnection implements Runnable {
     protected ObjectOutputStream out;
     protected boolean open;
 
-    public NetConnection(CoreThread host) {
+    protected NetConnection(CoreThread host) {
         this.host = host;
         this.logger = host.logger;
         //Thread to establish a connection, uses this class' own run() method from Runnable.

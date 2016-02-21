@@ -20,7 +20,7 @@ public abstract class BoardObject {
         this.position = position;
     }
 
-    public HexagonalArray getHexArray() {
+    protected HexagonalArray getHexArray() {
         return hexArray;
     }
 

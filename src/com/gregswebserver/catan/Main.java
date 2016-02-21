@@ -9,11 +9,9 @@ import com.gregswebserver.catan.common.log.Logger;
  */
 public class Main {
 
-    public static Logger logger;
-
     public static void main(String[] args) {
         // Create a logger to begin storing log information
-        logger = new Logger();
+        Logger logger = new Logger();
         logger.useStdOut();
         // Initialize the startup window
         Startup startup = new Startup(logger);

@@ -17,11 +17,19 @@ import java.awt.*;
  */
 public class InGameScreenRegion extends ClientScreen {
 
-    private static final Dimension borderBuffer = Client.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
-    private static final Insets viewInsets = new Insets(borderBuffer.height,borderBuffer.width,borderBuffer.height,borderBuffer.width);
+    private static final Dimension borderBuffer;
+    private static final int sidebarWidth;
+    private static final int inventoryHeight;
+    private static final int contextHeight;
+    private static final Insets viewInsets;
 
-    private final static int sidebarWidth = 256;
-    private final static int bottomHeight = 256;
+    static {
+        borderBuffer = Client.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
+        sidebarWidth = Client.staticConfig.getInt("catan.graphics.interface.ingame.sidebar.width");
+        inventoryHeight = Client.staticConfig.getInt("catan.graphics.interface.ingame.inventory.height");
+        contextHeight = Client.staticConfig.getInt("catan.graphics.interface.ingame.context.height");
+        viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
+    }
 
     private final CatanGame game;
     private final ScrollingScreenContainer map;
@@ -68,14 +76,18 @@ public class InGameScreenRegion extends ClientScreen {
     @Override
     protected void resizeContents(RenderMask mask) {
         int mainWidth = mask.getWidth() - sidebarWidth;
-        int mainHeight = mask.getHeight() - bottomHeight;
-        trade.setPosition(new Point(mainWidth,0));
-        inventory.setPosition(new Point(0,mainHeight));
-        context.setPosition(new Point(mainWidth,mainHeight));
-        map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
-        trade.setMask(new RectangularMask(new Dimension(sidebarWidth, mainHeight)));
-        inventory.setMask(new RectangularMask(new Dimension(mainWidth, bottomHeight)));
-        context.setMask(new RectangularMask(new Dimension(sidebarWidth, bottomHeight)));
+        int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;
+
+        inventory.setPosition(new Point(mainWidth, 0));
+        trade.setPosition(new Point(mainWidth, inventoryHeight));
+        context.setPosition(new Point(mainWidth,inventoryHeight + tradeHeight));
+
+        map.setMask(new RectangularMask(new Dimension(mainWidth, mask.getHeight())));
+        trade.setMask(new RectangularMask(new Dimension(sidebarWidth, tradeHeight)));
+        inventory.setMask(new RectangularMask(new Dimension(sidebarWidth, inventoryHeight)));
+        context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
+
+        map.center();
     }
 
     public String toString() {

@@ -20,6 +20,7 @@ public abstract class EdgedTiledBackground extends TiledBackground {
 
     @Override
     protected void renderContents() {
+        assertRenderable();
         graphics = getStyle().getBackgroundStyle(backgroundStyle).getGraphicSet();
         RenderMask textureMask = graphics.getMask();
         int totWidth = getMask().getWidth();
@@ -29,6 +30,7 @@ public abstract class EdgedTiledBackground extends TiledBackground {
         int corWidth = totWidth - texWidth;
         int corHeight = totHeight - texHeight;
         //Four corners
+        clear();
         addTile(new Point(), upleft);
         addTile(new Point(corWidth, 0), upright);
         addTile(new Point(0, corHeight), downleft);

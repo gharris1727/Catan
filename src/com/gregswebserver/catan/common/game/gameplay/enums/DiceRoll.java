@@ -18,8 +18,8 @@ public enum DiceRoll {
     Eleven(11, 2),
     Twelve(12, 1);
 
-    private final int value;
-    private final int rank;
+    public final int value;
+    public final int rank;
 
     DiceRoll(int value, int rank) {
         this.value = value;
@@ -35,13 +35,5 @@ public enum DiceRoll {
         int dieOne = (int) (Math.random() * 6) + 1;
         int dieTwo = (int) (Math.random() * 6) + 1;
         return get(dieOne + dieTwo);
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public int getRank() {
-        return rank;
     }
 }

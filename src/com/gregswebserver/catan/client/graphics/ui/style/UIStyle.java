@@ -61,7 +61,7 @@ public enum UIStyle {
         private final Color color;
 
         @SuppressWarnings("MagicConstant")
-        public TextStyle(String textStyleKey) {
+        private TextStyle(String textStyleKey) {
             this.textStyleKey = textStyleKey;
             String fontName = Client.staticConfig.get(textStyleKey + fontNameKey);
             String fontStyleName = Client.staticConfig.get(textStyleKey + fontStyleKey).toUpperCase();
@@ -92,7 +92,7 @@ public enum UIStyle {
 
         private final GraphicSet graphicSet;
 
-        public BackgroundStyle(String backgroundStyleKey) {
+        private BackgroundStyle(String backgroundStyleKey) {
             graphicSet = new GraphicSet(backgroundStyleKey, RectangularMask.class);
         }
 

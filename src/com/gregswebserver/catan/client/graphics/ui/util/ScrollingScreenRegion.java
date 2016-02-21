@@ -16,7 +16,7 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
     private RenderMask hostMask;
     private Insets insets;
 
-    public ScrollingScreenRegion(int priority) {
+    protected ScrollingScreenRegion(int priority) {
         super(priority);
         this.offset = new Point();
     }
@@ -32,6 +32,16 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
     public void setPosition(Point position) {
         this.offset.setLocation(position);
         checkBounds();
+    }
+
+    public void center() {
+        if (isRenderable()) {
+            Point position = getPosition();
+            Dimension size = getMask().getSize();
+            Dimension host = hostMask.getSize();
+            position.x = (host.width - size.width + insets.left - insets.right)/2 + offset.x;
+            position.y = (host.height - size.height + insets.top - insets.bottom)/2 + offset.y;
+        }
     }
 
     @Override
@@ -65,7 +75,7 @@ public abstract class ScrollingScreenRegion extends UIScreenRegion {
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && offset != null && hostMask != null;
+        return super.isRenderable() && hostMask != null && insets != null;
     }
 
     @Override

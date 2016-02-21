@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
+import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,8 +11,8 @@ import java.util.Map;
  */
 public class Trade {
 
-    public final HashMap<Tradeable, Integer> offer;
-    public final HashMap<Tradeable, Integer> request;
+    public final HashMap<GameResource, Integer> offer;
+    public final HashMap<GameResource, Integer> request;
 
     public Trade() {
         offer = new HashMap<>();

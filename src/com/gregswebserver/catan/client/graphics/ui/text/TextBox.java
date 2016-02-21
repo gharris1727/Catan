@@ -56,7 +56,7 @@ public abstract class TextBox extends UIScreenRegion {
         return null;
     }
 
-    public abstract UserEvent onAccept();
+    protected abstract UserEvent onAccept();
 
     @Override
     protected void resizeContents(RenderMask mask) {

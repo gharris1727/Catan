@@ -16,7 +16,6 @@ public enum GameEventType implements EventType {
     Turn_Advance(null),
     Player_Roll_Dice(Coordinate.class),
     Player_Move_Robber(Coordinate.class),
-    Player_Select_Location(Coordinate.class),
     Build_Settlement(Coordinate.class),
     Build_City(Coordinate.class),
     Build_Road(Coordinate.class);

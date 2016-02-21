@@ -235,14 +235,13 @@ public class Client extends CoreThread {
         switch(event.getType()) {
             case Game_Create:
                 GameSettings gameSettings = (GameSettings) event.getPayload();
-                gameSettings.getTeams().setLocal(username);
+                gameSettings.teams.setLocal(username);
                 gameThread = new GameThread(this, gameSettings);
                 manager.displayGameScreen();
                 break;
             case Turn_Advance:
             case Player_Roll_Dice:
             case Player_Move_Robber:
-            case Player_Select_Location:
             case Build_Settlement:
             case Build_City:
             case Build_Road:

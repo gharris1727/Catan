@@ -102,8 +102,8 @@ public class MapRegion extends ScrollingScreenRegion {
     private static Point vertexToScreen(Coordinate c) {
         int outX = (c.x / 4) * unitSize.width;
         int outY = (c.y) * unitSize.height;
-        outX += vertOffsets[0][c.x % 4];
-        outY += vertOffsets[1][c.x % 4];
+        outX += vertOffsets[0][c.x % 4]-4;
+        outY += vertOffsets[1][c.x % 4]-2;
         return new Point(outX, outY);
     }
 }

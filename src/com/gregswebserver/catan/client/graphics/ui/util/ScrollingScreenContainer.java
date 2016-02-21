@@ -25,6 +25,10 @@ public abstract class ScrollingScreenContainer extends UIScreenRegion {
         scroll.forceRender();
     }
 
+    public void center() {
+        scroll.center();
+    }
+
     @Override
     protected void resizeContents(RenderMask mask) {
         scroll.setHostView(mask, insets);

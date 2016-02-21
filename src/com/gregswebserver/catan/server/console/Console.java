@@ -63,7 +63,7 @@ public class Console extends JPanel implements UserInput, LogListener {
     }
 
     private void append(String text) {
-        SwingUtilities.invokeLater(new AppendTask(textArea, text));
+        SwingUtilities.invokeLater(() -> textArea.append(text + "\n"));
     }
 
     public Server getServer() {
@@ -73,4 +73,5 @@ public class Console extends JPanel implements UserInput, LogListener {
     public void setServer(Server server) {
         this.server = server;
     }
+
 }
