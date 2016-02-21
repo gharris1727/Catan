@@ -15,9 +15,10 @@ import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.resources.GraphicSet;
-import com.gregswebserver.catan.common.structure.Lobby;
-import com.gregswebserver.catan.common.structure.LobbyPool;
-import com.gregswebserver.catan.common.structure.LobbySortOption;
+import com.gregswebserver.catan.common.structure.lobby.Lobby;
+import com.gregswebserver.catan.common.structure.lobby.LobbyPool;
+import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
+import com.gregswebserver.catan.common.structure.lobby.LobbyState;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -262,11 +263,13 @@ public class LobbyListRegion extends UIScreenRegion {
             clear();
             int height = 1;
             for (Lobby lobby : lobbies) {
-                LobbyListScrollElement elt = new LobbyListScrollElement(0, lobby);
-                elt.setStyle(getStyle());
-                elt.setMask(lobbySize);
-                add(elt).setPosition(new Point(0,height));
-                height += lobbyHeight;
+                if (lobby.getState() == LobbyState.Preparing) {
+                    LobbyListScrollElement elt = new LobbyListScrollElement(0, lobby);
+                    elt.setStyle(getStyle());
+                    elt.setMask(lobbySize);
+                    add(elt).setPosition(new Point(0, height));
+                    height += lobbyHeight;
+                }
             }
             setMask(new RectangularMask(new Dimension(LobbyListRegion.this.getMask().getWidth(),height)));
         }

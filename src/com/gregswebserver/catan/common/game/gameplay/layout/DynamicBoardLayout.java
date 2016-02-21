@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.board.layout;
+package com.gregswebserver.catan.common.game.gameplay.layout;
 
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;

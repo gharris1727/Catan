@@ -7,7 +7,6 @@ import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.AuthenticationException;
 import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
 import com.gregswebserver.catan.common.game.event.GameEvent;
@@ -16,14 +15,14 @@ import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.common.network.NetEventType;
 import com.gregswebserver.catan.common.network.ServerConnection;
-import com.gregswebserver.catan.common.structure.Lobby;
-import com.gregswebserver.catan.common.structure.MatchmakingPool;
 import com.gregswebserver.catan.common.structure.UserInfo;
 import com.gregswebserver.catan.common.structure.UserLogin;
 import com.gregswebserver.catan.common.structure.event.ControlEvent;
 import com.gregswebserver.catan.common.structure.event.ControlEventType;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
+import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 import com.gregswebserver.catan.server.event.ServerEvent;
 import com.gregswebserver.catan.server.event.ServerEventType;
 import com.gregswebserver.catan.server.structure.ConnectionPool;
@@ -151,12 +150,7 @@ public class Server extends CoreThread {
         try {
             //Try to execute the event locally.
             matchmakingPool.execute(event);
-            //Rebroadcast the event to everyone connected.
-            for (Username user : matchmakingPool.getClientList()) {
-                ServerConnection connection = connectionPool.get(user);
-                if (connection != null)
-                    connection.sendEvent(event);
-            }
+            //Execute any special server-side hooks on lobby events.
             switch(event.getType()) {
                 case User_Connect:
                     break;
@@ -170,18 +164,25 @@ public class Server extends CoreThread {
                     break;
                 case Lobby_Leave:
                     break;
+                case Lobby_Start:
+                    gamePool.start((GameSettings) event.getPayload());
+                    break;
+                case Lobby_Finish:
+                    gamePool.finish(((Username) event.getPayload()));
+                    break;
             }
-        } catch (EventConsumerException e) {
+            //Rebroadcast the event to everyone connected.
+            for (Username user : matchmakingPool.getClientList())
+                connectionPool.get(user).sendEvent(event);
+        } catch (Exception e) {
             logger.log(e, LogLevel.ERROR);
         }
     }
 
     private void gameEvent(GameEvent event) {
-        try {
-            gamePool.execute(event);
-        } catch (EventConsumerException e) {
-            logger.log("Unable to run game event on the server side.", e, LogLevel.ERROR);
-        }
+        gamePool.process(event);
+        for (Username user : matchmakingPool.getLobbyList().userGetLobby(event.getOrigin()).getUsers())
+            connectionPool.get(user).sendEvent(event);
     }
 
     @Override
@@ -258,18 +259,6 @@ public class Server extends CoreThread {
         } catch (IOException e) {
             logger.log("Server connection failure", e, LogLevel.WARN);
         }
-    }
-
-    public void sendToUser(Username username, ExternalEvent event) {
-        ServerConnection connection = connectionPool.get(username);
-        if (connection != null)
-            connection.sendEvent(event);
-        else
-            logger.log("Unable to send event to user: no user found.", LogLevel.WARN);
-    }
-
-    public Lobby getUserLobby(Username username) {
-        return matchmakingPool.getLobbyList().userGetLobby(username);
     }
 
     private void shutdown() {

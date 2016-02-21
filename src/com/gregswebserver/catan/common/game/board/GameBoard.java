@@ -12,6 +12,7 @@ import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -21,8 +22,8 @@ public class GameBoard {
 
     private final Dimension size;
     private final HexagonalArray hexArray;
-    private final HashMap<DiceRoll, ArrayList<Coordinate>> diceRollCoordinates;
-    private final HashMap<Coordinate, TradingPostType> tradingPosts;
+    private final Map<DiceRoll, List<Coordinate>> diceRollCoordinates;
+    private final Map<Coordinate, TradingPostType> tradingPosts;
     private Coordinate robberLocation;
 
     public GameBoard(Dimension size) {
@@ -33,7 +34,7 @@ public class GameBoard {
     }
 
     public void setDiceRollCoordinate(DiceRoll diceRoll, Coordinate c) {
-        ArrayList<Coordinate> coordinates;
+        List<Coordinate> coordinates;
         if (!diceRollCoordinates.containsKey(diceRoll)) {
             coordinates = new ArrayList<>();
             diceRollCoordinates.put(diceRoll, coordinates);
@@ -78,7 +79,7 @@ public class GameBoard {
         return hexArray.getTile(c);
     }
 
-    public Town getBuilding(Coordinate c) {
+    public Town getTown(Coordinate c) {
         return hexArray.getTown(c);
     }
 
@@ -92,6 +93,10 @@ public class GameBoard {
 
     public Map<Coordinate, Town> getTownMap() {
         return hexArray.vertices.toMap();
+    }
+
+    public List<Coordinate> getActiveTiles(DiceRoll roll) {
+        return diceRollCoordinates.get(roll);
     }
 
     public Set<Coordinate> getBeachTiles(Set<Coordinate> landTiles) {

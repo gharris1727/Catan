@@ -1,9 +1,10 @@
-package com.gregswebserver.catan.common.game.player;
+package com.gregswebserver.catan.common.structure.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.gameplay.enums.AchievementCard;
 import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 
 import java.io.Serializable;
 import java.util.EnumMap;
@@ -15,7 +16,7 @@ import java.util.Set;
  * Created by Greg on 8/8/2014.
  * A player in a game of catan, stores resource accounts, victory points, and can make moves on the catan game.
  */
-public class Player implements Serializable{
+public class Player implements Serializable {
 
     private final Username name;
     private final Team team;

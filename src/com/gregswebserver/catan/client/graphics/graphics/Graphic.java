@@ -18,7 +18,8 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 public class Graphic implements Maskable {
 
     private static final int transColor = 0xff00ff;
-    protected int[] pixels = null, clickable = null;
+    protected int[] pixels = null;
+    private int[] clickable = null;
     private RenderMask mask;
     protected BufferedImage buffer;
     private boolean transparency;
@@ -52,7 +53,7 @@ public class Graphic implements Maskable {
             pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
     }
 
-    public boolean accelerated() {
+    private boolean accelerated() {
         return pixels == null && !transparency && mask instanceof RectangularMask;
     }
 

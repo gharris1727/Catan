@@ -2,13 +2,13 @@ package com.gregswebserver.catan.common.resources;
 
 /**
  * Created by greg on 1/28/16.
- * A cache lookup object for different GameRuleSet objects.
+ * A cache lookup object for different GameRules objects.
  */
-public class GameRuleSetInfo {
+public class GameRulesInfo {
 
     private final String name;
 
-    public GameRuleSetInfo(String name) {
+    public GameRulesInfo(String name) {
         this.name = name;
     }
 
@@ -25,8 +25,8 @@ public class GameRuleSetInfo {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (o instanceof GameRuleSetInfo) {
-            GameRuleSetInfo info = (GameRuleSetInfo) o;
+        if (o instanceof GameRulesInfo) {
+            GameRulesInfo info = (GameRulesInfo) o;
             return name.equals(info.name);
         }
         return false;

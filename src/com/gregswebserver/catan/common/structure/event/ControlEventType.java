@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.structure.event;
 
 import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.structure.MatchmakingPool;
+import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 /**
  * Created by Greg on 10/16/2014.

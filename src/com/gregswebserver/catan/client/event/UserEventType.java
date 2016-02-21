@@ -4,8 +4,8 @@ import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.structure.LobbyConfig;
-import com.gregswebserver.catan.common.structure.LobbySortOption;
+import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
+import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
 
 /**
  * Created by Greg on 1/4/2015.
@@ -24,6 +24,7 @@ public enum UserEventType implements EventType {
     Lobby_Sort(LobbySortOption.class),
     Space_Clicked(Coordinate.class),
     Tile_Rob(Coordinate.class),
+    End_Turn(null),
     Edge_Clicked(Coordinate.class),
     Road_Purchase(Coordinate.class),
     Vertex_Clicked(Coordinate.class),

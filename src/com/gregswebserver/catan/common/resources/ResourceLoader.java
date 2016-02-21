@@ -3,9 +3,10 @@ package com.gregswebserver.catan.common.resources;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.GraphicSource;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.common.game.board.layout.BoardLayout;
-import com.gregswebserver.catan.common.game.board.layout.DynamicBoardLayout;
-import com.gregswebserver.catan.common.game.board.layout.StaticBoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.layout.DynamicBoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.layout.StaticBoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
 
 /**
  * Created by Greg on 1/7/2015.
@@ -28,11 +29,11 @@ public class ResourceLoader {
         }
     };
 
-    private static final ResourceCache<GameRuleSetInfo, GameRuleSet> gameRuleSetCache = new ResourceCache<GameRuleSetInfo, GameRuleSet>() {
+    private static final ResourceCache<GameRulesInfo, GameRules> gameRuleSetCache = new ResourceCache<GameRulesInfo, GameRules>() {
         @Override
-        protected GameRuleSet load(GameRuleSetInfo info) throws ResourceLoadException {
+        protected GameRules load(GameRulesInfo info) throws ResourceLoadException {
             try {
-                return new GameRuleSet(info.getPath());
+                return new GameRules(info.getPath());
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }
@@ -82,7 +83,7 @@ public class ResourceLoader {
         return graphicSourceCache.get(info);
     }
 
-    public static GameRuleSet getGameRuleSet(GameRuleSetInfo info) throws ResourceLoadException{
+    public static GameRules getGameRuleSet(GameRulesInfo info) throws ResourceLoadException{
         return gameRuleSetCache.get(info);
     }
 }

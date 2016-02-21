@@ -1,15 +1,20 @@
-package com.gregswebserver.catan.common.structure;
+package com.gregswebserver.catan.common.structure.lobby;
 
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.GameSettings;
-import com.gregswebserver.catan.common.game.board.layout.BoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.better.BetterGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.copy.CopyGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
-import com.gregswebserver.catan.common.game.player.Player;
-import com.gregswebserver.catan.common.game.player.Team;
-import com.gregswebserver.catan.common.resources.*;
+import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
+import com.gregswebserver.catan.common.resources.GameRulesInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoadException;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
+import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.game.Player;
+import com.gregswebserver.catan.common.structure.game.PlayerPool;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,11 +31,13 @@ public class Lobby {
 
     private final Map<Username, LobbyUser> users;
     private final Username local;
+    private LobbyState state;
     private LobbyConfig config;
 
     public Lobby(LobbyConfig config, Username local) {
         this.users = new HashMap<>(config.getMaxPlayers());
         this.local = local;
+        state = LobbyState.Preparing;
         setConfig(config);
     }
 
@@ -62,10 +69,10 @@ public class Lobby {
         //TODO: error handling and reporting errors to the user.
 
         //We need to construct the parts of a GameSettings object.
-        BoardLayout layout;
-        GameRuleSet rules;
-        BoardGenerator generator;
-        PlayerPool teams;
+        BoardLayout boardLayout;
+        GameRules gameRules;
+        BoardGenerator boardGenerator;
+        PlayerPool playerPool;
         try {
             BoardLayoutInfo info = null;
             //TODO: put the regex stuff somewhere so that we can use it to validate when saving the game.
@@ -80,14 +87,14 @@ public class Lobby {
                 info = new BoardLayoutInfo(Long.parseLong(config.getLayoutName()));
             else if ("".equals(config.getLayoutName())) // Empty string triggers random seed.
                 info = new BoardLayoutInfo(System.nanoTime());
-            layout = ResourceLoader.getBoardLayout(info);
+            boardLayout = ResourceLoader.getBoardLayout(info);
         } catch (ResourceLoadException e) {
             // Fall back to the text seeded map.
-            layout = ResourceLoader.getBoardLayout(new BoardLayoutInfo(config.getLayoutName().hashCode()));
+            boardLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo(config.getLayoutName().hashCode()));
         }
 
         //We really don't have an alternative than to spit the error back up.
-        rules = ResourceLoader.getGameRuleSet(new GameRuleSetInfo(config.getRulesetName()));
+        gameRules = ResourceLoader.getGameRuleSet(new GameRulesInfo(config.getRulesetName()));
 
         //Keyword 'copy' for selecting the copy generator
         Matcher copyGenerator = Pattern.compile("^[Cc]opy$").matcher(config.getGeneratorName());
@@ -95,11 +102,11 @@ public class Lobby {
         Matcher betterGenerator = Pattern.compile("^[Bb]etter(?: )??(?:[Ss]ettlers)??$").matcher(config.getGeneratorName());
         //Choose the generator to use.
         if (copyGenerator.find())
-            generator = CopyGenerator.instance;
+            boardGenerator = CopyGenerator.instance;
         else if (betterGenerator.find())
-            generator = BetterGenerator.instance;
+            boardGenerator = BetterGenerator.instance;
         else
-            generator = RandomBoardGenerator.instance;
+            boardGenerator = RandomBoardGenerator.instance;
 
         //Keep track which teams people have selected so that they are not randomly allocated later.
         Set<Team> teamsToAllocate = Team.getTeamSet();
@@ -129,13 +136,20 @@ public class Lobby {
                 players.put(username,new Player(username, team));
             }
         }
-        teams = new PlayerPool(local, players);
+        playerPool = new PlayerPool(local, players);
 
-        //TODO: resolve loading user data into the game.
-        return new GameSettings(System.nanoTime(), layout, generator, rules, teams);
+        return new GameSettings(System.nanoTime(), boardLayout, boardGenerator, gameRules, playerPool);
     }
 
     public String toString() {
         return "Lobby " + config;
+    }
+
+    public void setState(LobbyState state) {
+        this.state = state;
+    }
+
+    public LobbyState getState() {
+        return state;
     }
 }

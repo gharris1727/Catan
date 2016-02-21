@@ -10,7 +10,7 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.TextBox;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.common.structure.LobbyConfig;
+import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 
 /**
  * Created by greg on 1/23/16.

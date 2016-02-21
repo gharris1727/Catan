@@ -10,8 +10,8 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
-import com.gregswebserver.catan.common.game.player.Player;
 import com.gregswebserver.catan.common.resources.GraphicSet;
+import com.gregswebserver.catan.common.structure.game.Player;
 
 import java.awt.*;
 import java.util.EnumMap;
@@ -85,6 +85,7 @@ public class InventoryRegion extends UIScreenRegion {
     @Override
     protected void renderContents() {
         center(username).y = usernamePosition.y;
+        elements.values().forEach(InventoryElement::forceRender);
     }
 
     public String toString() {

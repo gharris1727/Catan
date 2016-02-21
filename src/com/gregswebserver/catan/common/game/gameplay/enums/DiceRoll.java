@@ -30,10 +30,4 @@ public enum DiceRoll {
         // values() contains an array of enums in order, quickly find the one we need.
         return values()[value - 2];
     }
-
-    public static DiceRoll random() {
-        int dieOne = (int) (Math.random() * 6) + 1;
-        int dieTwo = (int) (Math.random() * 6) + 1;
-        return get(dieOne + dieTwo);
-    }
 }

@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.towns;
 
-import com.gregswebserver.catan.common.game.player.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 
 /**
  * Created by Greg on 8/9/2014.

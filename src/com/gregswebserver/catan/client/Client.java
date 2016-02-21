@@ -21,7 +21,6 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
@@ -32,10 +31,11 @@ import com.gregswebserver.catan.common.network.ClientConnection;
 import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.common.network.NetEventType;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
-import com.gregswebserver.catan.common.structure.*;
 import com.gregswebserver.catan.common.structure.event.ControlEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
+import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.lobby.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -193,7 +193,7 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
-                outgoing = new GameEvent(username, GameEventType.Game_Create,  getActiveLobby().getGameSettings());
+                outgoing = new LobbyEvent(username, LobbyEventType.Lobby_Start, getActiveLobby().getGameSettings());
                 sendEvent(outgoing);
                 break;
             case Lobby_Sort:
@@ -204,6 +204,10 @@ public class Client extends CoreThread {
                 break;
             case Tile_Rob:
                 outgoing = new GameEvent(username, GameEventType.Player_Move_Robber, event.getPayload());
+                sendEvent(outgoing);
+                break;
+            case End_Turn:
+                outgoing = new GameEvent(username, GameEventType.Turn_Advance, null);
                 sendEvent(outgoing);
                 break;
             case Edge_Clicked:
@@ -232,22 +236,8 @@ public class Client extends CoreThread {
     }
 
     private void gameEvent(GameEvent event) {
-        switch(event.getType()) {
-            case Game_Create:
-                GameSettings gameSettings = (GameSettings) event.getPayload();
-                gameSettings.teams.setLocal(username);
-                gameThread = new GameThread(this, gameSettings);
-                manager.displayGameScreen();
-                break;
-            case Turn_Advance:
-            case Player_Roll_Dice:
-            case Player_Move_Robber:
-            case Build_Settlement:
-            case Build_City:
-            case Build_Road:
-                if (gameThread != null)
-                    gameThread.addEvent(event);
-        }
+        if (gameThread != null)
+            gameThread.addEvent(event);
     }
 
     // Control events sent by the server to affect the local client.
@@ -289,8 +279,18 @@ public class Client extends CoreThread {
                         manager.displayInLobbyScreen();
                     break;
                 case Lobby_Leave:
-                    if (username.equals(event.getPayload()))
+                    if (username.equals(event.getOrigin()))
                         manager.displayLobbyJoinMenu();
+                    break;
+                case Lobby_Start:
+                    GameSettings gameSettings = (GameSettings) event.getPayload();
+                    if (((GameSettings) event.getPayload()).playerPool.getPlayer(username) != null) {
+                        gameSettings.playerPool.setLocal(username);
+                        gameThread = new GameThread(this, gameSettings);
+                        manager.displayGameScreen();
+                    }
+                    break;
+                case Lobby_Finish:
                     break;
             }
             //Force update any relevant screens

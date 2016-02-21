@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.structure;
+package com.gregswebserver.catan.common.structure.lobby;
 
 import com.gregswebserver.catan.common.crypto.Username;
 
@@ -54,6 +54,14 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
 
     public void changeConfig(Username username, LobbyConfig config) {
         userMap.get(username).setConfig(config);
+    }
+
+    public void start(Username username) {
+        userGetLobby(username).setState(LobbyState.InGame);
+    }
+
+    public void finish(Username username) {
+        userGetLobby(username).setState(LobbyState.Finished);
     }
 
     private class LobbyComparator implements Comparator<Lobby> {

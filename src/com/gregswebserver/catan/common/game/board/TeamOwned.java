@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.common.game.player;
+package com.gregswebserver.catan.common.game.board;
 
-import com.gregswebserver.catan.common.game.board.BoardObject;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 
 /**
  * Created by Greg on 8/8/2014.

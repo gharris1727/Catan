@@ -48,7 +48,7 @@ public class InGameScreenRegion extends ClientScreen {
         };
         trade = new TradeRegion(1);
         inventory = new InventoryRegion(2, game.getTeams().getLocalPlayer());
-        context = new ContextRegion(3, game.getTeams());
+        context = new ContextRegion(3, game);
         add(map);
         add(trade);
         add(inventory);
@@ -64,12 +64,14 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     public void vertexClicked(Coordinate coord) {
-        context.target(game.getBoard().getBuilding(coord));
+        context.target(game.getBoard().getTown(coord));
     }
 
     @Override
     public void update() {
         map.update();
+        inventory.forceRender();
+        trade.forceRender();
         context.forceRender();
     }
 

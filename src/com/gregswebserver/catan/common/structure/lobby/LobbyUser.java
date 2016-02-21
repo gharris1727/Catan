@@ -1,6 +1,6 @@
-package com.gregswebserver.catan.common.structure;
+package com.gregswebserver.catan.common.structure.lobby;
 
-import com.gregswebserver.catan.common.game.player.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 
 /**
  * Created by greg on 2/5/16.
@@ -11,11 +11,7 @@ public class LobbyUser {
     private Team team;
 
     public LobbyUser() {
-        this(Team.None);
-    }
-
-    public LobbyUser(Team team) {
-        this.team = team;
+        this.team = Team.None;
     }
 
     public Team getTeam() {

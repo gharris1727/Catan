@@ -5,8 +5,8 @@ import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.GameSettings;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 /**
  * Created by Greg on 8/12/2014.

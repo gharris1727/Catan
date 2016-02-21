@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game;
 
-import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
@@ -13,11 +12,19 @@ import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.player.Player;
-import com.gregswebserver.catan.common.game.player.Team;
-import com.gregswebserver.catan.common.structure.PlayerPool;
+import com.gregswebserver.catan.common.game.gameplay.DiceRollRandomizer;
+import com.gregswebserver.catan.common.game.gameplay.TeamTurnRandomizer;
+import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
+import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.game.Player;
+import com.gregswebserver.catan.common.structure.game.PlayerPool;
 
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -25,35 +32,36 @@ import java.awt.*;
  */
 public class CatanGame implements EventConsumer<GameEvent> {
 
-    private final GameSettings settings;
+    private final GameRules rules;
+    private final PlayerPool players;
     private final GameBoard board;
+    private final DiceRollRandomizer diceRolls;
+    private final TeamTurnRandomizer teamTurns;
 
     public CatanGame(GameSettings settings) {
-        this.settings = settings;
+        rules = settings.gameRules;
+        players = settings.playerPool;
         board = settings.generate();
+        diceRolls = new DiceRollRandomizer(settings.seed);
+        teamTurns = new TeamTurnRandomizer(settings.seed, players.getTeamSet());
     }
 
     @Override
     public boolean test(GameEvent event) {
+        boolean turnActive = players.getPlayer(event.getOrigin()).getTeam() == teamTurns.getActiveTeam();
         switch (event.getType()) {
-            //TODO: turn checks
-            case Game_Create:
-                return false;
             case Build_Settlement:
-                return board.getBuilding((Coordinate) event.getPayload()).getTeam() == Team.None;
+                return turnActive && board.getTown((Coordinate) event.getPayload()).getTeam() == Team.None;
             case Build_City:
-                Town b = board.getBuilding((Coordinate) event.getPayload());
-                return (b instanceof Settlement && b.getTeam() == settings.teams.getPlayer(event.getOrigin()).getTeam());
+                Town b = board.getTown((Coordinate) event.getPayload());
+                return turnActive && (b instanceof Settlement && b.getTeam() == players.getPlayer(event.getOrigin()).getTeam());
             case Build_Road:
-                return board.getPath((Coordinate) event.getPayload()).getTeam() == Team.None;
+                return turnActive && board.getPath((Coordinate) event.getPayload()).getTeam() == Team.None;
             case Player_Move_Robber:
                 Tile tile = board.getTile((Coordinate) event.getPayload());
-                return (tile instanceof ResourceTile);
+                return turnActive && (tile instanceof ResourceTile);
             case Turn_Advance:
-                break;
-            case Player_Roll_Dice:
-                //TODO: turn checks
-                return true;
+                return turnActive;
         }
         return false;
     }
@@ -63,12 +71,10 @@ public class CatanGame implements EventConsumer<GameEvent> {
         if (!test(event))
             throw new EventConsumerException(event);
         Username origin = event.getOrigin();
-        Player player = settings.teams.getPlayer(origin);
+        Player player = players.getPlayer(origin);
         Team team = player.getTeam();
         Coordinate coordinate;
         switch (event.getType()) {
-            case Game_Create:
-                throw new IllegalStateException();
             case Build_Settlement:
                 coordinate = (Coordinate) event.getPayload();
                 Settlement settlement = new Settlement(team);
@@ -88,9 +94,32 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 coordinate = (Coordinate) event.getPayload();
                 board.moveRobber(coordinate);
                 break;
-            case Player_Roll_Dice:
-                break;
             case Turn_Advance:
+                teamTurns.advanceTurn();
+                DiceRoll roll = diceRolls.next();
+                List<Coordinate> tileCoords = board.getActiveTiles(roll);
+                if (tileCoords != null && !tileCoords.isEmpty()) {
+                    for (Coordinate t : tileCoords) {
+                        GameResource resource = ((ResourceTile) board.getTile(t)).getResource();
+                        if (resource != null) {
+                            for (Coordinate v : board.getAdjacentVertices(t)) {
+                                Town town = board.getTown(v);
+                                if (town != null && town.getTeam() != Team.None) {
+                                    List<Player> players = this.players.getTeamPlayers(town.getTeam());
+                                    for (Player p : players) {
+                                        Map<GameResource, Integer> inventory = p.getInventory();
+                                        int resCount = inventory.get(resource);
+                                        if (town instanceof Settlement)
+                                            resCount += rules.getSettlementResources();
+                                        if (town instanceof City)
+                                            resCount += rules.getCityResources();
+                                        inventory.put(resource, resCount);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 break;
         }
     }
@@ -104,6 +133,10 @@ public class CatanGame implements EventConsumer<GameEvent> {
     }
 
     public PlayerPool getTeams() {
-        return settings.teams;
+        return players;
+    }
+
+    public boolean isLocalPlayerActive() {
+        return players.getLocalPlayer().getTeam() == teamTurns.getActiveTeam();
     }
 }

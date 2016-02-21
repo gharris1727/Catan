@@ -2,11 +2,11 @@ package com.gregswebserver.catan.common.game.gameplay.generator;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.io.Serializable;

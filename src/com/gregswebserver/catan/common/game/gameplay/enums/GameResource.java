@@ -10,8 +10,7 @@ public enum GameResource {
     Lumber("Logs"),
     Wool("Sheep"),
     Ore("Rocks"),
-    Grain("Wheat"),
-    Wildcard("Any");
+    Grain("Wheat");
 
     public final String name;
 

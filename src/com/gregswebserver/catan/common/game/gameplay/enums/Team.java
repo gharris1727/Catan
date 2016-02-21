@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.player;
+package com.gregswebserver.catan.common.game.gameplay.enums;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;

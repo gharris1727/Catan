@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.common.game.gameplay.generator.better;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
-import com.gregswebserver.catan.common.game.board.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
+import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 
 /**
  * Created by greg on 1/24/16.

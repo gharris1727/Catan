@@ -2,8 +2,9 @@ package com.gregswebserver.catan.common.structure.event;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.structure.LobbyConfig;
 import com.gregswebserver.catan.common.structure.UserInfo;
+import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 
 /**
  * Created by greg on 1/27/16.
@@ -16,7 +17,9 @@ public enum LobbyEventType implements EventType {
     Lobby_Create(LobbyConfig.class), //Client -> Server -> Broadcast, when a lobby is created.
     Lobby_Change_Config(LobbyConfig.class), //Client -> Server -> Broadcast, when a lobby is modified.
     Lobby_Join(Username.class), //Client -> Server -> Broadcast, when a client joins a lobby, stores owner of lobby.
-    Lobby_Leave(null); //Client -> Server -> Broadcast, when a client leaves a lobby.
+    Lobby_Leave(null), //Client -> Server -> Broadcast, when a client leaves a lobby.
+    Lobby_Start(GameSettings.class), //Client -> Server -> Broadcast when a game starts.
+    Lobby_Finish(Username.class); //Server -> Broadcast when a player wins the game.
 
     private final Class payloadType;
 

@@ -1,4 +1,6 @@
-package com.gregswebserver.catan.common.resources;
+package com.gregswebserver.catan.common.game.gameplay.rules;
+
+import com.gregswebserver.catan.common.resources.PropertiesFile;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -7,8 +9,10 @@ import java.io.Serializable;
  * Created by greg on 1/24/16.
  * A set of rules regarding playing the game and determining win conditions.
  */
-public class GameRuleSet implements Serializable {
+public class GameRules implements Serializable {
 
+    private int settlementResources;
+    private int cityResources;
     private int pathPoints;
     private int settlementPoints;
     private int cityPoints;
@@ -35,9 +39,11 @@ public class GameRuleSet implements Serializable {
     private int maxSettlements;
     private int maxCities;
 
-    public GameRuleSet(String path) throws IOException {
+    public GameRules(String path) throws IOException {
         PropertiesFile file = new PropertiesFile(path,"Board layout information");
         file.open();
+        settlementResources = file.getInt("rules.resources.settlement");
+        cityResources = file.getInt("rules.resources.city");
         pathPoints = file.getInt("rules.points.build.path");
         settlementPoints = file.getInt("rules.points.build.settlement");
         cityPoints = file.getInt("rules.points.build.city");
@@ -63,6 +69,14 @@ public class GameRuleSet implements Serializable {
         maxPaths = file.getInt("rules.max.paths");
         maxSettlements = file.getInt("rules.max.settlements");
         maxCities = file.getInt("rules.max.cities");
+    }
+
+    public int getSettlementResources() {
+        return settlementResources;
+    }
+
+    public int getCityResources() {
+        return cityResources;
     }
 
     public int getPathPoints() {
@@ -167,6 +181,6 @@ public class GameRuleSet implements Serializable {
 
     @Override
     public String toString() {
-        return "GameRuleSet";
+        return "GameRules";
     }
 }
