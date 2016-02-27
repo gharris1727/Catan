@@ -69,7 +69,6 @@ public class HexagonalArray {
             { //ODD
                     {0, 0, 0, 0, 3, 1, 1, 2, 2}, //X
                     {0, 0, 0, 1, 1, 0, 1, 0, 1}}}; //Y
-    //TODO: finish implementing more translations.
     private static final int[][][] edgeToSpace = { //SUBTRACTIONS
             { //ZERO
                     {0, 0, 0, 0, 0, 3, 0, 0, 0}, //X
@@ -186,7 +185,6 @@ public class HexagonalArray {
     }
 
     private static void checkDirection(Direction d, int[][] array) throws IllegalDirectionException {
-        //TODO: this function needs to be refined, fails on more cases than necessary.
         //If both indexes are zero, then that indicates that no motion is made.
         //only usable for the 1:1 ratio conversions (space-space, edge-edge, vertex-vertex)
         if (array[0][d.ordinal()] == 0 && array[1][d.ordinal()] == 0)

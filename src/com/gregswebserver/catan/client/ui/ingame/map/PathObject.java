@@ -19,7 +19,9 @@ public class PathObject extends MapObject {
     protected PathObject(int priority, MapRegion container, Path path) {
         super(priority, container);
         this.path = path;
-        int orientation = (path.getPosition().x + 1) % 3;
+        int orientation = 0;
+        if (path.getPosition().x % 6 == 0 || path.getPosition().x % 6 == 4) orientation = 1;
+        if (path.getPosition().x % 6 == 1 || path.getPosition().x % 6 == 3) orientation = 2;
         Graphic background = path.getTeam().getRoadGraphic(orientation);
         add(new GraphicObject(0, background) {
             @Override

@@ -122,11 +122,25 @@ public class GameBoard {
         return t instanceof ResourceTile && !((ResourceTile) t).hasRobber();
     }
 
-    public boolean canBuildRoad(Coordinate c) {
+    public boolean canBuildRoad(Coordinate c, Team team) {
         if (c == null)
             return false;
         Path e = hexArray.getPath(c);
-        return e instanceof EmptyPath;
+        if (!(e instanceof EmptyPath))
+            return false;
+        Map<Direction, Coordinate> adjacentEdges = hexArray.getAdjacentEdgesFromEdge(c);
+        for (Coordinate a : adjacentEdges.values()) {
+            Path p = hexArray.getPath(a);
+            if (p instanceof Road && p.getTeam() == team)
+                return true;
+        }
+        Map<Direction, Coordinate> adjacentVertices = hexArray.getAdjacentVerticesFromEdge(c);
+        for (Coordinate a : adjacentVertices.values()) {
+            Town t = hexArray.getTown(a);
+            if ((t instanceof Settlement || t instanceof City) && t.getTeam() == team)
+                return true;
+        }
+        return false;
     }
 
     public boolean canBuildSettlement(Coordinate c, Team team) {

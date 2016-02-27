@@ -72,7 +72,7 @@ public class MapRegion extends ScrollingScreenRegion {
             {16, 72}}; //Vertical
     private static final int[][] edgeOffsets = {
             {0, 0, 36, 100, 100, 136}, //Horizontal
-            {9, 65, 0, 65, 9, 56}}; //Vertical
+            {9, 65, 0, 9, 65, 56}}; //Vertical
     private static final int[][] vertOffsets = {
             {0, 24, 100, 124}, //Horizontal
             {56, 0, 0, 56}}; //Vertical

@@ -77,8 +77,9 @@ public class CatanGame implements EventConsumer<GameEvent> {
                     return false;
                 case Build_Road:
                     return
-                        player.state == Player.PlayerState.Road_1 ||
-                        player.state == Player.PlayerState.Road_2;
+                        (player.state == Player.PlayerState.Road_1 ||
+                        player.state == Player.PlayerState.Road_2) &&
+                        board.canBuildRoad(c, player.getTeam());
                 case Buy_Development:
                     return false;
             }
@@ -93,7 +94,7 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 case Build_City:
                     return board.canBuildCity(c, player.getTeam()) && player.canMakePurchase(Purchase.City);
                 case Build_Road:
-                    return board.canBuildRoad(c) && player.canMakePurchase(Purchase.Road);
+                    return board.canBuildRoad(c, player.getTeam()) && player.canMakePurchase(Purchase.Road);
                 case Buy_Development:
                     return player.canMakePurchase(Purchase.DevelopmentCard);
             }
@@ -116,10 +117,14 @@ public class CatanGame implements EventConsumer<GameEvent> {
                     player.state = Player.PlayerState.Road_1;
                 if (player.state == Player.PlayerState.Settlement_2)
                     player.state = Player.PlayerState.Road_2;
+                if (!starting)
+                    player.makePurchase(Purchase.Settlement);
                 break;
             case Build_City:
                 coordinate = (Coordinate) event.getPayload();
                 board.buildCity(coordinate, team);
+                if (!starting)
+                    player.makePurchase(Purchase.City);
                 break;
             case Build_Road:
                 coordinate = (Coordinate) event.getPayload();
@@ -128,6 +133,8 @@ public class CatanGame implements EventConsumer<GameEvent> {
                     player.state = Player.PlayerState.Waiting;
                 if (player.state == Player.PlayerState.Road_2)
                     player.state = Player.PlayerState.Playing;
+                if (!starting)
+                    player.makePurchase(Purchase.Road);
                 break;
             case Player_Move_Robber:
                 coordinate = (Coordinate) event.getPayload();
