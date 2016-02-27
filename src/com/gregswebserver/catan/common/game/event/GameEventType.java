@@ -15,7 +15,8 @@ public enum GameEventType implements EventType {
     Player_Move_Robber(Coordinate.class),
     Build_Settlement(Coordinate.class),
     Build_City(Coordinate.class),
-    Build_Road(Coordinate.class);
+    Build_Road(Coordinate.class),
+    Buy_Development(null);
 
     private final Class payloadType;
 

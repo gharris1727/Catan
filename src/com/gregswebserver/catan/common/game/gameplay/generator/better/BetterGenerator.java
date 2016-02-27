@@ -18,7 +18,7 @@ public class BetterGenerator implements BoardGenerator {
     @Override
     public GameBoard generate(BoardLayout layout, long seed) {
         //TODO: implement the BetterSettlers generation algorithm.
-        return new GameBoard(layout.getSize());
+        throw new RuntimeException("Unimplemented");
     }
 
     @Override

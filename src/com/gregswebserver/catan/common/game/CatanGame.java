@@ -5,17 +5,16 @@ import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.paths.Road;
-import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.DiceRollRandomizer;
-import com.gregswebserver.catan.common.game.gameplay.TeamTurnRandomizer;
+import com.gregswebserver.catan.common.game.gameplay.TeamTurnManager;
+import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.game.gameplay.enums.Purchase;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
@@ -23,8 +22,8 @@ import com.gregswebserver.catan.common.structure.game.Player;
 import com.gregswebserver.catan.common.structure.game.PlayerPool;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -36,33 +35,68 @@ public class CatanGame implements EventConsumer<GameEvent> {
     private final PlayerPool players;
     private final GameBoard board;
     private final DiceRollRandomizer diceRolls;
-    private final TeamTurnRandomizer teamTurns;
+    private final TeamTurnManager teamTurns;
+    private final Iterator<Team> firstRound;
+    private final Iterator<Team> secondRound;
+    private Team activeTeam;
+    private boolean starting;
 
     public CatanGame(GameSettings settings) {
         rules = settings.gameRules;
         players = settings.playerPool;
         board = settings.generate();
         diceRolls = new DiceRollRandomizer(settings.seed);
-        teamTurns = new TeamTurnRandomizer(settings.seed, players.getTeamSet());
+        teamTurns = new TeamTurnManager(settings.seed, players.getTeamSet());
+        firstRound = teamTurns.forward();
+        secondRound = teamTurns.reverse();
+        activeTeam = firstRound.next();
+        starting = true;
     }
 
     @Override
     public boolean test(GameEvent event) {
-        boolean turnActive = players.getPlayer(event.getOrigin()).getTeam() == teamTurns.getActiveTeam();
-        switch (event.getType()) {
-            case Build_Settlement:
-                return turnActive && board.getTown((Coordinate) event.getPayload()).getTeam() == Team.None;
-            case Build_City:
-                Town b = board.getTown((Coordinate) event.getPayload());
-                return turnActive && (b instanceof Settlement && b.getTeam() == players.getPlayer(event.getOrigin()).getTeam());
-            case Build_Road:
-                return turnActive && board.getPath((Coordinate) event.getPayload()).getTeam() == Team.None;
-            case Player_Move_Robber:
-                Tile tile = board.getTile((Coordinate) event.getPayload());
-                return turnActive && (tile instanceof ResourceTile);
-            case Turn_Advance:
-                return turnActive;
-        }
+        Player player = players.getPlayer(event.getOrigin());
+        Coordinate c = null;
+        if (event.getPayload() instanceof Coordinate)
+            c = (Coordinate) event.getPayload();
+        if (player.getTeam() != activeTeam)
+            return false;
+        if (starting)
+            switch (event.getType()) {
+                case Turn_Advance:
+                    return player.state == Player.PlayerState.Waiting ||
+                            player.state == Player.PlayerState.Playing;
+                case Player_Move_Robber:
+                    return false;
+                case Build_Settlement:
+                    return
+                        (player.state == Player.PlayerState.Settlement_1 ||
+                        player.state == Player.PlayerState.Settlement_2) &&
+                        board.canBuildInitialSettlement(c);
+                case Build_City:
+                    return false;
+                case Build_Road:
+                    return
+                        player.state == Player.PlayerState.Road_1 ||
+                        player.state == Player.PlayerState.Road_2;
+                case Buy_Development:
+                    return false;
+            }
+        else
+            switch (event.getType()) {
+                case Turn_Advance:
+                    return true;
+                case Player_Move_Robber:
+                    return board.canRobTile(c) && player.canPlayDevelopmentCard(DevelopmentCard.Knight);
+                case Build_Settlement:
+                    return board.canBuildSettlement(c, player.getTeam()) && player.canMakePurchase(Purchase.Settlement);
+                case Build_City:
+                    return board.canBuildCity(c, player.getTeam()) && player.canMakePurchase(Purchase.City);
+                case Build_Road:
+                    return board.canBuildRoad(c) && player.canMakePurchase(Purchase.Road);
+                case Buy_Development:
+                    return player.canMakePurchase(Purchase.DevelopmentCard);
+            }
         return false;
     }
 
@@ -77,43 +111,58 @@ public class CatanGame implements EventConsumer<GameEvent> {
         switch (event.getType()) {
             case Build_Settlement:
                 coordinate = (Coordinate) event.getPayload();
-                Settlement settlement = new Settlement(team);
-                board.setBuilding(coordinate, settlement);
+                player.lastSettlement = board.buildSettlement(coordinate, team);
+                if (player.state == Player.PlayerState.Settlement_1)
+                    player.state = Player.PlayerState.Road_1;
+                if (player.state == Player.PlayerState.Settlement_2)
+                    player.state = Player.PlayerState.Road_2;
                 break;
             case Build_City:
                 coordinate = (Coordinate) event.getPayload();
-                City city = new City(team);
-                board.setBuilding(coordinate, city);
+                board.buildCity(coordinate, team);
                 break;
             case Build_Road:
                 coordinate = (Coordinate) event.getPayload();
-                Road road = new Road(team);
-                board.setPath(coordinate, road);
+                board.buildRoad(coordinate, team);
+                if (player.state == Player.PlayerState.Road_1)
+                    player.state = Player.PlayerState.Waiting;
+                if (player.state == Player.PlayerState.Road_2)
+                    player.state = Player.PlayerState.Playing;
                 break;
             case Player_Move_Robber:
                 coordinate = (Coordinate) event.getPayload();
                 board.moveRobber(coordinate);
                 break;
             case Turn_Advance:
-                teamTurns.advanceTurn();
-                DiceRoll roll = diceRolls.next();
-                List<Coordinate> tileCoords = board.getActiveTiles(roll);
-                if (tileCoords != null && !tileCoords.isEmpty()) {
-                    for (Coordinate t : tileCoords) {
-                        GameResource resource = ((ResourceTile) board.getTile(t)).getResource();
-                        if (resource != null) {
-                            for (Coordinate v : board.getAdjacentVertices(t)) {
-                                Town town = board.getTown(v);
+                player.endTurn();
+                if (starting) {
+                    if (player.state == Player.PlayerState.Waiting)
+                        player.state = Player.PlayerState.Settlement_2;
+                    if (player.state == Player.PlayerState.Playing) {
+                        for (Tile t : board.getAdjacentTiles(player.lastSettlement.getPosition()))
+                            player.addResource(t,1);
+                    }
+                    if (firstRound.hasNext())
+                        activeTeam = firstRound.next();
+                    else if (secondRound.hasNext())
+                        activeTeam = secondRound.next();
+                    else
+                        starting = false;
+                }
+                if (!starting) {
+                    activeTeam = teamTurns.advanceTurn();
+                    DiceRoll roll = diceRolls.next();
+                    List<Coordinate> spaces = board.getActiveTiles(roll);
+                    if (spaces != null && !spaces.isEmpty()) {
+                        for (Coordinate space : spaces) {
+                            for (Town town : board.getAdjacentTowns(space)) {
                                 if (town != null && town.getTeam() != Team.None) {
                                     List<Player> players = this.players.getTeamPlayers(town.getTeam());
                                     for (Player p : players) {
-                                        Map<GameResource, Integer> inventory = p.getInventory();
-                                        int resCount = inventory.get(resource);
                                         if (town instanceof Settlement)
-                                            resCount += rules.getSettlementResources();
+                                            p.addResource(board.getTile(space), rules.getSettlementResources());
                                         if (town instanceof City)
-                                            resCount += rules.getCityResources();
-                                        inventory.put(resource, resCount);
+                                            p.addResource(board.getTile(space), rules.getCityResources());
                                     }
                                 }
                             }
@@ -137,6 +186,10 @@ public class CatanGame implements EventConsumer<GameEvent> {
     }
 
     public boolean isLocalPlayerActive() {
-        return players.getLocalPlayer().getTeam() == teamTurns.getActiveTeam();
+        return players.getLocalPlayer().getTeam() == activeTeam;
+    }
+
+    public enum GameState {
+        IntialPlacement, ReversePlacement, Regular
     }
 }

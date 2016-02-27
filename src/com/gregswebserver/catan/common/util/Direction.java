@@ -7,17 +7,12 @@ import java.util.Set;
  * Direction enum for spatial relationships in the HexagonalArray.
  */
 public enum Direction {
-    //ORDER OF CREATION INCREDIBLY IMPORTANT HERE.
-    //ordinal() is used for a large amount of graphics processing.
-    //Self-reference
+
     center(0, 0),
-    //Edge/Space-only reference.
     up(0, 1),
     down(0, -1),
-    //Vertex-only reference.
     left(-1, 0),
     right(1, 0),
-    //Dual reference.
     upleft(up, left),
     downleft(down, left),
     upright(up, right),

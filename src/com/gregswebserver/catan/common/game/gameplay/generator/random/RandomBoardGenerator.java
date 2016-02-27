@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.gameplay.generator.random;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.paths.EmptyPath;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
@@ -11,10 +12,8 @@ import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.awt.*;
+import java.util.*;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -30,7 +29,13 @@ public class RandomBoardGenerator implements BoardGenerator {
     @Override
     public GameBoard generate(BoardLayout layout, long seed) {
         Random random = new Random(seed);
-        GameBoard board = new GameBoard(layout.getSize());
+
+        Dimension size = layout.getSize();
+        HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
+        Map<DiceRoll, java.util.List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
+        Map<Coordinate, TradingPostType> tradingPosts = new HashMap<>();
+        Coordinate robberLocation = null;
+
         Iterator<Coordinate> resourceTiles = layout.getTiles();
         Iterator<Coordinate> tradingPorts = layout.getPorts();
         //Prep all of the helper classes to generate map features.
@@ -48,34 +53,34 @@ public class RandomBoardGenerator implements BoardGenerator {
         //Generate and place playable hexagons
         while (resourceTiles.hasNext()) {
             Coordinate c = resourceTiles.next();
-            validVertices.addAll(board.getAdjacentVertices(c));
-            validEdges.addAll(board.getAdjacentEdges(c));
+            validVertices.addAll(hexArray.getAdjacentVerticesFromSpace(c).values());
+            validEdges.addAll(hexArray.getAdjacentEdgesFromSpace(c).values());
             Terrain t = terrain.next();
             if (t.equals(Terrain.Desert)) {
-                setResourceTile(board, c, new ResourceTile(t, DiceRoll.Seven));
-                board.moveRobber(c);
+                setResourceTile(hexArray, diceRolls, c, new ResourceTile(t, DiceRoll.Seven));
+                robberLocation = c;
             } else {
-                setResourceTile(board, c, new ResourceTile(t, tokens.next()));
+                setResourceTile(hexArray, diceRolls, c, new ResourceTile(t, tokens.next()));
             }
         }
 
         //Place all of the empty features that fill the rest of the valid map.
         for (Coordinate c : validVertices) {
-            board.setBuilding(c, new EmptyTown());
+            hexArray.setTown(c, new EmptyTown());
         }
         for (Coordinate c : validEdges) {
-            board.setPath(c, new EmptyPath());
+            hexArray.setPath(c, new EmptyPath());
         }
 
-        generateBeachTiles(board);
+        generateBeachTiles(hexArray);
 
         //Place trading posts.
         TradeGenerator trades = new TradeGenerator(layout.getPortCount());
         trades.randomize(random);
         for (TradingPostType trade : trades)
-            setTradingPost(board, tradingPorts.next(), trade);
+            setTradingPost(hexArray, tradingPosts, tradingPorts.next(), trade);
 
-        return board;
+        return new GameBoard(size, hexArray, diceRolls, tradingPosts, robberLocation);
     }
 
     @Override

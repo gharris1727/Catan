@@ -8,26 +8,32 @@ import java.util.*;
  * Created by greg on 2/21/16.
  * Generates the turn order for a game randomly, but then repeats the cycle indefinitely.
  */
-public class TeamTurnRandomizer implements Iterator<Team> {
+public class TeamTurnManager implements Iterator<Team> {
     private final List<Team> turnOrder;
+    private final List<Team> reverse;
     private Iterator<Team> currentTurn;
-    private Team activeTeam;
 
-    public TeamTurnRandomizer(long seed, Set<Team> teams) {
+    public TeamTurnManager(long seed, Set<Team> teams) {
         turnOrder = new ArrayList<>(teams);
         Collections.shuffle(turnOrder, new Random(seed));
+        reverse = new ArrayList<>(turnOrder);
+        Collections.reverse(reverse);
         currentTurn = turnOrder.iterator();
-        advanceTurn();
     }
 
-    public void advanceTurn() {
-        activeTeam = currentTurn.next();
+    public Team advanceTurn() {
+        Team activeTeam = currentTurn.next();
         if (!currentTurn.hasNext())
             currentTurn = turnOrder.iterator();
+        return activeTeam;
     }
 
-    public Team getActiveTeam() {
-        return activeTeam;
+    public Iterator<Team> forward() {
+        return turnOrder.iterator();
+    }
+
+    public Iterator<Team> reverse() {
+        return reverse.iterator();
     }
 
     @Override

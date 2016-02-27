@@ -12,10 +12,10 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.board.BoardObject;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
-import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
@@ -82,12 +82,8 @@ public class ContextRegion extends UIScreenRegion {
         //Clear the context region of everything
         clear();
         //If we already clicked on something, update and see if it changed.
-        if (target instanceof Tile)
-            target = game.getBoard().getTile(((Tile) target).getPosition());
-        else if (target instanceof Path)
-            target = game.getBoard().getPath(((Path) target).getPosition());
-        else if (target instanceof Town)
-            target = game.getBoard().getTown(((Town) target).getPosition());
+        if (target instanceof BoardObject)
+            target = game.getBoard().refresh(((BoardObject) target));
         //Clear the text so that if we unselected, it all goes blank.
         title.setText("");
         detail.setText("");
