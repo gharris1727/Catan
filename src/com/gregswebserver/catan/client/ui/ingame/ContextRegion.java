@@ -38,11 +38,11 @@ public class ContextRegion extends UIScreenRegion {
     private static final int detailheight;
 
     static {
-        graphics = new GraphicSet("catan.graphics.interface.ingame.context.icons", RectangularMask.class);
-        offset = Client.staticConfig.getPoint("catan.graphics.interface.ingame.context.offset");
-        spacing = Client.staticConfig.getPoint("catan.graphics.interface.ingame.context.spacing");
-        titleheight = Client.staticConfig.getInt("catan.graphics.interface.ingame.context.title.y");
-        detailheight = Client.staticConfig.getInt("catan.graphics.interface.ingame.context.detail.y");
+        graphics = new GraphicSet(Client.graphicsConfig, "interface.ingame.context.icons", RectangularMask.class);
+        offset = Client.graphicsConfig.getPoint("interface.ingame.context.offset");
+        spacing = Client.graphicsConfig.getPoint("interface.ingame.context.spacing");
+        titleheight = Client.graphicsConfig.getInt("interface.ingame.context.title.y");
+        detailheight = Client.graphicsConfig.getInt("interface.ingame.context.detail.y");
     }
 
     private final CatanGame game;

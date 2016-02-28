@@ -3,10 +3,11 @@ package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
-import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
+import com.gregswebserver.catan.client.graphics.ui.style.StyledGraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
@@ -14,7 +15,6 @@ import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
-import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 import com.gregswebserver.catan.common.structure.lobby.LobbyPool;
 import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
@@ -30,17 +30,15 @@ import java.awt.event.MouseWheelEvent;
  */
 public class LobbyListRegion extends UIScreenRegion {
 
-    private static final GraphicSet arrows = new GraphicSet("catan.ui.blue.icons.arrows", RectangularMask.class);
+    private static final int headerHeight = Client.graphicsConfig.getInt("interface.lobbylist.header.height");
+    private static final int lobbyHeight = Client.graphicsConfig.getInt("interface.lobbylist.lobby.height");
+    private static final int footerHeight = Client.graphicsConfig.getInt("interface.lobbylist.footer.height");
+    private static final int spacing = Client.graphicsConfig.getInt("interface.lobbylist.spacing");
 
-    private static final int headerHeight = 2*arrows.getMask().getHeight();
-    private static final int lobbyHeight = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.lobby.height");
-    private static final int footerHeight = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.footer.height");
-    private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.spacing");
-
-    private static final int gameTypeColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.type.width");
-    private static final int currentClientsColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.current.width");
-    private static final int openSlotsColumnWidth = Client.staticConfig.getInt("catan.graphics.interface.lobbylist.header.open.width");
-    private static final int arrowWidth = arrows.getMask().getWidth();
+    private static final int gameTypeColumnWidth = Client.graphicsConfig.getInt("interface.lobbylist.header.type.width");
+    private static final int currentClientsColumnWidth = Client.graphicsConfig.getInt("interface.lobbylist.header.current.width");
+    private static final int openSlotsColumnWidth = Client.graphicsConfig.getInt("interface.lobbylist.header.open.width");
+    private static final int arrowWidth = Client.graphicsConfig.getInt("interface.lobbylist.arrows.width");
 
     private int lobbyNameColumnWidth;
     private RenderMask lobbySize;
@@ -153,8 +151,8 @@ public class LobbyListRegion extends UIScreenRegion {
 
             private final TiledBackground background;
             private final TextLabel labelGraphic;
-            private final GraphicObject upArrow;
-            private final GraphicObject downArrow;
+            private final UpArrow upArrow;
+            private final DownArrow downArrow;
 
             public LobbyListHeaderElement(int priority, LobbySortOption ascend, LobbySortOption descend) {
                 super(priority);
@@ -170,52 +168,8 @@ public class LobbyListRegion extends UIScreenRegion {
                         return "LobbyListHeaderElementLabelGraphic " + ascend.getTitle();
                     }
                 };
-                upArrow = new GraphicObject(1, arrows.getGraphic(0)) {
-                    @Override
-                    public String toString() {
-                        return "LobbyListHeaderElementUpArrow " + ascend.getTitle();
-                    }
-
-                    @Override
-                    public UserEvent onMousePress(MouseEvent event) {
-                        setGraphic(arrows.getGraphic(2));
-                        return null;
-                    }
-
-                    @Override
-                    public UserEvent onMouseRelease(MouseEvent event) {
-                        lobbyNameHeader.clearArrows();
-                        gameTypeHeader.clearArrows();
-                        currentClientsHeader.clearArrows();
-                        openSlotsHeader.clearArrows();
-                        setGraphic(arrows.getGraphic(4));
-                        sortOption = ascend;
-                        return new UserEvent(this, UserEventType.Lobby_Sort, ascend);
-                    }
-                };
-                downArrow = new GraphicObject(1, arrows.getGraphic(1)) {
-                    @Override
-                    public String toString() {
-                        return "LobbyListHeaderDownArrow " + descend.getTitle();
-                    }
-
-                    @Override
-                    public UserEvent onMousePress(MouseEvent event) {
-                        setGraphic(arrows.getGraphic(3));
-                        return null;
-                    }
-
-                    @Override
-                    public UserEvent onMouseRelease(MouseEvent event) {
-                        lobbyNameHeader.clearArrows();
-                        gameTypeHeader.clearArrows();
-                        currentClientsHeader.clearArrows();
-                        openSlotsHeader.clearArrows();
-                        setGraphic(arrows.getGraphic(5));
-                        sortOption = descend;
-                        return new UserEvent(this,UserEventType.Lobby_Sort, descend);
-                    }
-                };
+                upArrow = new UpArrow(ascend);
+                downArrow = new DownArrow(descend);
                 //Add the objects to the screen.
                 add(background).setClickable(this);
                 add(labelGraphic).setClickable(this);
@@ -241,13 +195,96 @@ public class LobbyListRegion extends UIScreenRegion {
             }
 
             public void clearArrows() {
-                upArrow.setGraphic(arrows.getGraphic(0));
-                downArrow.setGraphic(arrows.getGraphic(1));
+                upArrow.index = 0;
+                downArrow.index = 1;
             }
 
             @Override
             public String toString() {
                 return "LobbyListHeaderElement";
+            }
+
+            private class DownArrow extends StyledGraphicObject {
+
+                private final LobbySortOption descend;
+                int index;
+
+                public DownArrow(LobbySortOption descend) {
+                    super(1);
+                    this.descend = descend;
+                    index = 1;
+                }
+
+                @Override
+                public Graphic getGraphic() {
+                    return getStyle().getIconGraphics("arrows", RectangularMask.class).getGraphic(index);
+                }
+
+                @Override
+                public String toString() {
+                    return "LobbyListHeaderDownArrow " + descend.getTitle();
+                }
+
+                @Override
+                public UserEvent onMousePress(MouseEvent event) {
+                    index = 3;
+                    forceRender();
+                    return null;
+                }
+
+                @Override
+                public UserEvent onMouseRelease(MouseEvent event) {
+                    lobbyNameHeader.clearArrows();
+                    gameTypeHeader.clearArrows();
+                    currentClientsHeader.clearArrows();
+                    openSlotsHeader.clearArrows();
+                    index = 5;
+                    sortOption = descend;
+                    forceRender();
+                    return new UserEvent(this, UserEventType.Lobby_Sort, descend);
+                }
+
+            }
+
+            private class UpArrow extends StyledGraphicObject {
+
+                private final LobbySortOption ascend;
+                private int index;
+
+                public UpArrow(LobbySortOption ascend) {
+                    super(1);
+                    this.ascend = ascend;
+                    index = 0;
+                }
+
+                @Override
+                public Graphic getGraphic() {
+                    return getStyle().getIconGraphics("arrows", RectangularMask.class).getGraphic(index);
+                }
+
+                @Override
+                public String toString() {
+                    return "LobbyListHeaderElementUpArrow " + ascend.getTitle();
+                }
+
+                @Override
+                public UserEvent onMousePress(MouseEvent event) {
+                    index = 2;
+                    forceRender();
+                    return null;
+                }
+
+                @Override
+                public UserEvent onMouseRelease(MouseEvent event) {
+                    lobbyNameHeader.clearArrows();
+                    gameTypeHeader.clearArrows();
+                    currentClientsHeader.clearArrows();
+                    openSlotsHeader.clearArrows();
+                    index = 4;
+                    sortOption = ascend;
+                    forceRender();
+                    return new UserEvent(this, UserEventType.Lobby_Sort, ascend);
+                }
             }
         }
     }

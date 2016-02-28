@@ -24,8 +24,8 @@ public abstract class ResourceCounter extends UIScreenRegion {
     private static final int textSpacing;
 
     static {
-        icons = new GraphicSet("catan.graphics.interface.ingame.resource.icons", RectangularMask.class);
-        textSpacing = Client.staticConfig.getInt("catan.graphics.interface.ingame.resource.textspacing");
+        icons = new GraphicSet(Client.graphicsConfig, "interface.ingame.resource.icons", RectangularMask.class);
+        textSpacing = Client.graphicsConfig.getInt("interface.ingame.resource.textspacing");
     }
 
     private final EnumCounter<GameResource> counter;

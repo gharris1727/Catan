@@ -29,15 +29,15 @@ public enum Team {
     private final GraphicSet graphics;
 
     Team(String teamConfigKey) {
-        GraphicSourceInfo source = new GraphicSourceInfo(Client.staticConfig.get("catan.graphics.teams.paths." + teamConfigKey));
+        GraphicSourceInfo source = new GraphicSourceInfo(Client.graphicsConfig.get("teams.paths." + teamConfigKey));
 
-        RenderMask horizontal = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.horizontal.size"));
-        RenderMask diagonalUp = new AngleRectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.size"),
-                Client.staticConfig.getDimension("catan.graphics.teams.masks.diagonal.offset"));
+        RenderMask horizontal = new RectangularMask(Client.graphicsConfig.getDimension("teams.masks.horizontal.size"));
+        RenderMask diagonalUp = new AngleRectangularMask(Client.graphicsConfig.getDimension("teams.masks.diagonal.size"),
+                Client.graphicsConfig.getDimension("teams.masks.diagonal.offset"));
         RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
-        RenderMask settlement = new RoundedMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.settlement.size"));
-        RenderMask city =new RoundedMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.city.size"));
-        RenderMask robber = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.teams.masks.robber.size"));
+        RenderMask settlement = new RoundedMask(Client.graphicsConfig.getDimension("teams.masks.settlement.size"));
+        RenderMask city =new RoundedMask(Client.graphicsConfig.getDimension("teams.masks.city.size"));
+        RenderMask robber = new RectangularMask(Client.graphicsConfig.getDimension("teams.masks.robber.size"));
         RenderMask[] masks = new RenderMask[]{horizontal, diagonalUp, diagonalDown, settlement, city, robber};
         graphics = new GraphicSet(source, masks);
     }

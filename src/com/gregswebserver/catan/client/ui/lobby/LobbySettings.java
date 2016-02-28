@@ -19,16 +19,16 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 public class LobbySettings extends UIScreenRegion {
 
     private static final RenderMask nameSize = new RectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.name"));
+            Client.graphicsConfig.getDimension("interface.inlobby.settings.name"));
     private static final RenderMask typeSize = new RectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.type"));
+            Client.graphicsConfig.getDimension("interface.inlobby.settings.type"));
     private static final RenderMask generatorSize = new RectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.generator"));
+            Client.graphicsConfig.getDimension("interface.inlobby.settings.generator"));
     private static final RenderMask rulesetSize = new RectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.ruleset"));
+            Client.graphicsConfig.getDimension("interface.inlobby.settings.ruleset"));
     private static final RenderMask clientsSize = new RectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.settings.clients"));
-    private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.inlobby.settings.spacing");
+            Client.graphicsConfig.getDimension("interface.inlobby.settings.clients"));
+    private static final int spacing = Client.graphicsConfig.getInt("interface.inlobby.settings.spacing");
 
     private final TiledBackground background;
     private final TextBox name;

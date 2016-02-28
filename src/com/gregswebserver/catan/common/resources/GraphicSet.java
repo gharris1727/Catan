@@ -1,10 +1,8 @@
 package com.gregswebserver.catan.common.resources;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
-import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
@@ -21,16 +19,16 @@ public class GraphicSet {
     private final RenderMask[] masks;
     private final GraphicInfo[] graphics;
 
-    public GraphicSet(String configKey, Class<? extends RenderMask> maskClass) {
-        GraphicSourceInfo source = new GraphicSourceInfo(Client.staticConfig.get(configKey + ".path"));
+    public GraphicSet(PropertiesFile definition, String configKey, Class<? extends RenderMask> maskClass) {
+        GraphicSourceInfo source = new GraphicSourceInfo(definition.get(configKey + ".path"));
         RenderMask mask;
         try {
             Constructor constructor = maskClass.getConstructor(Dimension.class);
-            mask = (RenderMask) constructor.newInstance(Client.staticConfig.getDimension(configKey + ".size"));
+            mask = (RenderMask) constructor.newInstance(definition.getDimension(configKey + ".size"));
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new ConfigurationException("Unable to construct mask from single dimension", e);
         }
-        int num = Client.staticConfig.getInt(configKey + ".count");
+        int num = definition.getInt(configKey + ".count");
         masks = new RenderMask[num];
         Arrays.fill(masks, mask);
         graphics = new GraphicInfo[num];
@@ -52,7 +50,6 @@ public class GraphicSet {
         }
     }
 
-    @NotNull
     public Graphic getGraphic(int index) {
         try {
             if (index < 0 || index >= graphics.length)

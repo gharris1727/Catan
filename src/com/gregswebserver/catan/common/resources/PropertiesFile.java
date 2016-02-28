@@ -21,14 +21,11 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
     private final Properties config;
     private boolean needsSaving;
 
-    public PropertiesFile(String path, String comment) {
+    public PropertiesFile(String path, String comment) throws IOException {
         this.path = path;
         this.comment = comment;
         config = new Properties();
         needsSaving = false;
-    }
-
-    public void open() throws IOException {
         try {
             config.load(new BufferedReader(new FileReader(ExternalResource.getUserDataDirectory() + path)));
         } catch (IOException e) {
@@ -48,23 +45,27 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
     }
 
     public String get(String key) {
-        // Continue only if the key provided was not null.
-        if (key != null) {
-            // Break the key up by delimiters for redirects
-            String[] keyParts = key.split("\\.");
-            // Start looking for the root token.
-            String newKey = tryRedirect(keyParts[0]);
-            for(int i = 1; i < keyParts.length - 1; i++)
-                newKey = tryRedirect(newKey + "." + keyParts[i]);
-            if (keyParts.length > 1)
-                newKey += "." + keyParts[keyParts.length-1];
-            String found = config.getProperty(newKey);
-            if (found == null)
-                return null;
-            String recurse = get(found);
-            return (recurse == null) ? found : recurse;
+        //Bottom out on null/empty strings
+        if (key == null || key.length() == 0)
+            return null;
+        //Split the key by the periods in its length
+        String[] keyParts = key.split("\\.");
+        //Find the key we should be looking for
+        String target;
+        //If there is more than one part, check the linear redirects.
+        if (keyParts.length > 1) {
+            String partial = tryRedirect(keyParts[0]);
+            for (int i = 1; i < keyParts.length - 1; i++)
+                partial = tryRedirect(partial + "." + keyParts[i]);
+            partial += "." + keyParts[keyParts.length - 1];
+            target = config.getProperty(partial);
+        } else {
+            target = config.getProperty(key);
         }
-        return null;
+        if (target == null)
+            return null;
+        String recurse = get(target);
+        return recurse == null ? target : recurse;
     }
 
     private String tryRedirect(String key) {

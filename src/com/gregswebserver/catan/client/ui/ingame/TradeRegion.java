@@ -33,11 +33,11 @@ public class TradeRegion extends UIScreenRegion {
     private static final int elementHeight;
 
     static {
-        elementOffset = Client.staticConfig.getPoint("catan.graphics.interface.ingame.trade.element.offset");
-        elementSpacing = Client.staticConfig.getPoint("catan.graphics.interface.ingame.trade.element.spacing");
-        acceptButtonSize = Client.staticConfig.getDimension("catan.graphics.interface.ingame.trade.accept.size");
-        panelHeight = Client.staticConfig.getInt("catan.graphics.interface.ingame.trade.panel.height");
-        elementHeight = Client.staticConfig.getInt("catan.graphics.interface.ingame.trade.element.height");
+        elementOffset = Client.graphicsConfig.getPoint("interface.ingame.trade.element.offset");
+        elementSpacing = Client.graphicsConfig.getPoint("interface.ingame.trade.element.spacing");
+        acceptButtonSize = Client.graphicsConfig.getDimension("interface.ingame.trade.accept.size");
+        panelHeight = Client.graphicsConfig.getInt("interface.ingame.trade.panel.height");
+        elementHeight = Client.graphicsConfig.getInt("interface.ingame.trade.element.height");
     }
 
     private final TiledBackground background;

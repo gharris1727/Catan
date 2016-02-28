@@ -14,7 +14,6 @@ import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
  */
 public class ResourceLoader {
 
-    //TODO: rename StaticBoardLayout to match the other Info schemas.
     private static final ResourceCache<BoardLayoutInfo, BoardLayout> boardLayoutCache = new ResourceCache<BoardLayoutInfo, BoardLayout>() {
         @Override
         protected BoardLayout load(BoardLayoutInfo info) throws ResourceLoadException {
@@ -64,11 +63,33 @@ public class ResourceLoader {
         }
     };
 
+    private static final ResourceCache<PropertiesFileInfo, PropertiesFile> propertiesFileCache = new ResourceCache<PropertiesFileInfo, PropertiesFile>() {
+        @Override
+        protected PropertiesFile load(PropertiesFileInfo info) throws ResourceLoadException {
+            try {
+                return new PropertiesFile(info.getPath(), info.getComment());
+            } catch (Exception e) {
+                throw new ResourceLoadException(info.toString(), e);
+            }
+        }
+
+        @Override
+        public void save(PropertiesFileInfo info) throws ResourceLoadException {
+            try {
+                PropertiesFile file = get(info);
+                file.close();
+            } catch (Exception e) {
+                throw new ResourceLoadException(info.toString(), e);
+            }
+        }
+    };
+
     static {
         boardLayoutCache.clear();
         gameRuleSetCache.clear();
         graphicCache.clear();
         graphicSourceCache.clear();
+        propertiesFileCache.clear();
     }
 
     public static BoardLayout getBoardLayout(BoardLayoutInfo info) throws ResourceLoadException {
@@ -85,5 +106,13 @@ public class ResourceLoader {
 
     public static GameRules getGameRuleSet(GameRulesInfo info) throws ResourceLoadException{
         return gameRuleSetCache.get(info);
+    }
+
+    public static PropertiesFile getPropertiesFile(PropertiesFileInfo info) throws ResourceLoadException {
+        return propertiesFileCache.get(info);
+    }
+
+    public static void savePropertiesFile(PropertiesFileInfo info) throws ResourceLoadException {
+        propertiesFileCache.save(info);
     }
 }

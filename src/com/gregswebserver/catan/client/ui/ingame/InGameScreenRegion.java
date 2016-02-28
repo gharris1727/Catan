@@ -24,10 +24,10 @@ public class InGameScreenRegion extends ClientScreen {
     private static final Insets viewInsets;
 
     static {
-        borderBuffer = Client.staticConfig.getDimension("catan.graphics.interface.ingame.borderbuffer");
-        sidebarWidth = Client.staticConfig.getInt("catan.graphics.interface.ingame.sidebar.width");
-        inventoryHeight = Client.staticConfig.getInt("catan.graphics.interface.ingame.inventory.height");
-        contextHeight = Client.staticConfig.getInt("catan.graphics.interface.ingame.context.height");
+        borderBuffer = Client.graphicsConfig.getDimension("interface.ingame.borderbuffer");
+        sidebarWidth = Client.graphicsConfig.getInt("interface.ingame.sidebar.width");
+        inventoryHeight = Client.graphicsConfig.getInt("interface.ingame.inventory.height");
+        contextHeight = Client.graphicsConfig.getInt("interface.ingame.context.height");
         viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
     }
 

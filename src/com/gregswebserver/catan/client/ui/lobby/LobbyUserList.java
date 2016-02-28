@@ -19,10 +19,10 @@ import java.awt.*;
  */
 public class LobbyUserList extends UIScreenRegion {
 
-    private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.inlobby.users.spacing");
+    private static final int spacing = Client.graphicsConfig.getInt("interface.inlobby.users.spacing");
 
-    private static final RenderMask userSize = new RoundedRectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.users"));
+    private static final RenderMask userSize =
+            new RoundedRectangularMask(Client.graphicsConfig.getDimension("interface.inlobby.users"));
 
     private final Lobby lobby;
     private final TiledBackground background;

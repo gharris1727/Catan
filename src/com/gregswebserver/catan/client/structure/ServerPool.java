@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.client.structure;
 
 import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -13,6 +15,9 @@ import java.util.List;
  */
 public class ServerPool implements Iterable<ConnectionInfo> {
 
+    public static final PropertiesFileInfo serverfile =
+            new PropertiesFileInfo("config/client/servers.properties", "Login details for servers");
+
     //TODO: rework this to allow drag-swapping of ServerLogin objects.
 
     private final List<ConnectionInfo> list;
@@ -20,24 +25,19 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     public ServerPool() {
         list = new LinkedList<>();
-        file = new PropertiesFile("config/client/servers.properties", "Login details for servers");
-        try {
-            file.open();
-            int i = 0;
-            String hostname;
-            String port;
-            String username;
-            do {
-                hostname = file.get("servers." + i + ".hostname");
-                port = file.get("servers." + i + ".port");
-                username = file.get("servers." + i + ".username");
-                if (hostname != null)
-                    list.add(new ConnectionInfo(hostname,port,username));
-                i++;
-            } while (hostname != null);
-        } catch (Exception e) {
-            //If the open() function threw an exception, we merely failed to load a pool file.
-        }
+        file = ResourceLoader.getPropertiesFile(serverfile);
+        int i = 0;
+        String hostname;
+        String port;
+        String username;
+        do {
+            hostname = file.get("servers." + i + ".hostname");
+            port = file.get("servers." + i + ".port");
+            username = file.get("servers." + i + ".username");
+            if (hostname != null)
+                list.add(new ConnectionInfo(hostname,port,username));
+            i++;
+        } while (hostname != null);
     }
 
     public void save() throws IOException {
@@ -49,7 +49,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
             file.set("servers." + i + ".username", elt.getUsername());
             i++;
         }
-        file.close();
+        ResourceLoader.savePropertiesFile(serverfile);
     }
 
     public void add(ConnectionInfo login) {

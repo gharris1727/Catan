@@ -22,7 +22,7 @@ import java.awt.*;
  */
 public class MapRegion extends ScrollingScreenRegion {
 
-    private static final Dimension unitSize = Client.staticConfig.getDimension("catan.graphics.tiles.unit.size");
+    private static final Dimension unitSize = Client.graphicsConfig.getDimension("tiles.unit.size");
 
     private final GameBoard board;
 

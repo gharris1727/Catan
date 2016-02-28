@@ -31,6 +31,8 @@ import com.gregswebserver.catan.common.network.ClientConnection;
 import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.common.network.NetEventType;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.event.ControlEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
@@ -48,16 +50,14 @@ import java.net.UnknownHostException;
  */
 public class Client extends CoreThread {
 
-    //TODO: change/remove all references to this outside the client package.
     public static final PropertiesFile staticConfig;
+    public static final PropertiesFile graphicsConfig;
 
     static {
-        staticConfig = new PropertiesFile("config/client/static.properties", "Static root configuration");
-        try {
-            staticConfig.open();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        staticConfig = ResourceLoader.getPropertiesFile(
+                new PropertiesFileInfo("config/client/static.properties", "Static root configuration"));
+        graphicsConfig = ResourceLoader.getPropertiesFile(
+                new PropertiesFileInfo("config/graphics/graphics.properties", "Graphics configuration"));
     }
 
     private ChatThread chatThread;
@@ -330,7 +330,8 @@ public class Client extends CoreThread {
 
     private void startup() {
         manager = new RenderManager(this);
-        manager.setStyle(UIStyle.Blue);
+        String styleName = staticConfig.get("style");
+        manager.setStyle(new UIStyle(styleName));
         listener = new InputListener(this, manager);
         new ClientWindow(this, listener);
         serverPool = new ServerPool();

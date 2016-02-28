@@ -4,10 +4,11 @@ import com.gregswebserver.catan.common.crypto.*;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.UserInfo;
 import com.gregswebserver.catan.common.structure.UserLogin;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,19 +18,17 @@ import java.util.Map;
  */
 public class UserDatabase {
 
+    public static final PropertiesFileInfo databasefile =
+            new PropertiesFileInfo("config/server/accounts.properties", "User account information");
+
     private final Logger logger;
     private final PropertiesFile database;
     private final Map<Username, UserAccount> accounts;
 
     public UserDatabase(Logger logger) {
         this.logger = logger;
-        database = new PropertiesFile("config/server/accounts.properties", "User account information");
+        database = ResourceLoader.getPropertiesFile(databasefile);
         accounts = new HashMap<>();
-        try {
-            database.open();
-        } catch (IOException e) {
-            this.logger.log("Unable to load user database.", e, LogLevel.ERROR);
-        }
         for (Map.Entry<String, String> entry : database) {
             Username username = new Username(entry.getKey());
             UserAccount account = new UserAccount(username, entry.getValue());
@@ -40,11 +39,7 @@ public class UserDatabase {
     public void save() {
         for (Map.Entry<Username, UserAccount> entry : accounts.entrySet())
             database.set(entry.getKey().username, entry.getValue().toString());
-        try {
-            database.close();
-        } catch (IOException e) {
-            logger.log("Unable to save user database.", e, LogLevel.ERROR);
-        }
+        ResourceLoader.savePropertiesFile(databasefile);
     }
 
     public void registerAccount(UserLogin login) {

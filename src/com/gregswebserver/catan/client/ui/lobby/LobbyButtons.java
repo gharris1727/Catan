@@ -20,10 +20,10 @@ import java.awt.event.MouseEvent;
 class LobbyButtons extends UIScreenRegion {
 
     private static final RenderMask startSize = new RoundedRectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.panel.start"));
+            Client.graphicsConfig.getDimension("interface.inlobby.panel.start"));
     private static final RenderMask leaveSize = new RoundedRectangularMask(
-            Client.staticConfig.getDimension("catan.graphics.interface.inlobby.panel.leave"));
-    private static final int spacing = Client.staticConfig.getInt("catan.graphics.interface.inlobby.panel.spacing");
+            Client.graphicsConfig.getDimension("interface.inlobby.panel.leave"));
+    private static final int spacing = Client.graphicsConfig.getInt("interface.inlobby.panel.spacing");
 
     private final TiledBackground background;
     private final Button startButton;

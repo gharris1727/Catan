@@ -5,9 +5,10 @@ import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -29,9 +30,8 @@ public class StaticBoardLayout implements BoardLayout {
     private final LinkedList<DiceRoll> rolls;
     private final LinkedList<TradingPostType> posts;
 
-    public StaticBoardLayout(String path) throws IOException {
-        PropertiesFile file = new PropertiesFile(path,"Board layout information");
-        file.open();
+    public StaticBoardLayout(String path) {
+        PropertiesFile file = ResourceLoader.getPropertiesFile(new PropertiesFileInfo(path,"Board layout information"));
         name = parseName(file);
         size = parseSize(file);
         tiles = parseTiles(file);
@@ -251,7 +251,6 @@ public class StaticBoardLayout implements BoardLayout {
 
     @Override
     public String toString() {
-        //TODO: fix the name not being parsed correctly.
         return "StaticBoardLayout " + name;
     }
 }

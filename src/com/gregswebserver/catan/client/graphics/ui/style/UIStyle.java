@@ -1,8 +1,11 @@
 package com.gregswebserver.catan.client.graphics.ui.style;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.resources.GraphicSet;
+import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.awt.*;
 import java.util.regex.Pattern;
@@ -11,9 +14,7 @@ import java.util.regex.Pattern;
  * Created by Greg on 1/15/2015.
  * A background used to render a ui background, that is tiled to fit multiple sizes.
  */
-public enum UIStyle {
-
-    Blue("blue");
+public class UIStyle {
 
     public static final String FONT_HEADING = "heading";
     public static final String FONT_PARAGRAPH = "paragraph";
@@ -26,49 +27,52 @@ public enum UIStyle {
     public static final String BACKGROUND_USERS = "users";
     public static final String BACKGROUND_GAME = "game"; //TODO: probably find a better place for this
 
-    private static final String styleRootKey = "catan.ui.";
-    private static final String fontRootKey = ".fonts.";
+    private static final String fontRootKey = "fonts.";
     private static final String fontNameKey = ".name";
     private static final String fontStyleKey = ".style";
     private static final String fontSizeKey = ".size";
     private static final String fontColorKey = ".color";
-    private static final String backgroundRootKey = ".background.";
+    private static final String backgroundRootKey = "background.";
+    private static final String iconRootKey = "icons.";
 
-    private final String uiStyleKey;
+    private final PropertiesFile styleDefinition;
 
-    UIStyle(String uiStyleName) {
-        this.uiStyleKey = styleRootKey + uiStyleName;
+    public UIStyle(String styleName) {
+        this.styleDefinition = ResourceLoader.getPropertiesFile(
+                new PropertiesFileInfo("config/ui/" + styleName + ".properties", styleName + " Properties"));
     }
 
-    public TextStyle getTextStyle(String textStyleName) {
-        String textStyleKey = uiStyleKey + fontRootKey + textStyleName;
-        return new TextStyle(textStyleKey);
+    public TextStyle getTextStyle(String styleName) {
+        return new TextStyle(fontRootKey + styleName);
     }
 
-    public BackgroundStyle getBackgroundStyle(String backgroundStyleName) {
-        String backgroundStyleKey = uiStyleKey + backgroundRootKey + backgroundStyleName;
-        return new BackgroundStyle(backgroundStyleKey);
+    public GraphicSet getBackgroundGraphics(String backgroundStyleName) {
+        return new GraphicSet(styleDefinition, backgroundRootKey + backgroundStyleName, RectangularMask.class);
+    }
+
+    public GraphicSet getIconGraphics(String styleName, Class<? extends RenderMask> mask) {
+        return new GraphicSet(styleDefinition, iconRootKey + styleName, mask);
     }
 
     /**
      * Created by Greg on 1/17/2015.
      * A style of text, including font, size, italics/bold, and color.
      */
-    public static class TextStyle {
+    public class TextStyle {
 
         private final Font font;
         private final Color color;
 
         @SuppressWarnings("MagicConstant")
         private TextStyle(String textStyleKey) {
-            String fontName = Client.staticConfig.get(textStyleKey + fontNameKey);
-            String fontStyleName = Client.staticConfig.get(textStyleKey + fontStyleKey).toUpperCase();
-            int fontSize = Client.staticConfig.getInt(textStyleKey + fontSizeKey);
-            this.color = Client.staticConfig.getColor(textStyleKey + fontColorKey);
+            String fontName = styleDefinition.get(textStyleKey + fontNameKey);
+            String fontStyleName = styleDefinition.get(textStyleKey + fontStyleKey).toUpperCase();
+            int fontSize = styleDefinition.getInt(textStyleKey + fontSizeKey);
+            this.color = styleDefinition.getColor(textStyleKey + fontColorKey);
             this.font = new Font(fontName, getFontStyle(fontStyleName), fontSize);
         }
 
-        private static int getFontStyle(String fontStyleName) {
+        private int getFontStyle(String fontStyleName) {
             int style = Font.PLAIN;
             if (Pattern.matches("BOLD",fontStyleName))
                 style |= Font.BOLD;
@@ -83,19 +87,6 @@ public enum UIStyle {
 
         public Color getColor() {
             return color;
-        }
-    }
-
-    public class BackgroundStyle {
-
-        private final GraphicSet graphicSet;
-
-        private BackgroundStyle(String backgroundStyleKey) {
-            graphicSet = new GraphicSet(backgroundStyleKey, RectangularMask.class);
-        }
-
-        public GraphicSet getGraphicSet() {
-            return graphicSet;
         }
     }
 }

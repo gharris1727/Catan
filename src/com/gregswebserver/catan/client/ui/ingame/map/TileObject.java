@@ -26,7 +26,7 @@ import java.awt.event.MouseEvent;
  */
 public class TileObject extends MapObject {
 
-    private static final RenderMask tileMask = new HexagonalMask(Client.staticConfig.getDimension("catan.graphics.tiles.size"));
+    private static final RenderMask tileMask = new HexagonalMask(Client.graphicsConfig.getDimension("tiles.size"));
 
     private static final Point[] bridgePositions = new Point[]{
             new Point(), new Point(), new Point(), // C U D
@@ -45,20 +45,20 @@ public class TileObject extends MapObject {
     private static final GraphicSet tradeBridges;
 
     static {
-        resources = new GraphicSet("catan.graphics.tiles.land", HexagonalMask.class);
-        diceRolls = new GraphicSet("catan.graphics.game.dice", RoundedMask.class);
+        resources = new GraphicSet(Client.graphicsConfig, "tiles.land", HexagonalMask.class);
+        diceRolls = new GraphicSet(Client.graphicsConfig, "game.dice", RoundedMask.class);
 
-        singleBeach = new GraphicSet("catan.graphics.tiles.singlebeach", HexagonalMask.class);
-        doubleBeach = new GraphicSet("catan.graphics.tiles.doublebeach", HexagonalMask.class);
+        singleBeach = new GraphicSet(Client.graphicsConfig, "tiles.singlebeach", HexagonalMask.class);
+        doubleBeach = new GraphicSet(Client.graphicsConfig, "tiles.doublebeach", HexagonalMask.class);
 
-        resourceIcons = new GraphicSet("catan.graphics.trade.icons", RoundedMask.class);
-        GraphicSourceInfo source = new GraphicSourceInfo(Client.staticConfig.get("catan.graphics.trade.bridge.path"));
-        RenderMask horizontal = new RectangularMask(Client.staticConfig.getDimension("catan.graphics.trade.bridge.horizontal.size"));
-        RenderMask diagonalUp = new AngleRectangularMask(Client.staticConfig.getDimension("catan.graphics.trade.bridge.diagonal.size"));
+        resourceIcons = new GraphicSet(Client.graphicsConfig, "trade.icons", RoundedMask.class);
+        GraphicSourceInfo source = new GraphicSourceInfo(Client.graphicsConfig.get("trade.bridge.path"));
+        RenderMask horizontal = new RectangularMask(Client.graphicsConfig.getDimension("trade.bridge.horizontal.size"));
+        RenderMask diagonalUp = new AngleRectangularMask(Client.graphicsConfig.getDimension("trade.bridge.diagonal.size"));
         RenderMask diagonalDown = new FlippedMask(diagonalUp, FlippedMask.Direction.VERTICAL);
         RenderMask[] masks = new RenderMask[]{null, null, null, horizontal,
                 horizontal, diagonalDown, diagonalUp, diagonalUp, diagonalDown};
-        tradeBridges = new GraphicSet(source,masks);
+        tradeBridges = new GraphicSet(source, masks);
     }
 
     private final Tile tile;
@@ -101,8 +101,7 @@ public class TileObject extends MapObject {
     private class TradeBridgeGraphicObject extends GraphicObject {
 
         private TradeBridgeGraphicObject(Direction d) {
-            //TODO: this should render behind the resource icon
-            super(2, tradeBridges.getGraphic(d.ordinal()));
+            super(1, tradeBridges.getGraphic(d.ordinal()));
             setPosition(bridgePositions[d.ordinal()]);
             setClickable(TileObject.this);
         }
@@ -141,7 +140,7 @@ public class TileObject extends MapObject {
 
     private class TradeIconGraphicObject extends GraphicObject {
         private TradeIconGraphicObject(TradingPostType tradingPostType) {
-            super(1, resourceIcons.getGraphic(tradingPostType.ordinal()));
+            super(2, resourceIcons.getGraphic(tradingPostType.ordinal()));
             setClickable(TileObject.this);
         }
 

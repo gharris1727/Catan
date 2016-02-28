@@ -27,10 +27,10 @@ import java.util.Iterator;
 public class ServerListRegion extends UIScreenRegion {
 
 
-    private static final RenderMask headerSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.header"));
-    private static final RenderMask serverSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.server"));
-    private static final RenderMask footerSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.footer"));
-    private static final RenderMask paddingSize = new RoundedRectangularMask(Client.staticConfig.getDimension("catan.graphics.interface.serverlist.padding"));
+    private static final RenderMask headerSize = new RoundedRectangularMask(Client.graphicsConfig.getDimension("interface.serverlist.header"));
+    private static final RenderMask serverSize = new RoundedRectangularMask(Client.graphicsConfig.getDimension("interface.serverlist.server"));
+    private static final RenderMask footerSize = new RoundedRectangularMask(Client.graphicsConfig.getDimension("interface.serverlist.footer"));
+    private static final RenderMask paddingSize = new RoundedRectangularMask(Client.graphicsConfig.getDimension("interface.serverlist.padding"));
 
     private final ServerPool list;
 

@@ -21,8 +21,8 @@ import java.awt.event.MouseEvent;
  */
 public class DisconnectingScreen extends ClientScreen {
 
-    private final int spacing = Client.staticConfig.getInt("catan.graphics.interface.disconnecting.spacing");
-    private final Dimension buttonSize = Client.staticConfig.getDimension("catan.graphics.interface.disconnecting.button.size");
+    private final int spacing = Client.graphicsConfig.getInt("interface.disconnecting.spacing");
+    private final Dimension buttonSize = Client.graphicsConfig.getDimension("interface.disconnecting.button.size");
 
     private final TiledBackground background;
     private final TextLabel text;

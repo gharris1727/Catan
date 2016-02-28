@@ -32,7 +32,7 @@ public abstract class TiledBackground extends UIScreenRegion {
     @Override
     protected void renderContents() {
         assertRenderable();
-        graphics = getStyle().getBackgroundStyle(backgroundStyle).getGraphicSet();
+        graphics = getStyle().getBackgroundGraphics(backgroundStyle);
         clear();
         renderFillerTiles(0,0,getMask().getWidth(),getMask().getHeight());
     }

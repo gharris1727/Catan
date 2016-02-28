@@ -25,9 +25,9 @@ public class InventoryRegion extends UIScreenRegion {
     private static final Point elementSpacing;
 
     static {
-        usernamePosition = Client.staticConfig.getPoint("catan.graphics.interface.ingame.inventory.username.position");
-        elementOffset = Client.staticConfig.getPoint("catan.graphics.interface.ingame.inventory.element.offset");
-        elementSpacing = Client.staticConfig.getPoint("catan.graphics.interface.ingame.inventory.element.spacing");
+        usernamePosition = Client.graphicsConfig.getPoint("interface.ingame.inventory.username.position");
+        elementOffset = Client.graphicsConfig.getPoint("interface.ingame.inventory.element.offset");
+        elementSpacing = Client.graphicsConfig.getPoint("interface.ingame.inventory.element.spacing");
     }
 
     private final Player player;

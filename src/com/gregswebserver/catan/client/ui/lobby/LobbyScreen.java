@@ -14,7 +14,7 @@ import java.awt.*;
  */
 public class LobbyScreen extends ClientScreen {
 
-    private static final int buttonsHeight = Client.staticConfig.getInt("catan.graphics.interface.inlobby.panel.height");
+    private static final int buttonsHeight = Client.graphicsConfig.getInt("interface.inlobby.panel.height");
 
     private final LobbyUserList userList;
     private final LobbySettings settings;
