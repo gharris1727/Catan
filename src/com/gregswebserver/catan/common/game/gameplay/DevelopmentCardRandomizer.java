@@ -11,11 +11,10 @@ import java.util.*;
  */
 public class DevelopmentCardRandomizer implements Iterator<DevelopmentCard> {
 
-    private final List<DevelopmentCard> deck;
     private final Iterator<DevelopmentCard> iterator;
 
     public DevelopmentCardRandomizer(GameRules rules, long seed) {
-        deck = new ArrayList<>();
+        List<DevelopmentCard> deck = new ArrayList<>();
         for (int i = 0; i < rules.getSoldierCount(); i++)
             deck.add(DevelopmentCard.Knight);
         for (int i = 0; i < rules.getMarketCount(); i++)

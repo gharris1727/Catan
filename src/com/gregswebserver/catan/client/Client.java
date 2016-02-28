@@ -60,7 +60,6 @@ public class Client extends CoreThread {
         }
     }
 
-    private ClientWindow window;
     private ChatThread chatThread;
     private GameThread gameThread;
     private RenderThread renderThread;
@@ -106,10 +105,6 @@ public class Client extends CoreThread {
 
     public String getDisconnectMessage() {
         return disconnectReason;
-    }
-
-    public Username getUsername() {
-        return username;
     }
 
     @Override
@@ -337,7 +332,7 @@ public class Client extends CoreThread {
         manager = new RenderManager(this);
         manager.setStyle(UIStyle.Blue);
         listener = new InputListener(this, manager);
-        window = new ClientWindow(this, listener);
+        new ClientWindow(this, listener);
         serverPool = new ServerPool();
         manager.displayServerConnectMenu();
         renderThread = new RenderThread(logger, manager);

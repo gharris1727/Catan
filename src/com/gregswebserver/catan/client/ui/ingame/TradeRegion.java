@@ -10,7 +10,6 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenContainer;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.game.CatanGame;
@@ -20,7 +19,6 @@ import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.EnumMap;
 
 /**
  * Created by Greg on 1/6/2015.
@@ -43,7 +41,7 @@ public class TradeRegion extends UIScreenRegion {
     }
 
     private final TiledBackground background;
-    private final ScrollingScreenContainer list;
+    private final TradeList list;
     private final TradeControlPanel panel;
     private RenderMask tradeSize;
     private Trade selected;
@@ -56,12 +54,7 @@ public class TradeRegion extends UIScreenRegion {
                 return "TradeBackground";
             }
         };
-        list = new ScrollingScreenContainer(1, new TradeList(0, game), new Insets(0,0,0,0)) {
-            @Override
-            public String toString() {
-                return "TradeScrollContainer";
-            }
-        };
+        list = new TradeList(0, game);
         panel = new TradeControlPanel(2);
         add(background).setClickable(this);
         add(list);
@@ -69,7 +62,7 @@ public class TradeRegion extends UIScreenRegion {
     }
 
     public void update() {
-        list.update();
+        list.forceRender();
     }
 
     @Override
@@ -78,7 +71,7 @@ public class TradeRegion extends UIScreenRegion {
         RenderMask scrollSize = new RectangularMask(new Dimension(mask.getWidth(), scrollHeight));
         RenderMask panelSize = new RectangularMask(new Dimension(mask.getWidth(), panelHeight));
         background.setMask(scrollSize);
-        list.setMask(scrollSize);
+        list.setHostView(scrollSize, new Insets(0,0,0,0));
         panel.setMask(panelSize);
         panel.setPosition(new Point(0, scrollHeight));
         tradeSize = new RectangularMask(new Dimension(mask.getWidth(),elementHeight));
@@ -133,8 +126,6 @@ public class TradeRegion extends UIScreenRegion {
         private class TradeListElement extends UIScreenRegion {
 
             private final TiledBackground background;
-            private final EnumMap<GameResource, ResourceCounter> requested;
-            private final EnumMap<GameResource, ResourceCounter> offered;
             private final Trade trade;
 
             protected TradeListElement(int priority, Trade trade) {
@@ -146,8 +137,6 @@ public class TradeRegion extends UIScreenRegion {
                         return "TradeListElementBackground";
                     }
                 };
-                requested = new EnumMap<>(GameResource.class);
-                offered = new EnumMap<>(GameResource.class);
                 int index = 0;
                 for (GameResource gameResource : GameResource.values()) {
                     ResourceCounter request = new ResourceCounter(2, trade.request, gameResource) {
@@ -162,8 +151,6 @@ public class TradeRegion extends UIScreenRegion {
                             return "InventoryResourceCounter";
                         }
                     };
-                    requested.put(gameResource, request);
-                    offered.put(gameResource, offer);
                     add(request).setClickable(this).setPosition(new Point(
                             elementOffset.x + index * elementSpacing.x,
                             elementOffset.y));
