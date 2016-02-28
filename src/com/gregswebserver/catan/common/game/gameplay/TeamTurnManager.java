@@ -8,41 +8,51 @@ import java.util.*;
  * Created by greg on 2/21/16.
  * Generates the turn order for a game randomly, but then repeats the cycle indefinitely.
  */
-public class TeamTurnManager implements Iterator<Team> {
-    private final List<Team> turnOrder;
+public class TeamTurnManager {
+    private final List<Team> forward;
     private final List<Team> reverse;
     private Iterator<Team> currentTurn;
+    private Team currentTeam;
+    private GameState state;
 
     public TeamTurnManager(long seed, Set<Team> teams) {
-        turnOrder = new ArrayList<>(teams);
-        Collections.shuffle(turnOrder, new Random(seed));
-        reverse = new ArrayList<>(turnOrder);
+        forward = new ArrayList<>(teams);
+        Collections.shuffle(forward, new Random(seed));
+        reverse = new ArrayList<>(forward);
         Collections.reverse(reverse);
-        currentTurn = turnOrder.iterator();
+        currentTurn = forward.iterator();
+        currentTeam = currentTurn.next();
+        state = GameState.IntialPlacement;
     }
 
     public Team advanceTurn() {
-        Team activeTeam = currentTurn.next();
         if (!currentTurn.hasNext())
-            currentTurn = turnOrder.iterator();
-        return activeTeam;
+            switch (state) {
+                case IntialPlacement:
+                    currentTurn = reverse.iterator();
+                    state = GameState.ReversePlacement;
+                    break;
+                case ReversePlacement:
+                    currentTurn = forward.iterator();
+                    state = GameState.Regular;
+                    break;
+                case Regular:
+                    currentTurn = forward.iterator();
+                    break;
+            }
+        currentTeam = currentTurn.next();
+        return currentTeam;
     }
 
-    public Iterator<Team> forward() {
-        return turnOrder.iterator();
+    public Team getCurrentTeam() {
+        return currentTeam;
     }
 
-    public Iterator<Team> reverse() {
-        return reverse.iterator();
+    public boolean starting() {
+        return state == GameState.IntialPlacement || state == GameState.ReversePlacement;
     }
 
-    @Override
-    public boolean hasNext() {
-        return true;
-    }
-
-    @Override
-    public Team next() {
-        return null;
+    public enum GameState {
+        IntialPlacement, ReversePlacement, Regular
     }
 }

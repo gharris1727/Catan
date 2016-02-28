@@ -6,15 +6,6 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
  */
 public enum GameResource {
 
-    Brick("Clay"),
-    Lumber("Logs"),
-    Wool("Sheep"),
-    Ore("Rocks"),
-    Grain("Wheat");
+    Brick, Lumber, Wool, Ore, Grain
 
-    public final String name;
-
-    GameResource(String name) {
-        this.name = name;
-    }
 }

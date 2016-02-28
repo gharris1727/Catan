@@ -24,6 +24,7 @@ public class UserListRegion extends UIScreenRegion {
             }
         };
         add(background).setClickable(this);
+        //TODO: render the list of clients in a scrollable frame.
     }
 
     @Override

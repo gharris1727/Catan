@@ -17,11 +17,8 @@ import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -186,9 +183,11 @@ public class GameBoard {
     }
 
     public Set<Tile> getAdjacentTiles(Coordinate vertex) {
-        return hexArray.getAdjacentSpacesFromVertex(vertex).values().stream()
-                .map(hexArray::getTile)
-                .collect(Collectors.toSet());
+        Set<Tile> tiles = new HashSet<>();
+        for (Coordinate a : hexArray.getAdjacentSpacesFromVertex(vertex).values()) {
+            tiles.add(hexArray.getTile(a));
+        }
+        return tiles;
     }
 
     public Set<Town> getAdjacentTowns(Coordinate space) {
@@ -199,5 +198,15 @@ public class GameBoard {
                 towns.add(town);
         }
         return towns;
+    }
+
+    public Set<TradingPostType> getTrades(Team team) {
+        Set<TradingPostType> trades = EnumSet.noneOf(TradingPostType.class);
+        for (Map.Entry<Coordinate, TradingPostType> entry : tradingPosts.entrySet()) {
+            Town town = hexArray.getTown(entry.getKey());
+            if (town != null && town.getTeam() == team)
+                trades.add(entry.getValue());
+        }
+        return trades;
     }
 }

@@ -42,13 +42,12 @@ public interface BoardGenerator extends Serializable {
         beachTiles.removeAll(landTiles);
 
         for (Coordinate c : beachTiles) {
-            Set<Direction> found1 = EnumSet.noneOf(Direction.class);
+            Set<Direction> found = EnumSet.noneOf(Direction.class);
             for (Map.Entry<Direction, Coordinate> e : hexArray.getAdjacentSpacesFromSpace(c).entrySet()) {
                 Tile t = hexArray.getTile(e.getValue());
                 if (t != null && t instanceof ResourceTile)
-                    found1.add(e.getKey());
+                    found.add(e.getKey());
             }
-            Set<Direction> found = found1;
             hexArray.setTile(c, new BeachTile(Direction.getAverage(found), found.size()));
         }
     }

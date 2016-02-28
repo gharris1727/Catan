@@ -46,7 +46,7 @@ public class InGameScreenRegion extends ClientScreen {
                 return "MapScrollContainer";
             }
         };
-        trade = new TradeRegion(1);
+        trade = new TradeRegion(1, game);
         inventory = new InventoryRegion(2, game.getTeams().getLocalPlayer());
         context = new ContextRegion(3, game);
         add(map);
@@ -71,7 +71,7 @@ public class InGameScreenRegion extends ClientScreen {
     public void update() {
         map.update();
         inventory.forceRender();
-        trade.forceRender();
+        trade.update();
         context.forceRender();
     }
 

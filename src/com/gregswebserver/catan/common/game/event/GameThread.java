@@ -39,7 +39,8 @@ public class GameThread extends QueuedInputThread<GameEvent> {
             if (host instanceof Client)
                 ((Client) host).gameUpdate();
         } catch (EventConsumerException e) {
-            logger.log(e, LogLevel.ERROR);
+            //TODO: provide some error feedback to the user so they know when something fails.
+            logger.log("Unable to process GameEvent", LogLevel.WARN);
         }
     }
 

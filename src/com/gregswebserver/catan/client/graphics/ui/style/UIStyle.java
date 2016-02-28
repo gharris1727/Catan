@@ -56,13 +56,11 @@ public enum UIStyle {
      */
     public static class TextStyle {
 
-        private final String textStyleKey;
         private final Font font;
         private final Color color;
 
         @SuppressWarnings("MagicConstant")
         private TextStyle(String textStyleKey) {
-            this.textStyleKey = textStyleKey;
             String fontName = Client.staticConfig.get(textStyleKey + fontNameKey);
             String fontStyleName = Client.staticConfig.get(textStyleKey + fontStyleKey).toUpperCase();
             int fontSize = Client.staticConfig.getInt(textStyleKey + fontSizeKey);

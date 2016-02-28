@@ -65,7 +65,7 @@ public class UserDatabase {
         return user.generateAuthToken();
     }
 
-    private void validateAuthToken(AuthToken token) throws UserNotFoundException, AuthenticationException {
+    public void validateAuthToken(AuthToken token) throws UserNotFoundException, AuthenticationException {
         UserAccount user = accounts.get(token.username);
         if (user == null)
             throw new UserNotFoundException();
@@ -73,7 +73,7 @@ public class UserDatabase {
             throw new AuthenticationException();
     }
 
-    private void invalidateSession(Username username) throws UserNotFoundException {
+    public void invalidateSession(Username username) throws UserNotFoundException {
         UserAccount user = accounts.get(username);
         if (user == null)
             throw new UserNotFoundException();

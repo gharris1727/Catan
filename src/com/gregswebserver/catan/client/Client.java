@@ -228,6 +228,10 @@ public class Client extends CoreThread {
                 outgoing = new GameEvent(username, GameEventType.Build_City, event.getPayload());
                 sendEvent(outgoing);
                 break;
+            case Make_Trade:
+                outgoing = new GameEvent(username, GameEventType.Make_Trade, event.getPayload());
+                sendEvent(outgoing);
+                break;
             case Inventory_Clicked:
                 throw new RuntimeException("Unimplemented");
             case Server_Clicked:

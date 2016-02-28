@@ -2,6 +2,8 @@ package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
+import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -16,7 +18,9 @@ public enum GameEventType implements EventType {
     Build_Settlement(Coordinate.class),
     Build_City(Coordinate.class),
     Build_Road(Coordinate.class),
-    Buy_Development(null);
+    Buy_Development(null),
+    Offer_Trade(TemporaryTrade.class),
+    Make_Trade(Trade.class);
 
     private final Class payloadType;
 

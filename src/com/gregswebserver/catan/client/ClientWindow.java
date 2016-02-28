@@ -24,7 +24,7 @@ public class ClientWindow extends CoreWindow {
     private boolean resizing = false;
 
     public ClientWindow(Client client, InputListener listener) {
-        super("Settlers of Catan - Client", new Dimension(640, 480), true, client.logger);
+        super("Settlers of Catan - Client", new Dimension(800, 600), true, client.logger);
         this.client = client;
         this.listener = listener;
         display();

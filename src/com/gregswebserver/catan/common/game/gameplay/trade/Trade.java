@@ -1,22 +1,22 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.structure.game.EnumCounter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Created by Greg on 8/13/2014.
  * Trading framework with sub-types of trading.
  */
-public class Trade {
+public abstract class Trade implements Comparable<Trade>, Serializable{
 
-    public final HashMap<GameResource, Integer> offer;
-    public final HashMap<GameResource, Integer> request;
+    public final EnumCounter<GameResource> offer;
+    public final EnumCounter<GameResource> request;
 
     public Trade() {
-        offer = new HashMap<>();
-        request = new HashMap<>();
+        offer = new EnumCounter<>(GameResource.class);
+        request = new EnumCounter<>(GameResource.class);
     }
 
     public boolean equals(Object o) {
@@ -25,30 +25,33 @@ public class Trade {
         if (!(o instanceof Trade))
             return false;
         Trade t = (Trade) o;
-        if (!mapEquals(t.offer, offer))
-            return false;
-        return mapEquals(t.request, request);
-    }
-
-    public boolean mapEquals(Map<?, ?> a, Map<?, ?> b) {
-        if (a.size() != b.size())
-            return false;
-        for (Map.Entry entry : a.entrySet()) {
-            if (!b.containsKey(entry.getKey()))
-                return false;
-            if (!b.get(entry.getKey()).equals(entry.getValue()))
-                return false;
-        }
-        for (Map.Entry entry : b.entrySet()) {
-            if (!a.containsKey(entry.getKey()))
-                return false;
-            if (!a.get(entry.getKey()).equals(entry.getValue()))
-                return false;
-        }
-        return true;
+        return offer.equals(t.offer) && request.equals(t.request);
     }
 
     public int hashCode() {
         return offer.hashCode() + request.hashCode();
+    }
+
+    @Override
+    public int compareTo(Trade trade) {
+        if (trade instanceof TemporaryTrade)
+            return -1;
+        int diff;
+        for (GameResource r : GameResource.values()) {
+            diff = trade.offer.get(r) - offer.get(r);
+            if (diff != 0) return diff;
+            diff = trade.request.get(r) - request.get(r);
+            if (diff != 0) return diff;
+        }
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        String out = "Trade(/";
+        for (GameResource r : GameResource.values()) {
+            out += request.get(r) + "-" + offer.get(r) + "/";
+        }
+        return out + ")";
     }
 }

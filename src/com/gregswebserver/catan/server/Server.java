@@ -112,6 +112,11 @@ public class Server extends CoreThread {
                 break;
             case User_Disconnect:
                 connectionPool.disconnectUser((Username) event.getPayload(), "Server-side Disconnect");
+                try {
+                    database.invalidateSession((Username) event.getPayload());
+                } catch (UserNotFoundException e) {
+                    logger.log(e, LogLevel.WARN);
+                }
                 break;
             case Client_Disconnect:
                 connectionPool.disconnect((Integer) event.getPayload());
@@ -221,8 +226,14 @@ public class Server extends CoreThread {
                 addEvent(new ServerEvent(this,ServerEventType.Client_Disconnect,id));
                 break;
             case External_Event:
-                //Forward external events to be handled.
-                addEvent((ExternalEvent) event.getPayload());
+                try {
+                    //Validate the incoming user's token.
+                    database.validateAuthToken(event.getOrigin());
+                    //Forward external events to be handled.
+                    addEvent((ExternalEvent) event.getPayload());
+                } catch (UserNotFoundException | AuthenticationException e) {
+                    logger.log(e, LogLevel.WARN);
+                }
                 break;
         }
     }

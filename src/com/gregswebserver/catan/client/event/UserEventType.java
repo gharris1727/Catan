@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
 
@@ -30,6 +31,7 @@ public enum UserEventType implements EventType {
     Vertex_Clicked(Coordinate.class),
     Settlement_Purchase(Coordinate.class),
     City_Purchase(Coordinate.class),
+    Make_Trade(Trade.class),
     Inventory_Clicked(Integer.class),
     Server_Clicked(Integer.class);
 

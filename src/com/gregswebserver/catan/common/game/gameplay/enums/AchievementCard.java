@@ -6,15 +6,5 @@ package com.gregswebserver.catan.common.game.gameplay.enums;
  */
 public enum AchievementCard  {
 
-    //TODO: insert the correct descriptions.
-    LongestRoad("Longest Road", "Description for Longest Road"),
-    LargestArmy("Largest Army", "Description for Largest Army");
-
-    public final String name;
-    public final String description;
-
-    AchievementCard(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+    LongestRoad, LargestArmy
 }
