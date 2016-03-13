@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay;
 
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.util.ReversibleIterator;
 
 import java.util.*;
 
@@ -8,51 +9,76 @@ import java.util.*;
  * Created by greg on 2/21/16.
  * Generates the turn order for a game randomly, but then repeats the cycle indefinitely.
  */
-public class TeamTurnManager {
-    private final List<Team> forward;
-    private final List<Team> reverse;
-    private Iterator<Team> currentTurn;
-    private Team currentTeam;
-    private GameState state;
+public class TeamTurnManager implements ReversibleIterator<Team> {
+
+    private final List<Team> turnOrder;
+    private int turnNumber;
+    private boolean robberActive;
 
     public TeamTurnManager(long seed, Set<Team> teams) {
-        forward = new ArrayList<>(teams);
-        Collections.shuffle(forward, new Random(seed));
-        reverse = new ArrayList<>(forward);
-        Collections.reverse(reverse);
-        currentTurn = forward.iterator();
-        currentTeam = currentTurn.next();
-        state = GameState.IntialPlacement;
+        turnOrder = new ArrayList<>(teams);
+        Collections.shuffle(turnOrder, new Random(seed));
+        turnNumber = 0;
     }
 
-    public Team advanceTurn() {
-        if (!currentTurn.hasNext())
-            switch (state) {
-                case IntialPlacement:
-                    currentTurn = reverse.iterator();
-                    state = GameState.ReversePlacement;
-                    break;
-                case ReversePlacement:
-                    currentTurn = forward.iterator();
-                    state = GameState.Regular;
-                    break;
-                case Regular:
-                    currentTurn = forward.iterator();
-                    break;
-            }
-        currentTeam = currentTurn.next();
-        return currentTeam;
+    @Override
+    public boolean hasPrev() {
+        return turnNumber > 0;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return true;
+    }
+
+    @Override
+    public Team next() {
+        turnNumber++;
+        return getCurrentTeam();
+    }
+
+    @Override
+    public Team prev() {
+        if (turnNumber > 0)
+            turnNumber--;
+        return getCurrentTeam();
     }
 
     public Team getCurrentTeam() {
-        return currentTeam;
+        return (starting() && turnNumber >= turnOrder.size()) ?
+                turnOrder.get((1 + turnOrder.size()-turnNumber) % turnOrder.size()) :
+                turnOrder.get(turnNumber % turnOrder.size());
     }
 
     public boolean starting() {
-        return state == GameState.IntialPlacement || state == GameState.ReversePlacement;
+        return turnNumber < turnOrder.size() * 2;
     }
 
-    public enum GameState {
-        IntialPlacement, ReversePlacement, Regular
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TeamTurnManager that = (TeamTurnManager) o;
+
+        if (turnNumber != that.turnNumber) return false;
+        return turnOrder.equals(that.turnOrder);
+
+    }
+
+    @Override
+    public String toString() {
+        return "TeamTurnManager{" +
+                "turnOrder=" + turnOrder +
+                ", turnNumber=" + turnNumber +
+                '}';
+    }
+
+    public boolean isRobberActive() {
+        return robberActive;
+    }
+
+    public void setRobberActive(boolean robberActive) {
+        this.robberActive = robberActive;
     }
 }

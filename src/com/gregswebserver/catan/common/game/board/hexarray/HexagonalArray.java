@@ -191,25 +191,28 @@ public class HexagonalArray {
             throw new IllegalDirectionException(d);
     }
 
-    public void setTile(Coordinate space, Tile tile) {
-        if (tile == null) return;
+    public Tile setTile(Coordinate space, Tile tile) {
+        if (tile == null) return null;
         tile.setHexArray(this);
         tile.setPosition(space);
         spaces.set(space, tile);
+        return tile;
     }
 
-    public void setPath(Coordinate edge, Path path) {
-        if (path == null) return;
+    public Path setPath(Coordinate edge, Path path) {
+        if (path == null) return null;
         path.setHexArray(this);
         path.setPosition(edge);
         edges.set(edge, path);
+        return path;
     }
 
-    public void setTown(Coordinate vertex, Town town) {
-        if (town == null) return;
+    public Town setTown(Coordinate vertex, Town town) {
+        if (town == null) return null;
         town.setHexArray(this);
         town.setPosition(vertex);
         vertices.set(vertex, town);
+        return town;
     }
 
     public Tile getTile(Coordinate space) {
@@ -421,4 +424,25 @@ public class HexagonalArray {
         return out;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HexagonalArray that = (HexagonalArray) o;
+
+        if (!spaces.equals(that.spaces)) return false;
+        if (!edges.equals(that.edges)) return false;
+        return vertices.equals(that.vertices);
+
+    }
+
+    @Override
+    public String toString() {
+        return "HexagonalArray{" +
+                "spaces=" + spaces +
+                ", edges=" + edges +
+                ", vertices=" + vertices +
+                '}';
+    }
 }

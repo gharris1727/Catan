@@ -5,4 +5,8 @@ package com.gregswebserver.catan.common.event;
  * Event superclass extended by other custom events.
  */
 public abstract class GenericEvent {
+
+    public abstract boolean equals(Object o);
+
+    public abstract int hashCode();
 }

@@ -45,6 +45,28 @@ public class ResourceTile extends Tile {
         return terrain.gameResource;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ResourceTile)) return false;
+
+        ResourceTile that = (ResourceTile) o;
+
+        if (robber != that.robber) return false;
+        if (diceRoll != that.diceRoll) return false;
+        return terrain == that.terrain;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + diceRoll.hashCode();
+        result = 31 * result + terrain.hashCode();
+        result = 31 * result + (robber ? 1 : 0);
+        return result;
+    }
+
     public String toString() {
         return "ResourceTile " + terrain;
     }

@@ -17,4 +17,21 @@ public abstract class DirectionalTile extends Tile {
     public Direction getDirection() {
         return direction;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DirectionalTile)) return false;
+
+        DirectionalTile that = (DirectionalTile) o;
+
+        return direction == that.direction;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + direction.hashCode();
+        return result;
+    }
 }

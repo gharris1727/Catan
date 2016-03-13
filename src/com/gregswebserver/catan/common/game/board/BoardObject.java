@@ -20,7 +20,7 @@ public abstract class BoardObject {
         this.position = position;
     }
 
-    protected HexagonalArray getHexArray() {
+    public HexagonalArray getHexArray() {
         return hexArray;
     }
 
@@ -30,4 +30,19 @@ public abstract class BoardObject {
 
     public abstract String toString();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BoardObject)) return false;
+
+        BoardObject that = (BoardObject) o;
+
+        return position != null ? position.equals(that.position) : that.position == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return position != null ? position.hashCode() : 0;
+    }
 }

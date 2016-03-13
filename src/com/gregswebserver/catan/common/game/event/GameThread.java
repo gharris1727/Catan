@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.CoreThread;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
@@ -18,11 +19,11 @@ public class GameThread extends QueuedInputThread<GameEvent> {
     private final CoreThread host;
     private final CatanGame game;
 
-    public GameThread(CoreThread host, GameSettings settings) {
+    public GameThread(CoreThread host, Username local, GameSettings settings) {
         super(host.logger);
         this.host = host;
         logger.log("Creating new GameThread for " + settings, LogLevel.DEBUG);
-        this.game = new CatanGame(settings);
+        this.game = new CatanGame(local, settings);
         start();
     }
 
@@ -40,7 +41,7 @@ public class GameThread extends QueuedInputThread<GameEvent> {
                 ((Client) host).gameUpdate();
         } catch (EventConsumerException e) {
             //TODO: provide some error feedback to the user so they know when something fails.
-            logger.log("Unable to process GameEvent", LogLevel.WARN);
+            logger.log("Unable to process GameEvent", e, LogLevel.WARN);
         }
     }
 

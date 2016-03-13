@@ -1,20 +1,25 @@
-package com.gregswebserver.catan.common.game.gameplay;
+package com.gregswebserver.catan.common.game.gameplay.random;
 
 import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.util.ReversibleIterator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by greg on 2/27/16.
  * A random generator of development cards.
  */
-public class DevelopmentCardRandomizer implements Iterator<DevelopmentCard> {
+public class DevelopmentCardRandomizer implements ReversibleIterator<DevelopmentCard> {
 
-    private final Iterator<DevelopmentCard> iterator;
+    private int index;
+    private final List<DevelopmentCard> deck;
 
     public DevelopmentCardRandomizer(GameRules rules, long seed) {
-        List<DevelopmentCard> deck = new ArrayList<>();
+        deck = new ArrayList<>();
         for (int i = 0; i < rules.getSoldierCount(); i++)
             deck.add(DevelopmentCard.Knight);
         for (int i = 0; i < rules.getMarketCount(); i++)
@@ -34,16 +39,44 @@ public class DevelopmentCardRandomizer implements Iterator<DevelopmentCard> {
         for (int i = 0; i < rules.getPlentyCount(); i++)
             deck.add(DevelopmentCard.YearOfPlenty);
         Collections.shuffle(deck, new Random(seed));
-        iterator = deck.iterator();
     }
 
     @Override
     public boolean hasNext() {
-        return iterator.hasNext();
+        return index < deck.size();
+    }
+
+    @Override
+    public boolean hasPrev() {
+        return index > 0;
     }
 
     @Override
     public DevelopmentCard next() {
-        return iterator.next();
+        return deck.get(index++);
+    }
+
+    @Override
+    public DevelopmentCard prev() {
+        return deck.get(--index);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DevelopmentCardRandomizer that = (DevelopmentCardRandomizer) o;
+
+        if (index != that.index) return false;
+        return deck.equals(that.deck);
+    }
+
+    @Override
+    public String toString() {
+        return "DevelopmentCardRandomizer{" +
+                "index=" + index +
+                ", deck=" + deck +
+                '}';
     }
 }

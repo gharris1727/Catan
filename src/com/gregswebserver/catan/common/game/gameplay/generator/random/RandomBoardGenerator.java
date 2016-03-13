@@ -34,7 +34,6 @@ public class RandomBoardGenerator implements BoardGenerator {
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
         Map<DiceRoll, java.util.List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
         Map<Coordinate, TradingPostType> tradingPosts = new HashMap<>();
-        Coordinate robberLocation = null;
 
         Iterator<Coordinate> resourceTiles = layout.getTiles();
         Iterator<Coordinate> tradingPorts = layout.getPorts();
@@ -51,6 +50,7 @@ public class RandomBoardGenerator implements BoardGenerator {
         Set<Coordinate> validEdges = new HashSet<>();
 
         //Generate and place playable hexagons
+        Coordinate robberLocation = null;
         while (resourceTiles.hasNext()) {
             Coordinate c = resourceTiles.next();
             validVertices.addAll(hexArray.getAdjacentVerticesFromSpace(c).values());

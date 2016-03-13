@@ -19,6 +19,25 @@ public class BeachTile extends DirectionalTile {
         return sides;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BeachTile)) return false;
+        if (!super.equals(o)) return false;
+
+        BeachTile beachTile = (BeachTile) o;
+
+        return sides == beachTile.sides;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + sides;
+        return result;
+    }
+
     public String toString() {
         return "BeachTile n/" + sides + " d/" + getDirection();
     }

@@ -18,4 +18,21 @@ public abstract class TeamOwned extends BoardObject {
         return owner;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TeamOwned)) return false;
+
+        TeamOwned teamOwned = (TeamOwned) o;
+
+        return owner == teamOwned.owner;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + owner.hashCode();
+        return result;
+    }
 }

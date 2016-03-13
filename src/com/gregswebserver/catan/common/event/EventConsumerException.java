@@ -6,7 +6,7 @@ package com.gregswebserver.catan.common.event;
  */
 public class EventConsumerException extends Exception {
 
-    public EventConsumerException(GenericEvent event) {
-        super("Event consumer cannot process event: " + event);
+    public EventConsumerException(String message, GenericEvent event) {
+        super(message + ": " + event);
     }
 }

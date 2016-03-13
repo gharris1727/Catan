@@ -1,10 +1,14 @@
 package com.gregswebserver.catan.common.structure.game;
 
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventPayload;
 import com.gregswebserver.catan.common.game.board.GameBoard;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+
+import java.util.Map;
 
 /**
  * Created by greg on 1/24/16.
@@ -16,19 +20,19 @@ public class GameSettings extends EventPayload {
     public final BoardLayout boardLayout;
     public final BoardGenerator boardGenerator;
     public final GameRules gameRules;
-    public final PlayerPool playerPool;
+    public final Map<Username, Team> playerTeams;
 
-    public GameSettings(long seed, BoardLayout boardLayout, BoardGenerator boardGenerator, GameRules gameRules, PlayerPool playerPool) {
+    public GameSettings(long seed, BoardLayout boardLayout, BoardGenerator boardGenerator, GameRules gameRules, Map<Username, Team> playerTeams) {
         this.seed = seed;
         this.boardLayout = boardLayout;
         this.boardGenerator = boardGenerator;
         this.gameRules = gameRules;
-        this.playerPool = playerPool;
+        this.playerTeams = playerTeams;
     }
 
     @Override
     public String toString() {
-        return "GameSettings(" + seed + "/" + boardLayout + "/" + boardGenerator + "/" + gameRules + "/" + playerPool + ")";
+        return "GameSettings(" + seed + "/" + boardLayout + "/" + boardGenerator + "/" + gameRules + "/" + playerTeams + ")";
     }
 
     public GameBoard generate() {

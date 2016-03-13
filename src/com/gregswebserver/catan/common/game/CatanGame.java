@@ -1,19 +1,20 @@
 package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.DevelopmentCardRandomizer;
-import com.gregswebserver.catan.common.game.gameplay.DiceRollRandomizer;
 import com.gregswebserver.catan.common.game.gameplay.TeamTurnManager;
-import com.gregswebserver.catan.common.game.gameplay.enums.*;
+import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.gameplay.random.DevelopmentCardRandomizer;
+import com.gregswebserver.catan.common.game.gameplay.random.DiceRollRandomizer;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
 import com.gregswebserver.catan.common.game.gameplay.trade.PermanentTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
@@ -21,6 +22,7 @@ import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.game.Player;
 import com.gregswebserver.catan.common.structure.game.PlayerPool;
+import org.junit.ComparisonFailure;
 
 import java.util.*;
 
@@ -28,23 +30,26 @@ import java.util.*;
  * Created by Greg on 8/8/2014.
  * Main class for a game of Catan that contains the game board, game state, and player information.
  */
-public class CatanGame implements EventConsumer<GameEvent> {
+public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     private final GameRules rules;
-    private final PlayerPool players;
     private final GameBoard board;
+    private final PlayerPool players;
     private final DiceRollRandomizer diceRolls;
     private final DevelopmentCardRandomizer cards;
     private final TeamTurnManager teamTurns;
+    private final Stack<GameEvent> eventStack;
     private final Set<Trade> bankTrades;
 
-    public CatanGame(GameSettings settings) {
+    public CatanGame(Username local, GameSettings settings) {
         rules = settings.gameRules;
-        players = settings.playerPool;
         board = settings.generate();
+        players = new PlayerPool(local, settings.playerTeams);
         diceRolls = new DiceRollRandomizer(settings.seed);
         cards = new DevelopmentCardRandomizer(settings.gameRules, settings.seed);
         teamTurns = new TeamTurnManager(settings.seed, players.getTeamSet());
+        eventStack = new Stack<>();
+        eventStack.push(null);
         bankTrades = new HashSet<>();
         for (GameResource target : GameResource.values())
             for (GameResource source : GameResource.values())
@@ -59,112 +64,55 @@ public class CatanGame implements EventConsumer<GameEvent> {
             c = (Coordinate) event.getPayload();
         if (player.getTeam() != teamTurns.getCurrentTeam())
             return false;
-        if (teamTurns.starting())
-            switch (event.getType()) {
-                case Turn_Advance:
-                    return player.state == Player.PlayerState.Waiting ||
-                            player.state == Player.PlayerState.Playing;
-                case Player_Move_Robber:
-                    return false;
-                case Build_Settlement:
-                    return
-                        (player.state == Player.PlayerState.Settlement_1 ||
-                        player.state == Player.PlayerState.Settlement_2) &&
-                        board.canBuildInitialSettlement(c);
-                case Build_City:
-                    return false;
-                case Build_Road:
-                    return
-                        (player.state == Player.PlayerState.Road_1 ||
-                        player.state == Player.PlayerState.Road_2) &&
-                        board.canBuildRoad(c, player.getTeam());
-                case Buy_Development:
-                case Offer_Trade:
-                case Make_Trade:
-                    return false;
-            }
-        else
-            switch (event.getType()) {
-                case Turn_Advance:
-                    return true;
-                case Player_Move_Robber:
-                    return board.canRobTile(c) && player.canPlayDevelopmentCard(DevelopmentCard.Knight);
-                case Build_Settlement:
-                    return board.canBuildSettlement(c, player.getTeam()) && player.canMakePurchase(Purchase.Settlement);
-                case Build_City:
-                    return board.canBuildCity(c, player.getTeam()) && player.canMakePurchase(Purchase.City);
-                case Build_Road:
-                    return board.canBuildRoad(c, player.getTeam()) && player.canMakePurchase(Purchase.Road);
-                case Buy_Development:
-                    return player.canMakePurchase(Purchase.DevelopmentCard) && cards.hasNext();
-                case Offer_Trade:
-                    return player.canFulfillTrade((Trade) event.getPayload());
-                case Make_Trade:
+        switch (event.getType()) {
+            case Turn_Advance:
+                return player.canAdvanceTurn();
+            case Player_Move_Robber:
+                return (teamTurns.isRobberActive() || player.canMoveRobber()) && board.canRobTile(c);
+            case Build_Settlement:
+                if (teamTurns.starting())
+                    return player.canBuildSettlement() && board.canBuildInitialSettlement(c);
+                else
+                    return player.canBuildSettlement() && board.canBuildSettlement(c, player.getTeam());
+            case Build_City:
+                return player.canBuildCity() && board.canBuildCity(c, player.getTeam());
+            case Build_Road:
+                return player.canBuildRoad() && board.canBuildRoad(c, player.getTeam());
+            case Buy_Development:
+                return player.canBuyDevelopmentCard() && cards.hasNext();
+            case Offer_Trade:
+                return player.canFulfillTrade((TemporaryTrade) event.getPayload());
+            case Make_Trade:
+                if (event.getPayload() instanceof TemporaryTrade) {
+                    TemporaryTrade trade = (TemporaryTrade) event.getPayload();
+                    return player.canMakeTrade(trade) && players.getPlayer(trade.seller).canFulfillTrade(trade);
+                } else
                     return player.canMakeTrade((Trade) event.getPayload());
-            }
+        }
         return false;
     }
 
     @Override
     public void execute(GameEvent event) throws EventConsumerException {
         if (!test(event))
-            throw new EventConsumerException(event);
-        Username origin = event.getOrigin();
-        Player player = players.getPlayer(origin);
+            throw new EventConsumerException("Cannot execute game event", event);
+        eventStack.push(event);
+        Player player = players.getPlayer(event.getOrigin());
         Team team = player.getTeam();
-        Coordinate coordinate;
+        Coordinate coordinate = null;
+        if (event.getPayload() instanceof Coordinate)
+            coordinate = (Coordinate) event.getPayload();
         switch (event.getType()) {
-            case Build_Settlement:
-                coordinate = (Coordinate) event.getPayload();
-                player.lastSettlement = board.buildSettlement(coordinate, team);
-                if (player.state == Player.PlayerState.Settlement_1)
-                    player.state = Player.PlayerState.Road_1;
-                if (player.state == Player.PlayerState.Settlement_2)
-                    player.state = Player.PlayerState.Road_2;
-                if (!teamTurns.starting())
-                    player.makePurchase(Purchase.Settlement);
-                break;
-            case Build_City:
-                coordinate = (Coordinate) event.getPayload();
-                board.buildCity(coordinate, team);
-                if (!teamTurns.starting())
-                    player.makePurchase(Purchase.City);
-                break;
-            case Build_Road:
-                coordinate = (Coordinate) event.getPayload();
-                board.buildRoad(coordinate, team);
-                if (player.state == Player.PlayerState.Road_1)
-                    player.state = Player.PlayerState.Waiting;
-                if (player.state == Player.PlayerState.Road_2)
-                    player.state = Player.PlayerState.Playing;
-                if (!teamTurns.starting())
-                    player.makePurchase(Purchase.Road);
-                break;
-            case Player_Move_Robber:
-                coordinate = (Coordinate) event.getPayload();
-                player.playDevelopmentCard(DevelopmentCard.Knight);
-                board.moveRobber(coordinate);
-                break;
             case Turn_Advance:
-                player.endTurn();
-                if (teamTurns.starting()) {
-                    if (player.state == Player.PlayerState.Waiting)
-                        player.state = Player.PlayerState.Settlement_2;
-                    if (player.state == Player.PlayerState.Playing) {
-                        for (Tile t : board.getAdjacentTiles(player.lastSettlement.getPosition()))
-                            player.addResource(t,1);
-                    }
-                }
-                teamTurns.advanceTurn();
+                player.advanceTurn();
+                teamTurns.next();
                 if (!teamTurns.starting()) {
-                    DiceRoll roll = diceRolls.next();
-                    List<Coordinate> spaces = board.getActiveTiles(roll);
+                    List<Coordinate> spaces = board.getActiveTiles(diceRolls.next());
                     if (spaces != null && !spaces.isEmpty()) {
                         for (Coordinate space : spaces) {
                             for (Town town : board.getAdjacentTowns(space)) {
                                 if (town != null && town.getTeam() != Team.None) {
-                                    List<Player> players = this.players.getTeamPlayers(town.getTeam());
-                                    for (Player p : players) {
+                                    for (Player p : players.getTeamPlayers(town.getTeam())) {
                                         if (town instanceof Settlement)
                                             p.addResource(board.getTile(space), rules.getSettlementResources());
                                         if (town instanceof City)
@@ -173,23 +121,106 @@ public class CatanGame implements EventConsumer<GameEvent> {
                                 }
                             }
                         }
+                    } else {
+                        teamTurns.setRobberActive(true);
                     }
                 }
                 break;
+            case Player_Move_Robber:
+                player.moveRobber();
+                board.moveRobber(coordinate);
+                break;
+            case Build_Settlement:
+                player.buildSettlement(board.buildSettlement(coordinate, team));
+                break;
+            case Build_City:
+                player.buildCity(board.buildCity(coordinate, team));
+                break;
+            case Build_Road:
+                player.buildRoad(board.buildRoad(coordinate, team));
+                break;
             case Buy_Development:
-                player.addDevelopmentCard(cards.next());
-                player.makePurchase(Purchase.DevelopmentCard);
+                player.buyDevelopmentCard(cards.next());
                 break;
             case Offer_Trade:
-                player.setTrade((TemporaryTrade) event.getPayload());
+                player.offerTrade((TemporaryTrade) event.getPayload());
+                break;
+            case Make_Trade:
+                player.makeTrade((Trade) event.getPayload());
+                if (event.getPayload() instanceof TemporaryTrade) {
+                    Player seller = players.getPlayer(((TemporaryTrade) event.getPayload()).seller);
+                    seller.fulfillTrade((TemporaryTrade) event.getPayload());
+                    seller.offerTrade(null);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void undo(GameEvent event) throws EventConsumerException {
+        if (event == null || !event.equals(eventStack.peek()))
+            throw new EventConsumerException("Cannot undo game event", event);
+        eventStack.pop();
+        Username origin = event.getOrigin();
+        Player player = players.getPlayer(origin);
+        Team team = player.getTeam();
+        Coordinate coordinate = null;
+        if (event.getPayload() instanceof Coordinate)
+            coordinate = (Coordinate) event.getPayload();
+        switch(event.getType()) {
+            case Turn_Advance:
+                if (!teamTurns.starting()) {
+                    List<Coordinate> spaces = board.getActiveTiles(diceRolls.prev());
+                    if (spaces != null && !spaces.isEmpty()) {
+                        for (Coordinate space : spaces) {
+                            for (Town town : board.getAdjacentTowns(space)) {
+                                if (town != null && town.getTeam() != Team.None) {
+                                    for (Player p : players.getTeamPlayers(town.getTeam())) {
+                                        if (town instanceof Settlement)
+                                            p.removeResource(board.getTile(space), rules.getSettlementResources());
+                                        if (town instanceof City)
+                                            p.removeResource(board.getTile(space), rules.getCityResources());
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        teamTurns.setRobberActive(false);
+                    }
+                }
+                player.undoAdvanceTurn();
+                teamTurns.prev();
+                break;
+            case Player_Move_Robber:
+                board.undoRobber();
+                player.undoMoveRobber();
+                cards.prev();
+                break;
+            case Build_Settlement:
+                board.destroyTown(coordinate);
+                player.undoBuildSettlement();
+                break;
+            case Build_City:
+                board.buildSettlement(coordinate, team);
+                player.undoBuildCity();
+                break;
+            case Build_Road:
+                board.destroyRoad(coordinate);
+                player.undoBuildRoad();
+                break;
+            case Buy_Development:
+                player.undoBuyDevelopmentCard(cards.prev());
+                break;
+            case Offer_Trade:
+                player.undoOfferTrade();
                 break;
             case Make_Trade:
                 Trade trade = (Trade) event.getPayload();
-                player.makeTrade(trade);
+                player.undoTrade(trade);
                 if (trade instanceof TemporaryTrade) {
                     Player seller = players.getPlayer(((TemporaryTrade) trade).seller);
-                    seller.fulfillTrade(trade);
-                    seller.setTrade(null);
+                    seller.undoFulfillTrade((TemporaryTrade) trade);
+                    seller.undoOfferTrade();
                 }
                 break;
         }
@@ -225,5 +256,59 @@ public class CatanGame implements EventConsumer<GameEvent> {
                 trades.add(trade);
         Collections.sort(trades);
         return trades;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CatanGame)) return false;
+
+        CatanGame catanGame = (CatanGame) o;
+
+        if (!eventStack.equals(catanGame.eventStack)) return false;
+        if (!rules.equals(catanGame.rules)) return false;
+        if (!players.equals(catanGame.players)) return false;
+        if (!board.equals(catanGame.board)) return false;
+        if (!diceRolls.equals(catanGame.diceRolls)) return false;
+        if (!cards.equals(catanGame.cards)) return false;
+        if (!teamTurns.equals(catanGame.teamTurns)) return false;
+        return bankTrades.equals(catanGame.bankTrades);
+
+    }
+
+    public void assertEquals(CatanGame o) {
+        if (this == o) return;
+
+        if (!eventStack.equals(o.eventStack))
+            throw new ComparisonFailure("EventStack", eventStack.toString(), o.eventStack.toString());
+        if (!rules.equals(o.rules))
+            throw new ComparisonFailure("Rules", rules.toString(), o.rules.toString());
+        if (!players.equals(o.players))
+            throw new ComparisonFailure("Players", players.toString(), o.players.toString());
+        if (!board.equals(o.board))
+            throw new ComparisonFailure("Board", board.toString(), o.board.toString());
+        if (!diceRolls.equals(o.diceRolls))
+            throw new ComparisonFailure("DiceRolls", diceRolls.toString(), o.diceRolls.toString());
+        if (!cards.equals(o.cards))
+            throw new ComparisonFailure("Cards", cards.toString(), o.cards.toString());
+        if (!teamTurns.equals(o.teamTurns))
+            throw new ComparisonFailure("Turns", teamTurns.toString(), o.teamTurns.toString());
+        if (!bankTrades.equals(o.bankTrades))
+            throw new ComparisonFailure("BankTrades", bankTrades.toString(), o.bankTrades.toString());
+
+    }
+
+    @Override
+    public String toString() {
+        return "CatanGame{" +
+                "rules=" + rules +
+                ", board=" + board +
+                ", players=" + players +
+                ", diceRolls=" + diceRolls +
+                ", cards=" + cards +
+                ", teamTurns=" + teamTurns +
+                ", bankTrades=" + bankTrades +
+                ", eventStack=" + eventStack +
+                '}';
     }
 }

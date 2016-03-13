@@ -36,9 +36,8 @@ public abstract class Trade implements Comparable<Trade>, Serializable{
     public int compareTo(Trade trade) {
         if (trade instanceof TemporaryTrade)
             return -1;
-        int diff;
         for (GameResource r : GameResource.values()) {
-            diff = trade.offer.get(r) - offer.get(r);
+            int diff = trade.offer.get(r) - offer.get(r);
             if (diff != 0) return diff;
             diff = trade.request.get(r) - request.get(r);
             if (diff != 0) return diff;

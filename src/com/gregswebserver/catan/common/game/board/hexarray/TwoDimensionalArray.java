@@ -10,7 +10,7 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
 
     public static final int MAX_SIZE = Integer.MAX_VALUE - 8;
     public final int sizeX, sizeY;
-    private Object[] data;
+    private final Object[] data;
     private int size;
 
     public TwoDimensionalArray(int x, int y) {
@@ -22,14 +22,13 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
         data = new Object[x * y];
     }
 
-    private boolean set(int x, int y, T o) {
+    private void set(int x, int y, T o) {
         rangeCheck(x, y);
         data[x + y * sizeX] = o;
-        return true;
     }
 
-    public boolean set(Coordinate c, T o) {
-        return set(c.x, c.y, o);
+    public void set(Coordinate c, T o) {
+        set(c.x, c.y, o);
     }
 
     @SuppressWarnings("unchecked")
@@ -56,10 +55,10 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
 
     public Map<Coordinate, T> toMap() {
         Map<Coordinate, T> coordinates = new HashMap<>();
-        T obj;
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
-                if ((obj = get(x, y)) != null) {
+                T obj = get(x, y);
+                if (obj != null) {
                     coordinates.put(new Coordinate(x, y), obj);
                 }
             }
@@ -150,5 +149,28 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
 
     public int size() {
         return size;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TwoDimensionalArray<?> that = (TwoDimensionalArray<?>) o;
+
+        if (sizeX != that.sizeX) return false;
+        if (sizeY != that.sizeY) return false;
+        if (size != that.size) return false;
+        return Arrays.equals(data, that.data);
+
+    }
+
+    @Override
+    public String toString() {
+        return "TwoDimensionalArray{" +
+                "sizeX=" + sizeX +
+                ", sizeY=" + sizeY +
+                ", size=" + size +
+                '}';
     }
 }

@@ -33,11 +33,11 @@ public enum Direction {
 
     public static Direction getAverage(Set<Direction> input) {
         int sumX = 0, sumY = 0;
-        Direction out = null;
         for (Direction d : input) {
             sumX += d.x;
             sumY += d.y;
         }
+        Direction out = null;
         if (sumY == 0) {
             if (sumX == 0)
                 out = center;

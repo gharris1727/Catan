@@ -30,7 +30,7 @@ public class GameBoard {
     private final HexagonalArray hexArray;
     private final Map<DiceRoll, List<Coordinate>> diceRolls;
     private final Map<Coordinate, TradingPostType> tradingPosts;
-    private Coordinate robberLocation;
+    private final Stack<Coordinate> robberLocations;
 
     public GameBoard(
             Dimension size,
@@ -42,7 +42,8 @@ public class GameBoard {
         this.hexArray = hexArray;
         this.diceRolls = diceRolls;
         this.tradingPosts = tradingPosts;
-        this.robberLocation = robberLocation;
+        this.robberLocations = new Stack<>();
+        this.robberLocations.push(robberLocation);
     }
 
     public Dimension getSize() {
@@ -51,27 +52,36 @@ public class GameBoard {
 
     public void moveRobber(Coordinate coordinate) {
         ((ResourceTile) hexArray.spaces.get(coordinate)).placeRobber();
-        if (robberLocation != null)
-            ((ResourceTile) hexArray.spaces.get(robberLocation)).removeRobber();
-        robberLocation = coordinate;
+        ((ResourceTile) hexArray.spaces.get(robberLocations.peek())).removeRobber();
+        robberLocations.push(coordinate);
+    }
+
+    public void undoRobber() {
+        if (robberLocations.size() > 1) {
+            ((ResourceTile) hexArray.spaces.get(robberLocations.peek())).removeRobber();
+            robberLocations.pop();
+            ((ResourceTile) hexArray.spaces.get(robberLocations.peek())).placeRobber();
+        }
     }
 
     public Settlement buildSettlement(Coordinate c, Team team) {
-        Settlement settlement = new Settlement(team);
-        hexArray.setTown(c, settlement);
-        return settlement;
+        return (Settlement) hexArray.setTown(c, new Settlement(team));
     }
 
     public City buildCity(Coordinate c, Team team) {
-        City city = new City(team);
-        hexArray.setTown(c, city);
-        return city;
+        return (City) hexArray.setTown(c, new City(team));
+    }
+
+    public void destroyTown(Coordinate c) {
+        hexArray.setTown(c, new EmptyTown());
     }
 
     public Road buildRoad(Coordinate c, Team team) {
-        Road road = new Road(team);
-        hexArray.setPath(c, road);
-        return road;
+        return (Road) hexArray.setPath(c, new Road(team));
+    }
+
+    public void destroyRoad(Coordinate c) {
+        hexArray.setPath(c, new EmptyPath());
     }
 
     public BoardObject refresh(BoardObject object) {
@@ -208,5 +218,30 @@ public class GameBoard {
                 trades.add(entry.getValue());
         }
         return trades;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameBoard gameBoard = (GameBoard) o;
+
+        if (!size.equals(gameBoard.size)) return false;
+        if (!hexArray.equals(gameBoard.hexArray)) return false;
+        if (!diceRolls.equals(gameBoard.diceRolls)) return false;
+        if (!tradingPosts.equals(gameBoard.tradingPosts)) return false;
+        return robberLocations.equals(gameBoard.robberLocations);
+    }
+
+    @Override
+    public String toString() {
+        return "GameBoard{" +
+                "size=" + size +
+                ", hexArray=" + hexArray +
+                ", diceRolls=" + diceRolls +
+                ", tradingPosts=" + tradingPosts +
+                ", robberLocations=" + robberLocations +
+                '}';
     }
 }

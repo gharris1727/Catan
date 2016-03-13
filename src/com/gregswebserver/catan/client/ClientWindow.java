@@ -63,6 +63,7 @@ public class ClientWindow extends CoreWindow {
         synchronized (this) {
             if (!resizing)
                 shouldResize = resizing = true;
+
         }
         // Now the slow code that actually does the resizing can happen asynchronously.
         if (shouldResize) {

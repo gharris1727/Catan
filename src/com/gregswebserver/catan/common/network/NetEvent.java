@@ -48,4 +48,27 @@ public class NetEvent extends GenericEvent implements Serializable {
     public String toString() {
         return "[NETWORK] O(" + origin + ") T(" + type + ") P(" + payload + ")";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NetEvent)) return false;
+
+        NetEvent netEvent = (NetEvent) o;
+
+        if (origin != null ? !origin.equals(netEvent.origin) : netEvent.origin != null) return false;
+        if (type != netEvent.type) return false;
+        if (payload != null ? !payload.equals(netEvent.payload) : netEvent.payload != null) return false;
+        return connection != null ? connection.equals(netEvent.connection) : netEvent.connection == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = origin != null ? origin.hashCode() : 0;
+        result = 31 * result + type.hashCode();
+        result = 31 * result + (payload != null ? payload.hashCode() : 0);
+        result = 31 * result + (connection != null ? connection.hashCode() : 0);
+        return result;
+    }
 }

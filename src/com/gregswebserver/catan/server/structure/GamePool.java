@@ -27,8 +27,8 @@ public class GamePool {
     }
 
     public void start(GameSettings settings) {
-        GameThread thread = new GameThread(host, settings);
-        for (Username username : settings.playerPool.getAllUsers())
+        GameThread thread = new GameThread(host, host.getToken().username, settings);
+        for (Username username : settings.playerTeams.keySet())
             games.put(username, thread);
     }
 

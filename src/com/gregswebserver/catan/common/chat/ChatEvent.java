@@ -37,4 +37,23 @@ public class ChatEvent extends ExternalEvent<ChatEventType> {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChatEvent)) return false;
+        if (!super.equals(o)) return false;
+
+        ChatEvent chatEvent = (ChatEvent) o;
+
+        return message != null ? message.equals(chatEvent.message) : chatEvent.message == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        return result;
+    }
 }

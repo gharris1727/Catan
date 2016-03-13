@@ -94,6 +94,15 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
      * Event sent into the queue to signal that the thread should die (poison-pill).
      */
     protected static class ThreadStopEvent extends GenericEvent {
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof ThreadStopEvent;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
     }
 
     /**

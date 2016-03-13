@@ -12,33 +12,33 @@ import java.io.Serializable;
  */
 public class GameRules implements Serializable {
 
-    private int settlementResources;
-    private int cityResources;
-    private int pathPoints;
-    private int settlementPoints;
-    private int cityPoints;
-    private int armyPoints;
-    private int roadPoints;
-    private int marketPoints;
-    private int parliamentPoints;
-    private int universityPoints;
-    private int chapelPoints;
-    private int libraryPoints;
-    private int minimumPoints;
-    private int leadPoints;
-    private int soldierCount;
-    private int marketCount;
-    private int parliamentCount;
-    private int universityCount;
-    private int chapelCount;
-    private int libraryCount;
-    private int monopolyCount;
-    private int roadbuildingCount;
-    private int plentyCount;
-    private int maxCards;
-    private int maxPaths;
-    private int maxSettlements;
-    private int maxCities;
+    private final int settlementResources;
+    private final int cityResources;
+    private final int pathPoints;
+    private final int settlementPoints;
+    private final int cityPoints;
+    private final int armyPoints;
+    private final int roadPoints;
+    private final int marketPoints;
+    private final int parliamentPoints;
+    private final int universityPoints;
+    private final int chapelPoints;
+    private final int libraryPoints;
+    private final int minimumPoints;
+    private final int leadPoints;
+    private final int soldierCount;
+    private final int marketCount;
+    private final int parliamentCount;
+    private final int universityCount;
+    private final int chapelCount;
+    private final int libraryCount;
+    private final int monopolyCount;
+    private final int roadbuildingCount;
+    private final int plentyCount;
+    private final int maxCards;
+    private final int maxPaths;
+    private final int maxSettlements;
+    private final int maxCities;
 
     public GameRules(String path) {
         PropertiesFile file = ResourceLoader.getPropertiesFile(new PropertiesFileInfo(path,"Board layout information"));
@@ -177,6 +177,43 @@ public class GameRules implements Serializable {
 
     public int getMaxCities() {
         return maxCities;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameRules gameRules = (GameRules) o;
+
+        if (settlementResources != gameRules.settlementResources) return false;
+        if (cityResources != gameRules.cityResources) return false;
+        if (pathPoints != gameRules.pathPoints) return false;
+        if (settlementPoints != gameRules.settlementPoints) return false;
+        if (cityPoints != gameRules.cityPoints) return false;
+        if (armyPoints != gameRules.armyPoints) return false;
+        if (roadPoints != gameRules.roadPoints) return false;
+        if (marketPoints != gameRules.marketPoints) return false;
+        if (parliamentPoints != gameRules.parliamentPoints) return false;
+        if (universityPoints != gameRules.universityPoints) return false;
+        if (chapelPoints != gameRules.chapelPoints) return false;
+        if (libraryPoints != gameRules.libraryPoints) return false;
+        if (minimumPoints != gameRules.minimumPoints) return false;
+        if (leadPoints != gameRules.leadPoints) return false;
+        if (soldierCount != gameRules.soldierCount) return false;
+        if (marketCount != gameRules.marketCount) return false;
+        if (parliamentCount != gameRules.parliamentCount) return false;
+        if (universityCount != gameRules.universityCount) return false;
+        if (chapelCount != gameRules.chapelCount) return false;
+        if (libraryCount != gameRules.libraryCount) return false;
+        if (monopolyCount != gameRules.monopolyCount) return false;
+        if (roadbuildingCount != gameRules.roadbuildingCount) return false;
+        if (plentyCount != gameRules.plentyCount) return false;
+        if (maxCards != gameRules.maxCards) return false;
+        if (maxPaths != gameRules.maxPaths) return false;
+        if (maxSettlements != gameRules.maxSettlements) return false;
+        return maxCities == gameRules.maxCities;
+
     }
 
     @Override

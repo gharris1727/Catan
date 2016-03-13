@@ -63,6 +63,24 @@ public class TradeTile extends BeachTile {
         return out;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TradeTile)) return false;
+        if (!super.equals(o)) return false;
+
+        TradeTile tradeTile = (TradeTile) o;
+
+        return tradingPostType == tradeTile.tradingPostType;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + tradingPostType.hashCode();
+        return result;
+    }
+
     public String toString() {
         return "TradeTile n/" + getSides() + " d/" + getDirection();
     }

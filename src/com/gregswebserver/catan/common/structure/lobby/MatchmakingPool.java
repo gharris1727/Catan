@@ -47,7 +47,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
     @Override
     public void execute(LobbyEvent event) throws EventConsumerException {
         if (!test(event))
-            throw new EventConsumerException(event);
+            throw new EventConsumerException("Cannot execute lobby event", event);
         Username origin = event.getOrigin();
         switch (event.getType()) {
             case User_Disconnect:

@@ -4,7 +4,6 @@ import com.gregswebserver.catan.common.resources.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,19 +27,17 @@ public class ServerPool implements Iterable<ConnectionInfo> {
         file = ResourceLoader.getPropertiesFile(serverfile);
         int i = 0;
         String hostname;
-        String port;
-        String username;
         do {
             hostname = file.get("servers." + i + ".hostname");
-            port = file.get("servers." + i + ".port");
-            username = file.get("servers." + i + ".username");
+            String port = file.get("servers." + i + ".port");
+            String username = file.get("servers." + i + ".username");
             if (hostname != null)
                 list.add(new ConnectionInfo(hostname,port,username));
             i++;
         } while (hostname != null);
     }
 
-    public void save() throws IOException {
+    public void save() {
         file.clear();
         int i = 0;
         for (ConnectionInfo elt : list) {

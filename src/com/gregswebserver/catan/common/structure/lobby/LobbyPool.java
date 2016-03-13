@@ -22,7 +22,7 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
     }
 
     public void add(Username host, LobbyConfig config) {
-        Lobby lobby = new Lobby(config, host);
+        Lobby lobby = new Lobby(config);
         lobby.add(host);
         userMap.put(host, lobby);
         //Concurrent write, but inserting on the head of the list should be safe.

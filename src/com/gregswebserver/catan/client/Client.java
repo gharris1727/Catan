@@ -39,7 +39,6 @@ import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.lobby.*;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 
 /**
@@ -65,7 +64,6 @@ public class Client extends CoreThread {
     private RenderThread renderThread;
 
     private RenderManager manager;
-    private InputListener listener;
     private ClientConnection connection;
 
     private ServerPool serverPool;
@@ -283,9 +281,8 @@ public class Client extends CoreThread {
                     break;
                 case Lobby_Start:
                     GameSettings gameSettings = (GameSettings) event.getPayload();
-                    if (((GameSettings) event.getPayload()).playerPool.getPlayer(username) != null) {
-                        gameSettings.playerPool.setLocal(username);
-                        gameThread = new GameThread(this, gameSettings);
+                    if (((GameSettings) event.getPayload()).playerTeams.containsKey(username)) {
+                        gameThread = new GameThread(this, username, gameSettings);
                         manager.displayGameScreen();
                     }
                     break;
@@ -332,7 +329,7 @@ public class Client extends CoreThread {
         manager = new RenderManager(this);
         String styleName = staticConfig.get("style");
         manager.setStyle(new UIStyle(styleName));
-        listener = new InputListener(this, manager);
+        InputListener listener = new InputListener(this, manager);
         new ClientWindow(this, listener);
         serverPool = new ServerPool();
         manager.displayServerConnectMenu();
@@ -349,11 +346,7 @@ public class Client extends CoreThread {
 //            chatThread.stop();
         if (gameThread != null && gameThread.isRunning())
             gameThread.stop();
-        try {
-            serverPool.save();
-        } catch (IOException e) {
-            logger.log("Unable to save server list.", e, LogLevel.WARN);
-        }
+        serverPool.save();
         stop();
     }
 
