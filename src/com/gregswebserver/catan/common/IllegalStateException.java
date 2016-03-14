@@ -6,6 +6,10 @@ package com.gregswebserver.catan.common;
  */
 public class IllegalStateException extends RuntimeException {
 
+    public IllegalStateException(String message) {
+        super(message);
+    }
+
     public IllegalStateException() {
         super("Something went wrong, and the program got somewhere it shouldn't have.");
     }

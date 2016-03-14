@@ -11,12 +11,10 @@ import java.util.*;
  */
 public class PlayerPool {
 
-    private final Username local;
     private final Map<Username, Player> players;
     private final Map<Team, List<Player>> teams;
 
-    public PlayerPool(Username local, Map<Username, Team> playerTeams) {
-        this.local = local;
+    public PlayerPool(Map<Username, Team> playerTeams) {
         this.players = new HashMap<>();
         this.teams = new EnumMap<>(Team.class);
         for (Map.Entry<Username, Team> playerTeam : playerTeams.entrySet()) {
@@ -41,13 +39,9 @@ public class PlayerPool {
         return teams.get(team);
     }
 
-    public Player getLocalPlayer() {
-        return players.get(local);
-    }
-
     @Override
     public String toString() {
-        return "PlayerPool(" + local + "/" + players + ")";
+        return "PlayerPool(" + players + ")";
     }
 
     public Set<Team> getTeamSet() {
@@ -64,7 +58,6 @@ public class PlayerPool {
 
         PlayerPool that = (PlayerPool) o;
 
-        if (local != null ? !local.equals(that.local) : that.local != null) return false;
         if (!players.equals(that.players)) return false;
         return teams.equals(that.teams);
 

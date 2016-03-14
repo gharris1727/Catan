@@ -12,6 +12,7 @@ import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
@@ -43,11 +44,13 @@ public class TradeRegion extends UIScreenRegion {
     private final TiledBackground background;
     private final TradeList list;
     private final TradeControlPanel panel;
+    private final Username local;
     private RenderMask tradeSize;
     private Trade selected;
 
-    public TradeRegion(int priority, CatanGame game) {
+    public TradeRegion(int priority, CatanGame game, Username local) {
         super(priority);
+        this.local = local;
         background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
             @Override
             public String toString() {
@@ -94,7 +97,7 @@ public class TradeRegion extends UIScreenRegion {
         protected void renderContents() {
             clear();
             int height = 1;
-            for (Trade t : game.getTrades()) {
+            for (Trade t : game.getTrades(TradeRegion.this.local)) {
                 TradeListElement elt = new TradeListElement(0, t);
                 elt.setStyle(getStyle());
                 elt.setMask(tradeSize);
@@ -175,7 +178,7 @@ public class TradeRegion extends UIScreenRegion {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 selected = trade;
-                return null;
+                return new UserEvent(this, UserEventType.Trade_Clicked, trade);
             }
 
             @Override

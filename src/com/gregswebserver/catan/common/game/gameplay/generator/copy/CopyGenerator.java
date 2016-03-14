@@ -11,10 +11,8 @@ import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 
 import java.awt.*;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by greg on 1/24/16.
@@ -31,8 +29,8 @@ public class CopyGenerator implements BoardGenerator {
     public GameBoard generate(BoardLayout layout, long seed) {
         Dimension size = layout.getSize();
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
-        Map<DiceRoll, java.util.List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
-        Map<Coordinate, TradingPostType> tradingPosts = new HashMap<>();
+        Map<DiceRoll, List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
+        List<Coordinate> tradingPosts = new ArrayList<>();
         Iterator<Coordinate> tiles = layout.getTiles();
         Iterator<Coordinate> ports = layout.getPorts();
         Iterator<Terrain> terrain = layout.getTerrain();

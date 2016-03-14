@@ -14,6 +14,7 @@ import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -32,8 +33,8 @@ public class RandomBoardGenerator implements BoardGenerator {
 
         Dimension size = layout.getSize();
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
-        Map<DiceRoll, java.util.List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
-        Map<Coordinate, TradingPostType> tradingPosts = new HashMap<>();
+        Map<DiceRoll, List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
+        List<Coordinate> tradingPosts = new ArrayList<>();
 
         Iterator<Coordinate> resourceTiles = layout.getTiles();
         Iterator<Coordinate> tradingPorts = layout.getPorts();

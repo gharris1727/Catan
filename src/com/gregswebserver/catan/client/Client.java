@@ -9,6 +9,7 @@ import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderManager;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
+import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.client.structure.ServerPool;
 import com.gregswebserver.catan.common.CoreThread;
@@ -20,11 +21,11 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
-import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.event.GameControlEvent;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
-import com.gregswebserver.catan.common.game.event.GameThread;
+import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ClientConnection;
@@ -60,7 +61,7 @@ public class Client extends CoreThread {
     }
 
     private ChatThread chatThread;
-    private GameThread gameThread;
+    private GameManager gameManager;
     private RenderThread renderThread;
 
     private RenderManager manager;
@@ -97,8 +98,8 @@ public class Client extends CoreThread {
         return matchmakingPool.getLobbyList().userGetLobby(username);
     }
 
-    public CatanGame getActiveGame() {
-        return gameThread.getGame();
+    public GameManager getGameManager() {
+        return gameManager;
     }
 
     public String getDisconnectMessage() {
@@ -196,45 +197,56 @@ public class Client extends CoreThread {
                 manager.gameScreen.spaceClicked((Coordinate) event.getPayload());
                 break;
             case Tile_Rob:
-                outgoing = new GameEvent(username, GameEventType.Player_Move_Robber, event.getPayload());
-                sendEvent(outgoing);
+                gameManager.local(new GameEvent(username, GameEventType.Player_Move_Robber, event.getPayload()));
                 break;
             case End_Turn:
-                outgoing = new GameEvent(username, GameEventType.Turn_Advance, null);
-                sendEvent(outgoing);
+                gameManager.local(new GameEvent(username, GameEventType.Turn_Advance, null));
                 break;
             case Edge_Clicked:
                 manager.gameScreen.edgeClicked((Coordinate) event.getPayload());
                 break;
             case Road_Purchase:
-                outgoing = new GameEvent(username, GameEventType.Build_Road, event.getPayload());
-                sendEvent(outgoing);
+                gameManager.local(new GameEvent(username, GameEventType.Build_Road, event.getPayload()));
                 break;
             case Vertex_Clicked:
                 manager.gameScreen.vertexClicked((Coordinate) event.getPayload());
                 break;
             case Settlement_Purchase:
-                outgoing = new GameEvent(username, GameEventType.Build_Settlement, event.getPayload());
-                sendEvent(outgoing);
+                gameManager.local(new GameEvent(username, GameEventType.Build_Settlement, event.getPayload()));
                 break;
             case City_Purchase:
-                outgoing = new GameEvent(username, GameEventType.Build_City, event.getPayload());
-                sendEvent(outgoing);
+                gameManager.local(new GameEvent(username, GameEventType.Build_City, event.getPayload()));
+                break;
+            case Trade_Clicked:
+                manager.gameScreen.tradeClicked((Trade) event.getPayload());
                 break;
             case Make_Trade:
-                outgoing = new GameEvent(username, GameEventType.Make_Trade, event.getPayload());
-                sendEvent(outgoing);
+                gameManager.local(new GameEvent(username, GameEventType.Make_Trade, event.getPayload()));
                 break;
             case Inventory_Clicked:
                 throw new RuntimeException("Unimplemented");
             case Server_Clicked:
                 throw new RuntimeException("Unimplemented");
+            case History_Clicked:
+                manager.gameScreen.timelineClicked((Integer) event.getPayload());
+                break;
+            case History_Jump:
+                gameManager.jumpToEvent((Integer) event.getPayload());
+                break;
         }
     }
 
+    public void localSuccess(GameControlEvent event) {
+        sendEvent((ExternalEvent) event.getPayload());
+    }
+
+    public void localFailure(EventConsumerException e) {
+        logger.log("Unable to perform local change!", e, LogLevel.WARN);
+    }
+
     private void gameEvent(GameEvent event) {
-        if (gameThread != null)
-            gameThread.addEvent(event);
+        if (gameManager != null)
+            gameManager.remote(event);
     }
 
     // Control events sent by the server to affect the local client.
@@ -282,7 +294,7 @@ public class Client extends CoreThread {
                 case Lobby_Start:
                     GameSettings gameSettings = (GameSettings) event.getPayload();
                     if (((GameSettings) event.getPayload()).playerTeams.containsKey(username)) {
-                        gameThread = new GameThread(this, username, gameSettings);
+                        gameManager = new GameManager(this, gameSettings);
                         manager.displayGameScreen();
                     }
                     break;
@@ -344,8 +356,8 @@ public class Client extends CoreThread {
             renderThread.stop();
 //        if (chatThread != null && chatThread.isRunning())
 //            chatThread.stop();
-        if (gameThread != null && gameThread.isRunning())
-            gameThread.stop();
+        if (gameManager != null)
+            gameManager.stop();
         serverPool.save();
         stop();
     }

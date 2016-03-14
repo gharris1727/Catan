@@ -293,6 +293,7 @@ public class LobbyListRegion extends UIScreenRegion {
 
         private LobbyListScroll(int priority) {
             super(priority);
+            setTransparency(true);
         }
 
         @Override

@@ -53,10 +53,10 @@ public interface BoardGenerator extends Serializable {
     }
 
     //This generator call assumes beaches have already been generated.
-    default void setTradingPost(HexagonalArray hexArray, Map<Coordinate, TradingPostType> tradingPosts, Coordinate c, TradingPostType tradeType) {
+    default void setTradingPost(HexagonalArray hexArray, List<Coordinate> tradingPosts, Coordinate c, TradingPostType tradeType) {
         BeachTile beach = (BeachTile) hexArray.getTile(c);
         TradeTile tradeTile = new TradeTile(beach.getDirection(), beach.getSides(), tradeType);
         hexArray.setTile(c, tradeTile);
-        tradingPosts.put(c, tradeType);
+        tradingPosts.add(c);
     }
 }

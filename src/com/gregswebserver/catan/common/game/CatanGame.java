@@ -9,6 +9,7 @@ import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.gameplay.TeamTurnManager;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
@@ -41,19 +42,20 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     private final Stack<GameEvent> eventStack;
     private final Set<Trade> bankTrades;
 
-    public CatanGame(Username local, GameSettings settings) {
+    public CatanGame(GameSettings settings) {
         rules = settings.gameRules;
         board = settings.generate();
-        players = new PlayerPool(local, settings.playerTeams);
+        players = new PlayerPool(settings.playerTeams);
         diceRolls = new DiceRollRandomizer(settings.seed);
         cards = new DevelopmentCardRandomizer(settings.gameRules, settings.seed);
         teamTurns = new TeamTurnManager(settings.seed, players.getTeamSet());
         eventStack = new Stack<>();
-        eventStack.push(null);
+        eventStack.push(new GameEvent(null, GameEventType.Start, null));
         bankTrades = new HashSet<>();
         for (GameResource target : GameResource.values())
             for (GameResource source : GameResource.values())
-                bankTrades.add(new PermanentTrade(source, target, 4));
+                if (target != source)
+                    bankTrades.add(new PermanentTrade(source, target, 4));
     }
 
     @Override
@@ -234,30 +236,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return players;
     }
 
-    public boolean isLocalPlayerActive() {
-        return players.getLocalPlayer().getTeam() == teamTurns.getCurrentTeam();
-    }
-
-    public List<Trade> getTrades() {
-        Player local = players.getLocalPlayer();
-        List<Trade> trades = new ArrayList<>();
-        for (Username u : players.getAllUsers()) {
-            Trade trade = players.getPlayer(u).getTrade();
-            if (trade != null && local.canMakeTrade(trade))
-                trades.add(trade);
-        }
-        for (TradingPostType t : board.getTrades(local.getTeam())) {
-            for (Trade trade : t.getTrades())
-                if (local.canMakeTrade(trade))
-                    trades.add(trade);
-        }
-        for (Trade trade : bankTrades)
-            if (local.canMakeTrade(trade))
-                trades.add(trade);
-        Collections.sort(trades);
-        return trades;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -310,5 +288,29 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 ", bankTrades=" + bankTrades +
                 ", eventStack=" + eventStack +
                 '}';
+    }
+
+    public List<Trade> getTrades(Username user) {
+        List<Trade> trades = new ArrayList<>();
+        Player player = players.getPlayer(user);
+        for (Username u : players.getAllUsers()) {
+            Trade trade = players.getPlayer(u).getTrade();
+            if (trade != null && player.canMakeTrade(trade))
+                trades.add(trade);
+        }
+        for (TradingPostType t1 : board.getTrades(player.getTeam())) {
+            for (Trade trade : t1.getTrades())
+                if (player.canMakeTrade(trade))
+                    trades.add(trade);
+        }
+        for (Trade trade : bankTrades)
+            if (player.canMakeTrade(trade))
+                trades.add(trade);
+        Collections.sort(trades);
+        return trades;
+    }
+
+    public boolean isPlayerActive(Username user) {
+        return players.getPlayer(user).getTeam() == teamTurns.getCurrentTeam();
     }
 }

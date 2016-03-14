@@ -31,9 +31,12 @@ public enum UserEventType implements EventType {
     Vertex_Clicked(Coordinate.class),
     Settlement_Purchase(Coordinate.class),
     City_Purchase(Coordinate.class),
+    Trade_Clicked(Trade.class),
     Make_Trade(Trade.class),
     Inventory_Clicked(Integer.class),
-    Server_Clicked(Integer.class);
+    Server_Clicked(Integer.class),
+    History_Clicked(Integer.class),
+    History_Jump(Integer.class);
 
     private final Class payloadType;
 

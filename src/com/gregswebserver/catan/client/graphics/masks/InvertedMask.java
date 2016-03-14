@@ -5,6 +5,7 @@ package com.gregswebserver.catan.client.graphics.masks;
  * Mask for inverting either the left or right sides of another render mask.
  */
 public class InvertedMask extends RenderMask {
+
     public InvertedMask(RenderMask other, Direction direction) {
         int first = -1;
         int last = 0;

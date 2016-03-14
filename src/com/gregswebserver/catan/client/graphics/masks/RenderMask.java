@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.client.graphics.masks;
 
+import com.gregswebserver.catan.common.IllegalStateException;
+
 import java.awt.*;
 import java.util.Arrays;
 
@@ -20,6 +22,9 @@ public abstract class RenderMask {
             throw new IllegalStateException("Mask arrays not instantiated.");
         if (height != padding.length || height != widths.length)
             throw new IllegalStateException("Mask height inconsistent");
+        for (int row = 0; row < height; row++)
+            if (padding[row] + widths[row] > width)
+                throw new IllegalStateException("Mask width inconsistent.");
     }
 
     public int getWidth() {

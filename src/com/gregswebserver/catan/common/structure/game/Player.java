@@ -172,7 +172,7 @@ public class Player implements Serializable {
             for (Coordinate space : hexArray.getAdjacentSpacesFromVertex(position).values())
                 addResource(hexArray.getTile(space),1);
             state = PlayerState.Playing;
-        } else {
+        } else if (state == PlayerState.Playing) {
             round++;
         }
     }
@@ -184,14 +184,16 @@ public class Player implements Serializable {
         bought.pop();
         if (state == PlayerState.Settlement_2)
             state = PlayerState.Waiting;
-        if (state == PlayerState.Playing && round == 0) {
-            HexagonalArray hexArray = settlements.peek().getHexArray();
-            Coordinate position = settlements.peek().getPosition();
-            for (Coordinate space : hexArray.getAdjacentSpacesFromVertex(position).values())
-                removeResource(hexArray.getTile(space),1);
-            state = PlayerState.FirstTurn;
-        } else {
-            round--;
+        if (state == PlayerState.Playing) {
+            if (round == 0) {
+                HexagonalArray hexArray = settlements.peek().getHexArray();
+                Coordinate position = settlements.peek().getPosition();
+                for (Coordinate space : hexArray.getAdjacentSpacesFromVertex(position).values())
+                    removeResource(hexArray.getTile(space), 1);
+                state = PlayerState.FirstTurn;
+            } else {
+                round--;
+            }
         }
     }
 

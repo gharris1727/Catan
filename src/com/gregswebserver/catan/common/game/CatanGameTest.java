@@ -57,7 +57,7 @@ public class CatanGameTest {
     }
 
     private CatanGame startTwoPlayerGame() {
-        CatanGame game = new CatanGame(greg, twoPlayers);
+        CatanGame game = new CatanGame(twoPlayers);
         assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
         assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
         assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
@@ -97,13 +97,13 @@ public class CatanGameTest {
 
     @Test
     public void testCreateNewGame() {
-        new CatanGame(greg, twoPlayers);
+        new CatanGame(twoPlayers);
     }
 
     @Test
     public void testGameBeginning() {
-        CatanGame game = new CatanGame(greg, twoPlayers);
-        CatanGame game2 = new CatanGame(greg, twoPlayers);
+        CatanGame game = new CatanGame(twoPlayers);
+        CatanGame game2 = new CatanGame(twoPlayers);
         game.assertEquals(game2);
         assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
         assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
@@ -151,8 +151,8 @@ public class CatanGameTest {
 
     @Test
     public void testWrongBeginning() {
-        CatanGame game = new CatanGame(greg, twoPlayers);
-        CatanGame game2 = new CatanGame(greg, twoPlayers);
+        CatanGame game = new CatanGame(twoPlayers);
+        CatanGame game2 = new CatanGame(twoPlayers);
         //GREG'S TURN
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
@@ -246,8 +246,8 @@ public class CatanGameTest {
 
     @Test
     public void testWrongTurns() {
-        CatanGame game = new CatanGame(greg, twoPlayers);
-        CatanGame game2 = new CatanGame(greg, twoPlayers);
+        CatanGame game = new CatanGame(twoPlayers);
+        CatanGame game2 = new CatanGame(twoPlayers);
 
         //GREG'S TURN
         game.assertEquals(game2);

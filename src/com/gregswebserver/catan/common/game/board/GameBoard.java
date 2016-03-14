@@ -7,6 +7,7 @@ import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.paths.Road;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
+import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
@@ -29,14 +30,14 @@ public class GameBoard {
     private final Dimension size;
     private final HexagonalArray hexArray;
     private final Map<DiceRoll, List<Coordinate>> diceRolls;
-    private final Map<Coordinate, TradingPostType> tradingPosts;
+    private final List<Coordinate> tradingPosts;
     private final Stack<Coordinate> robberLocations;
 
     public GameBoard(
             Dimension size,
             HexagonalArray hexArray,
             Map<DiceRoll, List<Coordinate>> diceRolls,
-            Map<Coordinate, TradingPostType> tradingPosts,
+            List<Coordinate> tradingPosts,
             Coordinate robberLocation) {
         this.size = size;
         this.hexArray = hexArray;
@@ -212,10 +213,13 @@ public class GameBoard {
 
     public Set<TradingPostType> getTrades(Team team) {
         Set<TradingPostType> trades = EnumSet.noneOf(TradingPostType.class);
-        for (Map.Entry<Coordinate, TradingPostType> entry : tradingPosts.entrySet()) {
-            Town town = hexArray.getTown(entry.getKey());
-            if (town != null && town.getTeam() == team)
-                trades.add(entry.getValue());
+        for (Coordinate tradeSpace : tradingPosts) {
+            TradeTile tradeTile = (TradeTile) hexArray.getTile(tradeSpace);
+            for (Coordinate tradeTown : tradeTile.getTradingPostCoordinates()) {
+                Town town = hexArray.getTown(tradeTown);
+                if (town != null && town.getTeam() == team)
+                    trades.add(tradeTile.getTradingPostType());
+            }
         }
         return trades;
     }

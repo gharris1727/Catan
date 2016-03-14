@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import static com.gregswebserver.catan.common.util.Direction.*;
 
@@ -51,8 +52,8 @@ public class TradeTile extends BeachTile {
         }
     }
 
-    public HashSet<Coordinate> getTradingPostCoordinates() {
-        HashSet<Coordinate> out = new HashSet<>(3);
+    public Set<Coordinate> getTradingPostCoordinates() {
+        Set<Coordinate> out = new HashSet<>(3);
         for (Direction d : getTradingPostDirections()) {
             try {
                 out.add(getHexArray().getVertexCoordinateFromSpace(getPosition(), d));

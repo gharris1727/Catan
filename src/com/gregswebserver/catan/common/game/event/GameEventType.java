@@ -13,6 +13,7 @@ import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
  */
 public enum GameEventType implements EventType {
 
+    Start(null),
     Turn_Advance(null),
     Player_Move_Robber(Coordinate.class),
     Build_Settlement(Coordinate.class),

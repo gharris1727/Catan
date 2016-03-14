@@ -11,6 +11,8 @@ import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.structure.GameManager;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
 import com.gregswebserver.catan.common.game.board.paths.Path;
@@ -18,7 +20,9 @@ import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
+import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
@@ -45,15 +49,19 @@ public class ContextRegion extends UIScreenRegion {
         detailheight = Client.graphicsConfig.getInt("interface.ingame.context.detail.y");
     }
 
+    private final GameManager manager;
     private final CatanGame game;
+    private final Username local;
     private final TiledBackground background;
     private final TextLabel title;
     private final TextLabel detail;
     private Object target;
 
-    public ContextRegion(int priority, CatanGame game) {
+    public ContextRegion(int priority, GameManager manager, Username local) {
         super(priority);
-        this.game = game;
+        this.manager = manager;
+        this.game = manager.getLocalGame();
+        this.local = local;
         background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
             @Override
             public String toString() {
@@ -87,8 +95,9 @@ public class ContextRegion extends UIScreenRegion {
         //Clear the text so that if we unselected, it all goes blank.
         title.setText("");
         detail.setText("");
-        if (game.isLocalPlayerActive()) {
-            add(new ContextButton(2, 0) {
+        boolean localPlayerActive = game.isPlayerActive(local);
+        if (localPlayerActive) {
+            add(new ContextButton(2, 1) {
                 @Override
                 public String toString() {
                     return "TurnAdvanceButton";
@@ -108,8 +117,8 @@ public class ContextRegion extends UIScreenRegion {
                 detail.setText("Produces: " + tile.getResource());
             else
                 detail.setText("Produces: Nothing");
-            if (game.isLocalPlayerActive() && !tile.hasRobber()) {
-                add(new ContextButton(2, 4) {
+            if (localPlayerActive && !tile.hasRobber()) {
+                add(new ContextButton(2, 2) {
                     @Override
                     public String toString() {
                         return "Path";
@@ -133,7 +142,7 @@ public class ContextRegion extends UIScreenRegion {
             Path path = (Path) target;
             title.setText("Path: " + target);
             detail.setText("Owned by: " + path.getTeam());
-            if (game.isLocalPlayerActive() && path.getTeam().equals(Team.None)) {
+            if (localPlayerActive && path.getTeam().equals(Team.None)) {
                 add(new ContextButton(2, 5) {
                     @Override
                     public String toString() {
@@ -149,22 +158,21 @@ public class ContextRegion extends UIScreenRegion {
         } else if (target instanceof Town) {
             title.setText("Town: " + target);
             detail.setText("Owned by: " + ((Town) target).getTeam());
-            if (game.isLocalPlayerActive()) {
+            if (localPlayerActive) {
                 Town town = (Town) target;
                 if (town.getTeam().equals(Team.None)) {
-                    add(new ContextButton(2, 1) {
+                    add(new ContextButton(2, 3) {
                         @Override
                         public String toString() {
                             return "Town";
                         }
-
                         @Override
                         public UserEvent onMouseClick(MouseEvent event) {
                             return new UserEvent(this, UserEventType.Settlement_Purchase, town.getPosition());
                         }
                     }).setPosition(getButtonLocation(1, 0));
-                } else if (town.getTeam().equals(game.getTeams().getLocalPlayer().getTeam())) {
-                    add(new ContextButton(2, 3) {
+                } else if (town.getTeam().equals(game.getTeams().getPlayer(local).getTeam())) {
+                    add(new ContextButton(2, 4) {
                         @Override
                         public String toString() {
                             return "Town";
@@ -177,6 +185,32 @@ public class ContextRegion extends UIScreenRegion {
                     }).setPosition(getButtonLocation(1, 0));
                 }
             }
+        } else if (target instanceof Trade) {
+            add(new ContextButton(2,8) {
+                @Override
+                public String toString() {
+                    return "ConfirmTrade";
+                }
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    return new UserEvent(this, UserEventType.Make_Trade, target);
+                }
+            }).setPosition(getButtonLocation(1,0));
+        } else if (target instanceof Integer) {
+            GameEvent event = manager.getEvents().get((Integer) target);
+            title.setText("Event: " + event);
+            detail.setText("From: " + event.getOrigin());
+            add(new ContextButton(2, 9) {
+                @Override
+                public String toString() {
+                    return "JumpToEvent";
+                }
+
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    return new UserEvent(this, UserEventType.History_Jump, target);
+                }
+            }).setPosition(getButtonLocation(1,0));
         }
         add(background);
         center(add(title)).y = titleheight;

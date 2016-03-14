@@ -1,12 +1,9 @@
 package com.gregswebserver.catan.common.game.event;
 
-import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.common.CoreThread;
-import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 /**
@@ -14,16 +11,13 @@ import com.gregswebserver.catan.common.structure.game.GameSettings;
  * Main game event that consumes GameEvents from the blocking queue, and preforms the actions on the game element.
  * Simulates a catan game to store state and condition.
  */
-public class GameThread extends QueuedInputThread<GameEvent> {
+public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
 
-    private final CoreThread host;
     private final CatanGame game;
 
-    public GameThread(CoreThread host, Username local, GameSettings settings) {
-        super(host.logger);
-        this.host = host;
-        logger.log("Creating new GameThread for " + settings, LogLevel.DEBUG);
-        this.game = new CatanGame(local, settings);
+    public GameThread(Logger logger, GameSettings settings) {
+        super(logger);
+        this.game = new CatanGame(settings);
         start();
     }
 
@@ -34,19 +28,35 @@ public class GameThread extends QueuedInputThread<GameEvent> {
     //Process GameEvents from the event queue.
     @Override
     protected void execute() throws ThreadStop {
-        GameEvent event = getEvent(true);
+        GameControlEvent event = getEvent(true);
         try {
-            game.execute(event);
-            if (host instanceof Client)
-                ((Client) host).gameUpdate();
+            GameEvent gameEvent = null;
+            if (event.getPayload() instanceof GameEvent)
+                gameEvent = (GameEvent) event.getPayload();
+            switch (event.getType()){
+                case Test:
+                    if (!game.test(gameEvent))
+                        throw new EventConsumerException("Game action not allowed", gameEvent);
+                    break;
+                case Execute:
+                    game.execute(gameEvent);
+                    break;
+                case Undo:
+                    game.undo(gameEvent);
+                    break;
+            }
+            onSuccess(event);
         } catch (EventConsumerException e) {
-            //TODO: provide some error feedback to the user so they know when something fails.
-            logger.log("Unable to process GameEvent", e, LogLevel.WARN);
+            onFailure(event, e);
         }
     }
 
+    protected abstract void onSuccess(GameControlEvent event);
+
+    protected abstract void onFailure(GameControlEvent event, EventConsumerException e);
+
     public String toString() {
-        return host + " GameThread";
+        return "GameThread";
     }
 
 }
