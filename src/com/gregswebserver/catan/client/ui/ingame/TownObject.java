@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame.map;
+package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
@@ -20,14 +20,14 @@ public class TownObject extends MapObject {
 
     private final Town town;
 
-    TownObject(int priority, MapRegion container, Town town) {
-        super(priority, container);
+    TownObject(int priority, MapRegion container, TeamGraphics graphics, Town town) {
+        super(priority, container, graphics);
         this.town = town;
         Graphic background;
         if (town instanceof Settlement || town instanceof EmptyTown) {
-            background = town.getTeam().getSettlementGraphic();
+            background = graphics.getSettlementGraphic(town.getTeam());
         } else if (town instanceof City) {
-            background = town.getTeam().getCityGraphic();
+            background = graphics.getCityGraphic(town.getTeam());
         } else
             throw new IllegalStateException();
         add(new GraphicObject(0, background) {

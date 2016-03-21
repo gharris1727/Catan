@@ -45,7 +45,12 @@ public class ResourceLoader {
             try {
                 GraphicSource s = getGraphicSource(info.getSource());
                 RenderMask m = info.getMask();
-                return new Graphic(s, m, info.getLocation(), true);
+                Graphic graphic = new Graphic(s, m, info.getLocation(), true);
+                int[] swaps = info.getSwaps();
+                if (swaps != null)
+                    for (int i = 0; i < swaps.length; i +=2 )
+                        graphic.swap(swaps[i],swaps[i+1]);
+                return graphic;
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }

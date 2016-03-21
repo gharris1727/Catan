@@ -15,6 +15,9 @@ import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.common.network.NetEventType;
 import com.gregswebserver.catan.common.network.ServerConnection;
+import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
+import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.UserInfo;
 import com.gregswebserver.catan.common.structure.UserLogin;
 import com.gregswebserver.catan.common.structure.event.ControlEvent;
@@ -42,6 +45,10 @@ import java.security.SecureRandom;
  */
 public class Server extends CoreThread {
 
+    private static final PropertiesFileInfo configFile;
+
+    private PropertiesFile config;
+
     private ServerWindow window;
     private UserDatabase database;
     private ConnectionPool connectionPool;
@@ -51,6 +58,10 @@ public class Server extends CoreThread {
     private ServerSocket socket;
     private boolean listening;
     private Thread listen;
+
+    static {
+        configFile = new PropertiesFileInfo("server.properties", "Server Configuration");
+    }
 
     public Server(int port) {
         this(new Logger(), port);
@@ -196,7 +207,6 @@ public class Server extends CoreThread {
         int id = connection.getConnectionID();
         switch (event.getType()) {
             case Log_In:
-                logger.log("Authenticating client",LogLevel.DEBUG);
                 try {
                     //Authenticate the client and generate an AuthToken for them.
                     AuthToken clientToken = database.authenticate((UserLogin) event.getPayload());
@@ -239,10 +249,11 @@ public class Server extends CoreThread {
     }
 
     private void startup(int port) {
+        config = ResourceLoader.getPropertiesFile(configFile);
         token = new AuthToken(new Username("Server"), new SecureRandom().nextInt()); //For use in chat and sending events originating here.
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
-        database = new UserDatabase(logger);
+        database = new UserDatabase(logger, new PropertiesFileInfo(config.get("database"), "User database"));
         matchmakingPool = new MatchmakingPool();
         gamePool = new GamePool(this);
         try {

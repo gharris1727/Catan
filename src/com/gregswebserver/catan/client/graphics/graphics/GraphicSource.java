@@ -21,6 +21,7 @@ public class GraphicSource extends Graphic {
         int width = image.getWidth(), height = image.getHeight();
         //Create a buffer to import the RGBA pixels.
         int pixelsRGBA[] = new int[width * height];
+        //Pull the image data into the rgba buffer.
         image.getRGB(0, 0, width, height, pixelsRGBA, 0, width);
         //Initialize this object's storage
         init(new RectangularMask(new Dimension(width,height)), true);

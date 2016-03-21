@@ -5,10 +5,8 @@ import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.Button;
 import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
@@ -29,14 +27,14 @@ public class TradeRegion extends UIScreenRegion {
 
     private static final Point elementOffset;
     private static final Point elementSpacing;
-    private static final Dimension acceptButtonSize;
     private static final int panelHeight;
     private static final int elementHeight;
+
+    //TODO: provide an interface to create a new TemporaryTrade.
 
     static {
         elementOffset = Client.graphicsConfig.getPoint("interface.ingame.trade.element.offset");
         elementSpacing = Client.graphicsConfig.getPoint("interface.ingame.trade.element.spacing");
-        acceptButtonSize = Client.graphicsConfig.getDimension("interface.ingame.trade.accept.size");
         panelHeight = Client.graphicsConfig.getInt("interface.ingame.trade.panel.height");
         elementHeight = Client.graphicsConfig.getInt("interface.ingame.trade.element.height");
     }
@@ -46,7 +44,6 @@ public class TradeRegion extends UIScreenRegion {
     private final TradeControlPanel panel;
     private final Username local;
     private RenderMask tradeSize;
-    private Trade selected;
 
     public TradeRegion(int priority, CatanGame game, Username local) {
         super(priority);
@@ -88,9 +85,10 @@ public class TradeRegion extends UIScreenRegion {
 
         private final CatanGame game;
 
-        protected TradeList(int priority, CatanGame game) {
+        private TradeList(int priority, CatanGame game) {
             super(priority);
             this.game = game;
+            setTransparency(true);
         }
 
         @Override
@@ -177,7 +175,6 @@ public class TradeRegion extends UIScreenRegion {
 
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                selected = trade;
                 return new UserEvent(this, UserEventType.Trade_Clicked, trade);
             }
 
@@ -196,9 +193,8 @@ public class TradeRegion extends UIScreenRegion {
     private class TradeControlPanel extends UIScreenRegion {
 
         private final TiledBackground background;
-        private final Button acceptTrade;
 
-        protected TradeControlPanel(int priority) {
+        private TradeControlPanel(int priority) {
             super(priority);
             background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
                 @Override
@@ -207,29 +203,11 @@ public class TradeRegion extends UIScreenRegion {
                 }
             };
             add(background).setClickable(this);
-            acceptTrade = new Button(1, "Accept") {
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return selected == null ? null : new UserEvent(this, UserEventType.Make_Trade, selected);
-                }
-
-                @Override
-                public String toString() {
-                    return "AcceptTradeButton";
-                }
-            };
-            acceptTrade.setMask(new RoundedRectangularMask(acceptButtonSize));
-            add(acceptTrade);
         }
 
         @Override
         protected void resizeContents(RenderMask mask) {
             background.setMask(mask);
-        }
-
-        @Override
-        protected void renderContents() {
-            center(acceptTrade);
         }
 
         @Override

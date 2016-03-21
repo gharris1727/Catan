@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame.map;
+package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
@@ -13,10 +13,12 @@ import java.awt.*;
 public abstract class MapObject extends ScreenRegion {
 
     private final MapRegion container;
+    protected final TeamGraphics graphics;
 
-    protected MapObject(int priority, MapRegion container) {
+    protected MapObject(int priority, MapRegion container, TeamGraphics graphics) {
         super(priority);
         this.container = container;
+        this.graphics = graphics;
     }
 
     @Override

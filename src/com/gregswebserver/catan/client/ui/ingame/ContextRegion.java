@@ -42,7 +42,7 @@ public class ContextRegion extends UIScreenRegion {
     private static final int detailheight;
 
     static {
-        graphics = new GraphicSet(Client.graphicsConfig, "interface.ingame.context.icons", RectangularMask.class);
+        graphics = new GraphicSet(Client.graphicsConfig, "interface.ingame.context.icons", RectangularMask.class, null);
         offset = Client.graphicsConfig.getPoint("interface.ingame.context.offset");
         spacing = Client.graphicsConfig.getPoint("interface.ingame.context.spacing");
         titleheight = Client.graphicsConfig.getInt("interface.ingame.context.title.y");
@@ -92,6 +92,8 @@ public class ContextRegion extends UIScreenRegion {
         //If we already clicked on something, update and see if it changed.
         if (target instanceof BoardObject)
             target = game.getBoard().refresh(((BoardObject) target));
+        if (target instanceof Trade && !game.getTrades(local).contains(target))
+            target = null;
         //Clear the text so that if we unselected, it all goes blank.
         title.setText("");
         detail.setText("");
@@ -186,20 +188,24 @@ public class ContextRegion extends UIScreenRegion {
                 }
             }
         } else if (target instanceof Trade) {
-            add(new ContextButton(2,8) {
-                @Override
-                public String toString() {
-                    return "ConfirmTrade";
-                }
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Make_Trade, target);
-                }
-            }).setPosition(getButtonLocation(1,0));
+            if (localPlayerActive) {
+                add(new ContextButton(2, 8) {
+                    @Override
+                    public String toString() {
+                        return "ConfirmTrade";
+                    }
+
+                    @Override
+                    public UserEvent onMouseClick(MouseEvent event) {
+                        return new UserEvent(this, UserEventType.Make_Trade, target);
+                    }
+                }).setPosition(getButtonLocation(1, 0));
+            }
         } else if (target instanceof Integer) {
             GameEvent event = manager.getEvents().get((Integer) target);
-            title.setText("Event: " + event);
-            detail.setText("From: " + event.getOrigin());
+            title.setText("Event: " + event.getDescription());
+            if (event.getOrigin() != null)
+                detail.setText(event.getOrigin().toString());
             add(new ContextButton(2, 9) {
                 @Override
                 public String toString() {

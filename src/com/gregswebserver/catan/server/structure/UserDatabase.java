@@ -18,16 +18,15 @@ import java.util.Map;
  */
 public class UserDatabase {
 
-    public static final PropertiesFileInfo databasefile =
-            new PropertiesFileInfo("config/server/accounts.properties", "User account information");
-
     private final Logger logger;
+    private final PropertiesFileInfo databaseFile;
     private final PropertiesFile database;
     private final Map<Username, UserAccount> accounts;
 
-    public UserDatabase(Logger logger) {
+    public UserDatabase(Logger logger, PropertiesFileInfo databaseFile) {
         this.logger = logger;
-        database = ResourceLoader.getPropertiesFile(databasefile);
+        this.databaseFile = databaseFile;
+        this.database = ResourceLoader.getPropertiesFile(databaseFile);
         accounts = new HashMap<>();
         for (Map.Entry<String, String> entry : database) {
             Username username = new Username(entry.getKey());
@@ -39,7 +38,7 @@ public class UserDatabase {
     public void save() {
         for (Map.Entry<Username, UserAccount> entry : accounts.entrySet())
             database.set(entry.getKey().username, entry.getValue().toString());
-        ResourceLoader.savePropertiesFile(databasefile);
+        ResourceLoader.savePropertiesFile(databaseFile);
     }
 
     public void registerAccount(UserLogin login) {

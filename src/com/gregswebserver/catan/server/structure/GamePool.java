@@ -36,7 +36,7 @@ public class GamePool {
             protected void onSuccess(GameControlEvent event) {
             }
             @Override
-            protected void onFailure(GameControlEvent event, EventConsumerException e) {
+            protected void onFailure(EventConsumerException e) {
                 logger.log("Unable to execute game event!", e, LogLevel.ERROR);
             }
         };

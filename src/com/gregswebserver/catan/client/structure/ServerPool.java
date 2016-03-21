@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.structure;
 
+import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
-import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.util.Iterator;
@@ -14,9 +14,6 @@ import java.util.List;
  */
 public class ServerPool implements Iterable<ConnectionInfo> {
 
-    public static final PropertiesFileInfo serverfile =
-            new PropertiesFileInfo("config/client/servers.properties", "Login details for servers");
-
     //TODO: rework this to allow drag-swapping of ServerLogin objects.
 
     private final List<ConnectionInfo> list;
@@ -24,7 +21,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     public ServerPool() {
         list = new LinkedList<>();
-        file = ResourceLoader.getPropertiesFile(serverfile);
+        file = ResourceLoader.getPropertiesFile(Client.serverFile);
         int i = 0;
         String hostname;
         do {
@@ -46,7 +43,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
             file.set("servers." + i + ".username", elt.getUsername());
             i++;
         }
-        ResourceLoader.savePropertiesFile(serverfile);
+        ResourceLoader.savePropertiesFile(Client.serverFile);
     }
 
     public void add(ConnectionInfo login) {

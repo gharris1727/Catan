@@ -11,8 +11,8 @@ import com.gregswebserver.catan.common.event.EventType;
  */
 public enum RenderEventType implements EventType {
 
-    Canvas_Update(ScreenCanvas.class),
-    Animation_Step(null);
+    Canvas_Update(ScreenCanvas.class), //Update the screen canvas with a new one.
+    Animation_Step(null); //Step all animations.
 
     private final Class payloadType;
 

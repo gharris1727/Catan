@@ -9,7 +9,7 @@ import java.awt.image.BufferStrategy;
  * Created by Greg on 1/18/2015.
  * A canvas that has an underlying graphic so that we can render to it.
  */
-public class ScreenCanvas extends Canvas {
+public final class ScreenCanvas extends Canvas {
 
     private final Dimension size;
     private final TimeSlice canvasRender;
@@ -55,7 +55,7 @@ public class ScreenCanvas extends Canvas {
             }
             bufferCreate.mark();
             screenRender.reset();
-            frameBuffer.getDrawGraphics().drawImage(graphic.getBuffer(), 0, 0, getWidth(), getHeight(), null);
+            graphic.renderTo(frameBuffer.getDrawGraphics(), getWidth(), getHeight());
             frameBuffer.show();
             screenRender.mark();
         }

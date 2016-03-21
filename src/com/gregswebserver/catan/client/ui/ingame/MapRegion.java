@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame.map;
+package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
@@ -25,12 +25,14 @@ public class MapRegion extends ScrollingScreenRegion {
     private static final Dimension unitSize = Client.graphicsConfig.getDimension("tiles.unit.size");
 
     private final GameBoard board;
+    private final TeamGraphics graphics;
 
     private final TiledBackground background;
 
-    public MapRegion(GameBoard board) {
+    public MapRegion(GameBoard board, TeamGraphics graphics) {
         super(0);
         this.board = board;
+        this.graphics = graphics;
         background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_GAME) {
             public String toString() {
                 return "BoardAreaBackground";
@@ -49,11 +51,11 @@ public class MapRegion extends ScrollingScreenRegion {
     protected void renderContents() {
         clear();
         for (Tile tile : board.getTileMap().values())
-            add(new TileObject(1, this, tile)).setPosition(tileToScreen(tile.getPosition()));
+            add(new TileObject(1, this, graphics, tile)).setPosition(tileToScreen(tile.getPosition()));
         for (Path path : board.getPathMap().values())
-            add(new PathObject(2, this, path)).setPosition(edgeToScreen(path.getPosition()));
+            add(new PathObject(2, this, graphics, path)).setPosition(edgeToScreen(path.getPosition()));
         for (Town town : board.getTownMap().values())
-            add(new TownObject(3, this, town)).setPosition(vertexToScreen(town.getPosition()));
+            add(new TownObject(3, this, graphics, town)).setPosition(vertexToScreen(town.getPosition()));
         add(background);
     }
 

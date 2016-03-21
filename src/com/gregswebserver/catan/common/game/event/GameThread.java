@@ -47,13 +47,13 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
             }
             onSuccess(event);
         } catch (EventConsumerException e) {
-            onFailure(event, e);
+            onFailure(e);
         }
     }
 
     protected abstract void onSuccess(GameControlEvent event);
 
-    protected abstract void onFailure(GameControlEvent event, EventConsumerException e);
+    protected abstract void onFailure(EventConsumerException e);
 
     public String toString() {
         return "GameThread";

@@ -17,26 +17,24 @@ public enum UserEventType implements EventType {
     Net_Connect(ConnectionInfo.class), //Begin connecting to a remote server
     Net_Disconnect(null), //Disconnects from a remote server.
     Net_Clear(null), //Clears the connection error message.
-    Lobby_Create(null),
-    Lobby_Join(Username.class),
-    Lobby_Quit(null),
-    Lobby_Edit(LobbyConfig.class),
-    Lobby_Start(null),
-    Lobby_Sort(LobbySortOption.class),
-    Space_Clicked(Coordinate.class),
-    Tile_Rob(Coordinate.class),
-    End_Turn(null),
-    Edge_Clicked(Coordinate.class),
-    Road_Purchase(Coordinate.class),
-    Vertex_Clicked(Coordinate.class),
-    Settlement_Purchase(Coordinate.class),
-    City_Purchase(Coordinate.class),
-    Trade_Clicked(Trade.class),
-    Make_Trade(Trade.class),
-    Inventory_Clicked(Integer.class),
-    Server_Clicked(Integer.class),
-    History_Clicked(Integer.class),
-    History_Jump(Integer.class);
+    Lobby_Create(null), //Create a new lobby.
+    Lobby_Join(Username.class), //Join an existing lobby.
+    Lobby_Quit(null), //Quit from the active lobby.
+    Lobby_Edit(LobbyConfig.class), //Edit the current lobby's settings.
+    Lobby_Start(null), //Start the game from the lobby.
+    Lobby_Sort(LobbySortOption.class), //Sort the lobbies by sort option.
+    Space_Clicked(Coordinate.class), //Indicate that a space was clicked on.
+    Tile_Rob(Coordinate.class), //Place the robber on a tile.
+    End_Turn(null), //End the player's turn.
+    Edge_Clicked(Coordinate.class), //Indicate that an edge was clicked on.
+    Road_Purchase(Coordinate.class), //Purchase a road in the board.
+    Vertex_Clicked(Coordinate.class), //Indicate that a vertex was clicked on.
+    Settlement_Purchase(Coordinate.class), //Purchase a settlement.
+    City_Purchase(Coordinate.class), //Purchase a city.
+    Trade_Clicked(Trade.class), //Click on a trade.
+    Make_Trade(Trade.class), //Complete a trade.
+    History_Clicked(Integer.class), //Click on a historical event.
+    History_Jump(Integer.class); //Jump to that historical event.
 
     private final Class payloadType;
 

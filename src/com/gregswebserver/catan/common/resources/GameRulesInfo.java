@@ -13,7 +13,7 @@ public class GameRulesInfo {
     }
 
     public String getPath() {
-        return "config/rules/" + name + ".properties";
+        return "rules/" + name + ".properties";
     }
 
     @Override
@@ -34,6 +34,6 @@ public class GameRulesInfo {
 
     @Override
     public String toString() {
-        return "BoardLayoutInfo(" + name + ")";
+        return "GameRulesInfo(" + getPath() + ")";
     }
 }

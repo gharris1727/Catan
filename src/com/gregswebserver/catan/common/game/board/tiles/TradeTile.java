@@ -5,9 +5,6 @@ import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionExcep
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static com.gregswebserver.catan.common.util.Direction.*;
 
 /**
@@ -17,10 +14,41 @@ import static com.gregswebserver.catan.common.util.Direction.*;
 public class TradeTile extends BeachTile {
 
     private final TradingPostType tradingPostType;
+    private final Direction[] directions;
 
     public TradeTile(Direction direction, int sides, TradingPostType tradingPostType) {
         super(direction, sides);
         this.tradingPostType = tradingPostType;
+        switch (direction) {
+            case up:
+                directions = new Direction[]{upright, upleft};
+                break;
+            case down:
+                directions = new Direction[]{downright, downleft};
+                break;
+            case left:
+                directions = new Direction[]{downleft, left};
+                break;
+            case right:
+                directions = new Direction[]{upright, right};
+                break;
+            case upleft:
+                directions = new Direction[]{upleft, left};
+                break;
+            case downleft:
+                directions = new Direction[]{downleft, left};
+                break;
+            case upright:
+                directions = new Direction[]{upright, right};
+                break;
+            case downright:
+                directions = new Direction[]{downright, right};
+                break;
+            default:
+                //This is the error condition.
+                directions = new Direction[]{left, right};
+                break;
+        }
     }
 
     public TradingPostType getTradingPostType() {
@@ -28,40 +56,17 @@ public class TradeTile extends BeachTile {
     }
 
     public Direction[] getTradingPostDirections() {
-        //TODO: generate the trading post directions before this is created.
-        //this is fine for 1-sided beach, but we need to deterministically find 2-sided.
-        switch (getDirection()) {
-            case up:
-                return new Direction[]{upright, upleft};
-            case down:
-                return new Direction[]{downright, downleft};
-            case left:
-                return new Direction[]{downleft, left};
-            case right:
-                return new Direction[]{upright, right};
-            case upleft:
-                return new Direction[]{upleft, left};
-            case downleft:
-                return new Direction[]{downleft, left};
-            case upright:
-                return new Direction[]{upright, right};
-            case downright:
-                return new Direction[]{downright, right};
-            default:
-                return new Direction[]{};
-        }
+        return directions;
     }
 
-    public Set<Coordinate> getTradingPostCoordinates() {
-        Set<Coordinate> out = new HashSet<>(3);
-        for (Direction d : getTradingPostDirections()) {
-            try {
-                out.add(getHexArray().getVertexCoordinateFromSpace(getPosition(), d));
-            } catch (IllegalDirectionException e) {
-                //Shouldn't happen.
-            }
+    public Coordinate[] getTradingPostCoordinates() {
+        Coordinate[] coordinates = new Coordinate[directions.length];
+        try {
+            for (int i = 0; i < directions.length; i++)
+                coordinates[i] = getHexArray().getVertexCoordinateFromSpace(getPosition(), directions[i]);
+        } catch (IllegalDirectionException ignored) {
         }
-        return out;
+        return coordinates;
     }
 
     @Override

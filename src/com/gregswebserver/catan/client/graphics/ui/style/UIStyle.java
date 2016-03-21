@@ -18,6 +18,7 @@ public class UIStyle {
 
     public static final String FONT_HEADING = "heading";
     public static final String FONT_PARAGRAPH = "paragraph";
+    public static final String FONT_INVENTORY = "inventory";
 
     public static final String BACKGROUND_WINDOW = "window";
     public static final String BACKGROUND_INTERFACE = "interface";
@@ -25,7 +26,8 @@ public class UIStyle {
     public static final String BACKGROUND_TEXT = "text";
     public static final String BACKGROUND_LOBBIES = "lobbies";
     public static final String BACKGROUND_USERS = "users";
-    public static final String BACKGROUND_GAME = "game"; //TODO: probably find a better place for this
+    public static final String BACKGROUND_GAME = "game";
+    public static final String BACKGROUND_INVENTORY = "inventory";
 
     private static final String fontRootKey = "fonts.";
     private static final String fontNameKey = ".name";
@@ -39,7 +41,7 @@ public class UIStyle {
 
     public UIStyle(String styleName) {
         this.styleDefinition = ResourceLoader.getPropertiesFile(
-                new PropertiesFileInfo("config/ui/" + styleName + ".properties", styleName + " Properties"));
+                new PropertiesFileInfo("ui/" + styleName + ".properties", styleName + " UIStyle Properties"));
     }
 
     public TextStyle getTextStyle(String styleName) {
@@ -47,11 +49,11 @@ public class UIStyle {
     }
 
     public GraphicSet getBackgroundGraphics(String backgroundStyleName) {
-        return new GraphicSet(styleDefinition, backgroundRootKey + backgroundStyleName, RectangularMask.class);
+        return new GraphicSet(styleDefinition, backgroundRootKey + backgroundStyleName, RectangularMask.class, null);
     }
 
     public GraphicSet getIconGraphics(String styleName, Class<? extends RenderMask> mask) {
-        return new GraphicSet(styleDefinition, iconRootKey + styleName, mask);
+        return new GraphicSet(styleDefinition, iconRootKey + styleName, mask, null);
     }
 
     /**

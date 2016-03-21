@@ -50,15 +50,21 @@ import java.net.UnknownHostException;
  */
 public class Client extends CoreThread {
 
-    public static final PropertiesFile staticConfig;
+    public static final PropertiesFileInfo configFile;
+    public static final PropertiesFileInfo serverFile;
     public static final PropertiesFile graphicsConfig;
 
     static {
-        staticConfig = ResourceLoader.getPropertiesFile(
-                new PropertiesFileInfo("config/client/static.properties", "Static root configuration"));
+        configFile = new PropertiesFileInfo("client.properties", "Client configuration file");
+        serverFile = new PropertiesFileInfo("client/servers.properties", "Login details for servers");
         graphicsConfig = ResourceLoader.getPropertiesFile(
-                new PropertiesFileInfo("config/graphics/graphics.properties", "Graphics configuration"));
+                new PropertiesFileInfo("graphics/graphics.properties", "Graphics configuration"));
     }
+
+    private PropertiesFile config;
+    private PropertiesFile servers;
+    private PropertiesFile locale;
+    private PropertiesFile teamColors;
 
     private ChatThread chatThread;
     private GameManager gameManager;
@@ -104,6 +110,10 @@ public class Client extends CoreThread {
 
     public String getDisconnectMessage() {
         return disconnectReason;
+    }
+
+    public PropertiesFile getTeamColors() {
+        return teamColors;
     }
 
     @Override
@@ -223,10 +233,6 @@ public class Client extends CoreThread {
             case Make_Trade:
                 gameManager.local(new GameEvent(username, GameEventType.Make_Trade, event.getPayload()));
                 break;
-            case Inventory_Clicked:
-                throw new RuntimeException("Unimplemented");
-            case Server_Clicked:
-                throw new RuntimeException("Unimplemented");
             case History_Clicked:
                 manager.gameScreen.timelineClicked((Integer) event.getPayload());
                 break;
@@ -338,11 +344,15 @@ public class Client extends CoreThread {
     }
 
     private void startup() {
+        config = ResourceLoader.getPropertiesFile(configFile);
+        servers = ResourceLoader.getPropertiesFile(serverFile);
+        PropertiesFileInfo localeFile = new PropertiesFileInfo("locale/" + config.get("locale") + ".properties", "Locale information");
+        locale = ResourceLoader.getPropertiesFile(localeFile);
+        PropertiesFileInfo teamColorsFile = new PropertiesFileInfo("graphics/teams.properties","Team colors configuration");
+        teamColors = ResourceLoader.getPropertiesFile(teamColorsFile);
         manager = new RenderManager(this);
-        String styleName = staticConfig.get("style");
-        manager.setStyle(new UIStyle(styleName));
-        InputListener listener = new InputListener(this, manager);
-        new ClientWindow(this, listener);
+        manager.setStyle(new UIStyle(config.get("style")));
+        new ClientWindow(this, new InputListener(this, manager));
         serverPool = new ServerPool();
         manager.displayServerConnectMenu();
         renderThread = new RenderThread(logger, manager);

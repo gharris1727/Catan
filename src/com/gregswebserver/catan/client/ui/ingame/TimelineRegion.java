@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
-import com.gregswebserver.catan.client.graphics.masks.ChevronMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
@@ -13,7 +12,8 @@ import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.resources.GraphicSet;
+import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.structure.game.PlayerPool;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -26,24 +26,20 @@ import java.util.List;
  */
 public class TimelineRegion extends ScrollingScreenContainer {
 
-    private static final GraphicSet timelineGraphics;
-    private static final int eventWidth;
-    private static final int eventHeight;
+    private static final int timelineHeight;
     private static final int eventSpacing;
     private static final int eventBuffer;
 
     static {
-        timelineGraphics = new GraphicSet(Client.graphicsConfig, "interface.ingame.timeline.events", ChevronMask.class);
-        eventWidth = timelineGraphics.getMask().getWidth();
-        eventHeight = timelineGraphics.getMask().getHeight();
-        eventSpacing = Client.graphicsConfig.getInt("interface.ingame.timeline.events.spacing");
-        eventBuffer = eventWidth - eventSpacing;
+        timelineHeight = Client.graphicsConfig.getInt("interface.ingame.timeline.height");
+        eventSpacing = Client.graphicsConfig.getInt("interface.ingame.timeline.spacing");
+        eventBuffer = Client.graphicsConfig.getInt("interface.ingame.timeline.buffer");
     }
 
     private final TiledBackground background;
 
-    public TimelineRegion(int priority, GameManager manager) {
-        super(priority, new EventList(1,manager.getEvents()), new Insets(0,eventBuffer,0,eventBuffer));
+    public TimelineRegion(int priority, GameManager manager, TeamGraphics graphics) {
+        super(priority, new EventList(1,manager,graphics), new Insets(0,eventBuffer,0,eventBuffer));
         background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
             @Override
             public String toString() {
@@ -55,12 +51,16 @@ public class TimelineRegion extends ScrollingScreenContainer {
 
     private static class EventList extends ScrollingScreenRegion {
 
+        private final TeamGraphics graphics;
         private final List<GameEvent> events;
+        private final PlayerPool teams;
         private int lastCount;
 
-        protected EventList(int priority, List<GameEvent> events) {
+        private EventList(int priority, GameManager manager, TeamGraphics graphics) {
             super(priority);
-            this.events = events;
+            this.graphics = graphics;
+            this.events = manager.getEvents();
+            this.teams = manager.getLocalGame().getTeams();
             lastCount = events.size();
             setTransparency(true);
         }
@@ -86,7 +86,7 @@ public class TimelineRegion extends ScrollingScreenContainer {
                 width += eventSpacing;
             }
             width += eventBuffer;
-            setMask(new RectangularMask(new Dimension(width, eventHeight)));
+            setMask(new RectangularMask(new Dimension(width, timelineHeight)));
             //Scroll the bar over as new events come in.
             scroll(-eventSpacing * (events.size() - lastCount), 0);
             lastCount = events.size();
@@ -98,7 +98,9 @@ public class TimelineRegion extends ScrollingScreenContainer {
             protected EventListElement(int priority, int index) {
                 super(priority);
                 this.index = index;
-                setGraphic(timelineGraphics.getGraphic(events.get(index).getType().ordinal()));
+                GameEvent event = events.get(index);
+                Team team = event.getOrigin() == null ? Team.None : teams.getPlayer(event.getOrigin()).getTeam();
+                setGraphic(graphics.getEventGraphic(team, event));
             }
 
             @Override

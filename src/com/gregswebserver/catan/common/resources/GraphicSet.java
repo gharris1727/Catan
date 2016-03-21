@@ -19,7 +19,7 @@ public class GraphicSet {
     private final RenderMask[] masks;
     private final GraphicInfo[] graphics;
 
-    public GraphicSet(PropertiesFile definition, String configKey, Class<? extends RenderMask> maskClass) {
+    public GraphicSet(PropertiesFile definition, String configKey, Class<? extends RenderMask> maskClass, int[] swaps) {
         GraphicSourceInfo source = new GraphicSourceInfo(definition.get(configKey + ".path"));
         RenderMask mask;
         try {
@@ -34,20 +34,24 @@ public class GraphicSet {
         graphics = new GraphicInfo[num];
         int width = mask.getWidth();
         for (int i = 0; i < graphics.length; i++) {
-            graphics[i] = new GraphicInfo(source, mask, new Point(i * width, 0));
+            graphics[i] = new GraphicInfo(source, mask, new Point(i * width, 0), swaps);
         }
     }
 
-    public GraphicSet(GraphicSourceInfo source, RenderMask[] masks) {
+    public GraphicSet(GraphicSourceInfo source, RenderMask[] masks, int[] swaps) {
         this.masks = masks;
         graphics = new GraphicInfo[masks.length];
         int width = 0;
         for (int i = 0; i < graphics.length; i++) {
             if (masks[i] != null) {
-                graphics[i] = new GraphicInfo(source, masks[i], new Point(width, 0));
+                graphics[i] = new GraphicInfo(source, masks[i], new Point(width, 0), swaps);
                 width += masks[i].getWidth();
             }
         }
+    }
+
+    public Graphic getGraphic(Enum e) {
+        return getGraphic(e.ordinal());
     }
 
     public Graphic getGraphic(int index) {
@@ -56,7 +60,7 @@ public class GraphicSet {
                 throw new IllegalArgumentException("Unable to provide selected graphic: Out of range");
             return ResourceLoader.getGraphic(graphics[index]);
         } catch (ResourceLoadException e) {
-            throw new NotYetRenderableException("Unable to load external graphic.",e);
+            throw new NotYetRenderableException("Unable to load external graphic.", e);
         }
     }
 

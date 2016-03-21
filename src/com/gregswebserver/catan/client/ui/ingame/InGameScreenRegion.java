@@ -6,7 +6,6 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenContainer;
 import com.gregswebserver.catan.client.structure.GameManager;
-import com.gregswebserver.catan.client.ui.ingame.map.MapRegion;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
@@ -38,6 +37,7 @@ public class InGameScreenRegion extends ClientScreen {
 
     private final GameManager manager;
     private final CatanGame game;
+    private final TeamGraphics graphics;
 
     private final ScrollingScreenContainer map;
     private final TradeRegion trade;
@@ -49,7 +49,8 @@ public class InGameScreenRegion extends ClientScreen {
         super(client);
         this.manager = client.getGameManager();
         this.game = manager.getLocalGame();
-        map = new ScrollingScreenContainer(0, new MapRegion(game.getBoard()), viewInsets) {
+        this.graphics = new TeamGraphics(client.getTeamColors());
+        map = new ScrollingScreenContainer(0, new MapRegion(game.getBoard(), graphics), viewInsets) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
@@ -59,7 +60,7 @@ public class InGameScreenRegion extends ClientScreen {
         trade = new TradeRegion(1, game, username);
         inventory = new InventoryRegion(2, game.getTeams().getPlayer(username));
         context = new ContextRegion(2, manager, username);
-        timeline = new TimelineRegion(2, manager);
+        timeline = new TimelineRegion(2, manager, graphics);
         add(map);
         add(trade);
         add(inventory);

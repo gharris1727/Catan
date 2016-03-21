@@ -16,8 +16,8 @@ public enum TradingPostType {
     Brick(GameResource.Brick),
     Lumber(GameResource.Lumber),
     Wool(GameResource.Wool),
-    Grain(GameResource.Grain),
     Ore(GameResource.Ore),
+    Grain(GameResource.Grain),
     Wildcard(null);
 
     public final GameResource gameResource;

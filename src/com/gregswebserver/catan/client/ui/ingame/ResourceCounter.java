@@ -7,6 +7,7 @@ import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
+import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.resources.GraphicSet;
@@ -24,7 +25,7 @@ public abstract class ResourceCounter extends UIScreenRegion {
     private static final int textSpacing;
 
     static {
-        icons = new GraphicSet(Client.graphicsConfig, "interface.ingame.resource.icons", RectangularMask.class);
+        icons = new GraphicSet(Client.graphicsConfig, "interface.ingame.resource.icons", RectangularMask.class, null);
         textSpacing = Client.graphicsConfig.getInt("interface.ingame.resource.textspacing");
     }
 
@@ -40,7 +41,7 @@ public abstract class ResourceCounter extends UIScreenRegion {
         this.counter = counter;
         this.gameResource = gameResource;
         setTransparency(true);
-        background = new TiledBackground(0, UIStyle.BACKGROUND_TEXT) {
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INVENTORY) {
             @Override
             public String toString() {
                 return "ResourceCounterBackground";
@@ -52,7 +53,7 @@ public abstract class ResourceCounter extends UIScreenRegion {
                 return "InventoryElementIcon";
             }
         };
-        count = new TextLabel(2, UIStyle.FONT_HEADING, "0") {
+        count = new TextLabel(2, UIStyle.FONT_INVENTORY, "0") {
             @Override
             public String toString() {
                 return "InventoryElementCountText";
@@ -72,13 +73,7 @@ public abstract class ResourceCounter extends UIScreenRegion {
     protected void renderContents() {
         int current=counter.get(gameResource);
         count.setText("" + current);
-
-        int iconHeight = icons.getMask().getHeight();
-        int iconWidth = icons.getMask().getWidth();
-        int textHeight = count.getGraphic().getMask().getHeight();
-
-        setMask(new RectangularMask(new Dimension(iconWidth, iconHeight + textSpacing + textHeight)));
-
-        center(count).y = iconHeight + textSpacing;
+        setMask(icons.getMask());
+        count.setPosition(new Point(0, icons.getMask().getHeight() - count.getGraphic().getMask().getHeight()));
     }
 }

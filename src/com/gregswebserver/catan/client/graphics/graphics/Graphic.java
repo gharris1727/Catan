@@ -17,12 +17,12 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  */
 public class Graphic implements Maskable {
 
-    private static final int transColor = 0xff00ff;
-    protected int[] pixels = null;
-    private int[] clickable = null;
-    private RenderMask mask;
-    protected BufferedImage buffer;
-    private boolean transparency;
+    private static final int transColor = 0xff00ff; //Transparency color (pink)
+    protected int[] pixels = null; //Pixel array for rasterization.
+    private int[] clickable = null; //Clickable pixel array.
+    private RenderMask mask; //Details about the image size and shape.
+    protected BufferedImage buffer; //Hardware accelerated form of the graphic.
+    private boolean transparency; //Flag on whether to use transparency.
 
     //Constructor to allow subclasses to do their own instantiation.
     protected Graphic() {
@@ -41,6 +41,7 @@ public class Graphic implements Maskable {
         clear();
     }
 
+    //Initialize the graphic with the specified mask and transparency.
     protected void init(RenderMask mask, boolean transparency) {
         this.mask = mask;
         this.buffer = new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB);
@@ -48,15 +49,18 @@ public class Graphic implements Maskable {
         this.transparency = transparency;
     }
 
+    //Rasterize the image to the pixel buffer for manual rendering. De-accelerates the graphic.
     protected void loadRaster() {
         if (pixels == null)
             pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
     }
 
+    //Find out whether the graphic is hardware accelerated or not.
     private boolean accelerated() {
         return pixels == null && !transparency && mask instanceof RectangularMask;
     }
 
+    //Render one graphic to another using their render masks.
     private static void maskRender(Graphic to, Point toStart, Graphic from, Point fromStart, int color, boolean trans) {
         RenderMask toMask = to.mask;
         RenderMask fromMask = from.mask;
@@ -110,20 +114,38 @@ public class Graphic implements Maskable {
         }
     }
 
+    //Copy pixels and clickable pixels, using faster method if possible.
     private static void pixelCopy(int[] src, int srcPos, int srcStep, int[] dst, int dstPos, int dstStep, int length, boolean trans) {
-        if (!trans && srcStep == 1 && dstStep == 1)
-            System.arraycopy(src, srcPos, dst, dstPos, length);
-        else {
-            for (int i = 0; i < length; i++) {
-                int srcCurr = i * srcStep + srcPos;
-                int dstCurr = i * dstStep + dstPos;
-                int color = src[srcCurr];
-                if (trans && color != transColor)
-                    dst[dstCurr] = color;
+        if (trans) {
+            if (srcStep == 1 && dstStep == 1) {
+                for (int i = 0; i < length; i++) {
+                    int color = src[i + srcPos];
+                    if (color != transColor)
+                        dst[i + dstPos] = color;
+                }
+            } else {
+                for (int i = 0; i < length; i++) {
+                    int srcCurr = i * srcStep + srcPos;
+                    int dstCurr = i * dstStep + dstPos;
+                    int color = src[srcCurr];
+                    if (color != transColor)
+                        dst[dstCurr] = color;
+                }
+            }
+        } else {
+            if (srcStep == 1 && dstStep == 1) {
+                System.arraycopy(src, srcPos, dst, dstPos, length);
+            } else {
+                for (int i = 0; i < length; i++) {
+                    int srcCurr = i * srcStep + srcPos;
+                    int dstCurr = i * dstStep + dstPos;
+                    dst[dstCurr] = src[srcCurr];
+                }
             }
         }
     }
 
+    //Fill a line with a solid color.
     private static void fillColor(int[] dst, int dstPos, int dstStep, int color, int length) {
         if (dstStep == 1)
             Arrays.fill(dst, dstPos, dstPos + length, color);
@@ -145,6 +167,7 @@ public class Graphic implements Maskable {
         throw new RuntimeException("You cant resize a graphic dummy.");
     }
 
+    //Get the color of the secondary array at a specified point.
     public int getClickableColor(Point p) {
         return clickable[mask.getIndex(p)];
     }
@@ -164,6 +187,21 @@ public class Graphic implements Maskable {
         }
     }
 
+    //Render to a graphics, filling the space.
+    public void renderTo(Graphics graphics, int width, int height) {
+        graphics.drawImage(buffer, 0, 0, width, height, null);
+    }
+
+    public void swap(int from, int to ) {
+        loadRaster();
+        int length = pixels.length;
+        for (int i = 0; i < length; i++) {
+            if (pixels[i] == from)
+                pixels[i] = to;
+        }
+    }
+
+    //Clear the image, trying to preserve acceleration.
     public void clear() {
         if (accelerated()) {
             Graphics graphics = buffer.getGraphics();
@@ -178,14 +216,5 @@ public class Graphic implements Maskable {
 
     public String toString() {
         return "Graphic(" + mask.getWidth() + "/" + mask.getHeight() + ")";
-    }
-
-    public void displayClickableColor() {
-        loadRaster();
-        pixelCopy(clickable, 0, 1, pixels, 0, 1, clickable.length, false);
-    }
-
-    public Image getBuffer() {
-        return buffer;
     }
 }

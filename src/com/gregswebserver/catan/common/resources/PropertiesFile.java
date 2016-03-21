@@ -12,7 +12,7 @@ import java.util.Properties;
 
 /**
  * Created by greg on 1/18/16.
- * Class to access the static.properties configuration details
+ * Class to access configuration details
  */
 public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
 
@@ -20,22 +20,54 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
     private final String comment;
     private final Properties config;
     private boolean needsSaving;
+    private Source source;
 
     public PropertiesFile(String path, String comment) throws IOException {
         this.path = path;
         this.comment = comment;
         config = new Properties();
         needsSaving = false;
+        source = Source.UNLOADED;
         try {
-            config.load(new BufferedReader(new FileReader(ExternalResource.getUserDataDirectory() + path)));
-        } catch (IOException e) {
-            config.load(ExternalResource.class.getResourceAsStream(ExternalResource.getResourceDataDirectory() + path));
+            config.load(new BufferedReader(new FileReader(
+                    ExternalResource.getCurrentDirectory() +
+                            ExternalResource.getConfigDirectory() +
+                            path)));
+            source = Source.CURRENTDIR;
+        } catch (IOException ignored) {
         }
+        if (source == Source.UNLOADED)
+            try {
+                config.load(new BufferedReader(new FileReader(
+                        ExternalResource.getUserDataDirectory() +
+                                ExternalResource.getConfigDirectory() +
+                                path)));
+                source = Source.USERDIR;
+            } catch (IOException ignored) {
+            }
+        if (source == Source.UNLOADED)
+            try {
+                config.load(ExternalResource.class.getResourceAsStream(
+                        ExternalResource.getResourceDataDirectory() +
+                                ExternalResource.getConfigDirectory() +
+                                path));
+                source = Source.DEFAULT;
+            } catch (IOException ignored) {
+            }
+
     }
 
     public void close() throws IOException {
-        File file = new File(ExternalResource.getUserDataDirectory() + path);
         if (needsSaving) {
+            File file;
+            switch (source) {
+                case CURRENTDIR:
+                    file = new File(ExternalResource.getCurrentDirectory() + path);
+                    break;
+                default:
+                    file = new File(ExternalResource.getUserDataDirectory() + path);
+                    break;
+            }
             if (!file.exists() && file.getParentFile().mkdirs()) {
                 if (!file.createNewFile())
                     throw new IOException("Unable to create new file to save.");
@@ -99,6 +131,14 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         }
     }
 
+    public int getHexColor(String key) {
+        try {
+            return Integer.parseInt(get(key), 16);
+        } catch (NumberFormatException e) {
+            throw new ConfigurationException("Unable to read hex color from config file key " + key, e);
+        }
+    }
+
     public Point getPoint(String key) {
         return new Point(getInt(key + ".x"), getInt(key + ".y"));
     }
@@ -154,5 +194,9 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
                 };
             }
         };
+    }
+
+    private enum Source {
+        UNLOADED, CURRENTDIR, USERDIR, DEFAULT
     }
 }

@@ -49,7 +49,7 @@ public class GameManager {
                 }
             }
             @Override
-            protected void onFailure(GameControlEvent event, EventConsumerException e) {
+            protected void onFailure(EventConsumerException e) {
                 host.localFailure(e);
             }
         };
@@ -69,7 +69,7 @@ public class GameManager {
                 }
             }
             @Override
-            protected void onFailure(GameControlEvent event, EventConsumerException e) {
+            protected void onFailure(EventConsumerException e) {
                 host.logger.log("Unable to perform remote change:", e, LogLevel.WARN);
             }
         };

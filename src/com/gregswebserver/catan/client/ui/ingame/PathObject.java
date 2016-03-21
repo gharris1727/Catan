@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame.map;
+package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
@@ -16,13 +16,13 @@ public class PathObject extends MapObject {
 
     private final Path path;
 
-    protected PathObject(int priority, MapRegion container, Path path) {
-        super(priority, container);
+    protected PathObject(int priority, MapRegion container, TeamGraphics graphics, Path path) {
+        super(priority, container, graphics);
         this.path = path;
         int orientation = 0;
         if (path.getPosition().x % 6 == 0 || path.getPosition().x % 6 == 4) orientation = 1;
         if (path.getPosition().x % 6 == 1 || path.getPosition().x % 6 == 3) orientation = 2;
-        Graphic background = path.getTeam().getRoadGraphic(orientation);
+        Graphic background = graphics.getRoadGraphic(path.getTeam(), orientation);
         add(new GraphicObject(0, background) {
             @Override
             public String toString() {
