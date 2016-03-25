@@ -294,6 +294,11 @@ public class Server extends CoreThread {
         } catch (Exception e) {
             logger.log("Shutdown error.", e, LogLevel.WARN);
         }
+        try {
+            config.close();
+        } catch (IOException e) {
+            logger.log("Unable to save configuration.", e, LogLevel.WARN);
+        }
         stop();
     }
 

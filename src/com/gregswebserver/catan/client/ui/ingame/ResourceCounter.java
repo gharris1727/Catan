@@ -1,14 +1,13 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.TextLabel;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.structure.game.EnumCounter;
@@ -19,14 +18,12 @@ import java.awt.*;
  * Created by greg on 2/27/16.
  * A resource counting icon for use in multiple areas.
  */
-public abstract class ResourceCounter extends UIScreenRegion {
+public abstract class ResourceCounter extends UIScreen {
 
-    private static final GraphicSet icons;
-    private static final int textSpacing;
+    private final GraphicSet icons;
+    private final int textSpacing;
 
     static {
-        icons = new GraphicSet(Client.graphicsConfig, "interface.ingame.resource.icons", RectangularMask.class, null);
-        textSpacing = Client.graphicsConfig.getInt("interface.ingame.resource.textspacing");
     }
 
     private final EnumCounter<GameResource> counter;
@@ -36,29 +33,25 @@ public abstract class ResourceCounter extends UIScreenRegion {
     private final GraphicObject icon;
     protected final TextLabel count;
 
-    protected ResourceCounter(int priority, EnumCounter<GameResource> counter, GameResource gameResource) {
-        super(priority);
+    protected ResourceCounter(int priority, UIScreen parent, EnumCounter<GameResource> counter, GameResource gameResource) {
+        super(priority, parent, "resource");
+        //Load layout information
+        icons = new GraphicSet(getLayout(), "icons", RectangularMask.class, null);
+        textSpacing = getLayout().getInt("textspacing");
+        //Store instance information
         this.counter = counter;
         this.gameResource = gameResource;
+        //Create sub-regions
         setTransparency(true);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INVENTORY) {
-            @Override
-            public String toString() {
-                return "ResourceCounterBackground";
-            }
-        };
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INVENTORY);
         icon = new GraphicObject(1,icons.getGraphic(gameResource.ordinal())) {
             @Override
             public String toString() {
                 return "InventoryElementIcon";
             }
         };
-        count = new TextLabel(2, UIStyle.FONT_INVENTORY, "0") {
-            @Override
-            public String toString() {
-                return "InventoryElementCountText";
-            }
-        };
+        count = new TextLabel(2, UIStyle.FONT_INVENTORY, "0");
+        //Add everything to the screen.
         add(background).setClickable(this);
         add(icon).setClickable(this);
         add(count).setClickable(this);

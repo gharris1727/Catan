@@ -14,7 +14,7 @@ import java.util.Properties;
  * Created by greg on 1/18/16.
  * Class to access configuration details
  */
-public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
+public class PropertiesFile implements Iterable<Map.Entry<String, String>>, ConfigSource {
 
     private final String path;
     private final String comment;
@@ -22,7 +22,7 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
     private boolean needsSaving;
     private Source source;
 
-    public PropertiesFile(String path, String comment) throws IOException {
+    public PropertiesFile(String path, String comment) {
         this.path = path;
         this.comment = comment;
         config = new Properties();
@@ -76,6 +76,12 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         }
     }
 
+    @Override
+    public ConfigSource narrow(String prefix) {
+        return new PropertiesFileNode(prefix);
+    }
+
+    @Override
     public String get(String key) {
         //Bottom out on null/empty strings
         if (key == null || key.length() == 0)
@@ -105,6 +111,7 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         return (redirect == null) ? key : redirect;
     }
 
+    @Override
     public int getInt(String key) {
         try {
             String value = get(key);
@@ -114,6 +121,7 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         }
     }
 
+    @Override
     public double getDouble(String key) {
         try {
             return Double.parseDouble(get(key));
@@ -122,6 +130,7 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         }
     }
 
+    @Override
     public Color getColor(String key) {
         try {
             Field field = Class.forName("java.awt.Color").getField(get(key));
@@ -131,6 +140,7 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         }
     }
 
+    @Override
     public int getHexColor(String key) {
         try {
             return Integer.parseInt(get(key), 16);
@@ -139,14 +149,17 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
         }
     }
 
+    @Override
     public Point getPoint(String key) {
         return new Point(getInt(key + ".x"), getInt(key + ".y"));
     }
 
+    @Override
     public Coordinate getCoord(String key) {
         return new Coordinate(getInt(key + ".x"), getInt(key + ".y"));
     }
 
+    @Override
     public Dimension getDimension(String key) {
         return new Dimension(getInt(key + ".width"), getInt(key + ".height"));
     }
@@ -198,5 +211,58 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>> {
 
     private enum Source {
         UNLOADED, CURRENTDIR, USERDIR, DEFAULT
+    }
+
+    public class PropertiesFileNode implements ConfigSource {
+        private final String prefix;
+
+        public PropertiesFileNode(String root) {
+            this.prefix = root + ".";
+        }
+
+        @Override
+        public ConfigSource narrow(String prefix) {
+            return new PropertiesFileNode(this.prefix + prefix);
+        }
+
+        @Override
+        public String get(String key) {
+            return PropertiesFile.this.get(prefix + key);
+        }
+
+        @Override
+        public int getInt(String key) {
+            return PropertiesFile.this.getInt(prefix + key);
+        }
+
+        @Override
+        public double getDouble(String key) {
+            return PropertiesFile.this.getDouble(prefix + key);
+        }
+
+        @Override
+        public Color getColor(String key) {
+            return PropertiesFile.this.getColor(prefix + key);
+        }
+
+        @Override
+        public int getHexColor(String key) {
+            return PropertiesFile.this.getHexColor(prefix + key);
+        }
+
+        @Override
+        public Point getPoint(String key) {
+            return PropertiesFile.this.getPoint(prefix + key);
+        }
+
+        @Override
+        public Coordinate getCoord(String key) {
+            return PropertiesFile.this.getCoord(prefix + key);
+        }
+
+        @Override
+        public Dimension getDimension(String key) {
+            return PropertiesFile.this.getDimension(prefix + key);
+        }
     }
 }

@@ -1,11 +1,9 @@
-package com.gregswebserver.catan.client.graphics.ui.text;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.TextGraphic;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.style.Styled;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
 
 import java.awt.*;
 
@@ -13,7 +11,7 @@ import java.awt.*;
  * Created by greg on 1/12/16.
  * A graphical text label
  */
-public abstract class TextLabel extends GraphicObject implements Styled {
+public class TextLabel extends GraphicObject implements Styled {
 
     private final String textStyleName;
 
@@ -43,5 +41,9 @@ public abstract class TextLabel extends GraphicObject implements Styled {
     @Override
     public UIStyle getStyle() {
         return style;
+    }
+
+    public String toString() {
+        return "TextLabel(" + text + ")";
     }
 }

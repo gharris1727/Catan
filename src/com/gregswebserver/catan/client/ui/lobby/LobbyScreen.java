@@ -3,7 +3,7 @@ package com.gregswebserver.catan.client.ui.lobby;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 
 import java.awt.*;
@@ -14,17 +14,15 @@ import java.awt.*;
  */
 public class LobbyScreen extends ClientScreen {
 
-    private static final int buttonsHeight = Client.graphicsConfig.getInt("interface.inlobby.panel.height");
-
     private final LobbyUserList userList;
     private final LobbySettings settings;
     private final LobbyButtons buttons;
 
     public LobbyScreen(Client client) {
-        super(client);
-        settings = new LobbySettings(1);
-        buttons = new LobbyButtons(2);
-        userList = new LobbyUserList(2, client.getActiveLobby());
+        super(client, "inlobby");
+        settings = new LobbySettings(this);
+        buttons = new LobbyButtons(this);
+        userList = new LobbyUserList(this, client.getActiveLobby());
         add(settings);
         add(buttons);
         add(userList);
@@ -44,6 +42,7 @@ public class LobbyScreen extends ClientScreen {
     protected void resizeContents(RenderMask mask) {
         int userListWidth = mask.getWidth()*2/3;
         int sidebarWidth = mask.getWidth() - userListWidth;
+        int buttonsHeight = getLayout().getInt("panel.height");
         int settingsHeight = mask.getHeight() - buttonsHeight;
         userList.setMask(new RectangularMask(new Dimension(userListWidth, mask.getHeight())));
         settings.setMask(new RectangularMask(new Dimension(sidebarWidth, settingsHeight)));

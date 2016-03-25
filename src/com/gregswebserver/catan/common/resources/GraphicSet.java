@@ -19,7 +19,7 @@ public class GraphicSet {
     private final RenderMask[] masks;
     private final GraphicInfo[] graphics;
 
-    public GraphicSet(PropertiesFile definition, String configKey, Class<? extends RenderMask> maskClass, int[] swaps) {
+    public GraphicSet(ConfigSource definition, String configKey, Class<? extends RenderMask> maskClass, int[] swaps) {
         GraphicSourceInfo source = new GraphicSourceInfo(definition.get(configKey + ".path"));
         RenderMask mask;
         try {

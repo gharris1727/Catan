@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.structure;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
 import java.util.Iterator;
@@ -16,12 +16,13 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     //TODO: rework this to allow drag-swapping of ServerLogin objects.
 
-    private final List<ConnectionInfo> list;
-    private final PropertiesFile file;
+    private final PropertiesFileInfo serverListFile;
+    private final List<ConnectionInfo> connectionInfoList;
 
-    public ServerPool() {
-        list = new LinkedList<>();
-        file = ResourceLoader.getPropertiesFile(Client.serverFile);
+    public ServerPool(PropertiesFileInfo serverListFile) {
+        this.serverListFile = serverListFile;
+        this.connectionInfoList = new LinkedList<>();
+        PropertiesFile file = ResourceLoader.getPropertiesFile(serverListFile);
         int i = 0;
         String hostname;
         do {
@@ -29,35 +30,36 @@ public class ServerPool implements Iterable<ConnectionInfo> {
             String port = file.get("servers." + i + ".port");
             String username = file.get("servers." + i + ".username");
             if (hostname != null)
-                list.add(new ConnectionInfo(hostname,port,username));
+                connectionInfoList.add(new ConnectionInfo(hostname, port, username));
             i++;
         } while (hostname != null);
     }
 
     public void save() {
-        file.clear();
+        PropertiesFile serverList = ResourceLoader.getPropertiesFile(serverListFile);
+        serverList.clear();
         int i = 0;
-        for (ConnectionInfo elt : list) {
-            file.set("servers." + i + ".hostname", elt.getRemote());
-            file.set("servers." + i + ".port", elt.getPort());
-            file.set("servers." + i + ".username", elt.getUsername());
+        for (ConnectionInfo elt : connectionInfoList) {
+            serverList.set("servers." + i + ".hostname", elt.getRemote());
+            serverList.set("servers." + i + ".port", elt.getPort());
+            serverList.set("servers." + i + ".username", elt.getUsername());
             i++;
         }
-        ResourceLoader.savePropertiesFile(Client.serverFile);
+        ResourceLoader.savePropertiesFile(serverListFile);
     }
 
     public void add(ConnectionInfo login) {
-        list.add(0, login);
+        connectionInfoList.add(0, login);
     }
 
-    public void remove(ConnectionInfo login) { list.remove(login); }
+    public void remove(ConnectionInfo login) { connectionInfoList.remove(login); }
 
     @Override
     public Iterator<ConnectionInfo> iterator() {
-        return list.iterator();
+        return connectionInfoList.iterator();
     }
 
     public int size() {
-        return list.size();
+        return connectionInfoList.size();
     }
 }

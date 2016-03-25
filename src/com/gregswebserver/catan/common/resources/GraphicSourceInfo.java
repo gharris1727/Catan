@@ -6,7 +6,7 @@ import com.gregswebserver.catan.ExternalResource;
  * Created by Greg on 1/6/2015.
  * A list of GraphicSource resources that can be loaded.
  */
-public class GraphicSourceInfo {
+public final class GraphicSourceInfo extends ResourceCacheKey{
 
     private final String path;
 
@@ -19,17 +19,22 @@ public class GraphicSourceInfo {
     }
 
     @Override
-    public int hashCode() {
-        return path.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GraphicSourceInfo that = (GraphicSourceInfo) o;
+
+        return path != null ? path.equals(that.path) : that.path == null;
     }
 
     @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof GraphicSourceInfo && ((GraphicSourceInfo)o).path.equals(path);
+    public int hashCode() {
+        return path != null ? path.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-        return "GraphicSourceInfo(" + path + ")";
+        return "GraphicSourceInfo(" + getPath() + ")";
     }
 }

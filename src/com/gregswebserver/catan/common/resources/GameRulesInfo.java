@@ -4,7 +4,7 @@ package com.gregswebserver.catan.common.resources;
  * Created by greg on 1/28/16.
  * A cache lookup object for different GameRules objects.
  */
-public class GameRulesInfo {
+public final class GameRulesInfo extends ResourceCacheKey {
 
     private final String name;
 
@@ -17,19 +17,18 @@ public class GameRulesInfo {
     }
 
     @Override
-    public int hashCode() {
-        return name.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameRulesInfo that = (GameRulesInfo) o;
+
+        return name != null ? name.equals(that.name) : that.name == null;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (o instanceof GameRulesInfo) {
-            GameRulesInfo info = (GameRulesInfo) o;
-            return name.equals(info.name);
-        }
-        return false;
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 
     @Override

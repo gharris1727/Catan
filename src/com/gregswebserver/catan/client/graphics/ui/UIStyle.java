@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui.style;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;

@@ -3,7 +3,7 @@ package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 
 import java.awt.*;
 
@@ -17,9 +17,9 @@ public class LobbyJoinMenu extends ClientScreen {
     private final UserListRegion userList;
 
     public LobbyJoinMenu(Client client) {
-        super(client);
-        lobbyList = new LobbyListRegion(0, client.getLobbyList());
-        userList = new UserListRegion(1, client.getClientList());
+        super(client, "lobbylist");
+        lobbyList = new LobbyListRegion(this, client.getLobbyList());
+        userList = new UserListRegion(this, client.getClientList());
         //Add the screen contents
         add(lobbyList);
         add(userList);

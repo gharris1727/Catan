@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Created by Greg on 1/15/2015.
  * A cache of resources that can be loaded and unloaded dynamically.
  */
-public abstract class ResourceCache<X, Y> {
+public abstract class ResourceCache<X extends ResourceCacheKey, Y> {
 
     private HashMap<X, Y> cache;
     private int stored;
@@ -38,6 +38,4 @@ public abstract class ResourceCache<X, Y> {
     }
 
     protected abstract Y load(X x) throws ResourceLoadException;
-
-
 }

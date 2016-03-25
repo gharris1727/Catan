@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui.style;
+package com.gregswebserver.catan.client.graphics.ui;
 
 /**
  * Created by greg on 1/15/16.

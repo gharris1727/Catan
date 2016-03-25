@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.util;
+package com.gregswebserver.catan.client.graphics.screen;
 
 import java.util.Random;
 
@@ -8,6 +8,7 @@ import java.util.Random;
  */
 public class UniqueColor {
 
+    //TODO: evaluate thread safety and likelyhood of collisions.
     private static final Random random = new Random();
 
     public static int getNext() {

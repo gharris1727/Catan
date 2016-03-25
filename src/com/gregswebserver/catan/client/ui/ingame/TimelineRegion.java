@@ -1,66 +1,78 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.graphics.masks.ChevronMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenContainer;
-import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenContainer;
+import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.client.structure.GameManager;
+import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.structure.game.PlayerPool;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by greg on 3/11/16.
  * A game timeline allowing the user to view the progression of the game, and manually step through the history of the game.
  */
-public class TimelineRegion extends ScrollingScreenContainer {
+public class TimelineRegion extends UIScreen {
 
-    private static final int timelineHeight;
-    private static final int eventSpacing;
-    private static final int eventBuffer;
+    private final int eventBuffer;
+    private final Map<Team, GraphicSet> eventGraphics;
 
-    static {
-        timelineHeight = Client.graphicsConfig.getInt("interface.ingame.timeline.height");
-        eventSpacing = Client.graphicsConfig.getInt("interface.ingame.timeline.spacing");
-        eventBuffer = Client.graphicsConfig.getInt("interface.ingame.timeline.buffer");
-    }
+    private final List<GameEvent> events;
+    private final PlayerPool teams;
 
     private final TiledBackground background;
+    private final ScrollingScreenContainer timeline;
 
-    public TimelineRegion(int priority, GameManager manager, TeamGraphics graphics) {
-        super(priority, new EventList(1,manager,graphics), new Insets(0,eventBuffer,0,eventBuffer));
-        background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
+    public TimelineRegion(UIScreen parent, GameManager manager, TeamColors teamColors) {
+        super(2, parent, "timeline");
+        //Load layout information
+        eventBuffer = getLayout().getInt("buffer");
+        eventGraphics = new EnumMap<>(Team.class);
+        for (Team team : Team.values())
+            eventGraphics.put(team,new GraphicSet(getLayout(), "source", ChevronMask.class, teamColors.getSwaps(team)));
+        //Store instance information
+        this.events = manager.getEvents();
+        this.teams = manager.getLocalGame().getTeams();
+        //Create sub-regions
+        background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
+        timeline = new ScrollingScreenContainer(1, new EventList(), new Insets(0, eventBuffer, 0, eventBuffer)) {
+
             @Override
             public String toString() {
-                return "TimelineRegionBackground";
+                return "TimelineScrollContainer";
             }
         };
+        //Add everything to the screen.
         add(background).setClickable(this);
+        add(timeline);
+        timeline.setTransparency(true);
     }
 
-    private static class EventList extends ScrollingScreenRegion {
+    public void update() {
+        timeline.update();
+    }
 
-        private final TeamGraphics graphics;
-        private final List<GameEvent> events;
-        private final PlayerPool teams;
+    private class EventList extends ScrollingScreenRegion {
         private int lastCount;
 
-        private EventList(int priority, GameManager manager, TeamGraphics graphics) {
-            super(priority);
-            this.graphics = graphics;
-            this.events = manager.getEvents();
-            this.teams = manager.getLocalGame().getTeams();
+        private EventList() {
+            super(0);
             lastCount = events.size();
             setTransparency(true);
         }
@@ -81,12 +93,13 @@ public class TimelineRegion extends ScrollingScreenContainer {
         protected void renderContents() {
             clear();
             int width = 1;
+            int eventSpacing = getLayout().getInt("spacing");
             for (int i = 0; i < events.size(); i++) {
-                add(new EventListElement(0, i)).setPosition(new Point(width, 0));
+                add(new EventListElement(i)).setPosition(new Point(width, 0));
                 width += eventSpacing;
             }
             width += eventBuffer;
-            setMask(new RectangularMask(new Dimension(width, timelineHeight)));
+            setMask(new RectangularMask(new Dimension(width, getLayout().getInt("height"))));
             //Scroll the bar over as new events come in.
             scroll(-eventSpacing * (events.size() - lastCount), 0);
             lastCount = events.size();
@@ -95,12 +108,12 @@ public class TimelineRegion extends ScrollingScreenContainer {
         private class EventListElement extends GraphicObject {
             private final int index;
 
-            protected EventListElement(int priority, int index) {
-                super(priority);
+            private EventListElement(int index) {
+                super(0);
                 this.index = index;
                 GameEvent event = events.get(index);
                 Team team = event.getOrigin() == null ? Team.None : teams.getPlayer(event.getOrigin()).getTeam();
-                setGraphic(graphics.getEventGraphic(team, event));
+                setGraphic(eventGraphics.get(team).getGraphic(event.getType()));
             }
 
             @Override
@@ -129,7 +142,7 @@ public class TimelineRegion extends ScrollingScreenContainer {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        super.resizeContents(mask);
+        timeline.setMask(mask);
         background.setMask(mask);
     }
 

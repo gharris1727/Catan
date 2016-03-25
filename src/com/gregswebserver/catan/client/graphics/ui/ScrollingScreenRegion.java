@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.client.graphics.ui.util;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 import java.awt.*;
@@ -10,7 +9,7 @@ import java.awt.*;
  * Created by greg on 1/21/16.
  * A screen region that supports smooth scrolling, and keeps within specified bounds.
  */
-public abstract class ScrollingScreenRegion extends UIScreenRegion {
+public abstract class ScrollingScreenRegion extends StyledScreenRegion {
 
     private final Point offset;
     private RenderMask hostMask;

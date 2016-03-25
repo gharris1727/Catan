@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.util.UniqueColor;
 import com.gregswebserver.catan.client.input.Clickable;
 
 import java.awt.*;

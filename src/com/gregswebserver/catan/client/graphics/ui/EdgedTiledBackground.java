@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui.util;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
@@ -12,7 +12,7 @@ import static com.gregswebserver.catan.common.util.Direction.*;
  * Created by Greg on 1/16/2015.
  * a TiledBackground that has additional edging shown.
  */
-public abstract class EdgedTiledBackground extends TiledBackground {
+public class EdgedTiledBackground extends TiledBackground {
 
     public EdgedTiledBackground(int priority, String backgroundStyle) {
         super(priority, backgroundStyle);
@@ -54,5 +54,9 @@ public abstract class EdgedTiledBackground extends TiledBackground {
                 return "Tile inside " + EdgedTiledBackground.this;
             }
         }).setClickable(this).setPosition(position);
+    }
+
+    public String toString() {
+        return "Edged" + super.toString();
     }
 }

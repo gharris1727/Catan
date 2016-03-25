@@ -4,7 +4,6 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 import com.gregswebserver.catan.common.profiler.TimeSlice;
@@ -35,7 +34,7 @@ public abstract class ScreenRegion extends ScreenObject implements Renderable, I
         clear();
     }
 
-    protected final void setTransparency(boolean transparency) {
+    public final void setTransparency(boolean transparency) {
         this.transparency = transparency;
     }
 

@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.util;
+package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 

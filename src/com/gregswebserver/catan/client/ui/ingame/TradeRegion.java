@@ -1,15 +1,11 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
@@ -23,39 +19,32 @@ import java.awt.event.MouseWheelEvent;
  * Created by Greg on 1/6/2015.
  * A trading screen that appears on the sidebar of the in-game screen.
  */
-public class TradeRegion extends UIScreenRegion {
-
-    private static final Point elementOffset;
-    private static final Point elementSpacing;
-    private static final int panelHeight;
-    private static final int elementHeight;
+public class TradeRegion extends UIScreen {
 
     //TODO: provide an interface to create a new TemporaryTrade.
 
-    static {
-        elementOffset = Client.graphicsConfig.getPoint("interface.ingame.trade.element.offset");
-        elementSpacing = Client.graphicsConfig.getPoint("interface.ingame.trade.element.spacing");
-        panelHeight = Client.graphicsConfig.getInt("interface.ingame.trade.panel.height");
-        elementHeight = Client.graphicsConfig.getInt("interface.ingame.trade.element.height");
-    }
+    private final Point elementOffset;
+    private final Point elementSpacing;
+    private RenderMask tradeSize;
 
+    private final Username local;
+    
     private final TiledBackground background;
     private final TradeList list;
     private final TradeControlPanel panel;
-    private final Username local;
-    private RenderMask tradeSize;
 
-    public TradeRegion(int priority, CatanGame game, Username local) {
-        super(priority);
+    public TradeRegion(UIScreen parent, CatanGame game, Username local) {
+        super(1, parent, "trade");
+        //Load layout details.
+        elementOffset = getLayout().getPoint("element.offset");
+        elementSpacing = getLayout().getPoint("element.spacing");
+        //Save instance details
         this.local = local;
-        background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
-            @Override
-            public String toString() {
-                return "TradeBackground";
-            }
-        };
-        list = new TradeList(0, game);
-        panel = new TradeControlPanel(2);
+        //Create sub-regions
+        background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
+        list = new TradeList(game);
+        panel = new TradeControlPanel();
+        //Add everything to the screen.
         add(background).setClickable(this);
         add(list);
         add(panel);
@@ -67,6 +56,7 @@ public class TradeRegion extends UIScreenRegion {
 
     @Override
     protected void resizeContents(RenderMask mask) {
+        int panelHeight = getLayout().getInt("panel.height");
         int scrollHeight = mask.getHeight() - panelHeight;
         RenderMask scrollSize = new RectangularMask(new Dimension(mask.getWidth(), scrollHeight));
         RenderMask panelSize = new RectangularMask(new Dimension(mask.getWidth(), panelHeight));
@@ -74,7 +64,7 @@ public class TradeRegion extends UIScreenRegion {
         list.setHostView(scrollSize, new Insets(0,0,0,0));
         panel.setMask(panelSize);
         panel.setPosition(new Point(0, scrollHeight));
-        tradeSize = new RectangularMask(new Dimension(mask.getWidth(),elementHeight));
+        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), getLayout().getInt("element.height")));
     }
 
     public String toString() {
@@ -85,8 +75,8 @@ public class TradeRegion extends UIScreenRegion {
 
         private final CatanGame game;
 
-        private TradeList(int priority, CatanGame game) {
-            super(priority);
+        private TradeList(CatanGame game) {
+            super(0);
             this.game = game;
             setTransparency(true);
         }
@@ -96,7 +86,7 @@ public class TradeRegion extends UIScreenRegion {
             clear();
             int height = 1;
             for (Trade t : game.getTrades(TradeRegion.this.local)) {
-                TradeListElement elt = new TradeListElement(0, t);
+                TradeListElement elt = new TradeListElement(t);
                 elt.setStyle(getStyle());
                 elt.setMask(tradeSize);
                 add(elt).setPosition(new Point(0, height));
@@ -124,29 +114,24 @@ public class TradeRegion extends UIScreenRegion {
             return "TradeList";
         }
 
-        private class TradeListElement extends UIScreenRegion {
+        private class TradeListElement extends StyledScreenRegion {
 
             private final TiledBackground background;
             private final Trade trade;
 
-            protected TradeListElement(int priority, Trade trade) {
-                super(priority);
+            protected TradeListElement(Trade trade) {
+                super(0);
                 this.trade = trade;
-                background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
-                    @Override
-                    public String toString() {
-                        return "TradeListElementBackground";
-                    }
-                };
+                background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
                 int index = 0;
                 for (GameResource gameResource : GameResource.values()) {
-                    ResourceCounter request = new ResourceCounter(2, trade.request, gameResource) {
+                    ResourceCounter request = new ResourceCounter(2, TradeRegion.this, trade.request, gameResource) {
                         @Override
                         public String toString() {
                             return "InventoryResourceCounter";
                         }
                     };
-                    ResourceCounter offer = new ResourceCounter(3, trade.offer, gameResource) {
+                    ResourceCounter offer = new ResourceCounter(3, TradeRegion.this, trade.offer, gameResource) {
                         @Override
                         public String toString() {
                             return "InventoryResourceCounter";
@@ -190,18 +175,13 @@ public class TradeRegion extends UIScreenRegion {
         }
     }
 
-    private class TradeControlPanel extends UIScreenRegion {
+    private class TradeControlPanel extends StyledScreenRegion {
 
         private final TiledBackground background;
 
-        private TradeControlPanel(int priority) {
-            super(priority);
-            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
-                @Override
-                public String toString() {
-                    return "TradeControlPanelBackground";
-                }
-            };
+        private TradeControlPanel() {
+            super(2);
+            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
             add(background).setClickable(this);
         }
 

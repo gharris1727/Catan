@@ -2,11 +2,11 @@ package com.gregswebserver.catan.client.ui.connecting;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.TextLabel;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 
 /**
  * Created by Greg on 1/18/2015.
@@ -18,25 +18,15 @@ public class ConnectingScreen extends ClientScreen {
     private final TextLabel text;
 
     public ConnectingScreen(Client client) {
-        super(client);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW) {
-            public String toString() {
-                return "ConnectingScreenBackground";
-            }
-        };
-        text = new TextLabel(1, UIStyle.FONT_HEADING, "Connecting...") {
-            public String toString() {
-                return "ConnectingScreenText";
-            }
-        };
+        super(client, "connecting");
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW);
+        text = new TextLabel(1, UIStyle.FONT_HEADING, "Connecting...");
         add(background).setClickable(this);
         add(text).setClickable(this);
     }
 
     @Override
-    public void update() {
-
-    }
+    public void update() { }
 
     @Override
     protected void resizeContents(RenderMask mask) {

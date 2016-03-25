@@ -3,9 +3,9 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
-import com.gregswebserver.catan.client.graphics.ui.util.ScrollingScreenContainer;
+import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenContainer;
 import com.gregswebserver.catan.client.structure.GameManager;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
@@ -19,25 +19,7 @@ import java.awt.*;
  */
 public class InGameScreenRegion extends ClientScreen {
 
-    private static final Dimension borderBuffer;
-    private static final int sidebarWidth;
-    private static final int inventoryHeight;
-    private static final int contextHeight;
-    private static final int timelineHeight;
-    private static final Insets viewInsets;
-
-    static {
-        borderBuffer = Client.graphicsConfig.getDimension("interface.ingame.borderbuffer");
-        sidebarWidth = Client.graphicsConfig.getInt("interface.ingame.sidebar.width");
-        inventoryHeight = Client.graphicsConfig.getInt("interface.ingame.inventory.height");
-        contextHeight = Client.graphicsConfig.getInt("interface.ingame.context.height");
-        timelineHeight = Client.graphicsConfig.getInt("interface.ingame.timeline.height");
-        viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
-    }
-
-    private final GameManager manager;
     private final CatanGame game;
-    private final TeamGraphics graphics;
 
     private final ScrollingScreenContainer map;
     private final TradeRegion trade;
@@ -46,21 +28,25 @@ public class InGameScreenRegion extends ClientScreen {
     private final TimelineRegion timeline;
 
     public InGameScreenRegion(Client client) {
-        super(client);
-        this.manager = client.getGameManager();
-        this.game = manager.getLocalGame();
-        this.graphics = new TeamGraphics(client.getTeamColors());
-        map = new ScrollingScreenContainer(0, new MapRegion(game.getBoard(), graphics), viewInsets) {
+        super(client, "ingame");
+        //Load relevant details
+        GameManager manager = client.getGameManager();
+        game = manager.getLocalGame();
+        TeamColors teamColors = new TeamColors(client.getTeamColors());
+        Dimension borderBuffer = getLayout().getDimension("borderbuffer");
+        Insets viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
+        map = new ScrollingScreenContainer(0, new MapRegion(getLayout(), game.getBoard(), teamColors), viewInsets) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
             }
         };
         Username username = client.getToken().username;
-        trade = new TradeRegion(1, game, username);
-        inventory = new InventoryRegion(2, game.getTeams().getPlayer(username));
-        context = new ContextRegion(2, manager, username);
-        timeline = new TimelineRegion(2, manager, graphics);
+        trade = new TradeRegion(this, game, username);
+        inventory = new InventoryRegion(this, game.getTeams().getPlayer(username));
+        context = new ContextRegion(this, manager, username);
+        timeline = new TimelineRegion(this, manager, teamColors);
+        //Add everything to the screen
         add(map);
         add(trade);
         add(inventory);
@@ -99,6 +85,11 @@ public class InGameScreenRegion extends ClientScreen {
 
     @Override
     protected void resizeContents(RenderMask mask) {
+        int sidebarWidth = getLayout().getInt("sidebar.width");
+        int inventoryHeight = getLayout().getInt("inventory.height");
+        int contextHeight = getLayout().getInt("context.height");
+        int timelineHeight = getLayout().getInt("timeline.height");
+
         int mainWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - timelineHeight;
         int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;

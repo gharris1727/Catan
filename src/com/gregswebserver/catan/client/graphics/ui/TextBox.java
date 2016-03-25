@@ -1,10 +1,7 @@
-package com.gregswebserver.catan.client.graphics.ui.text;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
 
 import java.awt.event.KeyEvent;
 
@@ -12,7 +9,7 @@ import java.awt.event.KeyEvent;
  * Created by Greg on 1/3/2015.
  * A screen area containing a text box that is editable by the user.
  */
-public abstract class TextBox extends UIScreenRegion {
+public abstract class TextBox extends StyledScreenRegion {
 
     private final StringBuilder text;
 
@@ -22,18 +19,8 @@ public abstract class TextBox extends UIScreenRegion {
     public TextBox(int priority, String prepopulate) {
         super(priority);
         text = new StringBuilder();
-        background = new TiledBackground(0, UIStyle.BACKGROUND_TEXT) {
-            @Override
-            public String toString() {
-                return "TextBoxBackground";
-            }
-        };
-        label = new TextLabel(1, UIStyle.FONT_PARAGRAPH, prepopulate) {
-            @Override
-            public String toString() {
-                return "TextBoxTextLabel";
-            }
-        };
+        background = new TiledBackground(0, UIStyle.BACKGROUND_TEXT);
+        label = new TextLabel(1, UIStyle.FONT_PARAGRAPH, prepopulate);
         add(background).setClickable(this);
         add(label).setClickable(this);
     }

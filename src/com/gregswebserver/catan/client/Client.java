@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.event.ClientEvent;
 import com.gregswebserver.catan.client.event.ClientEventType;
 import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.renderer.RenderManager;
 import com.gregswebserver.catan.client.renderer.RenderThread;
@@ -12,6 +12,7 @@ import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.client.structure.ServerPool;
+import com.gregswebserver.catan.client.ui.UIConfig;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;
@@ -31,6 +32,7 @@ import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ClientConnection;
 import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.common.network.NetEventType;
+import com.gregswebserver.catan.common.resources.ConfigSource;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
@@ -40,6 +42,7 @@ import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.lobby.*;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 /**
@@ -50,19 +53,18 @@ import java.net.UnknownHostException;
  */
 public class Client extends CoreThread {
 
-    public static final PropertiesFileInfo configFile;
-    public static final PropertiesFileInfo serverFile;
-    public static final PropertiesFile graphicsConfig;
+    private static final PropertiesFileInfo configFile;
+    private static final PropertiesFileInfo serverFile;
+    private static final PropertiesFileInfo uiLayoutFile;
 
     static {
         configFile = new PropertiesFileInfo("client.properties", "Client configuration file");
         serverFile = new PropertiesFileInfo("client/servers.properties", "Login details for servers");
-        graphicsConfig = ResourceLoader.getPropertiesFile(
-                new PropertiesFileInfo("graphics/graphics.properties", "Graphics configuration"));
+        uiLayoutFile = new PropertiesFileInfo("graphics/graphics.properties", "Graphics configuration");
     }
 
     private PropertiesFile config;
-    private PropertiesFile servers;
+    private PropertiesFile layout;
     private PropertiesFile locale;
     private PropertiesFile teamColors;
 
@@ -112,8 +114,12 @@ public class Client extends CoreThread {
         return disconnectReason;
     }
 
-    public PropertiesFile getTeamColors() {
+    public ConfigSource getTeamColors() {
         return teamColors;
+    }
+
+    public UIConfig getUIConfiguration() {
+        return new UIConfig(layout, locale);
     }
 
     @Override
@@ -345,15 +351,15 @@ public class Client extends CoreThread {
 
     private void startup() {
         config = ResourceLoader.getPropertiesFile(configFile);
-        servers = ResourceLoader.getPropertiesFile(serverFile);
         PropertiesFileInfo localeFile = new PropertiesFileInfo("locale/" + config.get("locale") + ".properties", "Locale information");
         locale = ResourceLoader.getPropertiesFile(localeFile);
         PropertiesFileInfo teamColorsFile = new PropertiesFileInfo("graphics/teams.properties","Team colors configuration");
         teamColors = ResourceLoader.getPropertiesFile(teamColorsFile);
+        layout = ResourceLoader.getPropertiesFile(uiLayoutFile);
         manager = new RenderManager(this);
         manager.setStyle(new UIStyle(config.get("style")));
         new ClientWindow(this, new InputListener(this, manager));
-        serverPool = new ServerPool();
+        serverPool = new ServerPool(serverFile);
         manager.displayServerConnectMenu();
         renderThread = new RenderThread(logger, manager);
         renderThread.start();
@@ -369,6 +375,11 @@ public class Client extends CoreThread {
         if (gameManager != null)
             gameManager.stop();
         serverPool.save();
+        try {
+            config.close();
+        } catch (IOException e) {
+            logger.log("Unable to save configuration", e, LogLevel.WARN);
+        }
         stop();
     }
 

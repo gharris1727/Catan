@@ -1,34 +1,28 @@
 package com.gregswebserver.catan.client.ui.lobby;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.TextBox;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.TextBox;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 
 /**
  * Created by greg on 1/23/16.
  * Panel with editable lobby settings.
  */
-public class LobbySettings extends UIScreenRegion {
+public class LobbySettings extends UIScreen {
 
-    private static final RenderMask nameSize = new RectangularMask(
-            Client.graphicsConfig.getDimension("interface.inlobby.settings.name"));
-    private static final RenderMask typeSize = new RectangularMask(
-            Client.graphicsConfig.getDimension("interface.inlobby.settings.type"));
-    private static final RenderMask generatorSize = new RectangularMask(
-            Client.graphicsConfig.getDimension("interface.inlobby.settings.generator"));
-    private static final RenderMask rulesetSize = new RectangularMask(
-            Client.graphicsConfig.getDimension("interface.inlobby.settings.ruleset"));
-    private static final RenderMask clientsSize = new RectangularMask(
-            Client.graphicsConfig.getDimension("interface.inlobby.settings.clients"));
-    private static final int spacing = Client.graphicsConfig.getInt("interface.inlobby.settings.spacing");
+    private final RenderMask nameSize;
+    private final RenderMask typeSize;
+    private final RenderMask generatorSize;
+    private final RenderMask rulesetSize;
+    private final RenderMask clientsSize;
+    private final int spacing;
 
     private final TiledBackground background;
     private final TextBox name;
@@ -39,23 +33,26 @@ public class LobbySettings extends UIScreenRegion {
 
     private LobbyConfig config;
 
-    public LobbySettings(int priority) {
-        super(priority);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
-            @Override
-            public String toString() {
-                return "LobbySidebarBackground";
-            }
-        };
+    public LobbySettings(LobbyScreen parent) {
+        super(1, parent, "settings");
+        //Load layout information.
+        nameSize = new RectangularMask(getLayout().getDimension("name"));
+        typeSize = new RectangularMask(getLayout().getDimension("type"));
+        generatorSize = new RectangularMask(getLayout().getDimension("generator"));
+        rulesetSize = new RectangularMask(getLayout().getDimension("ruleset"));
+        clientsSize = new RectangularMask(getLayout().getDimension("clients"));
+        spacing = getLayout().getInt("spacing");
+        //Create sub-regions
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
         name = new TextBox(1, "Lobby Name") {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
                         this.getText(),
-                        LobbySettings.this.config.getLayoutName(),
-                        LobbySettings.this.config.getGeneratorName(),
-                        LobbySettings.this.config.getRulesetName(),
-                        LobbySettings.this.config.getMaxPlayers());
+                        config.getLayoutName(),
+                        config.getGeneratorName(),
+                        config.getRulesetName(),
+                        config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
 
@@ -68,11 +65,11 @@ public class LobbySettings extends UIScreenRegion {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
-                        LobbySettings.this.config.getLobbyName(),
+                        config.getLobbyName(),
                         this.getText(),
-                        LobbySettings.this.config.getGeneratorName(),
-                        LobbySettings.this.config.getRulesetName(),
-                        LobbySettings.this.config.getMaxPlayers());
+                        config.getGeneratorName(),
+                        config.getRulesetName(),
+                        config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
 
@@ -85,11 +82,11 @@ public class LobbySettings extends UIScreenRegion {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
-                        LobbySettings.this.config.getLobbyName(),
-                        LobbySettings.this.config.getLayoutName(),
+                        config.getLobbyName(),
+                        config.getLayoutName(),
                         this.getText(),
-                        LobbySettings.this.config.getRulesetName(),
-                        LobbySettings.this.config.getMaxPlayers());
+                        config.getRulesetName(),
+                        config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
 
@@ -102,11 +99,11 @@ public class LobbySettings extends UIScreenRegion {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
-                        LobbySettings.this.config.getLobbyName(),
-                        LobbySettings.this.config.getLayoutName(),
-                        LobbySettings.this.config.getGeneratorName(),
+                        config.getLobbyName(),
+                        config.getLayoutName(),
+                        config.getGeneratorName(),
                         this.getText(),
-                        LobbySettings.this.config.getMaxPlayers());
+                        config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
 
@@ -119,10 +116,10 @@ public class LobbySettings extends UIScreenRegion {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
-                        LobbySettings.this.config.getLobbyName(),
-                        LobbySettings.this.config.getLayoutName(),
-                        LobbySettings.this.config.getGeneratorName(),
-                        LobbySettings.this.config.getRulesetName(),
+                        config.getLobbyName(),
+                        config.getLayoutName(),
+                        config.getGeneratorName(),
+                        config.getRulesetName(),
                         this.getInt());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
@@ -132,6 +129,7 @@ public class LobbySettings extends UIScreenRegion {
                 return "LobbySettingsClientsTextBox";
             }
         };
+        //Add everything to the screen.
         add(background).setClickable(this);
         add(name);
         add(type);

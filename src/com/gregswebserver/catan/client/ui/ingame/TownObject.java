@@ -20,14 +20,14 @@ public class TownObject extends MapObject {
 
     private final Town town;
 
-    TownObject(int priority, MapRegion container, TeamGraphics graphics, Town town) {
-        super(priority, container, graphics);
+    TownObject(MapRegion container, Town town) {
+        super(2, container);
         this.town = town;
         Graphic background;
         if (town instanceof Settlement || town instanceof EmptyTown) {
-            background = graphics.getSettlementGraphic(town.getTeam());
+            background = container.getBuildingGraphics(town.getTeam()).getGraphic(3);
         } else if (town instanceof City) {
-            background = graphics.getCityGraphic(town.getTeam());
+            background = container.getBuildingGraphics(town.getTeam()).getGraphic(4);
         } else
             throw new IllegalStateException();
         add(new GraphicObject(0, background) {

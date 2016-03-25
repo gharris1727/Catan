@@ -1,12 +1,11 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.TextLabel;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.structure.game.Player;
 
@@ -18,17 +17,7 @@ import java.util.Map;
  * Created by Greg on 1/5/2015.
  * Area responsible for rendering the inventory of the player.
  */
-public class InventoryRegion extends UIScreenRegion {
-
-    private static final Point usernamePosition;
-    private static final Point elementOffset;
-    private static final Point elementSpacing;
-
-    static {
-        usernamePosition = Client.graphicsConfig.getPoint("interface.ingame.inventory.username.position");
-        elementOffset = Client.graphicsConfig.getPoint("interface.ingame.inventory.element.offset");
-        elementSpacing = Client.graphicsConfig.getPoint("interface.ingame.inventory.element.spacing");
-    }
+public class InventoryRegion extends UIScreen {
 
     private final Player player;
 
@@ -36,25 +25,20 @@ public class InventoryRegion extends UIScreenRegion {
     private final TextLabel username;
     private final Map<GameResource, ResourceCounter> elements;
 
-    public InventoryRegion(int priority, Player player) {
-        super(priority);
+    public InventoryRegion(UIScreen parent, Player player) {
+        super(2, parent, "inventory");
+        //Load layout information.
+        Point elementOffset = getLayout().getPoint("element.offset");
+        Point elementSpacing = getLayout().getPoint("element.spacing");
+        //Store instance information.
         this.player = player;
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
-            @Override
-            public String toString() {
-                return "ContextRegionBackground";
-            }
-        };
-        username = new TextLabel(1, UIStyle.FONT_HEADING, player.getName().username) {
-            @Override
-            public String toString() {
-                return "InventoryUsernameLabel";
-            }
-        };
+        //Create sub-regions
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
+        username = new TextLabel(1, UIStyle.FONT_HEADING, player.getName().username);
         elements = new EnumMap<>(GameResource.class);
         int index = 0;
         for (GameResource gameResource : GameResource.values()) {
-            ResourceCounter element = new ResourceCounter(2, player.getInventory(), gameResource) {
+            ResourceCounter element = new ResourceCounter(2, this, player.getInventory(), gameResource) {
                 @Override
                 public String toString() {
                     return "InventoryResourceCounter";
@@ -73,6 +57,7 @@ public class InventoryRegion extends UIScreenRegion {
                     elementOffset.y));
             index++;
         }
+        //Add everything to the screen.
         add(background).setClickable(this);
         add(username).setClickable(this);
     }
@@ -84,7 +69,7 @@ public class InventoryRegion extends UIScreenRegion {
 
     @Override
     protected void renderContents() {
-        center(username).y = usernamePosition.y;
+        center(username).y = getLayout().getInt("username.position.y");
         elements.values().forEach(ResourceCounter::forceRender);
     }
 

@@ -5,14 +5,9 @@ import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.Button;
-import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
@@ -21,25 +16,15 @@ import java.awt.event.MouseEvent;
  */
 public class DisconnectingScreen extends ClientScreen {
 
-    private final int spacing = Client.graphicsConfig.getInt("interface.disconnecting.spacing");
-    private final Dimension buttonSize = Client.graphicsConfig.getDimension("interface.disconnecting.button.size");
-
     private final TiledBackground background;
     private final TextLabel text;
     private final Button button;
 
     public DisconnectingScreen(Client client) {
-        super(client);
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW) {
-            public String toString() {
-                return "DisconnectingScreenBackground";
-            }
-        };
-        text = new TextLabel(1, UIStyle.FONT_HEADING, client.getDisconnectMessage()) {
-            public String toString() {
-                return "DisconnectingScreenDisconnectReason";
-            }
-        };
+        super(client, "disconnecting");
+        //Create subregions
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW);
+        text = new TextLabel(1, UIStyle.FONT_HEADING, client.getDisconnectMessage());
         button = new Button(2, "Return to connect screen.") {
             public String toString() {
                 return "DisconnectingScreenDisconnectButton";
@@ -64,11 +49,12 @@ public class DisconnectingScreen extends ClientScreen {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-        button.setMask(new RoundedRectangularMask(buttonSize));
+        button.setMask(new RoundedRectangularMask(getLayout().getDimension("button.size")));
     }
 
     @Override
     protected void renderContents() {
+        int spacing = getLayout().getInt("spacing");
         center(text).y -= spacing;
         center(button).y += spacing;
     }

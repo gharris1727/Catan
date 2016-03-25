@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Superclass of custom object payloads sent in ExternalEvents
  * Other payloads are used, but all implement serializable.
  */
-public class EventPayload implements Serializable {
+public abstract class EventPayload implements Serializable {
 
     public static final long serialVersionUID = 1L;
 }

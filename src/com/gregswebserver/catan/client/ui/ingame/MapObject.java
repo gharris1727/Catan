@@ -13,12 +13,14 @@ import java.awt.*;
 public abstract class MapObject extends ScreenRegion {
 
     private final MapRegion container;
-    protected final TeamGraphics graphics;
 
-    protected MapObject(int priority, MapRegion container, TeamGraphics graphics) {
+    protected MapObject(int priority, MapRegion container) {
         super(priority);
         this.container = container;
-        this.graphics = graphics;
+    }
+
+    protected MapRegion getContainer(){
+        return container;
     }
 
     @Override

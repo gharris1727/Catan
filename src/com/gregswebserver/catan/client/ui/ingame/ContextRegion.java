@@ -1,17 +1,16 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.style.UIStyle;
-import com.gregswebserver.catan.client.graphics.ui.text.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.util.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.util.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.TextLabel;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.client.structure.GameManager;
+import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.BoardObject;
@@ -32,54 +31,36 @@ import java.awt.event.MouseEvent;
  * Created by Greg on 1/6/2015.
  * A screen region that lives in the bottom corner of the in-game screen.
  */
-public class ContextRegion extends UIScreenRegion {
+public class ContextRegion extends UIScreen {
 
-    private static final GraphicSet graphics;
-
-    private static final Point offset;
-    private static final Point spacing;
-    private static final int titleheight;
-    private static final int detailheight;
-
-    static {
-        graphics = new GraphicSet(Client.graphicsConfig, "interface.ingame.context.icons", RectangularMask.class, null);
-        offset = Client.graphicsConfig.getPoint("interface.ingame.context.offset");
-        spacing = Client.graphicsConfig.getPoint("interface.ingame.context.spacing");
-        titleheight = Client.graphicsConfig.getInt("interface.ingame.context.title.y");
-        detailheight = Client.graphicsConfig.getInt("interface.ingame.context.detail.y");
-    }
-
+    private final GraphicSet graphics;
+    private final Point offset;
+    private final Point spacing;
+    
     private final GameManager manager;
     private final CatanGame game;
     private final Username local;
+    private Object target;
+    
     private final TiledBackground background;
     private final TextLabel title;
     private final TextLabel detail;
-    private Object target;
 
-    public ContextRegion(int priority, GameManager manager, Username local) {
-        super(priority);
+    public ContextRegion(UIScreen parent, GameManager manager, Username local) {
+        super(2, parent, "context");
+        //Load layout information.
+        graphics = new GraphicSet(getLayout(), "icons", RectangularMask.class, null);
+        offset = getLayout().getPoint("offset");
+        spacing = getLayout().getPoint("spacing");
+        //Store instance information.
         this.manager = manager;
         this.game = manager.getLocalGame();
         this.local = local;
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE) {
-            @Override
-            public String toString() {
-                return "ContextRegionBackground";
-            }
-        };
-        title = new TextLabel(1, UIStyle.FONT_HEADING, "") {
-            @Override
-            public String toString() {
-                return "ContextMenuTitleText";
-            }
-        };
-        detail = new TextLabel(2, UIStyle.FONT_PARAGRAPH, "") {
-            @Override
-            public String toString() {
-                return "ContextMenuDetailText";
-            }
-        };
+        //Create sub-regions
+        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
+        title = new TextLabel(1, UIStyle.FONT_HEADING, "");
+        detail = new TextLabel(2, UIStyle.FONT_PARAGRAPH, "");
+        //Add everything to the screen.
         add(background).setClickable(this);
         add(title).setClickable(this);
         add(detail).setClickable(this);
@@ -99,7 +80,7 @@ public class ContextRegion extends UIScreenRegion {
         detail.setText("");
         boolean localPlayerActive = game.isPlayerActive(local);
         if (localPlayerActive) {
-            add(new ContextButton(2, 1) {
+            add(new ContextButton(1) {
                 @Override
                 public String toString() {
                     return "TurnAdvanceButton";
@@ -120,7 +101,7 @@ public class ContextRegion extends UIScreenRegion {
             else
                 detail.setText("Produces: Nothing");
             if (localPlayerActive && !tile.hasRobber()) {
-                add(new ContextButton(2, 2) {
+                add(new ContextButton(2) {
                     @Override
                     public String toString() {
                         return "Path";
@@ -145,7 +126,7 @@ public class ContextRegion extends UIScreenRegion {
             title.setText("Path: " + target);
             detail.setText("Owned by: " + path.getTeam());
             if (localPlayerActive && path.getTeam().equals(Team.None)) {
-                add(new ContextButton(2, 5) {
+                add(new ContextButton(5) {
                     @Override
                     public String toString() {
                         return "Path";
@@ -163,7 +144,7 @@ public class ContextRegion extends UIScreenRegion {
             if (localPlayerActive) {
                 Town town = (Town) target;
                 if (town.getTeam().equals(Team.None)) {
-                    add(new ContextButton(2, 3) {
+                    add(new ContextButton(3) {
                         @Override
                         public String toString() {
                             return "Town";
@@ -174,7 +155,7 @@ public class ContextRegion extends UIScreenRegion {
                         }
                     }).setPosition(getButtonLocation(1, 0));
                 } else if (town.getTeam().equals(game.getTeams().getPlayer(local).getTeam())) {
-                    add(new ContextButton(2, 4) {
+                    add(new ContextButton(4) {
                         @Override
                         public String toString() {
                             return "Town";
@@ -189,7 +170,7 @@ public class ContextRegion extends UIScreenRegion {
             }
         } else if (target instanceof Trade) {
             if (localPlayerActive) {
-                add(new ContextButton(2, 8) {
+                add(new ContextButton(8) {
                     @Override
                     public String toString() {
                         return "ConfirmTrade";
@@ -206,7 +187,7 @@ public class ContextRegion extends UIScreenRegion {
             title.setText("Event: " + event.getDescription());
             if (event.getOrigin() != null)
                 detail.setText(event.getOrigin().toString());
-            add(new ContextButton(2, 9) {
+            add(new ContextButton(9) {
                 @Override
                 public String toString() {
                     return "JumpToEvent";
@@ -219,8 +200,9 @@ public class ContextRegion extends UIScreenRegion {
             }).setPosition(getButtonLocation(1,0));
         }
         add(background);
-        center(add(title)).y = titleheight;
-        center(add(detail)).y = detailheight;
+
+        center(add(title)).y = getLayout().getInt("title.y");
+        center(add(detail)).y = getLayout().getInt("detail.y");
     }
 
     private Point getButtonLocation(int x, int y) {
@@ -242,8 +224,8 @@ public class ContextRegion extends UIScreenRegion {
     }
 
     private abstract class ContextButton extends GraphicObject {
-        private ContextButton(int priority, int icon) {
-            super(priority, graphics.getGraphic(icon));
+        private ContextButton(int icon) {
+            super(2, graphics.getGraphic(icon));
         }
     }
 }

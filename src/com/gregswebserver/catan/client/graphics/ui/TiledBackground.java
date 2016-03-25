@@ -1,9 +1,8 @@
-package com.gregswebserver.catan.client.graphics.ui.util;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.util.Direction;
 
@@ -13,7 +12,7 @@ import java.awt.*;
  * Created by Greg on 1/2/2015.
  * Resizable graphic
  */
-public abstract class TiledBackground extends UIScreenRegion {
+public class TiledBackground extends StyledScreenRegion {
 
     protected final String backgroundStyle;
     protected GraphicSet graphics;
@@ -51,5 +50,9 @@ public abstract class TiledBackground extends UIScreenRegion {
                 }).setClickable(this).setPosition(new Point(x,y));
             }
         }
+    }
+
+    public String toString() {
+        return "TiledBackground(" + backgroundStyle +")";
     }
 }

@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.graphics.ui.style;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.screen.ScreenObject;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
@@ -8,11 +8,11 @@ import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
  * Created by Greg on 1/16/2015.
  * A screen region used as a base for the user interface.
  */
-public abstract class UIScreenRegion extends ScreenRegion implements Styled {
+public abstract class StyledScreenRegion extends ScreenRegion implements Styled {
 
     private UIStyle style;
 
-    protected UIScreenRegion(int priority) {
+    protected StyledScreenRegion(int priority) {
         super(priority);
     }
 

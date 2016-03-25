@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.client.graphics.ui.util;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.style.UIScreenRegion;
 
 import java.awt.*;
 
@@ -9,7 +8,7 @@ import java.awt.*;
  * Created by greg on 2/7/16.
  * An integrated container for a ScrollingScreenRegion.
  */
-public abstract class ScrollingScreenContainer extends UIScreenRegion {
+public abstract class ScrollingScreenContainer extends StyledScreenRegion {
 
     private final ScrollingScreenRegion scroll;
     private final Insets insets;

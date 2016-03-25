@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.util.Animated;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 import java.util.Iterator;
