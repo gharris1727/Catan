@@ -35,9 +35,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     private int lobbyNameColumnWidth;
     private RenderMask lobbySize;
 
-    private final TiledBackground background;
     private final LobbyListHeader header;
-    private final LobbyListScroll scroll;
+    private final LobbyListScrollContainer container;
     private final LobbyListFooter footer;
 
     private final LobbyPool lobbies;
@@ -51,14 +50,12 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         this.lobbies = lobbies;
         //Create the child regions
         header = new LobbyListHeader();
-        background = new TiledBackground(0, "background");
         footer = new LobbyListFooter();
-        scroll = new LobbyListScroll();
+        container = new LobbyListScrollContainer(new LobbyListScroll());
         //Add everything to the screen
         add(header);
-        add(background);
         add(footer);
-        add(scroll);
+        add(container);
     }
 
     @Override
@@ -71,15 +68,14 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         lobbyNameColumnWidth = mask.getWidth() - openSlotsColumnWidth - currentClientsColumnWidth - gameTypeColumnWidth;
         //Set the window locations
         header.setPosition(new Point());
-        background.setPosition(new Point(0,headerHeight));
-        scroll.setPosition(background.getPosition());
+        container.setPosition(new Point(0,headerHeight));
         footer.setPosition(new Point(0,height-footerHeight));
         //Resize the windows
-        background.setMask(new RectangularMask(new Dimension(width,windowHeight)));
-        scroll.setHostView(background.getMask(),new Insets(0,0,0,0));
+        container.setMask(new RectangularMask(new Dimension(width,windowHeight)));
         header.setMask(new RectangularMask(new Dimension(width,headerHeight)));
         footer.setMask(new RectangularMask(new Dimension(width,footerHeight)));
         lobbySize = new RectangularMask(new Dimension(width,lobbyHeight));
+        container.setInsets(new Insets(0,0,0,0));
     }
 
     @Override
@@ -96,7 +92,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
     @Override
     public UserEvent onMouseScroll(MouseWheelEvent event) {
-        scroll.scroll(0,event.getScrollAmount());
+        container.getScroll().scroll(0,event.getScrollAmount());
         return null;
     }
 
@@ -106,7 +102,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     }
 
     public void update() {
-        scroll.forceRender();
+        container.update();
     }
 
     private class LobbyListHeader extends ConfigurableScreenRegion {
@@ -184,7 +180,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
             @Override
             public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return scroll.onMouseScroll(event);
+                return container.onMouseScroll(event);
             }
 
             public void clearArrows() {
@@ -287,6 +283,27 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                     return new UserEvent(this, UserEventType.Lobby_Sort, ascend);
                 }
             }
+        }
+    }
+
+    private class LobbyListScrollContainer extends ScrollingScreenContainer {
+
+        private final TiledBackground background;
+
+        private LobbyListScrollContainer(ScrollingScreenRegion scroll) {
+            super(1, "container", scroll);
+            background = new TiledBackground(0, "background");
+            add(background).setClickable(this);
+        }
+
+        @Override
+        protected void resizeContents(RenderMask mask) {
+            background.setMask(mask);
+        }
+
+        @Override
+        public String toString() {
+            return "LobbyListScrollContainer";
         }
     }
 
@@ -421,7 +438,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
         @Override
         public UserEvent onMouseScroll(MouseWheelEvent event) {
-            return scroll.onMouseScroll(event);
+            return container.onMouseScroll(event);
         }
 
         @Override

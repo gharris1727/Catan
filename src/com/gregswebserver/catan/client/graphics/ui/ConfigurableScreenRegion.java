@@ -21,11 +21,11 @@ public abstract class ConfigurableScreenRegion extends ScreenRegion implements C
     @Override
     public void setConfig(UIConfig config) {
         this.config = config.narrow(configKey);
+        loadConfig(this.config);
         for (ScreenObject o : this) {
             if (o instanceof Configurable)
                 ((Configurable) o).setConfig(this.config);
         }
-        loadConfig(this.config);
         forceRender();
     }
 

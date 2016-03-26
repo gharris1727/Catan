@@ -2,10 +2,7 @@ package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.crypto.Username;
@@ -27,9 +24,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
     private RenderMask tradeSize;
 
     private final Username local;
-    
-    private final TiledBackground background;
-    private final TradeList list;
+
+    private final TradeListContainer container;
     private final TradeControlPanel panel;
 
     public TradeRegion(CatanGame game, Username local) {
@@ -38,17 +34,15 @@ public class TradeRegion extends ConfigurableScreenRegion {
         //Save instance details
         this.local = local;
         //Create sub-regions
-        background = new TiledBackground(0, "background");
-        list = new TradeList(game);
+        container = new TradeListContainer(new TradeList(game));
         panel = new TradeControlPanel();
         //Add everything to the screen.
-        add(background).setClickable(this);
-        add(list);
+        add(container);
         add(panel);
     }
 
     public void update() {
-        list.forceRender();
+        container.update();
     }
 
     @Override
@@ -57,11 +51,11 @@ public class TradeRegion extends ConfigurableScreenRegion {
         int scrollHeight = mask.getHeight() - panelHeight;
         RenderMask scrollSize = new RectangularMask(new Dimension(mask.getWidth(), scrollHeight));
         RenderMask panelSize = new RectangularMask(new Dimension(mask.getWidth(), panelHeight));
-        background.setMask(scrollSize);
-        list.setHostView(scrollSize, new Insets(0,0,0,0));
+        container.setMask(scrollSize);
         panel.setMask(panelSize);
         panel.setPosition(new Point(0, scrollHeight));
-        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), getConfig().getLayout().getInt("list.element.height")));
+        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), getConfig().getLayout().getInt("container.list.element.height")));
+        container.setInsets(new Insets(0,0,0,0));
     }
 
     public String toString() {
@@ -73,7 +67,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
         private final CatanGame game;
 
         private TradeList(CatanGame game) {
-            super(0, "list");
+            super(1, "list");
             this.game = game;
             setTransparency(true);
         }
@@ -181,6 +175,27 @@ public class TradeRegion extends ConfigurableScreenRegion {
             public String toString() {
                 return null;
             }
+        }
+    }
+
+    private class TradeListContainer extends ScrollingScreenContainer {
+
+        private final TiledBackground background;
+
+        private TradeListContainer(ScrollingScreenRegion scroll) {
+            super(0, "container", scroll);
+            background = new TiledBackground(0, "background");
+            add(background).setClickable(this);
+        }
+
+        @Override
+        protected void resizeContents(RenderMask mask) {
+            background.setMask(mask);
+        }
+
+        @Override
+        public String toString() {
+            return "TradeListContainer";
         }
     }
 

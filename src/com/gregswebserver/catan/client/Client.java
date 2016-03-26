@@ -116,10 +116,6 @@ public class Client extends CoreThread {
         return teamColors;
     }
 
-    public UIConfig getUIConfiguration() {
-        return new UIConfig(style, layout, locale);
-    }
-
     @Override
     protected void externalEvent(ExternalEvent event) {
         if (event instanceof ChatEvent && chatThread != null)
@@ -357,7 +353,7 @@ public class Client extends CoreThread {
         manager = new RenderManager(this);
         PropertiesFileInfo styleFile = new PropertiesFileInfo("ui/"+config.get("style") + ".properties", "Style Information");
         style = ResourceLoader.getPropertiesFile(styleFile);
-        manager.setConfig(getUIConfiguration());
+        manager.setConfig(new UIConfig(style, layout, locale));
         new ClientWindow(this, new InputListener(this, manager));
         serverPool = new ServerPool(serverFile);
         manager.displayServerConnectMenu();

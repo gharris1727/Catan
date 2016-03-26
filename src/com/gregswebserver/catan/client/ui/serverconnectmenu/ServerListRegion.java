@@ -30,7 +30,7 @@ public class ServerListRegion extends ConfigurableScreenRegion {
 
     private Point[] serverLocations;
 
-    //TODO: make scrolling continuous.
+    //TODO: redesign this to take advantage of the ScrollingScreenRegion framework.
     private int scroll;
     private ConnectionInfo selected;
 

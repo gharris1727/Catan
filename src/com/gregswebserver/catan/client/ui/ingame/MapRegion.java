@@ -121,6 +121,7 @@ public class MapRegion extends ScrollingScreenRegion {
         buildings = new EnumMap<>(Team.class);
         for (Team team : Team.values())
             buildings.put(team,new GraphicSet(buildingSource, buildingMasks, teamColors.getSwaps(team)));
+        setMask(new RectangularMask(boardToScreen(board.getSize())));
     }
 
     @Override
@@ -133,7 +134,6 @@ public class MapRegion extends ScrollingScreenRegion {
         for (Town town : board.getTownMap().values())
             add(new TownObject(this, town)).setPosition(vertexToScreen(town.getPosition()));
         add(background);
-        setMask(new RectangularMask(boardToScreen(board.getSize())));
     }
 
     @Override

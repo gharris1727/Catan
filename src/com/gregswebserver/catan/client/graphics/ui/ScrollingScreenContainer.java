@@ -16,6 +16,7 @@ public abstract class ScrollingScreenContainer extends ConfigurableScreenRegion 
     protected ScrollingScreenContainer(int priority, String configKey, ScrollingScreenRegion scroll) {
         super(priority, configKey);
         this.scroll = scroll;
+        scroll.setHost(this);
         add(scroll);
     }
 
@@ -35,5 +36,9 @@ public abstract class ScrollingScreenContainer extends ConfigurableScreenRegion 
     @Override
     protected void resizeContents(RenderMask mask) {
         scroll.setHostView(mask, insets);
+    }
+
+    public ScrollingScreenRegion getScroll() {
+        return scroll;
     }
 }

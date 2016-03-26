@@ -14,10 +14,15 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
     private final Point offset;
     private RenderMask hostMask;
     private Insets insets;
+    private ScrollingScreenContainer host;
 
     protected ScrollingScreenRegion(int priority, String configKey) {
         super(priority, configKey);
         this.offset = new Point();
+    }
+
+    public void setHost(ScrollingScreenContainer host) {
+        this.host = host;
     }
 
     public void setHostView(RenderMask hostMask, Insets insets) {
@@ -40,6 +45,7 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
             Dimension host = hostMask.getSize();
             position.x = (host.width - size.width + insets.left - insets.right)/2 + offset.x;
             position.y = (host.height - size.height + insets.top - insets.bottom)/2 + offset.y;
+            checkBounds();
         }
     }
 
@@ -68,18 +74,20 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
                 position.x = offset.x - insets.right;
             if (position.y > offset.y - insets.bottom)
                 position.y = offset.y - insets.bottom;
-            forceRender();
+            this.host.forceRender();
         }
     }
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && hostMask != null && insets != null;
+        return super.isRenderable() && host != null && hostMask != null && insets != null;
     }
 
     @Override
     public void assertRenderable() {
         super.assertRenderable();
+        if (host == null)
+            throw new NotYetRenderableException(this + " has no host");
         if (hostMask == null)
             throw new NotYetRenderableException(this + " has no host mask");
         if (insets == null)
