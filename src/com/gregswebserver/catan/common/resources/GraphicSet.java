@@ -3,6 +3,8 @@ package com.gregswebserver.catan.common.resources;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
+import com.gregswebserver.catan.common.config.ConfigSource;
+import com.gregswebserver.catan.common.config.ConfigurationException;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;

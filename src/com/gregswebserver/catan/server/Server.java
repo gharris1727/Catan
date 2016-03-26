@@ -3,6 +3,7 @@ package com.gregswebserver.catan.server;
 
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
+import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.AuthenticationException;
 import com.gregswebserver.catan.common.crypto.Password;
@@ -15,7 +16,6 @@ import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.NetEvent;
 import com.gregswebserver.catan.common.network.NetEventType;
 import com.gregswebserver.catan.common.network.ServerConnection;
-import com.gregswebserver.catan.common.resources.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.UserInfo;

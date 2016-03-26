@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.structure;
 
-import com.gregswebserver.catan.common.resources.ConfigurationException;
-import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.config.ConfigurationException;
+import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
@@ -41,12 +41,12 @@ public class ServerPool implements Iterable<ConnectionInfo> {
 
     public void save() {
         PropertiesFile serverList = ResourceLoader.getPropertiesFile(serverListFile);
-        serverList.clear();
+        serverList.clearEntries();
         int i = 0;
         for (ConnectionInfo elt : connectionInfoList) {
-            serverList.set("servers." + i + ".hostname", elt.getRemote());
-            serverList.set("servers." + i + ".port", elt.getPort());
-            serverList.set("servers." + i + ".username", elt.getUsername());
+            serverList.setEntry("servers." + i + ".hostname", elt.getRemote());
+            serverList.setEntry("servers." + i + ".port", elt.getPort());
+            serverList.setEntry("servers." + i + ".username", elt.getUsername());
             i++;
         }
         ResourceLoader.savePropertiesFile(serverListFile);

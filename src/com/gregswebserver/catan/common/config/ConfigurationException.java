@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.resources;
+package com.gregswebserver.catan.common.config;
 
 /**
  * Created by greg on 1/20/16.

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
+import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
-import com.gregswebserver.catan.common.resources.ConfigSource;
 
 import java.util.EnumMap;
 import java.util.Map;

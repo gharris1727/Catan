@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.resources;
+package com.gregswebserver.catan.common.config;
 
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 
@@ -6,7 +6,7 @@ import java.awt.*;
 
 /**
  * Created by greg on 3/22/16.
- * Methods for controlling access to a source of configuration details.
+ * Class that provides access to configuration details.
  */
 public interface ConfigSource {
 

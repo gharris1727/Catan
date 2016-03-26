@@ -4,7 +4,7 @@ package com.gregswebserver.catan.common.resources;
  * Created by greg on 2/28/16.
  * Information on how to load a properties file from disk.
  */
-public final class PropertiesFileInfo extends ResourceCacheKey{
+public final class PropertiesFileInfo extends ResourceCacheKey {
 
     private final String path;
     private final String comment;

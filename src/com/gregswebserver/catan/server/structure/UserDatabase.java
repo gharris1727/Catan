@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.server.structure;
 
+import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.crypto.*;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
-import com.gregswebserver.catan.common.resources.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.UserInfo;
@@ -37,7 +37,7 @@ public class UserDatabase {
 
     public void save() {
         for (Map.Entry<Username, UserAccount> entry : accounts.entrySet())
-            database.set(entry.getKey().username, entry.getValue().toString());
+            database.setEntry(entry.getKey().username, entry.getValue().toString());
         ResourceLoader.savePropertiesFile(databaseFile);
     }
 

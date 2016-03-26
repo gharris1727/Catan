@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.crypto;
 
-import com.gregswebserver.catan.common.resources.ConfigurationException;
+import com.gregswebserver.catan.common.config.ConfigurationException;
 import com.gregswebserver.catan.common.structure.UserInfo;
 
 import java.io.Serializable;

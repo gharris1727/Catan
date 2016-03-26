@@ -1,10 +1,11 @@
 package com.gregswebserver.catan.common.game.gameplay.layout;
 
+import com.gregswebserver.catan.common.config.ConfigSource;
+import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
-import com.gregswebserver.catan.common.resources.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
@@ -45,7 +46,7 @@ public class StaticBoardLayout implements BoardLayout {
         portCount = ports.size();
     }
 
-    private String parseName(PropertiesFile file) {
+    private String parseName(ConfigSource file) {
         return file.get("name");
     }
 
@@ -54,7 +55,7 @@ public class StaticBoardLayout implements BoardLayout {
         return name;
     }
 
-    private Dimension parseSize(PropertiesFile file) {
+    private Dimension parseSize(ConfigSource file) {
         return file.getDimension("size");
     }
 
@@ -64,7 +65,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     //Depends on parseTerrain(), parseTiles()
-    private Coordinate parseRobber(PropertiesFile file) {
+    private Coordinate parseRobber(ConfigSource file) {
         try {
             //Look for an explicit robber location first
             return file.getCoord("robber");
@@ -93,7 +94,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     //Depends on parseTerrain()
-    private int parseDesertCount(PropertiesFile file) {
+    private int parseDesertCount(ConfigSource file) {
         try {
             //Check for explicit desert count.
             return file.getInt("deserts");
@@ -118,7 +119,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     @SuppressWarnings("InfiniteLoopStatement")
-    private LinkedList<Coordinate> parseTiles(PropertiesFile file) {
+    private LinkedList<Coordinate> parseTiles(ConfigSource file) {
         LinkedList<Coordinate> list = new LinkedList<>();
         try {
             for (int i = 0; true; i++)
@@ -135,7 +136,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     @SuppressWarnings("InfiniteLoopStatement")
-    private LinkedList<Coordinate> parsePorts(PropertiesFile file) {
+    private LinkedList<Coordinate> parsePorts(ConfigSource file) {
         LinkedList<Coordinate> list = new LinkedList<>();
         try {
             for (int i = 0; true; i++)
@@ -151,7 +152,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     @SuppressWarnings("InfiniteLoopStatement")
-    private LinkedList<Terrain> parseTerrain(PropertiesFile file) {
+    private LinkedList<Terrain> parseTerrain(ConfigSource file) {
         LinkedList<Terrain> list = new LinkedList<>();
         try {
             for (int i = 0; true; i++) {
@@ -192,7 +193,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     @SuppressWarnings("InfiniteLoopStatement")
-    private LinkedList<DiceRoll> parseRolls(PropertiesFile file) {
+    private LinkedList<DiceRoll> parseRolls(ConfigSource file) {
         LinkedList<DiceRoll> list = new LinkedList<>();
         try {
             for (int i = 0; true; i++)
@@ -209,7 +210,7 @@ public class StaticBoardLayout implements BoardLayout {
     }
 
     @SuppressWarnings("InfiniteLoopStatement")
-    private LinkedList<TradingPostType> parsePosts(PropertiesFile file) {
+    private LinkedList<TradingPostType> parsePosts(ConfigSource file) {
         LinkedList<TradingPostType> list = new LinkedList<>();
         try {
             for (int i = 0; true; i++) {

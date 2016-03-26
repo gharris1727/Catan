@@ -3,6 +3,7 @@ package com.gregswebserver.catan.common.resources;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.GraphicSource;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.layout.DynamicBoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.layout.StaticBoardLayout;

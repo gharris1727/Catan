@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.rules;
 
-import com.gregswebserver.catan.common.resources.PropertiesFile;
+import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
@@ -41,7 +41,7 @@ public class GameRules implements Serializable {
     private final int maxCities;
 
     public GameRules(String path) {
-        PropertiesFile file = ResourceLoader.getPropertiesFile(new PropertiesFileInfo(path,"Board layout information"));
+        PropertiesFile file = ResourceLoader.getPropertiesFile(new PropertiesFileInfo(path,"Game Rules"));
         settlementResources = file.getInt("rules.resources.settlement");
         cityResources = file.getInt("rules.resources.city");
         pathPoints = file.getInt("rules.points.build.path");
