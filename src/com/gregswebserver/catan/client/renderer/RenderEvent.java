@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.event;
+package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.common.event.InternalEvent;
 

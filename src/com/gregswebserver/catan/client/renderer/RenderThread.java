@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.renderer;
 
-import com.gregswebserver.catan.client.event.RenderEvent;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.common.event.QueuedInputThread;

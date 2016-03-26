@@ -1,15 +1,14 @@
 package com.gregswebserver.catan.client.ui.serverconnectmenu;
 
-import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.client.structure.ServerPool;
-import com.gregswebserver.catan.client.ui.UIScreen;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

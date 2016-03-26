@@ -1,14 +1,10 @@
 package com.gregswebserver.catan.client.ui.lobby;
 
-import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.Button;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
-import com.gregswebserver.catan.client.ui.UIScreen;
+import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 
 import java.awt.event.MouseEvent;
 

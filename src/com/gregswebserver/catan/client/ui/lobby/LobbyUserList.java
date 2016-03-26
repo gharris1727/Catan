@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.ui.lobby;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 

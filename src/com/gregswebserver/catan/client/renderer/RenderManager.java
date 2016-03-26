@@ -1,17 +1,17 @@
 package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.Animated;
 import com.gregswebserver.catan.client.graphics.screen.Renderable;
+import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.Styled;
 import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.client.ui.ClientScreen;
+import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
 import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
 import com.gregswebserver.catan.client.ui.ingame.InGameScreenRegion;

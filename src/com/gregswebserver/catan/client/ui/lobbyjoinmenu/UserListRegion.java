@@ -2,8 +2,8 @@ package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.UIScreen;
 import com.gregswebserver.catan.client.graphics.ui.UIStyle;
-import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.structure.lobby.ClientPool;
 
 /**

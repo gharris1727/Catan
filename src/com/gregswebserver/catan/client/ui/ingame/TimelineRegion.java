@@ -1,17 +1,13 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.ChevronMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenContainer;
-import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
-import com.gregswebserver.catan.client.ui.UIScreen;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 import com.gregswebserver.catan.common.resources.GraphicSet;

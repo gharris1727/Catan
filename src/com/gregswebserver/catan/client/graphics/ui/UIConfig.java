@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui;
+package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.common.resources.ConfigSource;
 

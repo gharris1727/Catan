@@ -3,7 +3,7 @@ package com.gregswebserver.catan.client.ui.lobby;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.ui.ClientScreen;
+import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 
 import java.awt.*;

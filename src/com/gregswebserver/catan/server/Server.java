@@ -26,8 +26,6 @@ import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
-import com.gregswebserver.catan.server.event.ServerEvent;
-import com.gregswebserver.catan.server.event.ServerEventType;
 import com.gregswebserver.catan.server.structure.ConnectionPool;
 import com.gregswebserver.catan.server.structure.GamePool;
 import com.gregswebserver.catan.server.structure.UserDatabase;

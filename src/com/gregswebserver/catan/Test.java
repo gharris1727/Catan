@@ -1,8 +1,8 @@
 package com.gregswebserver.catan;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.event.UserEventType;
+import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.server.Server;

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
-import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.input.UserEvent;
 
 import java.awt.event.KeyEvent;
 

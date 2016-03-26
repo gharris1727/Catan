@@ -1,11 +1,9 @@
 package com.gregswebserver.catan.client;
 
-import com.gregswebserver.catan.client.event.ClientEvent;
-import com.gregswebserver.catan.client.event.ClientEventType;
-import com.gregswebserver.catan.client.event.RenderEvent;
-import com.gregswebserver.catan.client.event.RenderEventType;
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.input.InputListener;
+import com.gregswebserver.catan.client.renderer.RenderEvent;
+import com.gregswebserver.catan.client.renderer.RenderEventType;
 import com.gregswebserver.catan.common.CoreWindow;
 
 import java.awt.*;

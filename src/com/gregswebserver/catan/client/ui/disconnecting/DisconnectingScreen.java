@@ -1,12 +1,11 @@
 package com.gregswebserver.catan.client.ui.disconnecting;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.event.UserEvent;
-import com.gregswebserver.catan.client.event.UserEventType;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.client.ui.ClientScreen;
+import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 
 import java.awt.event.MouseEvent;
 

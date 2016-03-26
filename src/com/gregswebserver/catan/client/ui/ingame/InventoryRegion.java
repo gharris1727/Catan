@@ -1,11 +1,7 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
-import com.gregswebserver.catan.client.ui.UIScreen;
+import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.structure.game.Player;
 

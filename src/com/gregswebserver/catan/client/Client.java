@@ -1,18 +1,16 @@
 package com.gregswebserver.catan.client;
 
-import com.gregswebserver.catan.client.event.ClientEvent;
-import com.gregswebserver.catan.client.event.ClientEventType;
-import com.gregswebserver.catan.client.event.RenderEvent;
-import com.gregswebserver.catan.client.event.UserEvent;
+import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.client.input.InputListener;
+import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.renderer.RenderEvent;
 import com.gregswebserver.catan.client.renderer.RenderManager;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.client.structure.ServerPool;
-import com.gregswebserver.catan.client.ui.UIConfig;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;

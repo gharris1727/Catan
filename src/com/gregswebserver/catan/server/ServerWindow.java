@@ -2,8 +2,6 @@ package com.gregswebserver.catan.server;
 
 import com.gregswebserver.catan.common.CoreWindow;
 import com.gregswebserver.catan.server.console.Console;
-import com.gregswebserver.catan.server.event.ServerEvent;
-import com.gregswebserver.catan.server.event.ServerEventType;
 
 import java.awt.*;
 

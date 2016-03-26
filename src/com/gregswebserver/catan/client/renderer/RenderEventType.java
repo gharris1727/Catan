@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.event;
+package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.common.event.EventType;

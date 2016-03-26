@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
-import com.gregswebserver.catan.client.event.UserEvent;
 import com.gregswebserver.catan.client.input.Clickable;
+import com.gregswebserver.catan.client.input.UserEvent;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

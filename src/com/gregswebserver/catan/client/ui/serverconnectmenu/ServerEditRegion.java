@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.client.ui.serverconnectmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.ui.UIScreen;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
-import com.gregswebserver.catan.client.ui.UIScreen;
 
 /**
  * Created by Greg on 1/5/2015.

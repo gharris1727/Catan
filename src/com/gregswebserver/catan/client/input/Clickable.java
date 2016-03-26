@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.client.input;
 
-import com.gregswebserver.catan.client.event.UserEvent;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
