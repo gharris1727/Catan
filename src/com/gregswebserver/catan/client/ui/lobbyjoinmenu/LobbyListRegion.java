@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
-import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
@@ -21,17 +20,17 @@ import java.awt.event.MouseWheelEvent;
  * Created by greg on 1/10/16.
  * List of lobbies that the client can join, or create one themselves.
  */
-public class LobbyListRegion extends UIScreen {
+public class LobbyListRegion extends ConfigurableScreenRegion {
 
-    private final int headerHeight;
-    private final int lobbyHeight;
-    private final int footerHeight;
-    private final int spacing;
+    private int headerHeight;
+    private int lobbyHeight;
+    private int footerHeight;
+    private int spacing;
 
-    private final int gameTypeColumnWidth;
-    private final int currentClientsColumnWidth;
-    private final int openSlotsColumnWidth;
-    private final int arrowWidth;
+    private int gameTypeColumnWidth;
+    private int currentClientsColumnWidth;
+    private int openSlotsColumnWidth;
+    private int arrowWidth;
 
     private int lobbyNameColumnWidth;
     private RenderMask lobbySize;
@@ -45,22 +44,14 @@ public class LobbyListRegion extends UIScreen {
     private LobbySortOption sortOption;
     private Lobby selected;
 
-    public LobbyListRegion(LobbyJoinMenu parent, LobbyPool lobbies) {
-        super(0, parent, "lobbies");
+    public LobbyListRegion(LobbyPool lobbies) {
+        super(0, "lobbies");
         //Load layout information
-        headerHeight = getLayout().getInt("header.height");
-        lobbyHeight = getLayout().getInt("lobby.height");
-        footerHeight = getLayout().getInt("footer.height");
-        spacing = getLayout().getInt("spacing");
-        gameTypeColumnWidth = getLayout().getInt("header.type.width");
-        currentClientsColumnWidth = getLayout().getInt("header.current.width");
-        openSlotsColumnWidth = getLayout().getInt("header.open.width");
-        arrowWidth = getLayout().getInt("arrows.width");
         //Store instance information
         this.lobbies = lobbies;
         //Create the child regions
         header = new LobbyListHeader();
-        background = new TiledBackground(0, UIStyle.BACKGROUND_WINDOW);
+        background = new TiledBackground(0, "background");
         footer = new LobbyListFooter();
         scroll = new LobbyListScroll();
         //Add everything to the screen
@@ -92,6 +83,18 @@ public class LobbyListRegion extends UIScreen {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        headerHeight = getConfig().getLayout().getInt("header.height");
+        lobbyHeight = getConfig().getLayout().getInt("lobby.height");
+        footerHeight = getConfig().getLayout().getInt("footer.height");
+        spacing = getConfig().getLayout().getInt("spacing");
+        gameTypeColumnWidth = getConfig().getLayout().getInt("header.type.width");
+        currentClientsColumnWidth = getConfig().getLayout().getInt("header.current.width");
+        openSlotsColumnWidth = getConfig().getLayout().getInt("header.open.width");
+        arrowWidth = getConfig().getLayout().getInt("arrows.width");
+    }
+
+    @Override
     public UserEvent onMouseScroll(MouseWheelEvent event) {
         scroll.scroll(0,event.getScrollAmount());
         return null;
@@ -106,7 +109,7 @@ public class LobbyListRegion extends UIScreen {
         scroll.forceRender();
     }
 
-    private class LobbyListHeader extends StyledScreenRegion {
+    private class LobbyListHeader extends ConfigurableScreenRegion {
 
         private final LobbyListHeaderElement lobbyNameHeader;
         private final LobbyListHeaderElement gameTypeHeader;
@@ -114,7 +117,7 @@ public class LobbyListRegion extends UIScreen {
         private final LobbyListHeaderElement openSlotsHeader;
 
         private LobbyListHeader() {
-            super(2);
+            super(2, "header");
             lobbyNameHeader = new LobbyListHeaderElement(
                     LobbySortOption.Lobby_Name_Asc, LobbySortOption.Lobby_Name_Desc);
             gameTypeHeader = new LobbyListHeaderElement(
@@ -147,7 +150,7 @@ public class LobbyListRegion extends UIScreen {
             return "LobbyListHeader";
         }
 
-        private class LobbyListHeaderElement extends StyledScreenRegion {
+        private class LobbyListHeaderElement extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
             private final TextLabel labelGraphic;
@@ -155,9 +158,9 @@ public class LobbyListRegion extends UIScreen {
             private final DownArrow downArrow;
 
             public LobbyListHeaderElement(LobbySortOption ascend, LobbySortOption descend) {
-                super(0);
-                background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_LOBBIES);
-                labelGraphic = new TextLabel(1,UIStyle.FONT_PARAGRAPH, ascend.getTitle());
+                super(0, "element");
+                background = new EdgedTiledBackground(0, "background");
+                labelGraphic = new TextLabel(1, "label", ascend.getTitle());
                 upArrow = new UpArrow(ascend);
                 downArrow = new DownArrow(descend);
                 //Add the objects to the screen.
@@ -194,20 +197,24 @@ public class LobbyListRegion extends UIScreen {
                 return "LobbyListHeaderElement";
             }
 
-            private class DownArrow extends StyledGraphicObject {
+            private class DownArrow extends ConfigurableGraphicObject {
 
                 private final LobbySortOption descend;
                 int index;
 
                 public DownArrow(LobbySortOption descend) {
-                    super(1);
+                    super(1, "down");
                     this.descend = descend;
                     index = 1;
                 }
 
                 @Override
-                public Graphic getGraphic() {
-                    return getStyle().getIconGraphics("arrows", RectangularMask.class).getGraphic(index);
+                public void loadConfig(UIConfig config) {
+                    update();
+                }
+
+                public void update() {
+                    setGraphic(getConfig().getIconGraphics("arrows", RectangularMask.class).getGraphic(index));
                 }
 
                 @Override
@@ -218,7 +225,7 @@ public class LobbyListRegion extends UIScreen {
                 @Override
                 public UserEvent onMousePress(MouseEvent event) {
                     index = 3;
-                    forceRender();
+                    update();
                     return null;
                 }
 
@@ -230,26 +237,30 @@ public class LobbyListRegion extends UIScreen {
                     openSlotsHeader.clearArrows();
                     index = 5;
                     sortOption = descend;
-                    forceRender();
+                    update();
                     return new UserEvent(this, UserEventType.Lobby_Sort, descend);
                 }
 
             }
 
-            private class UpArrow extends StyledGraphicObject {
+            private class UpArrow extends ConfigurableGraphicObject {
 
                 private final LobbySortOption ascend;
                 private int index;
 
                 public UpArrow(LobbySortOption ascend) {
-                    super(1);
+                    super(1, "up");
                     this.ascend = ascend;
                     index = 0;
                 }
 
                 @Override
-                public Graphic getGraphic() {
-                    return getStyle().getIconGraphics("arrows", RectangularMask.class).getGraphic(index);
+                public void loadConfig(UIConfig config) {
+                    update();
+                }
+
+                public void update() {
+                    setGraphic(getConfig().getIconGraphics("arrows", RectangularMask.class).getGraphic(index));
                 }
 
                 @Override
@@ -260,7 +271,7 @@ public class LobbyListRegion extends UIScreen {
                 @Override
                 public UserEvent onMousePress(MouseEvent event) {
                     index = 2;
-                    forceRender();
+                    update();
                     return null;
                 }
 
@@ -272,7 +283,7 @@ public class LobbyListRegion extends UIScreen {
                     openSlotsHeader.clearArrows();
                     index = 4;
                     sortOption = ascend;
-                    forceRender();
+                    update();
                     return new UserEvent(this, UserEventType.Lobby_Sort, ascend);
                 }
             }
@@ -282,7 +293,7 @@ public class LobbyListRegion extends UIScreen {
     private class LobbyListScroll extends ScrollingScreenRegion {
 
         private LobbyListScroll() {
-            super(1);
+            super(1, "scroll");
             setTransparency(true);
         }
 
@@ -293,7 +304,7 @@ public class LobbyListRegion extends UIScreen {
             for (Lobby lobby : lobbies) {
                 if (lobby.getState() == LobbyState.Preparing) {
                     LobbyListScrollElement elt = new LobbyListScrollElement(lobby);
-                    elt.setStyle(getStyle());
+                    elt.setConfig(getConfig());
                     elt.setMask(lobbySize);
                     add(elt).setPosition(new Point(0, height));
                     height += lobbyHeight;
@@ -302,7 +313,7 @@ public class LobbyListRegion extends UIScreen {
             setMask(new RectangularMask(new Dimension(LobbyListRegion.this.getMask().getWidth(),height)));
         }
 
-        private class LobbyListScrollElement extends StyledScreenRegion {
+        private class LobbyListScrollElement extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
 
@@ -314,13 +325,13 @@ public class LobbyListRegion extends UIScreen {
             private final Lobby lobby;
 
             public LobbyListScrollElement(Lobby lobby) {
-                super(0);
+                super(0, "element");
                 this.lobby = lobby;
-                background = new TiledBackground(0, UIStyle.BACKGROUND_LOBBIES);
-                lobbyNameText = new TextLabel(1, UIStyle.FONT_PARAGRAPH, lobby.getConfig().getLobbyName());
-                gameTypeText = new TextLabel(1, UIStyle.FONT_PARAGRAPH, lobby.getConfig().getLayoutName());
-                currentClientsText = new TextLabel(1, UIStyle.FONT_PARAGRAPH, "" + lobby.size());
-                openSlotsText = new TextLabel(1, UIStyle.FONT_PARAGRAPH, "" + (lobby.getConfig().getMaxPlayers() - lobby.size()));
+                background = new TiledBackground(0, "background");
+                lobbyNameText = new TextLabel(1, "name", lobby.getConfig().getLobbyName());
+                gameTypeText = new TextLabel(1, "type", lobby.getConfig().getLayoutName());
+                currentClientsText = new TextLabel(1, "current", "" + lobby.size());
+                openSlotsText = new TextLabel(1, "open", "" + (lobby.getConfig().getMaxPlayers() - lobby.size()));
                 add(background).setClickable(this);
                 add(lobbyNameText).setClickable(this);
                 add(gameTypeText).setClickable(this);
@@ -364,16 +375,16 @@ public class LobbyListRegion extends UIScreen {
         }
     }
 
-    private class LobbyListFooter extends StyledScreenRegion {
+    private class LobbyListFooter extends ConfigurableScreenRegion {
 
         private final TiledBackground background;
         private final Button joinButton;
         private final Button createButton;
 
         private LobbyListFooter() {
-            super(2);
-            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-            joinButton = new Button(1, "Join") {
+            super(2, "footer");
+            background = new EdgedTiledBackground(0, "background");
+            joinButton = new Button(1, "join", "Join") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getUsers().iterator().next());
@@ -382,7 +393,7 @@ public class LobbyListRegion extends UIScreen {
                     return "LobbyListJoinButton";
                 }
             };
-            createButton = new Button(1, "Create new") {
+            createButton = new Button(1, "create", "Create new") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return new UserEvent(this, UserEventType.Lobby_Create, null);
@@ -401,6 +412,7 @@ public class LobbyListRegion extends UIScreen {
         @Override
         protected void resizeContents(RenderMask mask) {
             background.setMask(mask);
+            //TODO: make these dynamic or put them in the config files.
             joinButton.setPosition(new Point(16, 16));
             joinButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
             createButton.setPosition(new Point(200, 16));

@@ -1,19 +1,19 @@
 package com.gregswebserver.catan.client.ui.serverconnectmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.UIScreen;
+import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
 
 /**
  * Created by Greg on 1/5/2015.
  * A dialogue that pops up on the screen when a user wants to edit/create a new ServerPool entry.
  */
-public class ServerEditRegion extends UIScreen {
+public class ServerEditRegion extends ConfigurableScreenRegion {
 
     private final ConnectionInfo info;
 
-    public ServerEditRegion(ServerConnectMenu parent, ConnectionInfo info) {
-        super(1, parent, "edit");
+    public ServerEditRegion(ConnectionInfo info) {
+        super(1, "edit");
         this.info = info;
     }
 

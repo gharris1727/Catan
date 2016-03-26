@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.graphics;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -14,7 +14,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class TextGraphic extends Graphic {
 
-    public TextGraphic(UIStyle style, String textStyleName, String text) {
+    public TextGraphic(UIConfig style, String textStyleName, String text) {
         //Get the font we should be using to render this text.
         Font f = style.getTextStyle(textStyleName).getFont();
         //Get the layout for no anti-aliasing.

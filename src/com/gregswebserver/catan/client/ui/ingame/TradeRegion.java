@@ -2,7 +2,10 @@ package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.crypto.Username;
@@ -18,12 +21,9 @@ import java.awt.event.MouseWheelEvent;
  * Created by Greg on 1/6/2015.
  * A trading screen that appears on the sidebar of the in-game screen.
  */
-public class TradeRegion extends UIScreen {
+public class TradeRegion extends ConfigurableScreenRegion {
 
     //TODO: provide an interface to create a new TemporaryTrade.
-
-    private final Point elementOffset;
-    private final Point elementSpacing;
     private RenderMask tradeSize;
 
     private final Username local;
@@ -32,15 +32,13 @@ public class TradeRegion extends UIScreen {
     private final TradeList list;
     private final TradeControlPanel panel;
 
-    public TradeRegion(UIScreen parent, CatanGame game, Username local) {
-        super(1, parent, "trade");
+    public TradeRegion(CatanGame game, Username local) {
+        super(1, "trade");
         //Load layout details.
-        elementOffset = getLayout().getPoint("element.offset");
-        elementSpacing = getLayout().getPoint("element.spacing");
         //Save instance details
         this.local = local;
         //Create sub-regions
-        background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
+        background = new TiledBackground(0, "background");
         list = new TradeList(game);
         panel = new TradeControlPanel();
         //Add everything to the screen.
@@ -55,7 +53,7 @@ public class TradeRegion extends UIScreen {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        int panelHeight = getLayout().getInt("panel.height");
+        int panelHeight = getConfig().getLayout().getInt("panel.height");
         int scrollHeight = mask.getHeight() - panelHeight;
         RenderMask scrollSize = new RectangularMask(new Dimension(mask.getWidth(), scrollHeight));
         RenderMask panelSize = new RectangularMask(new Dimension(mask.getWidth(), panelHeight));
@@ -63,7 +61,7 @@ public class TradeRegion extends UIScreen {
         list.setHostView(scrollSize, new Insets(0,0,0,0));
         panel.setMask(panelSize);
         panel.setPosition(new Point(0, scrollHeight));
-        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), getLayout().getInt("element.height")));
+        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), getConfig().getLayout().getInt("list.element.height")));
     }
 
     public String toString() {
@@ -75,7 +73,7 @@ public class TradeRegion extends UIScreen {
         private final CatanGame game;
 
         private TradeList(CatanGame game) {
-            super(0);
+            super(0, "list");
             this.game = game;
             setTransparency(true);
         }
@@ -86,7 +84,7 @@ public class TradeRegion extends UIScreen {
             int height = 1;
             for (Trade t : game.getTrades(TradeRegion.this.local)) {
                 TradeListElement elt = new TradeListElement(t);
-                elt.setStyle(getStyle());
+                elt.setConfig(getConfig());
                 elt.setMask(tradeSize);
                 add(elt).setPosition(new Point(0, height));
                 height += tradeSize.getHeight();
@@ -113,37 +111,16 @@ public class TradeRegion extends UIScreen {
             return "TradeList";
         }
 
-        private class TradeListElement extends StyledScreenRegion {
+        private class TradeListElement extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
             private final Trade trade;
 
             protected TradeListElement(Trade trade) {
-                super(0);
+                super(0, "element");
                 this.trade = trade;
-                background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-                int index = 0;
-                for (GameResource gameResource : GameResource.values()) {
-                    ResourceCounter request = new ResourceCounter(2, TradeRegion.this, trade.request, gameResource) {
-                        @Override
-                        public String toString() {
-                            return "InventoryResourceCounter";
-                        }
-                    };
-                    ResourceCounter offer = new ResourceCounter(3, TradeRegion.this, trade.offer, gameResource) {
-                        @Override
-                        public String toString() {
-                            return "InventoryResourceCounter";
-                        }
-                    };
-                    add(request).setClickable(this).setPosition(new Point(
-                            elementOffset.x + index * elementSpacing.x,
-                            elementOffset.y));
-                    add(offer).setClickable(this).setPosition(new Point(
-                            elementOffset.x + index * elementSpacing.x,
-                            elementOffset.y + elementSpacing.y));
-                    index++;
-                }
+                background = new EdgedTiledBackground(0, "background");
+
                 add(background).setClickable(this);
             }
 
@@ -168,19 +145,52 @@ public class TradeRegion extends UIScreen {
             }
 
             @Override
+            protected void renderContents() {
+                Point elementOffset = getConfig().getLayout().getPoint("offset");
+                Point elementSpacing = getConfig().getLayout().getPoint("spacing");
+                assertRenderable();
+                clear();
+                int index = 0;
+                for (GameResource gameResource : GameResource.values()) {
+                    ResourceCounter request = new ResourceCounter(2, trade.request, gameResource) {
+                        @Override
+                        public String toString() {
+                            return "InventoryResourceCounter";
+                        }
+                    };
+                    ResourceCounter offer = new ResourceCounter(3, trade.offer, gameResource) {
+                        @Override
+                        public String toString() {
+                            return "InventoryResourceCounter";
+                        }
+                    };
+                    add(request).setClickable(this).setPosition(new Point(
+                            elementOffset.x + index * elementSpacing.x,
+                            elementOffset.y));
+                    request.setConfig(getConfig());
+                    add(offer).setClickable(this).setPosition(new Point(
+                            elementOffset.x + index * elementSpacing.x,
+                            elementOffset.y + elementSpacing.y));
+                    offer.setConfig(getConfig());
+                    index++;
+                }
+                add(background);
+            }
+
+            @Override
             public String toString() {
                 return null;
             }
         }
     }
 
-    private class TradeControlPanel extends StyledScreenRegion {
+    private class TradeControlPanel extends ConfigurableScreenRegion {
 
         private final TiledBackground background;
 
         private TradeControlPanel() {
-            super(2);
-            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
+            super(2, "panel");
+            background = new EdgedTiledBackground(0, "background");
             add(background).setClickable(this);
         }
 

@@ -3,7 +3,10 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.*;
+import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.TextLabel;
+import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
@@ -27,11 +30,7 @@ import java.awt.event.MouseEvent;
  * Created by Greg on 1/6/2015.
  * A screen region that lives in the bottom corner of the in-game screen.
  */
-public class ContextRegion extends UIScreen {
-
-    private final GraphicSet graphics;
-    private final Point offset;
-    private final Point spacing;
+public class ContextRegion extends ConfigurableScreenRegion {
     
     private final GameManager manager;
     private final CatanGame game;
@@ -41,21 +40,19 @@ public class ContextRegion extends UIScreen {
     private final TiledBackground background;
     private final TextLabel title;
     private final TextLabel detail;
+    private GraphicSet graphics;
 
-    public ContextRegion(UIScreen parent, GameManager manager, Username local) {
-        super(2, parent, "context");
+    public ContextRegion(GameManager manager, Username local) {
+        super(2, "context");
         //Load layout information.
-        graphics = new GraphicSet(getLayout(), "icons", RectangularMask.class, null);
-        offset = getLayout().getPoint("offset");
-        spacing = getLayout().getPoint("spacing");
         //Store instance information.
         this.manager = manager;
         this.game = manager.getLocalGame();
         this.local = local;
         //Create sub-regions
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-        title = new TextLabel(1, UIStyle.FONT_HEADING, "");
-        detail = new TextLabel(2, UIStyle.FONT_PARAGRAPH, "");
+        background = new EdgedTiledBackground(0, "background");
+        title = new TextLabel(1, "title", "");
+        detail = new TextLabel(2, "detail", "");
         //Add everything to the screen.
         add(background).setClickable(this);
         add(title).setClickable(this);
@@ -64,6 +61,8 @@ public class ContextRegion extends UIScreen {
 
     @Override
     protected void renderContents() {
+        if (graphics == null)
+            graphics = new GraphicSet(getConfig().getLayout(), "icons", RectangularMask.class, null);
         //Clear the context region of everything
         clear();
         //If we already clicked on something, update and see if it changed.
@@ -197,11 +196,13 @@ public class ContextRegion extends UIScreen {
         }
         add(background);
 
-        center(add(title)).y = getLayout().getInt("title.y");
-        center(add(detail)).y = getLayout().getInt("detail.y");
+        center(add(title)).y = getConfig().getLayout().getInt("title.y");
+        center(add(detail)).y = getConfig().getLayout().getInt("detail.y");
     }
 
     private Point getButtonLocation(int x, int y) {
+        Point offset = getConfig().getLayout().getPoint("offset");
+        Point spacing = getConfig().getLayout().getPoint("spacing");
         return new Point(offset.x + x*spacing.x, offset.y + y*spacing.y);
     }
 

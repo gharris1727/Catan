@@ -16,8 +16,8 @@ public class ServerConnectMenu extends ClientScreen {
     public ServerConnectMenu(Client client) {
         super(client, "connect");
         //Create the child regions
-        servers = new ServerListRegion(this, client.getServerList());
-        edit = new ServerEditRegion(this, null);
+        servers = new ServerListRegion(client.getServerList());
+        edit = new ServerEditRegion(null);
         //Add the regions to the render
         add(servers);
     }

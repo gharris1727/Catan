@@ -12,15 +12,12 @@ import java.awt.*;
  * Created by Greg on 1/2/2015.
  * Resizable graphic
  */
-public class TiledBackground extends StyledScreenRegion {
+public class TiledBackground extends ConfigurableScreenRegion {
 
-    protected final String backgroundStyle;
     protected GraphicSet graphics;
 
-
-    public TiledBackground(int priority, String backgroundStyle) {
-        super(priority);
-        this.backgroundStyle = backgroundStyle;
+    public TiledBackground(int priority, String configKey) {
+        super(priority, configKey);
         //TODO: add texture tiling features using 16 tile tile sets
     }
 
@@ -31,7 +28,7 @@ public class TiledBackground extends StyledScreenRegion {
     @Override
     protected void renderContents() {
         assertRenderable();
-        graphics = getStyle().getBackgroundGraphics(backgroundStyle);
+        graphics = getConfig().getBackgroundGraphics(getConfig().getLayout().get("style"));
         clear();
         renderFillerTiles(0,0,getMask().getWidth(),getMask().getHeight());
     }
@@ -53,6 +50,6 @@ public class TiledBackground extends StyledScreenRegion {
     }
 
     public String toString() {
-        return "TiledBackground(" + backgroundStyle +")";
+        return "TiledBackground";
     }
 }

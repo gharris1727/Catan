@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.client.structure;
 
+import com.gregswebserver.catan.common.resources.ConfigurationException;
 import com.gregswebserver.catan.common.resources.PropertiesFile;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
@@ -19,20 +20,23 @@ public class ServerPool implements Iterable<ConnectionInfo> {
     private final PropertiesFileInfo serverListFile;
     private final List<ConnectionInfo> connectionInfoList;
 
+    @SuppressWarnings("InfiniteLoopStatement")
     public ServerPool(PropertiesFileInfo serverListFile) {
         this.serverListFile = serverListFile;
         this.connectionInfoList = new LinkedList<>();
         PropertiesFile file = ResourceLoader.getPropertiesFile(serverListFile);
-        int i = 0;
-        String hostname;
-        do {
-            hostname = file.get("servers." + i + ".hostname");
-            String port = file.get("servers." + i + ".port");
-            String username = file.get("servers." + i + ".username");
-            if (hostname != null)
+        try {
+            int i = 0;
+            while (true) {
+                String hostname = file.get("servers." + i + ".hostname");
+                String port = file.get("servers." + i + ".port");
+                String username = file.get("servers." + i + ".username");
                 connectionInfoList.add(new ConnectionInfo(hostname, port, username));
-            i++;
-        } while (hostname != null);
+                i++;
+            }
+        } catch (ConfigurationException ignored) {
+            //This loop is meant to error out once we run out of elements.
+        }
     }
 
     public void save() {

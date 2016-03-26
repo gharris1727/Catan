@@ -3,13 +3,12 @@ package com.gregswebserver.catan.client.renderer;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
-import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.Animated;
-import com.gregswebserver.catan.client.graphics.screen.Renderable;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
-import com.gregswebserver.catan.client.graphics.ui.Styled;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
+import com.gregswebserver.catan.client.graphics.ui.Configurable;
+import com.gregswebserver.catan.client.graphics.ui.Resizable;
+import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
@@ -29,12 +28,12 @@ import java.awt.event.MouseWheelEvent;
  * Created by greg on 1/15/16.
  * Function to manage the different ScreenObjects that need to be displayed by the Render Thread.
  */
-public class RenderManager implements Renderable, Graphical, Animated, Clickable, Maskable, Styled {
+public class RenderManager implements Graphical, Animated, Clickable, Resizable, Configurable {
 
     private final Client client;
 
     private RenderMask mask;
-    private UIStyle style;
+    private UIConfig config;
 
     public ServerConnectMenu serverConnectMenu;
     public ConnectingScreen connectingScreen;
@@ -81,7 +80,7 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     }
 
     private void display(ClientScreen region) {
-        region.setStyle(style);
+        region.setConfig(config);
         region.setMask(mask);
         live = region;
     }
@@ -206,14 +205,19 @@ public class RenderManager implements Renderable, Graphical, Animated, Clickable
     }
 
     @Override
-    public void setStyle(UIStyle style) {
-        this.style = style;
-        if (live != null)
-            live.setStyle(style);
+    public void setConfig(UIConfig config) {
+        this.config = config;
+        loadConfig(this.config);
     }
 
     @Override
-    public UIStyle getStyle() {
-        return style;
+    public void loadConfig(UIConfig config) {
+        if (live != null)
+            live.setConfig(config);
+    }
+
+    @Override
+    public UIConfig getConfig() {
+        return config;
     }
 }

@@ -20,9 +20,9 @@ public class LobbyScreen extends ClientScreen {
 
     public LobbyScreen(Client client) {
         super(client, "inlobby");
-        settings = new LobbySettings(this);
-        buttons = new LobbyButtons(this);
-        userList = new LobbyUserList(this, client.getActiveLobby());
+        settings = new LobbySettings();
+        buttons = new LobbyButtons();
+        userList = new LobbyUserList(client.getActiveLobby());
         add(settings);
         add(buttons);
         add(userList);
@@ -42,7 +42,7 @@ public class LobbyScreen extends ClientScreen {
     protected void resizeContents(RenderMask mask) {
         int userListWidth = mask.getWidth()*2/3;
         int sidebarWidth = mask.getWidth() - userListWidth;
-        int buttonsHeight = getLayout().getInt("panel.height");
+        int buttonsHeight = getConfig().getLayout().getInt("panel.height");
         int settingsHeight = mask.getHeight() - buttonsHeight;
         userList.setMask(new RectangularMask(new Dimension(userListWidth, mask.getHeight())));
         settings.setMask(new RectangularMask(new Dimension(sidebarWidth, settingsHeight)));

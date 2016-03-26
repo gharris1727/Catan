@@ -22,9 +22,9 @@ public class DisconnectingScreen extends ClientScreen {
     public DisconnectingScreen(Client client) {
         super(client, "disconnecting");
         //Create subregions
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW);
-        text = new TextLabel(1, UIStyle.FONT_HEADING, client.getDisconnectMessage());
-        button = new Button(2, "Return to connect screen.") {
+        background = new EdgedTiledBackground(0, "background");
+        text = new TextLabel(1, "message", client.getDisconnectMessage());
+        button = new Button(2, "return", "Return to connect menu.") {
             public String toString() {
                 return "DisconnectingScreenDisconnectButton";
             }
@@ -48,12 +48,12 @@ public class DisconnectingScreen extends ClientScreen {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-        button.setMask(new RoundedRectangularMask(getLayout().getDimension("button.size")));
+        button.setMask(new RoundedRectangularMask(getConfig().getLayout().getDimension("return.size")));
     }
 
     @Override
     protected void renderContents() {
-        int spacing = getLayout().getInt("spacing");
+        int spacing = getConfig().getLayout().getInt("spacing");
         center(text).y -= spacing;
         center(button).y += spacing;
     }

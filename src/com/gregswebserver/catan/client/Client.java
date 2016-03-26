@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client;
 
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
-import com.gregswebserver.catan.client.graphics.ui.UIStyle;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
@@ -62,6 +61,7 @@ public class Client extends CoreThread {
     }
 
     private PropertiesFile config;
+    private PropertiesFile style;
     private PropertiesFile layout;
     private PropertiesFile locale;
     private PropertiesFile teamColors;
@@ -117,7 +117,7 @@ public class Client extends CoreThread {
     }
 
     public UIConfig getUIConfiguration() {
-        return new UIConfig(layout, locale);
+        return new UIConfig(style, layout, locale);
     }
 
     @Override
@@ -355,7 +355,9 @@ public class Client extends CoreThread {
         teamColors = ResourceLoader.getPropertiesFile(teamColorsFile);
         layout = ResourceLoader.getPropertiesFile(uiLayoutFile);
         manager = new RenderManager(this);
-        manager.setStyle(new UIStyle(config.get("style")));
+        PropertiesFileInfo styleFile = new PropertiesFileInfo("ui/"+config.get("style") + ".properties", "Style Information");
+        style = ResourceLoader.getPropertiesFile(styleFile);
+        manager.setConfig(getUIConfiguration());
         new ClientWindow(this, new InputListener(this, manager));
         serverPool = new ServerPool(serverFile);
         manager.displayServerConnectMenu();

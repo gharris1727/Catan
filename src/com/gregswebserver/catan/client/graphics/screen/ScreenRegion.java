@@ -2,8 +2,8 @@ package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.Graphical;
-import com.gregswebserver.catan.client.graphics.masks.Maskable;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.ui.Resizable;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 import com.gregswebserver.catan.common.profiler.TimeSlice;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ScreenRegion extends ScreenObject implements Renderable, Iterable<ScreenObject>, Graphical, Animated, Maskable {
+public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Graphical, Animated, Resizable {
 
     private final TimeSlice timeSlice;
     private RenderMask mask;

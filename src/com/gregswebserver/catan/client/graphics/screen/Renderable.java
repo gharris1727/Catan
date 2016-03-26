@@ -5,7 +5,8 @@ import com.gregswebserver.catan.common.profiler.TimeSlice;
 
 /**
  * Created by greg on 1/15/16.
- * Abstraction for some of the features relevant to rendering an object to the screen.
+ * A Graphical object where the production of a Graphic may be non-trivial
+ * This may be because it depends on outside resources, or other Graphical objects.
  */
 public interface Renderable extends Graphical {
 
@@ -15,5 +16,7 @@ public interface Renderable extends Graphical {
 
     void assertRenderable();
 
-    TimeSlice getRenderTime();
+    default TimeSlice getRenderTime() {
+        return null;
+    }
 }

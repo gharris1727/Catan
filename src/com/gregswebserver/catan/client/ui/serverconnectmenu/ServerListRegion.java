@@ -18,13 +18,13 @@ import java.util.Iterator;
  * Created by Greg on 1/5/2015.
  * A list of servers printed on screen.
  */
-public class ServerListRegion extends UIScreen {
+public class ServerListRegion extends ConfigurableScreenRegion {
 
 
-    private final RenderMask headerSize;
-    private final RenderMask serverSize;
-    private final RenderMask footerSize;
-    private final RenderMask paddingSize;
+    private RenderMask headerSize;
+    private RenderMask serverSize;
+    private RenderMask footerSize;
+    private RenderMask paddingSize;
 
     private final ServerPool list;
 
@@ -35,21 +35,19 @@ public class ServerListRegion extends UIScreen {
     private ConnectionInfo selected;
 
     private final TiledBackground background;
-    private final StyledScreenRegion footer;
+    private final ConfigurableScreenRegion footer;
 
-    public ServerListRegion(ServerConnectMenu parent, ServerPool list) {
-        super(0, parent, "serverlist");
+    public ServerListRegion(ServerPool list) {
+        super(0, "serverlist");
         //Load layout information
-        headerSize = new RoundedRectangularMask(getLayout().getDimension("header"));
-        serverSize = new RoundedRectangularMask(getLayout().getDimension("server"));
-        footerSize = new RoundedRectangularMask(getLayout().getDimension("footer"));
-        paddingSize = new RoundedRectangularMask(getLayout().getDimension("padding"));
         //Store instance information
         this.list = list;
         scroll = 0;
         selected = null;
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_WINDOW);
+        //Create sub-regions
+        background = new EdgedTiledBackground(0, "background");
         footer = new ServerListFooter();
+        //Add everything to the screen.
         add(background).setClickable(this);
         add(footer);
     }
@@ -78,6 +76,14 @@ public class ServerListRegion extends UIScreen {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        headerSize = new RoundedRectangularMask(getConfig().getLayout().getDimension("header"));
+        serverSize = new RoundedRectangularMask(getConfig().getLayout().getDimension("server"));
+        footerSize = new RoundedRectangularMask(getConfig().getLayout().getDimension("footer"));
+        paddingSize = new RoundedRectangularMask(getConfig().getLayout().getDimension("padding"));
+    }
+
+    @Override
     protected void renderContents() {
         //Completely re-render all children
         clear();
@@ -85,7 +91,7 @@ public class ServerListRegion extends UIScreen {
         for (int i = 0; i < serverLocations.length && i + scroll < list.size(); i++) {
             ServerListItem item = new ServerListItem(iterator.next());
             item.setMask(serverSize);
-            item.setStyle(getStyle());
+            item.setConfig(getConfig());
             item.setPosition(serverLocations[i]);
             add(item);
         }
@@ -97,7 +103,7 @@ public class ServerListRegion extends UIScreen {
         return "ServerListRegion";
     }
 
-    private class ServerListItem extends StyledScreenRegion {
+    private class ServerListItem extends ConfigurableScreenRegion {
 
         private final ConnectionInfo info;
 
@@ -106,13 +112,12 @@ public class ServerListRegion extends UIScreen {
         private final TextLabel login;
 
         private ServerListItem(ConnectionInfo info) {
-            super(1);
+            super(1, "item");
             this.info = info;
             //Create all of the screen objects.
-            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-            address = new TextLabel(1, UIStyle.FONT_PARAGRAPH,
-                    "Remote Address : " + info.getRemote() + ":" + info.getPort());
-            login = new TextLabel(2, UIStyle.FONT_PARAGRAPH, "Username: " + info.getUsername());
+            background = new EdgedTiledBackground(0, "background");
+            address = new TextLabel(1, "address", "Remote Address : " + info.getRemote() + ":" + info.getPort());
+            login = new TextLabel(2, "login", "Username: " + info.getUsername());
             //Add everything to the screen.
             add(login).setClickable(this);
             add(background).setClickable(this);
@@ -138,16 +143,16 @@ public class ServerListRegion extends UIScreen {
         }
     }
 
-    private class ServerListFooter extends StyledScreenRegion {
+    private class ServerListFooter extends ConfigurableScreenRegion {
 
         private final TiledBackground background;
         private final Button connectButton;
         private final TextBox passwordBox;
 
         private ServerListFooter() {
-            super(2);
-            background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-            connectButton = new Button(1, "Connect") {
+            super(2, "footer");
+            background = new EdgedTiledBackground(0, "background");
+            connectButton = new Button(1, "connect", "Connect") {
                 public String toString() {
                     return "ServerListFooterConnectButton";
                 }
@@ -157,7 +162,7 @@ public class ServerListRegion extends UIScreen {
                     return connect();
                 }
             };
-            passwordBox = new TextBox(1, "Password") {
+            passwordBox = new TextBox(1, "password", "Password") {
                 @Override
                 public UserEvent onAccept() {
                     return connect();
@@ -185,6 +190,7 @@ public class ServerListRegion extends UIScreen {
         @Override
         protected void resizeContents(RenderMask mask) {
             background.setMask(mask);
+            //TODO: move these to the layout config file.
             connectButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
             connectButton.setPosition(new Point(16, 16));
             passwordBox.setMask(new RectangularMask(new Dimension(200,32)));

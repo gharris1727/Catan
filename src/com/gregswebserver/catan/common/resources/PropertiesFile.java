@@ -83,9 +83,16 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>>, Conf
 
     @Override
     public String get(String key) {
+        String found = search(key);
+        if (found == null)
+            throw new ConfigurationException("Unable to read value from config file key " + key);
+        return found;
+    }
+
+    private String search(String key) {
         //Bottom out on null/empty strings
         if (key == null || key.length() == 0)
-            return null;
+            throw new ConfigurationException("Unable to read null key");
         //Split the key by the periods in its length
         String[] keyParts = key.split("\\.");
         //Find the key we should be looking for
@@ -102,7 +109,7 @@ public class PropertiesFile implements Iterable<Map.Entry<String, String>>, Conf
         }
         if (target == null)
             return null;
-        String recurse = get(target);
+        String recurse = search(target);
         return recurse == null ? target : recurse;
     }
 

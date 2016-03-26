@@ -9,18 +9,18 @@ import java.awt.event.KeyEvent;
  * Created by Greg on 1/3/2015.
  * A screen area containing a text box that is editable by the user.
  */
-public abstract class TextBox extends StyledScreenRegion {
+public abstract class TextBox extends ConfigurableScreenRegion {
 
     private final StringBuilder text;
 
     private final TiledBackground background;
     private final TextLabel label;
 
-    public TextBox(int priority, String prepopulate) {
-        super(priority);
+    public TextBox(int priority, String configKey, String prepopulate) {
+        super(priority, configKey);
         text = new StringBuilder();
-        background = new TiledBackground(0, UIStyle.BACKGROUND_TEXT);
-        label = new TextLabel(1, UIStyle.FONT_PARAGRAPH, prepopulate);
+        background = new TiledBackground(0, "background");
+        label = new TextLabel(1, "label", prepopulate);
         add(background).setClickable(this);
         add(label).setClickable(this);
     }

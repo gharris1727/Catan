@@ -24,31 +24,28 @@ import java.util.Map;
  * Created by greg on 3/11/16.
  * A game timeline allowing the user to view the progression of the game, and manually step through the history of the game.
  */
-public class TimelineRegion extends UIScreen {
+public class TimelineRegion extends ConfigurableScreenRegion {
 
-    private final int eventBuffer;
     private final Map<Team, GraphicSet> eventGraphics;
 
     private final List<GameEvent> events;
     private final PlayerPool teams;
+    private final TeamColors teamColors;
 
     private final TiledBackground background;
     private final ScrollingScreenContainer timeline;
 
-    public TimelineRegion(UIScreen parent, GameManager manager, TeamColors teamColors) {
-        super(2, parent, "timeline");
+    public TimelineRegion(GameManager manager, TeamColors teamColors) {
+        super(2, "timeline");
         //Load layout information
-        eventBuffer = getLayout().getInt("buffer");
         eventGraphics = new EnumMap<>(Team.class);
-        for (Team team : Team.values())
-            eventGraphics.put(team,new GraphicSet(getLayout(), "source", ChevronMask.class, teamColors.getSwaps(team)));
         //Store instance information
         this.events = manager.getEvents();
         this.teams = manager.getLocalGame().getTeams();
+        this.teamColors = teamColors;
         //Create sub-regions
-        background = new TiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-        timeline = new ScrollingScreenContainer(1, new EventList(), new Insets(0, eventBuffer, 0, eventBuffer)) {
-
+        background = new TiledBackground(0, "background");
+        timeline = new ScrollingScreenContainer(1, "scroll", new EventList()) {
             @Override
             public String toString() {
                 return "TimelineScrollContainer";
@@ -60,6 +57,12 @@ public class TimelineRegion extends UIScreen {
         timeline.setTransparency(true);
     }
 
+    @Override
+    public void loadConfig(UIConfig config) {
+        for (Team team : Team.values())
+            eventGraphics.put(team,new GraphicSet(getConfig().getLayout(), "source", ChevronMask.class, teamColors.getSwaps(team)));
+    }
+
     public void update() {
         timeline.update();
     }
@@ -68,7 +71,7 @@ public class TimelineRegion extends UIScreen {
         private int lastCount;
 
         private EventList() {
-            super(0);
+            super(0, "list");
             lastCount = events.size();
             setTransparency(true);
         }
@@ -89,13 +92,14 @@ public class TimelineRegion extends UIScreen {
         protected void renderContents() {
             clear();
             int width = 1;
-            int eventSpacing = getLayout().getInt("spacing");
+            int eventSpacing = getConfig().getLayout().getInt("spacing");
+            int eventBuffer = getConfig().getLayout().getInt("buffer");
             for (int i = 0; i < events.size(); i++) {
                 add(new EventListElement(i)).setPosition(new Point(width, 0));
                 width += eventSpacing;
             }
             width += eventBuffer;
-            setMask(new RectangularMask(new Dimension(width, getLayout().getInt("height"))));
+            setMask(new RectangularMask(new Dimension(width, getConfig().getLayout().getInt("height"))));
             //Scroll the bar over as new events come in.
             scroll(-eventSpacing * (events.size() - lastCount), 0);
             lastCount = events.size();
@@ -140,6 +144,9 @@ public class TimelineRegion extends UIScreen {
     protected void resizeContents(RenderMask mask) {
         timeline.setMask(mask);
         background.setMask(mask);
+        int eventBuffer = getConfig().getLayout().getInt("scroll.list.buffer");
+        Insets viewInsets = new Insets(0, eventBuffer, 0, eventBuffer);
+        timeline.setInsets(viewInsets);
     }
 
     @Override

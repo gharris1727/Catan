@@ -14,14 +14,14 @@ import static com.gregswebserver.catan.common.util.Direction.*;
  */
 public class EdgedTiledBackground extends TiledBackground {
 
-    public EdgedTiledBackground(int priority, String backgroundStyle) {
-        super(priority, backgroundStyle);
+    public EdgedTiledBackground(int priority, String configKey) {
+        super(priority, configKey);
     }
 
     @Override
     protected void renderContents() {
         assertRenderable();
-        graphics = getStyle().getBackgroundGraphics(backgroundStyle);
+        graphics = getConfig().getBackgroundGraphics(getConfig().getLayout().get("style"));
         RenderMask textureMask = graphics.getMask();
         int totWidth = getMask().getWidth();
         int totHeight = getMask().getHeight();

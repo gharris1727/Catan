@@ -18,8 +18,8 @@ public class LobbyJoinMenu extends ClientScreen {
 
     public LobbyJoinMenu(Client client) {
         super(client, "lobbylist");
-        lobbyList = new LobbyListRegion(this, client.getLobbyList());
-        userList = new UserListRegion(this, client.getClientList());
+        lobbyList = new LobbyListRegion(client.getLobbyList());
+        userList = new UserListRegion(client.getClientList());
         //Add the screen contents
         add(lobbyList);
         add(userList);

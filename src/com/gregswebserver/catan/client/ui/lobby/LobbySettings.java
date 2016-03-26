@@ -11,14 +11,14 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
  * Created by greg on 1/23/16.
  * Panel with editable lobby settings.
  */
-public class LobbySettings extends UIScreen {
+public class LobbySettings extends ConfigurableScreenRegion {
 
-    private final RenderMask nameSize;
-    private final RenderMask typeSize;
-    private final RenderMask generatorSize;
-    private final RenderMask rulesetSize;
-    private final RenderMask clientsSize;
-    private final int spacing;
+    private RenderMask nameSize;
+    private RenderMask typeSize;
+    private RenderMask generatorSize;
+    private RenderMask rulesetSize;
+    private RenderMask clientsSize;
+    private int spacing;
 
     private final TiledBackground background;
     private final TextBox name;
@@ -29,18 +29,12 @@ public class LobbySettings extends UIScreen {
 
     private LobbyConfig config;
 
-    public LobbySettings(LobbyScreen parent) {
-        super(1, parent, "settings");
+    public LobbySettings() {
+        super(1, "settings");
         //Load layout information.
-        nameSize = new RectangularMask(getLayout().getDimension("name"));
-        typeSize = new RectangularMask(getLayout().getDimension("type"));
-        generatorSize = new RectangularMask(getLayout().getDimension("generator"));
-        rulesetSize = new RectangularMask(getLayout().getDimension("ruleset"));
-        clientsSize = new RectangularMask(getLayout().getDimension("clients"));
-        spacing = getLayout().getInt("spacing");
         //Create sub-regions
-        background = new EdgedTiledBackground(0, UIStyle.BACKGROUND_INTERFACE);
-        name = new TextBox(1, "Lobby Name") {
+        background = new EdgedTiledBackground(0, "background");
+        name = new TextBox(1, "name", "Lobby Name") {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -57,7 +51,7 @@ public class LobbySettings extends UIScreen {
                 return "LobbySettingsNameTextBox";
             }
         };
-        type = new TextBox(1, "Game Type") {
+        type = new TextBox(1, "type", "Game Type") {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -74,7 +68,7 @@ public class LobbySettings extends UIScreen {
                 return "LobbySettingsGameTypeTextBox";
             }
         };
-        generator = new TextBox(1, "Generator") {
+        generator = new TextBox(1, "generator", "Generator") {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -91,7 +85,7 @@ public class LobbySettings extends UIScreen {
                 return "LobbySettingsGeneratorTextBox";
             }
         };
-        ruleset = new TextBox(1, "RuleSet") {
+        ruleset = new TextBox(1, "ruleset", "RuleSet") {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -108,7 +102,7 @@ public class LobbySettings extends UIScreen {
                 return "LobbySettingsRuleSetTextBox";
             }
         };
-        clients = new TextBox(1, "# Clients") {
+        clients = new TextBox(1, "clients", "# Clients") {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -132,6 +126,16 @@ public class LobbySettings extends UIScreen {
         add(generator);
         add(ruleset);
         add(clients);
+    }
+
+    @Override
+    public void loadConfig(UIConfig config) {
+        nameSize = new RectangularMask(getConfig().getLayout().getDimension("name.size"));
+        typeSize = new RectangularMask(getConfig().getLayout().getDimension("type.size"));
+        generatorSize = new RectangularMask(getConfig().getLayout().getDimension("generator.size"));
+        rulesetSize = new RectangularMask(getConfig().getLayout().getDimension("ruleset.size"));
+        clientsSize = new RectangularMask(getConfig().getLayout().getDimension("clients.size"));
+        spacing = getConfig().getLayout().getInt("spacing");
     }
 
     public void setLobbyConfig(LobbyConfig config) {
