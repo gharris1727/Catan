@@ -31,7 +31,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
                         if (t instanceof ThreadStop)
                             running = false;
                         else
-                            logger.log(t, LogLevel.ERROR);
+                            logger.log("Exception in thread: " + QueuedInputThread.this.toString(), t, LogLevel.ERROR);
                     }
                 }
             }

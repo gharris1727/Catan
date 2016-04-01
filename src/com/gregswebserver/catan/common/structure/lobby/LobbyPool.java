@@ -9,7 +9,7 @@ import java.util.*;
  * Created by greg on 1/10/16.
  * List of lobby objects that are sortable by multiple different
  */
-public class LobbyPool implements Iterable<Lobby>, Serializable{
+public class LobbyPool implements Iterable<Lobby>, Serializable {
 
     private final Map<Username, Lobby> userMap;
     private final List<Lobby> list;
@@ -23,7 +23,7 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
 
     public void add(Username host, LobbyConfig config) {
         Lobby lobby = new Lobby(config);
-        lobby.add(host);
+        lobby.addPlayer(host);
         userMap.put(host, lobby);
         //Concurrent write, but inserting on the head of the list should be safe.
         list.add(0, lobby);
@@ -31,17 +31,25 @@ public class LobbyPool implements Iterable<Lobby>, Serializable{
 
     public void join(Username user, Username host) {
         Lobby lobby = userMap.get(host);
-        lobby.add(user);
+        lobby.addPlayer(user);
         userMap.put(user, lobby);
     }
 
     public void leave(Username user) {
         Lobby lobby = userMap.remove(user);
-        lobby.remove(user);
+        lobby.removePlayer(user);
         //Concurrent write, removing may cause issues.
         if (lobby.size() == 0) {
             list.remove(lobby);
         }
+    }
+
+    public void connect(Username user) {
+        userMap.get(user).connect(user);
+    }
+
+    public void disconnect(Username user) {
+        userMap.get(user).disconnect(user);
     }
 
     public boolean userInLobby(Username username) {

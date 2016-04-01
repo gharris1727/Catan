@@ -24,7 +24,9 @@ import com.gregswebserver.catan.common.structure.event.ControlEvent;
 import com.gregswebserver.catan.common.structure.event.ControlEventType;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
+import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.lobby.Lobby;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 import com.gregswebserver.catan.server.structure.ConnectionPool;
 import com.gregswebserver.catan.server.structure.GamePool;
@@ -164,6 +166,8 @@ public class Server extends CoreThread {
         try {
             //Try to execute the event locally.
             matchmakingPool.execute(event);
+            Username origin = event.getOrigin();
+            Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(origin);
             //Execute any special server-side hooks on lobby events.
             switch(event.getType()) {
                 case User_Connect:
@@ -178,11 +182,21 @@ public class Server extends CoreThread {
                     break;
                 case Lobby_Leave:
                     break;
-                case Lobby_Start:
-                    gamePool.start((GameSettings) event.getPayload());
+                case Game_Start:
+                    GameSettings settings = (GameSettings) event.getPayload();
+                    int gameID = gamePool.start(settings);
+                    lobby.setGameID(gameID);
+                    for (Username username : settings.playerTeams.keySet())
+                        addEvent(new LobbyEvent(username, LobbyEventType.Game_Join, null));
                     break;
-                case Lobby_Finish:
-                    gamePool.finish(((Username) event.getPayload()));
+                case Game_Join:
+                    GameProgress progress = gamePool.getGameProgress(lobby.getGameID());
+                    LobbyEvent sync = new LobbyEvent(origin, LobbyEventType.Game_Sync, progress);
+                    connectionPool.get(origin).sendEvent(sync);
+                    break;
+                case Game_Leave:
+                    break;
+                case Game_Sync:
                     break;
             }
             //Rebroadcast the event to everyone connected.
@@ -194,8 +208,9 @@ public class Server extends CoreThread {
     }
 
     private void gameEvent(GameEvent event) {
-        gamePool.process(event);
-        for (Username user : matchmakingPool.getLobbyList().userGetLobby(event.getOrigin()).getUsers())
+        Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(event.getOrigin());
+        gamePool.process(lobby.getGameID(), event);
+        for (Username user : lobby.getPlayers())
             connectionPool.get(user).sendEvent(event);
     }
 

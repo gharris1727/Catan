@@ -6,6 +6,7 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.event.*;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.util.ArrayList;
@@ -25,9 +26,15 @@ public class GameManager {
     private final List<GameEvent> events;
     private int localhistoryIndex;
 
-    public GameManager(Client host, GameSettings settings) {
+    public GameManager(Client host, GameProgress progress) {
         this.host = host;
+        GameSettings settings = progress.getSettings();
         local = new GameThread(host.logger, settings){
+            @Override
+            public String toString() {
+                return host + " GameManagerLocalThread";
+            }
+
             @Override
             protected void onSuccess(GameControlEvent event) {
                 switch (event.getType()) {
@@ -55,6 +62,11 @@ public class GameManager {
         };
         remote = new GameThread(host.logger, settings) {
             @Override
+            public String toString() {
+                return host + " GameManagerRemoteThread";
+            }
+
+            @Override
             protected void onSuccess(GameControlEvent event) {
                 //A remote event was successful, so we should track it, as this is the true history of the game.
                 switch (event.getType()) {
@@ -75,6 +87,9 @@ public class GameManager {
         };
         events = new ArrayList<>();
         events.add(new GameEvent(null, GameEventType.Start, null));
+        List<GameEvent> history = progress.getHistory();
+        for (int i = 1; i < history.size(); i++)
+            remote(history.get(i));
         localhistoryIndex = 0;
     }
 
@@ -121,5 +136,10 @@ public class GameManager {
     public void stop() {
         local.stop();
         remote.stop();
+    }
+
+    @Override
+    public String toString() {
+        return "GameManager";
     }
 }

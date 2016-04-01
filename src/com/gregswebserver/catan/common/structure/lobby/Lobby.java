@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 public class Lobby {
 
     private final Map<Username, LobbyUser> users;
+    private int gameID;
     private LobbyState state;
     private LobbyConfig config;
 
@@ -37,15 +38,23 @@ public class Lobby {
         setConfig(config);
     }
 
-    public void add(Username username) {
+    public void addPlayer(Username username) {
         users.put(username, new LobbyUser());
     }
 
-    public void remove(Username username) {
+    public void removePlayer(Username username) {
         users.remove(username);
     }
 
-    public Set<Username> getUsers() {
+    public void connect(Username username) {
+        users.get(username).connect();
+    }
+
+    public void disconnect(Username username) {
+        users.get(username).disconnect();
+    }
+
+    public Set<Username> getPlayers() {
         return users.keySet();
     }
 
@@ -132,6 +141,14 @@ public class Lobby {
         }
 
         return new GameSettings(System.nanoTime(), boardLayout, boardGenerator, gameRules, players);
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+
+    public int getGameID() {
+        return gameID;
     }
 
     public String toString() {

@@ -43,6 +43,9 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     private LobbySortOption sortOption;
     private Lobby selected;
 
+    //TODO: add functionality to spectate existing lobbies.
+    //TODO: add functionality to search/filter lobbies.
+
     public LobbyListRegion(LobbyPool lobbies) {
         super(0, "lobbies");
         //Load layout information
@@ -153,7 +156,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             private final UpArrow upArrow;
             private final DownArrow downArrow;
 
-            public LobbyListHeaderElement(LobbySortOption ascend, LobbySortOption descend) {
+            private LobbyListHeaderElement(LobbySortOption ascend, LobbySortOption descend) {
                 super(0, "element");
                 background = new EdgedTiledBackground(0, "background");
                 labelGraphic = new TextLabel(1, "label", ascend.getTitle());
@@ -183,7 +186,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 return container.onMouseScroll(event);
             }
 
-            public void clearArrows() {
+            private void clearArrows() {
                 upArrow.index = 0;
                 downArrow.index = 1;
             }
@@ -198,7 +201,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 private final LobbySortOption descend;
                 int index;
 
-                public DownArrow(LobbySortOption descend) {
+                private DownArrow(LobbySortOption descend) {
                     super(1, "down");
                     this.descend = descend;
                     index = 1;
@@ -244,7 +247,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 private final LobbySortOption ascend;
                 private int index;
 
-                public UpArrow(LobbySortOption ascend) {
+                private UpArrow(LobbySortOption ascend) {
                     super(1, "up");
                     this.ascend = ascend;
                     index = 0;
@@ -341,7 +344,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
             private final Lobby lobby;
 
-            public LobbyListScrollElement(Lobby lobby) {
+            private LobbyListScrollElement(Lobby lobby) {
                 super(0, "element");
                 this.lobby = lobby;
                 background = new TiledBackground(0, "background");
@@ -404,7 +407,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             joinButton = new Button(1, "join", "Join") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getUsers().iterator().next());
+                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayers().iterator().next());
                 }
                 public String toString() {
                     return "LobbyListJoinButton";

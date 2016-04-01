@@ -38,7 +38,7 @@ public class LobbyUserList extends ConfigurableScreenRegion {
         RenderMask userSize = new RoundedRectangularMask(getConfig().getLayout().getDimension("size"));
         int spacing = getConfig().getLayout().getInt("spacing");
         int height = spacing;
-        for (Username user : lobby.getUsers()) {
+        for (Username user : lobby.getPlayers()) {
             LobbyUserListElement elt = new LobbyUserListElement(user);
             add(elt).setPosition(new Point(0, height));
             elt.setConfig(getConfig());

@@ -4,6 +4,7 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.log.Logger;
+import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 /**
@@ -13,10 +14,12 @@ import com.gregswebserver.catan.common.structure.game.GameSettings;
  */
 public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
 
+    private final GameSettings settings;
     private final CatanGame game;
 
     public GameThread(Logger logger, GameSettings settings) {
         super(logger);
+        this.settings = settings;
         this.game = new CatanGame(settings);
         start();
     }
@@ -25,10 +28,15 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
         return game;
     }
 
+    public GameProgress getProgress() {
+        return new GameProgress(settings, game.getEventList());
+    }
+
     //Process GameEvents from the event queue.
     @Override
     protected void execute() throws ThreadStop {
         GameControlEvent event = getEvent(true);
+        //logger.log(this + " Received " + event, LogLevel.DEBUG);
         try {
             GameEvent gameEvent = null;
             if (event.getPayload() instanceof GameEvent)
@@ -54,9 +62,5 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
     protected abstract void onSuccess(GameControlEvent event);
 
     protected abstract void onFailure(EventConsumerException e);
-
-    public String toString() {
-        return "GameThread";
-    }
 
 }

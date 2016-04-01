@@ -9,9 +9,11 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 public class LobbyUser {
 
     private Team team;
+    private boolean connected;
 
     public LobbyUser() {
         this.team = Team.None;
+        connected = false;
     }
 
     public Team getTeam() {
@@ -20,5 +22,17 @@ public class LobbyUser {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public void connect() {
+        connected = true;
+    }
+
+    public void disconnect() {
+        connected = false;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

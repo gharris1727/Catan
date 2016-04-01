@@ -37,8 +37,10 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
                 return exists && !inLobby && lobbies.userInLobby((Username) event.getPayload());
             case Lobby_Change_Config:
             case Lobby_Leave:
-            case Lobby_Start:
-            case Lobby_Finish:
+            case Game_Start:
+            case Game_Join:
+            case Game_Leave:
+            case Game_Sync:
                 return inLobby;
         }
         return false;
@@ -69,11 +71,16 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
             case Lobby_Leave:
                 lobbies.leave(origin);
                 break;
-            case Lobby_Start:
+            case Game_Start:
                 lobbies.start(origin);
                 break;
-            case Lobby_Finish:
-                lobbies.finish(origin);
+            case Game_Join:
+                lobbies.connect(origin);
+                break;
+            case Game_Leave:
+                lobbies.disconnect(origin);
+                break;
+            case Game_Sync:
                 break;
         }
     }

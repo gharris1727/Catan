@@ -236,6 +236,10 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return players;
     }
 
+    public List<GameEvent> getEventList() {
+        return new ArrayList<>(eventStack);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -36,7 +36,7 @@ import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.event.ControlEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
-import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.lobby.*;
 
 import java.io.IOException;
@@ -197,7 +197,7 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
-                outgoing = new LobbyEvent(username, LobbyEventType.Lobby_Start, getActiveLobby().getGameSettings());
+                outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, getActiveLobby().getGameSettings());
                 sendEvent(outgoing);
                 break;
             case Lobby_Sort:
@@ -297,14 +297,15 @@ public class Client extends CoreThread {
                     if (username.equals(event.getOrigin()))
                         manager.displayLobbyJoinMenu();
                     break;
-                case Lobby_Start:
-                    GameSettings gameSettings = (GameSettings) event.getPayload();
-                    if (((GameSettings) event.getPayload()).playerTeams.containsKey(username)) {
-                        gameManager = new GameManager(this, gameSettings);
-                        manager.displayGameScreen();
-                    }
+                case Game_Start:
                     break;
-                case Lobby_Finish:
+                case Game_Join:
+                    break;
+                case Game_Leave:
+                    break;
+                case Game_Sync:
+                    gameManager = new GameManager(this, (GameProgress) event.getPayload());
+                    manager.displayGameScreen();
                     break;
             }
             //Force update any relevant screens
