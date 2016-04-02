@@ -72,7 +72,7 @@ public abstract class RootConfigSource implements ConfigSource {
         return new Dimension(getInt(key + ".width"), getInt(key + ".height"));
     }
 
-    protected String search(String key) {
+    private String search(String key) {
         //Bottom out on null/empty strings
         if (key == null || key.length() == 0)
             throw new ConfigurationException("Unable to read null key");
@@ -96,7 +96,7 @@ public abstract class RootConfigSource implements ConfigSource {
         return recurse == null ? target : recurse;
     }
 
-    protected String tryRedirect(String key) {
+    private String tryRedirect(String key) {
         String redirect = getEntry(key);
         return (redirect == null) ? key : redirect;
     }
@@ -106,10 +106,10 @@ public abstract class RootConfigSource implements ConfigSource {
         return new NarrowedConfigSource(prefix);
     }
 
-    public class NarrowedConfigSource implements ConfigSource {
+    private class NarrowedConfigSource implements ConfigSource {
         private final String prefix;
 
-        public NarrowedConfigSource(String root) {
+        private NarrowedConfigSource(String root) {
             this.prefix = root + ".";
         }
 

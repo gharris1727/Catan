@@ -13,6 +13,8 @@ public class ServerConnectMenu extends ClientScreen {
     private final ServerListRegion servers;
     private final ServerEditRegion edit;
 
+    //TODO: add functionality to edit and create new server list elements.
+
     public ServerConnectMenu(Client client) {
         super(client, "connect");
         //Create the child regions

@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.lobby;
 
-import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
@@ -13,11 +12,6 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
  */
 public class LobbySettings extends ConfigurableScreenRegion {
 
-    private RenderMask nameSize;
-    private RenderMask typeSize;
-    private RenderMask generatorSize;
-    private RenderMask rulesetSize;
-    private RenderMask clientsSize;
     private int spacing;
 
     private final TiledBackground background;
@@ -31,7 +25,6 @@ public class LobbySettings extends ConfigurableScreenRegion {
 
     public LobbySettings() {
         super(1, "settings");
-        //Load layout information.
         //Create sub-regions
         background = new EdgedTiledBackground(0, "background");
         name = new TextBox(1, "name", "Lobby Name") {
@@ -130,12 +123,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
-        nameSize = new RectangularMask(getConfig().getLayout().getDimension("name.size"));
-        typeSize = new RectangularMask(getConfig().getLayout().getDimension("type.size"));
-        generatorSize = new RectangularMask(getConfig().getLayout().getDimension("generator.size"));
-        rulesetSize = new RectangularMask(getConfig().getLayout().getDimension("ruleset.size"));
-        clientsSize = new RectangularMask(getConfig().getLayout().getDimension("clients.size"));
-        spacing = getConfig().getLayout().getInt("spacing");
+        spacing = config.getLayout().getInt("spacing");
     }
 
     public void setLobbyConfig(LobbyConfig config) {
@@ -150,20 +138,15 @@ public class LobbySettings extends ConfigurableScreenRegion {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-        name.setMask(nameSize);
-        type.setMask(typeSize);
-        generator.setMask(generatorSize);
-        ruleset.setMask(rulesetSize);
-        clients.setMask(clientsSize);
     }
 
     @Override
     protected void renderContents() {
         center(name).y = spacing;
-        center(type).y = name.getPosition().y + nameSize.getHeight() + spacing;
-        center(generator).y = type.getPosition().y + typeSize.getHeight() + spacing;
-        center(ruleset).y = generator.getPosition().y + generatorSize.getHeight() + spacing;
-        center(clients).y = ruleset.getPosition().y + rulesetSize.getHeight() + spacing;
+        center(type).y = name.getPosition().y + name.getMask().getHeight() + spacing;
+        center(generator).y = type.getPosition().y + type.getMask().getHeight() + spacing;
+        center(ruleset).y = generator.getPosition().y + generator.getMask().getHeight() + spacing;
+        center(clients).y = ruleset.getPosition().y + ruleset.getMask().getHeight() + spacing;
     }
 
     @Override

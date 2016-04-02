@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.graphics.masks.*;
+import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
@@ -45,6 +47,7 @@ public class MapRegion extends ScrollingScreenRegion {
     private final TeamColors teamColors;
 
     private final TiledBackground background;
+    private Dimension unitSize;
 
     public MapRegion(GameBoard board, TeamColors teamColors) {
         super(0, "map");
@@ -96,27 +99,27 @@ public class MapRegion extends ScrollingScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
-        resources = new GraphicSet(config.getLayout(), "land", HexagonalMask.class, null);
-        diceRolls = new GraphicSet(config.getLayout(), "dice", RoundedMask.class, null);
-        singleBeach = new GraphicSet(config.getLayout(), "singlebeach", HexagonalMask.class, null);
-        doubleBeach = new GraphicSet(config.getLayout(), "doublebeach", HexagonalMask.class, null);
-        resourceIcons = new GraphicSet(config.getLayout(), "trade", RoundedMask.class, null);
+        unitSize = config.getLayout().getDimension("unit");
+        resources = new GraphicSet(config.getLayout(), "land", null);
+        diceRolls = new GraphicSet(config.getLayout(), "dice", null);
+        singleBeach = new GraphicSet(config.getLayout(), "singlebeach", null);
+        doubleBeach = new GraphicSet(config.getLayout(), "doublebeach", null);
+        resourceIcons = new GraphicSet(config.getLayout(), "trade", null);
 
         GraphicSourceInfo bridgeSource = new GraphicSourceInfo(config.getLayout().get("bridges.path"));
-        RenderMask bridgeHorizontal = new RectangularMask(config.getLayout().getDimension("bridges.horizontal.size"));
-        RenderMask bridgeDiagonalUp = new AngleRectangularMask(config.getLayout().getDimension("bridges.diagonal.size"));
+        RenderMask bridgeHorizontal = RenderMask.parseMask(config.getLayout().narrow("bridges.horizontal"));
+        RenderMask bridgeDiagonalUp = RenderMask.parseMask(config.getLayout().narrow("bridges.diagonal.up"));
         RenderMask brigeDiagonalDown = new FlippedMask(bridgeDiagonalUp, FlippedMask.Direction.VERTICAL);
         RenderMask[] masks = new RenderMask[]{null, null, null, bridgeHorizontal, bridgeHorizontal, brigeDiagonalDown, bridgeDiagonalUp, bridgeDiagonalUp, brigeDiagonalDown};
         tradeBridges = new GraphicSet(bridgeSource, masks, null);
 
         GraphicSourceInfo buildingSource = new GraphicSourceInfo(config.getLayout().get("buildings.source"));
-        RenderMask buildingHorizontal = new RectangularMask(config.getLayout().getDimension("buildings.horizontal.size"));
-        RenderMask buildingDiagonalUp = new AngleRectangularMask(config.getLayout().getDimension("buildings.diagonal.size"),
-                config.getLayout().getDimension("buildings.diagonal.offset"));
-        RenderMask buildingDiagonalDown = new FlippedMask(buildingDiagonalUp, FlippedMask.Direction.VERTICAL);
-        RenderMask settlement = new RoundedMask(config.getLayout().getDimension("buildings.settlement.size"));
-        RenderMask city =new RoundedMask(config.getLayout().getDimension("buildings.city.size"));
-        RenderMask robber = new RectangularMask(config.getLayout().getDimension("buildings.robber.size"));
+        RenderMask buildingHorizontal = RenderMask.parseMask(config.getLayout().narrow("buildings.horizontal"));
+        RenderMask buildingDiagonalUp = RenderMask.parseMask(config.getLayout().narrow("buildings.diagonal.up"));
+        RenderMask buildingDiagonalDown = RenderMask.parseMask(config.getLayout().narrow("buildings.diagonal.down"));
+        RenderMask settlement = RenderMask.parseMask(config.getLayout().narrow("buildings.settlement"));
+        RenderMask city = RenderMask.parseMask(config.getLayout().narrow("buildings.city"));
+        RenderMask robber = RenderMask.parseMask(config.getLayout().narrow("buildings.robber"));
         RenderMask[] buildingMasks = new RenderMask[]{buildingHorizontal, buildingDiagonalUp, buildingDiagonalDown, settlement, city, robber};
         buildings = new EnumMap<>(Team.class);
         for (Team team : Team.values())
@@ -157,14 +160,12 @@ public class MapRegion extends ScrollingScreenRegion {
             {56, 0, 0, 56}}; //Vertical
 
     private Dimension boardToScreen(Dimension size) {
-        Dimension unitSize = getConfig().getLayout().getDimension("unit");
         int outW = ((size.width + 1) / 2) * unitSize.width;
         int outH = (size.height + 1) * unitSize.height;
         return new Dimension(outW, outH);
     }
 
     private Point tileToScreen(Coordinate c) {
-        Dimension unitSize = getConfig().getLayout().getDimension("unit");
         int outX = (c.x / 2) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += tileOffsets[0][c.x % 2];
@@ -173,7 +174,6 @@ public class MapRegion extends ScrollingScreenRegion {
     }
 
     private Point edgeToScreen(Coordinate c) {
-        Dimension unitSize = getConfig().getLayout().getDimension("unit");
         int outX = (c.x / 6) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += edgeOffsets[0][c.x % 6];
@@ -182,7 +182,6 @@ public class MapRegion extends ScrollingScreenRegion {
     }
 
     private Point vertexToScreen(Coordinate c) {
-        Dimension unitSize = getConfig().getLayout().getDimension("unit");
         int outX = (c.x / 4) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += vertOffsets[0][c.x % 4]-4;

@@ -1,10 +1,7 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.structure.game.Player;
 
@@ -20,6 +17,9 @@ public class InventoryRegion extends ConfigurableScreenRegion {
 
     private final TiledBackground background;
     private final TextLabel username;
+    private Point elementOffset;
+    private Point elementSpacing;
+    private int usernameHeight;
 
     public InventoryRegion(Player player) {
         super(2, "inventory");
@@ -39,11 +39,16 @@ public class InventoryRegion extends ConfigurableScreenRegion {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        elementOffset = config.getLayout().getPoint("element.offset");
+        elementSpacing = config.getLayout().getPoint("element.spacing");
+        usernameHeight = config.getLayout().getInt("username.position.y");
+    }   
+
+    @Override
     protected void renderContents() {
         assertRenderable();
         clear();
-        Point elementOffset = getConfig().getLayout().getPoint("element.offset");
-        Point elementSpacing = getConfig().getLayout().getPoint("element.spacing");
         int index = 0;
         for (GameResource gameResource : GameResource.values()) {
             ResourceCounter element = new ResourceCounter(2, player.getInventory(), gameResource) {
@@ -68,7 +73,7 @@ public class InventoryRegion extends ConfigurableScreenRegion {
         //Add everything to the screen.
         add(background).setClickable(this);
         add(username).setClickable(this);
-        center(username).y = getConfig().getLayout().getInt("username.position.y");
+        center(username).y = usernameHeight;
     }
 
     public String toString() {

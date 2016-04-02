@@ -12,7 +12,7 @@ import java.awt.*;
  * Created by Greg on 1/2/2015.
  * Resizable graphic
  */
-public class TiledBackground extends ConfigurableScreenRegion {
+public class TiledBackground extends DefaultConfigurableScreenRegion {
 
     protected GraphicSet graphics;
 
@@ -22,13 +22,18 @@ public class TiledBackground extends ConfigurableScreenRegion {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        super.loadConfig(config);
+        graphics = config.getBackgroundGraphics(config.getLayout().get("style"));
+    }
+
+    @Override
     protected void resizeContents(RenderMask mask) {
     }
 
     @Override
     protected void renderContents() {
         assertRenderable();
-        graphics = getConfig().getBackgroundGraphics(getConfig().getLayout().get("style"));
         clear();
         renderFillerTiles(0,0,getMask().getWidth(),getMask().getHeight());
     }

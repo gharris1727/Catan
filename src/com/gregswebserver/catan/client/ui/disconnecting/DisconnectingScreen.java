@@ -2,7 +2,6 @@ package com.gregswebserver.catan.client.ui.disconnecting;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
@@ -18,6 +17,7 @@ public class DisconnectingScreen extends ClientScreen {
     private final TiledBackground background;
     private final TextLabel text;
     private final Button button;
+    private int spacing;
 
     public DisconnectingScreen(Client client) {
         super(client, "disconnecting");
@@ -41,19 +41,20 @@ public class DisconnectingScreen extends ClientScreen {
     }
 
     @Override
-    public void update() {
+    public void update() { }
 
+    @Override
+    public void loadConfig(UIConfig config) {
+        spacing = config.getLayout().getInt("spacing");
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-        button.setMask(new RoundedRectangularMask(getConfig().getLayout().getDimension("return.size")));
     }
 
     @Override
     protected void renderContents() {
-        int spacing = getConfig().getLayout().getInt("spacing");
         center(text).y -= spacing;
         center(button).y += spacing;
     }

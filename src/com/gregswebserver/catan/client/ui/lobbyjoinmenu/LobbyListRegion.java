@@ -2,11 +2,11 @@ package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
 import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
+import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 import com.gregswebserver.catan.common.structure.lobby.LobbyPool;
 import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
@@ -83,14 +83,14 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
-        headerHeight = getConfig().getLayout().getInt("header.height");
-        lobbyHeight = getConfig().getLayout().getInt("lobby.height");
-        footerHeight = getConfig().getLayout().getInt("footer.height");
-        spacing = getConfig().getLayout().getInt("spacing");
-        gameTypeColumnWidth = getConfig().getLayout().getInt("header.type.width");
-        currentClientsColumnWidth = getConfig().getLayout().getInt("header.current.width");
-        openSlotsColumnWidth = getConfig().getLayout().getInt("header.open.width");
-        arrowWidth = getConfig().getLayout().getInt("arrows.width");
+        headerHeight = config.getLayout().getInt("header.height");
+        lobbyHeight = config.getLayout().getInt("lobby.height");
+        footerHeight = config.getLayout().getInt("footer.height");
+        spacing = config.getLayout().getInt("spacing");
+        gameTypeColumnWidth = config.getLayout().getInt("header.type.width");
+        currentClientsColumnWidth = config.getLayout().getInt("header.current.width");
+        openSlotsColumnWidth = config.getLayout().getInt("header.open.width");
+        arrowWidth = config.getLayout().getInt("arrows.width");
     }
 
     @Override
@@ -199,7 +199,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             private class DownArrow extends ConfigurableGraphicObject {
 
                 private final LobbySortOption descend;
-                int index;
+                private int index;
+                private GraphicSet graphics;
 
                 private DownArrow(LobbySortOption descend) {
                     super(1, "down");
@@ -209,11 +210,12 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
                 @Override
                 public void loadConfig(UIConfig config) {
+                    graphics = config.getIconGraphics("arrows");
                     update();
                 }
 
                 public void update() {
-                    setGraphic(getConfig().getIconGraphics("arrows", RectangularMask.class).getGraphic(index));
+                    setGraphic(graphics.getGraphic(index));
                 }
 
                 @Override
@@ -246,6 +248,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
                 private final LobbySortOption ascend;
                 private int index;
+                private GraphicSet graphics;
 
                 private UpArrow(LobbySortOption ascend) {
                     super(1, "up");
@@ -255,11 +258,12 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
                 @Override
                 public void loadConfig(UIConfig config) {
+                    graphics = config.getIconGraphics("arrows");
                     update();
                 }
 
                 public void update() {
-                    setGraphic(getConfig().getIconGraphics("arrows", RectangularMask.class).getGraphic(index));
+                    setGraphic(graphics.getGraphic(index));
                 }
 
                 @Override
@@ -432,11 +436,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         @Override
         protected void resizeContents(RenderMask mask) {
             background.setMask(mask);
-            //TODO: make these dynamic or put them in the config files.
-            joinButton.setPosition(new Point(16, 16));
-            joinButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
-            createButton.setPosition(new Point(200, 16));
-            createButton.setMask(new RoundedRectangularMask(new Dimension(128, 32)));
         }
 
         @Override

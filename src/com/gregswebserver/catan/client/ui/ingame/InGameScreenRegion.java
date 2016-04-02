@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenContainer;
+import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
@@ -26,6 +27,11 @@ public class InGameScreenRegion extends ClientScreen {
     private final InventoryRegion inventory;
     private final ContextRegion context;
     private final TimelineRegion timeline;
+    private int sidebarWidth;
+    private int inventoryHeight;
+    private int contextHeight;
+    private int timelineHeight;
+    private Dimension borderBuffer;
 
     public InGameScreenRegion(Client client) {
         super(client, "ingame");
@@ -82,19 +88,23 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     @Override
-    protected void resizeContents(RenderMask mask) {
-        int sidebarWidth = getConfig().getLayout().getInt("sidebar.width");
-        int inventoryHeight = getConfig().getLayout().getInt("inventory.height");
-        int contextHeight = getConfig().getLayout().getInt("context.height");
-        int timelineHeight = getConfig().getLayout().getInt("timeline.height");
+    public void loadConfig(UIConfig config) {
+        sidebarWidth = config.getLayout().getInt("sidebar.width");
+        inventoryHeight = config.getLayout().getInt("inventory.height");
+        contextHeight = config.getLayout().getInt("context.height");
+        timelineHeight = config.getLayout().getInt("timeline.height");
+        borderBuffer = config.getLayout().getDimension("borderbuffer");
+    }
 
+    @Override
+    protected void resizeContents(RenderMask mask) {
         int mainWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - timelineHeight;
         int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;
 
         inventory.setPosition(new Point(mainWidth, 0));
         trade.setPosition(new Point(mainWidth, inventoryHeight));
-        context.setPosition(new Point(mainWidth,inventoryHeight + tradeHeight));
+        context.setPosition(new Point(mainWidth, inventoryHeight + tradeHeight));
         timeline.setPosition(new Point(0,mainHeight));
 
         map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
@@ -103,7 +113,6 @@ public class InGameScreenRegion extends ClientScreen {
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(mainWidth, timelineHeight)));
 
-        Dimension borderBuffer = getConfig().getLayout().getDimension("borderbuffer");
         Insets viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
         map.setInsets(viewInsets);
         map.center();

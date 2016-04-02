@@ -21,7 +21,6 @@ public class EdgedTiledBackground extends TiledBackground {
     @Override
     protected void renderContents() {
         assertRenderable();
-        graphics = getConfig().getBackgroundGraphics(getConfig().getLayout().get("style"));
         RenderMask textureMask = graphics.getMask();
         int totWidth = getMask().getWidth();
         int totHeight = getMask().getHeight();

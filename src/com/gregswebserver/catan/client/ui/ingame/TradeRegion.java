@@ -27,6 +27,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
     private final TradeListContainer container;
     private final TradeControlPanel panel;
+    private int panelHeight;
+    private int tradeHeight;
 
     public TradeRegion(CatanGame game, Username local) {
         super(1, "trade");
@@ -46,15 +48,20 @@ public class TradeRegion extends ConfigurableScreenRegion {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        panelHeight = config.getLayout().getInt("panel.height");
+        tradeHeight = config.getLayout().getInt("container.list.element.height");
+    }
+
+    @Override
     protected void resizeContents(RenderMask mask) {
-        int panelHeight = getConfig().getLayout().getInt("panel.height");
         int scrollHeight = mask.getHeight() - panelHeight;
         RenderMask scrollSize = new RectangularMask(new Dimension(mask.getWidth(), scrollHeight));
         RenderMask panelSize = new RectangularMask(new Dimension(mask.getWidth(), panelHeight));
         container.setMask(scrollSize);
         panel.setMask(panelSize);
         panel.setPosition(new Point(0, scrollHeight));
-        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), getConfig().getLayout().getInt("container.list.element.height")));
+        tradeSize = new RectangularMask(new Dimension(mask.getWidth(), tradeHeight));
         container.setInsets(new Insets(0,0,0,0));
     }
 
@@ -109,6 +116,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
             private final Trade trade;
+            private Point elementOffset;
+            private Point elementSpacing;
 
             protected TradeListElement(Trade trade) {
                 super(0, "element");
@@ -139,9 +148,13 @@ public class TradeRegion extends ConfigurableScreenRegion {
             }
 
             @Override
+            public void loadConfig(UIConfig config) {
+                elementOffset = getConfig().getLayout().getPoint("offset");
+                elementSpacing = getConfig().getLayout().getPoint("spacing");
+            }
+
+            @Override
             protected void renderContents() {
-                Point elementOffset = getConfig().getLayout().getPoint("offset");
-                Point elementSpacing = getConfig().getLayout().getPoint("spacing");
                 assertRenderable();
                 clear();
                 int index = 0;

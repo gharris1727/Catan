@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
+import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 
 import java.awt.*;
@@ -17,6 +18,7 @@ public class LobbyScreen extends ClientScreen {
     private final LobbyUserList userList;
     private final LobbySettings settings;
     private final LobbyButtons buttons;
+    private int buttonsHeight;
 
     public LobbyScreen(Client client) {
         super(client, "inlobby");
@@ -39,10 +41,14 @@ public class LobbyScreen extends ClientScreen {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        buttonsHeight = config.getLayout().getInt("panel.height");
+    }
+
+    @Override
     protected void resizeContents(RenderMask mask) {
         int userListWidth = mask.getWidth()*2/3;
         int sidebarWidth = mask.getWidth() - userListWidth;
-        int buttonsHeight = getConfig().getLayout().getInt("panel.height");
         int settingsHeight = mask.getHeight() - buttonsHeight;
         userList.setMask(new RectangularMask(new Dimension(userListWidth, mask.getHeight())));
         settings.setMask(new RectangularMask(new Dimension(sidebarWidth, settingsHeight)));

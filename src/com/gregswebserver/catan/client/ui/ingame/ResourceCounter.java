@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
@@ -48,7 +47,7 @@ public abstract class ResourceCounter extends ConfigurableScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
-        icons = new GraphicSet(config.getLayout(), "icons", RectangularMask.class, null);
+        icons = new GraphicSet(config.getLayout(), "icons", null);
     }
 
     @Override

@@ -1,11 +1,7 @@
 package com.gregswebserver.catan.client.ui.lobby;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.Button;
-import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 
@@ -20,10 +16,10 @@ public class LobbyButtons extends ConfigurableScreenRegion {
     private final TiledBackground background;
     private final Button startButton;
     private final Button leaveButton;
+    private int spacing;
 
     public LobbyButtons() {
         super(2, "panel");
-        //Load layout information
         //Create sub-regions
         background = new EdgedTiledBackground(0, "background");
         startButton = new Button(1, "start", "Start Game") {
@@ -57,13 +53,15 @@ public class LobbyButtons extends ConfigurableScreenRegion {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-        startButton.setMask(new RoundedRectangularMask(getConfig().getLayout().getDimension("start")));
-        leaveButton.setMask(new RoundedRectangularMask(getConfig().getLayout().getDimension("leave")));
+    }
+
+    @Override
+    public void loadConfig(UIConfig config) {
+        spacing = config.getLayout().getInt("spacing");
     }
 
     @Override
     protected void renderContents() {
-        int spacing = getConfig().getLayout().getInt("spacing");
         center(startButton).y -= spacing;
         center(leaveButton).y += spacing;
     }

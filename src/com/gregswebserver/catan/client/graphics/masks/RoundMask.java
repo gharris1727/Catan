@@ -8,9 +8,9 @@ import java.awt.*;
  * This behaves differently than other render masks, where it pre-generates the array
  * and uses that to look up values, rather than generating the array from the look-ups.
  */
-public class RoundedMask extends RenderMask {
+public class RoundMask extends RenderMask {
 
-    public RoundedMask(Dimension size) {
+    public RoundMask(Dimension size) {
         width = size.width;
         height = size.height;
         padding = new int[height];

@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
-import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
-import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
@@ -54,11 +52,11 @@ public class UIConfig {
     }
 
     public GraphicSet getBackgroundGraphics(String backgroundStyleName) {
-        return new GraphicSet(style, backgroundRootKey + backgroundStyleName, RectangularMask.class, null);
+        return new GraphicSet(style, backgroundRootKey + backgroundStyleName, null);
     }
 
-    public GraphicSet getIconGraphics(String styleName, Class<? extends RenderMask> mask) {
-        return new GraphicSet(style, iconRootKey + styleName, mask, null);
+    public GraphicSet getIconGraphics(String styleName) {
+        return new GraphicSet(style, iconRootKey + styleName, null);
     }
 
     /**

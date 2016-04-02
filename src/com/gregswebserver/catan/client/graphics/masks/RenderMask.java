@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.client.graphics.masks;
 
 import com.gregswebserver.catan.common.IllegalStateException;
+import com.gregswebserver.catan.common.config.ConfigSource;
+import com.gregswebserver.catan.common.config.ConfigurationException;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -89,6 +91,105 @@ public abstract class RenderMask {
                     && Arrays.equals(widths, mask.widths);
         }
         return false;
+    }
+
+    public static RenderMask parseMask(ConfigSource config) {
+        Dimension size = null;
+        ConfigurationException sizeExcept = null;
+        try {
+            size = config.getDimension("size");
+        } catch (ConfigurationException e) {
+            sizeExcept = e;
+        }
+        switch(config.get("type")) {
+            case "angle":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                try {
+                    Dimension offset = config.getDimension("offset");
+                    return new AngleRectangularMask(size, offset);
+                } catch (ConfigurationException ignored) {
+                    return new AngleRectangularMask(size);
+                }
+            case "chevron":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                int centerOffset = config.getInt("offset");
+                return new ChevronMask(size, centerOffset);
+            case "flipped":
+                RenderMask flipOther = parseMask(config.narrow("mask"));
+                FlippedMask.Direction flipDirection;
+                switch (config.get("direction").toLowerCase()) {
+                    case "0":
+                    case "v":
+                    case "vert":
+                    case "vertical":
+                    case "up":
+                    case "down":
+                        flipDirection = FlippedMask.Direction.VERTICAL;
+                        break;
+                    case "1":
+                    case "h":
+                    case "horiz":
+                    case "horizontal":
+                    case "left":
+                    case "right":
+                        flipDirection = FlippedMask.Direction.HORIZONTAL;
+                        break;
+                    default:
+                        throw new ConfigurationException("Unknown FlippedMask direction: " + config.get("direction"));
+                }
+                return new FlippedMask(flipOther, flipDirection);
+            case "hexagonal":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                return new HexagonalMask(size);
+            case "inverted":
+                RenderMask invertOther = parseMask(config.narrow("mask"));
+                InvertedMask.Direction invertDirection;
+                switch (config.get("direction").toLowerCase()) {
+                    case "0":
+                    case "l":
+                    case "left":
+                        invertDirection = InvertedMask.Direction.LEFT;
+                        break;
+                    case "1":
+                    case "r":
+                    case "right":
+                        invertDirection = InvertedMask.Direction.RIGHT;
+                        break;
+                    default:
+                        throw new ConfigurationException("Unknown InvertedMask direction: " + config.get("direction"));
+                }
+                return new InvertedMask(invertOther, invertDirection);
+            case "offset":
+                RenderMask offsetOther = parseMask(config.narrow("mask"));
+                Point offset = config.getPoint("offset");
+                return new OffsetMask(offsetOther, offset);
+            case "rectangular":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                return new RectangularMask(size);
+            case "rounded":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                try {
+                    Dimension corner = config.getDimension("corner");
+                    return new RoundedRectangularMask(size, corner);
+                } catch (ConfigurationException ignored) {
+                    return new RoundedRectangularMask(size);
+                }
+            case "round":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                return new RoundMask(size);
+            case "triangular":
+                if (sizeExcept != null)
+                    throw sizeExcept;
+                return new TriangularMask(size);
+            default:
+                throw new ConfigurationException("Unknown mask type");
+        }
     }
 
     @Override

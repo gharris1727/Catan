@@ -26,7 +26,7 @@ public class RoundedRectangularMask extends RenderMask {
     private void init(Dimension square, Dimension corner) {
         this.width = square.width;
         this.height = square.height;
-        this.corner = new RoundedMask(corner);
+        this.corner = new RoundMask(corner);
         padding = new int[height];
         widths = new int[height];
         for (int i = 1; i < height; i++) {

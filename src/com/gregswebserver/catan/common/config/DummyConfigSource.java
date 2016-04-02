@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class DummyConfigSource extends RootConfigSource {
 
-    private Map<String, String> entries;
+    private final Map<String, String> entries;
 
     public DummyConfigSource() {
         entries = new HashMap<>();

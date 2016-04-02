@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class GameProgress extends EventPayload {
 
-    private GameSettings settings;
-    private List<GameEvent> history;
+    private final GameSettings settings;
+    private final List<GameEvent> history;
 
     public GameProgress(GameSettings settings, List<GameEvent> history) {
         this.settings = settings;

@@ -2,10 +2,7 @@ package com.gregswebserver.catan.client.ui.lobby;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.masks.RoundedRectangularMask;
-import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 
@@ -19,6 +16,8 @@ public class LobbyUserList extends ConfigurableScreenRegion {
 
     private final Lobby lobby;
     private final TiledBackground background;
+    private RenderMask userSize;
+    private int spacing;
 
     public LobbyUserList(Lobby lobby) {
         super(2, "users");
@@ -33,10 +32,14 @@ public class LobbyUserList extends ConfigurableScreenRegion {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        userSize = new RoundedRectangularMask(config.getLayout().getDimension("size"));
+        spacing = config.getLayout().getInt("spacing");
+    }
+
+    @Override
     protected void renderContents() {
         clear();
-        RenderMask userSize = new RoundedRectangularMask(getConfig().getLayout().getDimension("size"));
-        int spacing = getConfig().getLayout().getInt("spacing");
         int height = spacing;
         for (Username user : lobby.getPlayers()) {
             LobbyUserListElement elt = new LobbyUserListElement(user);

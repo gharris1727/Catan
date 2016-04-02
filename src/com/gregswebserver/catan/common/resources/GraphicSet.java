@@ -4,11 +4,8 @@ import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 import com.gregswebserver.catan.common.config.ConfigSource;
-import com.gregswebserver.catan.common.config.ConfigurationException;
 
 import java.awt.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 
@@ -21,16 +18,11 @@ public class GraphicSet {
     private final RenderMask[] masks;
     private final GraphicInfo[] graphics;
 
-    public GraphicSet(ConfigSource definition, String configKey, Class<? extends RenderMask> maskClass, int[] swaps) {
-        GraphicSourceInfo source = new GraphicSourceInfo(definition.get(configKey + ".path"));
-        RenderMask mask;
-        try {
-            Constructor constructor = maskClass.getConstructor(Dimension.class);
-            mask = (RenderMask) constructor.newInstance(definition.getDimension(configKey + ".size"));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new ConfigurationException("Unable to construct mask from single dimension", e);
-        }
-        int num = definition.getInt(configKey + ".count");
+    public GraphicSet(ConfigSource definition, String configKey, int[] swaps) {
+        ConfigSource config = definition.narrow(configKey);
+        GraphicSourceInfo source = new GraphicSourceInfo(config.get("path"));
+        RenderMask mask = RenderMask.parseMask(config.narrow("mask"));
+        int num = config.getInt("count");
         masks = new RenderMask[num];
         Arrays.fill(masks, mask);
         graphics = new GraphicInfo[num];

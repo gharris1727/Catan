@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.graphics.masks.ChevronMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
@@ -34,6 +33,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 
     private final TiledBackground background;
     private final ScrollingScreenContainer timeline;
+    private int eventBuffer;
 
     public TimelineRegion(GameManager manager, TeamColors teamColors) {
         super(2, "timeline");
@@ -59,8 +59,9 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
+        eventBuffer = getConfig().getLayout().getInt("scroll.list.buffer");
         for (Team team : Team.values())
-            eventGraphics.put(team,new GraphicSet(getConfig().getLayout(), "source", ChevronMask.class, teamColors.getSwaps(team)));
+            eventGraphics.put(team,new GraphicSet(config.getLayout(), "source", teamColors.getSwaps(team)));
     }
 
     public void update() {
@@ -69,6 +70,9 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 
     private class EventList extends ScrollingScreenRegion {
         private int lastCount;
+        private int eventSpacing;
+        private int eventBuffer;
+        private int eventHeight;
 
         private EventList() {
             super(0, "list");
@@ -89,17 +93,22 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         }
 
         @Override
+        public void loadConfig(UIConfig config) {
+            eventSpacing = config.getLayout().getInt("spacing");
+            eventBuffer = config.getLayout().getInt("buffer");
+            eventHeight = config.getLayout().getInt("height");
+        }
+
+        @Override
         protected void renderContents() {
             clear();
             int width = 1;
-            int eventSpacing = getConfig().getLayout().getInt("spacing");
-            int eventBuffer = getConfig().getLayout().getInt("buffer");
             for (int i = 0; i < events.size(); i++) {
                 add(new EventListElement(i)).setPosition(new Point(width, 0));
                 width += eventSpacing;
             }
             width += eventBuffer;
-            setMask(new RectangularMask(new Dimension(width, getConfig().getLayout().getInt("height"))));
+            setMask(new RectangularMask(new Dimension(width, eventHeight)));
             //Scroll the bar over as new events come in.
             scroll(-eventSpacing * (events.size() - lastCount), 0);
             lastCount = events.size();
@@ -144,7 +153,6 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     protected void resizeContents(RenderMask mask) {
         timeline.setMask(mask);
         background.setMask(mask);
-        int eventBuffer = getConfig().getLayout().getInt("scroll.list.buffer");
         Insets viewInsets = new Insets(0, eventBuffer, 0, eventBuffer);
         timeline.setInsets(viewInsets);
     }

@@ -1,12 +1,8 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TextLabel;
-import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
@@ -60,9 +56,14 @@ public class ContextRegion extends ConfigurableScreenRegion {
     }
 
     @Override
+    public void loadConfig(UIConfig config) {
+        graphics = new GraphicSet(config.getLayout(), "icons", null);
+    }
+
+    @Override
     protected void renderContents() {
         if (graphics == null)
-            graphics = new GraphicSet(getConfig().getLayout(), "icons", RectangularMask.class, null);
+
         //Clear the context region of everything
         clear();
         //If we already clicked on something, update and see if it changed.

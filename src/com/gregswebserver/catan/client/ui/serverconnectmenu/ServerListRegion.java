@@ -233,14 +233,6 @@ public class ServerListRegion extends ConfigurableScreenRegion {
         }
 
         @Override
-        public void loadConfig(UIConfig config) {
-            connectButton.setPosition(config.getLayout().getPoint("connect.position"));
-            passwordBox.setPosition(config.getLayout().getPoint("password.position"));
-            connectButton.setMask(new RoundedRectangularMask(config.getLayout().getDimension("connect.size")));
-            passwordBox.setMask(new RectangularMask(config.getLayout().getDimension("password.size")));
-        }
-
-        @Override
         protected void resizeContents(RenderMask mask) {
             background.setMask(mask);
         }
