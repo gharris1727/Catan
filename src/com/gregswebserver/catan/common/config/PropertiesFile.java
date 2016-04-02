@@ -11,7 +11,7 @@ import java.util.Properties;
  * Created by greg on 1/18/16.
  * Class to access configuration details stored in an external file.
  */
-public class PropertiesFile extends RootConfigSource implements Iterable<Map.Entry<String,String>>{
+public class PropertiesFile extends RootConfigSource implements EditableConfigSource, Iterable<Map.Entry<String,String>>{
 
     private final String path;
     private final String comment;
@@ -31,45 +31,49 @@ public class PropertiesFile extends RootConfigSource implements Iterable<Map.Ent
                             ExternalResource.getConfigDirectory() +
                             path)));
             source = Source.CURRENTDIR;
-        } catch (IOException ignored) {
-        }
-        if (source == Source.UNLOADED)
+        } catch (IOException a) {
             try {
                 config.load(new BufferedReader(new FileReader(
                         ExternalResource.getUserDataDirectory() +
                                 ExternalResource.getConfigDirectory() +
                                 path)));
                 source = Source.USERDIR;
-            } catch (IOException ignored) {
+            } catch (IOException b) {
+                try {
+                    config.load(ExternalResource.class.getResourceAsStream(
+                            ExternalResource.getResourceDataDirectory() +
+                                    ExternalResource.getConfigDirectory() +
+                                    path));
+                    source = Source.DEFAULT;
+                } catch (IOException c) {
+                    throw new ConfigurationException("Unable to save configuration data.");
+                }
             }
-        if (source == Source.UNLOADED)
-            try {
-                config.load(ExternalResource.class.getResourceAsStream(
-                        ExternalResource.getResourceDataDirectory() +
-                                ExternalResource.getConfigDirectory() +
-                                path));
-                source = Source.DEFAULT;
-            } catch (IOException ignored) {
-            }
-
+        }
     }
 
-    public void close() throws IOException {
+    @Override
+    public void save() {
         if (needsSaving) {
-            File file;
-            switch (source) {
-                case CURRENTDIR:
-                    file = new File(ExternalResource.getCurrentDirectory() + path);
-                    break;
-                default:
-                    file = new File(ExternalResource.getUserDataDirectory() + path);
-                    break;
+            try {
+                File file;
+                switch (source) {
+                    case CURRENTDIR:
+                        file = new File(ExternalResource.getCurrentDirectory() + path);
+                        break;
+                    default:
+                        file = new File(ExternalResource.getUserDataDirectory() + path);
+                        break;
+                }
+                if (!file.exists() && file.getParentFile().mkdirs()) {
+                    if (!file.createNewFile())
+                        throw new IOException("Unable to create new file to save.");
+                }
+                config.store(new BufferedWriter(new FileWriter(file)), comment);
+                needsSaving = false;
+            } catch (IOException e) {
+                throw new ConfigurationException("Unable to save configuration data.");
             }
-            if (!file.exists() && file.getParentFile().mkdirs()) {
-                if (!file.createNewFile())
-                    throw new IOException("Unable to create new file to save.");
-            }
-            config.store(new BufferedWriter(new FileWriter(file)), comment);
         }
     }
 
@@ -78,6 +82,7 @@ public class PropertiesFile extends RootConfigSource implements Iterable<Map.Ent
         return config.getProperty(key);
     }
 
+    @Override
     public void setEntry(String key, String value) {
         if (key != null && value != null) {
             config.setProperty(key, value);
@@ -85,6 +90,7 @@ public class PropertiesFile extends RootConfigSource implements Iterable<Map.Ent
         }
     }
 
+    @Override
     public void clearEntries() {
         config.clear();
     }

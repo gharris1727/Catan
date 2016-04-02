@@ -83,7 +83,7 @@ public class ResourceLoader {
         public void save(PropertiesFileInfo info) throws ResourceLoadException {
             try {
                 PropertiesFile file = get(info);
-                file.close();
+                file.save();
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }

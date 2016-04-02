@@ -15,55 +15,49 @@ import java.util.List;
  */
 public class ServerPool implements Iterable<ConnectionInfo> {
 
-    //TODO: rework this to allow drag-swapping of ServerLogin objects.
-
-    private final PropertiesFileInfo serverListFile;
-    private final List<ConnectionInfo> connectionInfoList;
+    private final PropertiesFileInfo fileInfo;
+    private final List<ConnectionInfo> list;
 
     @SuppressWarnings("InfiniteLoopStatement")
-    public ServerPool(PropertiesFileInfo serverListFile) {
-        this.serverListFile = serverListFile;
-        this.connectionInfoList = new LinkedList<>();
-        PropertiesFile file = ResourceLoader.getPropertiesFile(serverListFile);
+    public ServerPool(PropertiesFileInfo fileInfo) {
+        this.fileInfo = fileInfo;
+        this.list = new LinkedList<>();
+        PropertiesFile file = ResourceLoader.getPropertiesFile(fileInfo);
         try {
             int i = 0;
-            while (true) {
-                String hostname = file.get("servers." + i + ".hostname");
-                String port = file.get("servers." + i + ".port");
-                String username = file.get("servers." + i + ".username");
-                connectionInfoList.add(new ConnectionInfo(hostname, port, username));
-                i++;
-            }
+            while (true)
+                list.add(new ConnectionInfo(file, i++));
         } catch (ConfigurationException ignored) {
             //This loop is meant to error out once we run out of elements.
         }
     }
 
     public void save() {
-        PropertiesFile serverList = ResourceLoader.getPropertiesFile(serverListFile);
-        serverList.clearEntries();
+        PropertiesFile file = ResourceLoader.getPropertiesFile(fileInfo);
+        file.clearEntries();
         int i = 0;
-        for (ConnectionInfo elt : connectionInfoList) {
-            serverList.setEntry("servers." + i + ".hostname", elt.getRemote());
-            serverList.setEntry("servers." + i + ".port", elt.getPort());
-            serverList.setEntry("servers." + i + ".username", elt.getUsername());
-            i++;
-        }
-        ResourceLoader.savePropertiesFile(serverListFile);
+        for (ConnectionInfo elt : list)
+            elt.save(file, i++);
+        ResourceLoader.savePropertiesFile(fileInfo);
     }
 
     public void add(ConnectionInfo login) {
-        connectionInfoList.add(0, login);
+        list.add(0, login);
     }
 
-    public void remove(ConnectionInfo login) { connectionInfoList.remove(login); }
+    public void remove(ConnectionInfo login) { list.remove(login); }
+
+    public void top(ConnectionInfo login) {
+        remove(login);
+        add(login);
+    }
 
     @Override
     public Iterator<ConnectionInfo> iterator() {
-        return connectionInfoList.iterator();
+        return list.iterator();
     }
 
     public int size() {
-        return connectionInfoList.size();
+        return list.size();
     }
 }

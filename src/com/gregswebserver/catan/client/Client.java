@@ -15,6 +15,7 @@ import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
 import com.gregswebserver.catan.common.config.ConfigSource;
+import com.gregswebserver.catan.common.config.ConfigurationException;
 import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.Username;
@@ -39,7 +40,6 @@ import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.lobby.*;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 
 /**
@@ -373,8 +373,8 @@ public class Client extends CoreThread {
             gameManager.stop();
         serverPool.save();
         try {
-            config.close();
-        } catch (IOException e) {
+            config.save();
+        } catch (ConfigurationException e) {
             logger.log("Unable to save configuration", e, LogLevel.WARN);
         }
         stop();

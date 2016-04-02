@@ -3,6 +3,7 @@ package com.gregswebserver.catan.server;
 
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
+import com.gregswebserver.catan.common.config.ConfigurationException;
 import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.crypto.AuthToken;
 import com.gregswebserver.catan.common.crypto.AuthenticationException;
@@ -308,8 +309,8 @@ public class Server extends CoreThread {
             logger.log("Shutdown error.", e, LogLevel.WARN);
         }
         try {
-            config.close();
-        } catch (IOException e) {
+            config.save();
+        } catch (ConfigurationException e) {
             logger.log("Unable to save configuration.", e, LogLevel.WARN);
         }
         stop();
