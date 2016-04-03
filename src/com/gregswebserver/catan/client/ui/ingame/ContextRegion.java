@@ -62,8 +62,6 @@ public class ContextRegion extends ConfigurableScreenRegion {
 
     @Override
     protected void renderContents() {
-        if (graphics == null)
-
         //Clear the context region of everything
         clear();
         //If we already clicked on something, update and see if it changed.

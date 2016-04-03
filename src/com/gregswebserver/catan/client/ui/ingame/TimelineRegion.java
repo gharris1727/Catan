@@ -36,7 +36,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     private int eventBuffer;
 
     public TimelineRegion(GameManager manager, TeamColors teamColors) {
-        super(2, "timeline");
+        super(1, "timeline");
         //Load layout information
         eventGraphics = new EnumMap<>(Team.class);
         //Store instance information

@@ -57,6 +57,12 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
         */
     }
 
+    @Override
+    protected void onException(Throwable t) {
+        super.onException(t);
+        stop();
+    }
+
     public String toString() {
         return "RenderThread";
     }

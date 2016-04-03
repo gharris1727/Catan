@@ -200,9 +200,6 @@ public class Client extends CoreThread {
                 outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, getActiveLobby().getGameSettings());
                 sendEvent(outgoing);
                 break;
-            case Lobby_Sort:
-                manager.lobbyJoinMenu.update();
-                break;
             case Space_Clicked:
                 manager.gameScreen.spaceClicked((Coordinate) event.getPayload());
                 break;

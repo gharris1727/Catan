@@ -3,9 +3,14 @@ package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
+import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
+import com.gregswebserver.catan.client.graphics.ui.UIConfig;
+import com.gregswebserver.catan.client.input.UserEvent;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by Greg on 1/17/2015.
@@ -13,16 +18,31 @@ import java.awt.*;
  */
 public class LobbyJoinMenu extends ClientScreen {
 
-    private final LobbyListRegion lobbyList;
+    private final LobbyTabRegion lobbyTabs;
+    private final LobbyListRegion pregameLobbies;
+    private final LobbyListRegion ingameLobbies;
+    private final LobbyCreateRegion createLobby;
     private final UserListRegion userList;
+    private int tabHeight;
 
     public LobbyJoinMenu(Client client) {
         super(client, "lobbylist");
-        lobbyList = new LobbyListRegion(client.getLobbyList());
+        lobbyTabs = new LobbyTabRegion();
+        pregameLobbies = new LobbyListRegion(3, "pregame", client.getLobbyList().getPregameLobbies());
+        ingameLobbies = new LobbyListRegion(2, "ingame", client.getLobbyList().getIngameLobbies());
+        createLobby = new LobbyCreateRegion();
         userList = new UserListRegion(client.getClientList());
         //Add the screen contents
-        add(lobbyList);
+        add(lobbyTabs);
+        add(pregameLobbies);
+        add(ingameLobbies);
+        add(createLobby);
         add(userList);
+    }
+
+    @Override
+    public void loadConfig(UIConfig config) {
+        tabHeight = config.getLayout().getInt("tabs.height");
     }
 
     @Override
@@ -31,13 +51,20 @@ public class LobbyJoinMenu extends ClientScreen {
         int width = mask.getWidth();
         int height = mask.getHeight();
         //Calculate intermediate dimensions
-        int lobbyListWidth = (width*3)/4;
-        int userListWidth = width - lobbyListWidth;
+        int mainWidth = (width*3)/4;
+        int mainHeight = height - tabHeight;
+        int userListWidth = width - mainWidth;
+        RectangularMask mainMask = new RectangularMask(new Dimension(mainWidth, mainHeight));
         //Create new positions
-        lobbyList.setPosition(new Point());
-        userList.setPosition(new Point(lobbyListWidth, 0));
+        pregameLobbies.setPosition(new Point(0, tabHeight));
+        ingameLobbies.setPosition(new Point(0, tabHeight));
+        createLobby.setPosition(new Point(0, tabHeight));
+        userList.setPosition(new Point(mainWidth, 0));
         //Create new render masks.
-        lobbyList.setMask(new RectangularMask(new Dimension(lobbyListWidth,height)));
+        lobbyTabs.setMask(new RectangularMask(new Dimension(mainWidth, tabHeight)));
+        pregameLobbies.setMask(mainMask);
+        ingameLobbies.setMask(mainMask);
+        createLobby.setMask(mainMask);
         userList.setMask(new RectangularMask(new Dimension(userListWidth,height)));
     }
 
@@ -47,7 +74,86 @@ public class LobbyJoinMenu extends ClientScreen {
 
     @Override
     public void update() {
-        lobbyList.update();
+        pregameLobbies.update();
+        ingameLobbies.update();
         userList.forceRender();
+    }
+
+    private class LobbyTabRegion extends ConfigurableScreenRegion {
+
+        private final Button pregame;
+        private final Button ingame;
+        private final Button create;
+
+        private LobbyTabRegion() {
+            super(0, "tabs");
+            pregame = new Button(0, "pregame", "Join") {
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    LobbyJoinMenu.this.clear();
+                    LobbyJoinMenu.this.add(lobbyTabs);
+                    LobbyJoinMenu.this.add(pregameLobbies);
+                    LobbyJoinMenu.this.add(userList);
+                    update();
+                    return null;
+                }
+
+                @Override
+                public String toString() {
+                    return "PregameButton";
+                }
+            };
+            ingame = new Button(0, "pregame", "Spectate") {
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    LobbyJoinMenu.this.clear();
+                    LobbyJoinMenu.this.add(lobbyTabs);
+                    LobbyJoinMenu.this.add(ingameLobbies);
+                    LobbyJoinMenu.this.add(userList);
+                    update();
+                    return null;
+                }
+
+                @Override
+                public String toString() {
+                    return "PregameButton";
+                }
+            };
+            create = new Button(0, "pregame", "Create Game") {
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    LobbyJoinMenu.this.clear();
+                    LobbyJoinMenu.this.add(lobbyTabs);
+                    LobbyJoinMenu.this.add(createLobby);
+                    LobbyJoinMenu.this.add(userList);
+                    update();
+                    return null;
+                }
+
+                @Override
+                public String toString() {
+                    return "PregameButton";
+                }
+            };
+            add(pregame);
+            add(ingame);
+            add(create);
+        }
+
+        @Override
+        protected void resizeContents(RenderMask mask) {
+            int thirdWidth = mask.getWidth()/3;
+            ingame.setPosition(new Point(thirdWidth, 0));
+            create.setPosition(new Point(2*thirdWidth, 0));
+            RectangularMask thirdMask = new RectangularMask(new Dimension(thirdWidth, mask.getHeight()));
+            pregame.setMask(thirdMask);
+            ingame.setMask(thirdMask);
+            create.setMask(new RectangularMask(new Dimension(mask.getWidth()-2*thirdWidth, mask.getHeight())));
+        }
+
+        @Override
+        public String toString() {
+            return "LobbyTabRegion";
+        }
     }
 }

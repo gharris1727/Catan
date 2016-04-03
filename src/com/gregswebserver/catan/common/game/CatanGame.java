@@ -315,6 +315,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     }
 
     public boolean isPlayerActive(Username user) {
-        return players.getPlayer(user).getTeam() == teamTurns.getCurrentTeam();
+        Player player = players.getPlayer(user);
+        return player != null && player.getTeam() == teamTurns.getCurrentTeam();
     }
 }

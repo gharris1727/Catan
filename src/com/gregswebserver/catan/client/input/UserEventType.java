@@ -6,7 +6,6 @@ import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
-import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
 
 /**
  * Created by Greg on 1/4/2015.
@@ -22,7 +21,6 @@ public enum UserEventType implements EventType {
     Lobby_Quit(null), //Quit from the active lobby.
     Lobby_Edit(LobbyConfig.class), //Edit the current lobby's settings.
     Lobby_Start(null), //Start the game from the lobby.
-    Lobby_Sort(LobbySortOption.class), //Sort the lobbies by sort option.
     Space_Clicked(Coordinate.class), //Indicate that a space was clicked on.
     Tile_Rob(Coordinate.class), //Place the robber on a tile.
     End_Turn(null), //End the player's turn.

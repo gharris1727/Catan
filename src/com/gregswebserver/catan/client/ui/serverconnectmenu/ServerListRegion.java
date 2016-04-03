@@ -126,13 +126,7 @@ public class ServerListRegion extends ConfigurableScreenRegion {
                 add(item);
                 height += serverSize.getHeight() + padding;
             }
-            if (height == 0) {
-                setMask(serverSize);
-                setTransparency(true);
-            } else {
-                setTransparency(false);
-                setMask(new RectangularMask(new Dimension(serverSize.getWidth(), height)));
-            }
+            setMask(new RectangularMask(new Dimension(serverSize.getWidth(), height)));
         }
 
         private class ServerListItem extends ConfigurableScreenRegion {

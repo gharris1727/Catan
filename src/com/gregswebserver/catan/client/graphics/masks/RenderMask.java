@@ -59,6 +59,10 @@ public abstract class RenderMask {
         return y*getWidth() + x;
     }
 
+    public boolean hasContent() {
+        return width > 0 && height > 0;
+    }
+
     public boolean containsPoint(Point p) {
         return containsPoint(p.x, p.y);
     }

@@ -31,7 +31,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
                         if (t instanceof ThreadStop)
                             running = false;
                         else
-                            logger.log("Exception in thread: " + QueuedInputThread.this.toString(), t, LogLevel.ERROR);
+                            onException(t);
                     }
                 }
             }
@@ -83,16 +83,16 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
     //Processing function that is called repeatedly.
     protected abstract void execute() throws ThreadStop;
 
+    protected void onException(Throwable t) {
+        logger.log("Exception in thread: " + this, t, LogLevel.ERROR);
+    }
+
     public abstract String toString(); //force downstream to override this.
 
     public boolean isRunning() {
         return running;
     }
 
-    /**
-     * Created by Greg on 8/16/2014.
-     * Event sent into the queue to signal that the thread should die (poison-pill).
-     */
     protected static class ThreadStopEvent extends GenericEvent {
         @Override
         public boolean equals(Object o) {
@@ -104,11 +104,6 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
             return 0;
         }
     }
-
-    /**
-     * Created by Greg on 8/16/2014.
-     * Throwable passed through a QueuedInputThread in order to kill it.
-     */
     protected static class ThreadStop extends Exception {
     }
 }

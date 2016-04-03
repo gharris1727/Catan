@@ -3,45 +3,50 @@ package com.gregswebserver.catan.common.structure.lobby;
 import com.gregswebserver.catan.common.crypto.Username;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by greg on 1/10/16.
- * List of lobby objects that are sortable by multiple different
+ * A set of lobbies, and maintained lists of lobbies by state.
  */
-public class LobbyPool implements Iterable<Lobby>, Serializable {
+public class LobbyPool implements Serializable {
 
     private final Map<Username, Lobby> userMap;
-    private final List<Lobby> list;
-    private LobbySortOption sortOption;
+    private final LinkedList<Lobby> ingameLobbies;
+    private final LinkedList<Lobby> pregameLobbies;
 
     public LobbyPool() {
         userMap = new HashMap<>();
-        list = new LinkedList<>();
-        sortOption = LobbySortOption.Lobby_Name_Asc;
+        pregameLobbies = new LinkedList<>();
+        ingameLobbies = new LinkedList<>();
     }
 
     public void add(Username host, LobbyConfig config) {
         Lobby lobby = new Lobby(config);
         lobby.addPlayer(host);
+        lobby.setState(LobbyState.Preparing);
         userMap.put(host, lobby);
-        //Concurrent write, but inserting on the head of the list should be safe.
-        list.add(0, lobby);
+        synchronized (pregameLobbies) {
+            pregameLobbies.add(lobby);
+        }
     }
 
     public void join(Username user, Username host) {
         Lobby lobby = userMap.get(host);
-        lobby.addPlayer(user);
+            lobby.addPlayer(user);
         userMap.put(user, lobby);
     }
 
     public void leave(Username user) {
         Lobby lobby = userMap.remove(user);
-        lobby.removePlayer(user);
-        //Concurrent write, removing may cause issues.
-        if (lobby.size() == 0) {
-            list.remove(lobby);
-        }
+        if (lobby.getState() == LobbyState.Preparing)
+            lobby.removePlayer(user);
+        if (lobby.size() == 0)
+            synchronized (pregameLobbies) {
+                pregameLobbies.remove(lobby);
+            }
     }
 
     public void connect(Username user) {
@@ -49,7 +54,12 @@ public class LobbyPool implements Iterable<Lobby>, Serializable {
     }
 
     public void disconnect(Username user) {
-        userMap.get(user).disconnect(user);
+        Lobby lobby = userMap.get(user);
+        lobby.disconnect(user);
+        if (lobby.getConnectedPlayers().size() == 0)
+            synchronized (ingameLobbies) {
+                ingameLobbies.remove(lobby);
+            }
     }
 
     public boolean userInLobby(Username username) {
@@ -65,66 +75,29 @@ public class LobbyPool implements Iterable<Lobby>, Serializable {
     }
 
     public void start(Username username) {
-        userGetLobby(username).setState(LobbyState.InGame);
+        Lobby lobby = userGetLobby(username);
+        lobby.setState(LobbyState.InGame);
+        synchronized (pregameLobbies) {
+            pregameLobbies.remove(lobby);
+        }
+        synchronized (ingameLobbies) {
+            ingameLobbies.add(lobby);
+        }
     }
 
     public void finish(Username username) {
-        userGetLobby(username).setState(LobbyState.Finished);
-    }
-
-    private class LobbyComparator implements Comparator<Lobby> {
-
-        private final LobbySortOption sortOption;
-
-        private LobbyComparator(LobbySortOption sortOption) {
-            this.sortOption = sortOption;
+        Lobby lobby = userGetLobby(username);
+        lobby.setState(LobbyState.Finished);
+        synchronized (ingameLobbies) {
+            ingameLobbies.remove(lobby);
         }
-
-        @Override
-        public int compare(Lobby f, Lobby s) {
-            switch (sortOption) {
-                case Lobby_Name_Asc:
-                    return f.getConfig().getLobbyName().compareTo(s.getConfig().getLobbyName());
-                case Lobby_Name_Desc:
-                    return -f.getConfig().getLobbyName().compareTo(s.getConfig().getLobbyName());
-                case Game_Type_Asc:
-                    return f.getConfig().getLayoutName().compareTo(s.getConfig().getLayoutName());
-                case Game_Type_Desc:
-                    return -f.getConfig().getLayoutName().compareTo(s.getConfig().getLayoutName());
-                case Num_Clients_Asc:
-                    return f.size() - s.size();
-                case Num_Clients_Desc:
-                    return s.size() - f.size();
-                case Open_Spaces_Asc:
-                    return f.getConfig().getMaxPlayers() - f.size() - s.getConfig().getMaxPlayers() + s.size();
-                case Open_Spaces_Desc:
-                    return s.getConfig().getMaxPlayers() - s.size() - f.getConfig().getMaxPlayers() + f.size();
-                default:
-                    return 0;
-            }
-        }
-
     }
 
-    public void sort(LobbySortOption sortOption) {
-        this.sortOption = sortOption;
-        sort();
+    public Iterable<Lobby> getIngameLobbies() {
+        return ingameLobbies;
     }
 
-    public void sort() {
-        list.sort(new LobbyComparator(sortOption));
-    }
-
-    public LobbySortOption getSortOption() {
-        return sortOption;
-    }
-
-    @Override
-    public Iterator<Lobby> iterator() {
-        return list.iterator();
-    }
-
-    public int size() {
-        return list.size();
+    public Iterable<Lobby> getPregameLobbies() {
+        return pregameLobbies;
     }
 }

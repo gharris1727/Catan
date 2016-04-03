@@ -8,13 +8,13 @@ import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
-import com.gregswebserver.catan.common.structure.lobby.LobbyPool;
+import com.gregswebserver.catan.common.structure.lobby.LobbyComparator;
 import com.gregswebserver.catan.common.structure.lobby.LobbySortOption;
-import com.gregswebserver.catan.common.structure.lobby.LobbyState;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.TreeSet;
 
 /**
  * Created by greg on 1/10/16.
@@ -39,18 +39,15 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     private final LobbyListScrollContainer container;
     private final LobbyListFooter footer;
 
-    private final LobbyPool lobbies;
+    private final Iterable<Lobby> lobbies;
     private LobbySortOption sortOption;
     private Lobby selected;
 
-    //TODO: add functionality to spectate existing lobbies.
-    //TODO: add functionality to search/filter lobbies.
-
-    public LobbyListRegion(LobbyPool lobbies) {
-        super(0, "lobbies");
-        //Load layout information
+    public LobbyListRegion(int priority, String configKey, Iterable<Lobby> lobbies) {
+        super(priority, configKey);
         //Store instance information
         this.lobbies = lobbies;
+        sortOption = LobbySortOption.Lobby_Name_Asc;
         //Create the child regions
         header = new LobbyListHeader();
         footer = new LobbyListFooter();
@@ -239,7 +236,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                     index = 5;
                     sortOption = descend;
                     update();
-                    return new UserEvent(this, UserEventType.Lobby_Sort, descend);
+                    return null;
                 }
 
             }
@@ -287,7 +284,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                     index = 4;
                     sortOption = ascend;
                     update();
-                    return new UserEvent(this, UserEventType.Lobby_Sort, ascend);
+                    container.update();
+                    return null;
                 }
             }
         }
@@ -305,6 +303,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
         @Override
         protected void resizeContents(RenderMask mask) {
+            super.resizeContents(mask);
             background.setMask(mask);
         }
 
@@ -318,21 +317,23 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
         private LobbyListScroll() {
             super(1, "scroll");
-            setTransparency(true);
         }
 
         @Override
         protected void renderContents() {
             clear();
-            int height = 1;
-            for (Lobby lobby : lobbies) {
-                if (lobby.getState() == LobbyState.Preparing) {
-                    LobbyListScrollElement elt = new LobbyListScrollElement(lobby);
-                    elt.setConfig(getConfig());
-                    elt.setMask(lobbySize);
-                    add(elt).setPosition(new Point(0, height));
-                    height += lobbyHeight;
-                }
+            TreeSet<Lobby> sorted = new TreeSet<>(new LobbyComparator(sortOption));
+            synchronized (lobbies) {
+                for (Lobby lobby : lobbies)
+                    sorted.add(lobby);
+            }
+            int height = 0;
+            for (Lobby lobby : sorted) {
+                LobbyListScrollElement elt = new LobbyListScrollElement(lobby);
+                elt.setConfig(getConfig());
+                elt.setMask(lobbySize);
+                add(elt).setPosition(new Point(0, height));
+                height += lobbyHeight;
             }
             setMask(new RectangularMask(new Dimension(LobbyListRegion.this.getMask().getWidth(),height)));
         }
@@ -403,7 +404,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
         private final TiledBackground background;
         private final Button joinButton;
-        private final Button createButton;
 
         private LobbyListFooter() {
             super(2, "footer");
@@ -411,26 +411,15 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             joinButton = new Button(1, "join", "Join") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayers().iterator().next());
+                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayer());
                 }
                 public String toString() {
                     return "LobbyListJoinButton";
                 }
             };
-            createButton = new Button(1, "create", "Create new") {
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Lobby_Create, null);
-                }
-                @Override
-                public String toString() {
-                    return "LobbyListCreateButton";
-                }
-            };
             //Add objects to the screen.
             add(background);
             add(joinButton);
-            add(createButton);
         }
 
         @Override

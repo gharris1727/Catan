@@ -14,10 +14,7 @@ import com.gregswebserver.catan.common.resources.ResourceLoadException;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,13 +25,14 @@ import java.util.regex.Pattern;
 public class Lobby {
 
     private final Map<Username, LobbyUser> users;
+    private final Set<Username> connected;
     private int gameID;
     private LobbyState state;
     private LobbyConfig config;
 
     public Lobby(LobbyConfig config) {
         this.users = new HashMap<>(config.getMaxPlayers());
-        state = LobbyState.Preparing;
+        this.connected = new HashSet<>();
         setConfig(config);
     }
 
@@ -47,11 +45,11 @@ public class Lobby {
     }
 
     public void connect(Username username) {
-        users.get(username).connect();
+        connected.add(username);
     }
 
     public void disconnect(Username username) {
-        users.get(username).disconnect();
+        connected.remove(username);
     }
 
     public Set<Username> getPlayers() {
@@ -161,5 +159,13 @@ public class Lobby {
 
     public LobbyState getState() {
         return state;
+    }
+
+    public Set<Username> getConnectedPlayers() {
+        return connected;
+    }
+
+    public Username getPlayer() {
+        return users.keySet().iterator().next();
     }
 }

@@ -28,6 +28,7 @@ import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
+import com.gregswebserver.catan.common.structure.lobby.LobbyState;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 import com.gregswebserver.catan.server.structure.ConnectionPool;
 import com.gregswebserver.catan.server.structure.GamePool;
@@ -180,6 +181,8 @@ public class Server extends CoreThread {
                 case Lobby_Change_Config:
                     break;
                 case Lobby_Join:
+                    if (lobby.getState() == LobbyState.InGame)
+                        addEvent(new LobbyEvent(origin, LobbyEventType.Game_Join, null));
                     break;
                 case Lobby_Leave:
                     break;
@@ -211,7 +214,7 @@ public class Server extends CoreThread {
     private void gameEvent(GameEvent event) {
         Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(event.getOrigin());
         gamePool.process(lobby.getGameID(), event);
-        for (Username user : lobby.getPlayers())
+        for (Username user : lobby.getConnectedPlayers())
             connectionPool.get(user).sendEvent(event);
     }
 

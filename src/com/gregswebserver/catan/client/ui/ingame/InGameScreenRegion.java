@@ -21,6 +21,7 @@ import java.awt.*;
 public class InGameScreenRegion extends ClientScreen {
 
     private final CatanGame game;
+    private final boolean playing;
 
     private final ScrollingScreenContainer map;
     private final TradeRegion trade;
@@ -46,14 +47,17 @@ public class InGameScreenRegion extends ClientScreen {
             }
         };
         Username username = client.getToken().username;
+        playing = game.getTeams().getAllUsers().contains(username);
         trade = new TradeRegion(game, username);
-        inventory = new InventoryRegion(game.getTeams().getPlayer(username));
+        inventory = new InventoryRegion(game, username);
         context = new ContextRegion(manager, username);
         timeline = new TimelineRegion(manager, teamColors);
         //Add everything to the screen
         add(map);
-        add(trade);
-        add(inventory);
+        if (playing) {
+            add(trade);
+            add(inventory);
+        }
         add(context);
         add(timeline);
     }
@@ -98,20 +102,29 @@ public class InGameScreenRegion extends ClientScreen {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        int mainWidth = mask.getWidth() - sidebarWidth;
+        int mainWidth;
+        if (playing)
+            mainWidth = mask.getWidth() - sidebarWidth;
+        else
+            mainWidth = mask.getWidth();
+        int timelineWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - timelineHeight;
         int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;
 
-        inventory.setPosition(new Point(mainWidth, 0));
-        trade.setPosition(new Point(mainWidth, inventoryHeight));
-        context.setPosition(new Point(mainWidth, inventoryHeight + tradeHeight));
+        if (playing) {
+            inventory.setPosition(new Point(timelineWidth, 0));
+            trade.setPosition(new Point(timelineWidth, inventoryHeight));
+        }
+        context.setPosition(new Point(timelineWidth, inventoryHeight + tradeHeight));
         timeline.setPosition(new Point(0,mainHeight));
 
         map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
-        trade.setMask(new RectangularMask(new Dimension(sidebarWidth, tradeHeight)));
-        inventory.setMask(new RectangularMask(new Dimension(sidebarWidth, inventoryHeight)));
+        if (playing) {
+            trade.setMask(new RectangularMask(new Dimension(sidebarWidth, tradeHeight)));
+            inventory.setMask(new RectangularMask(new Dimension(sidebarWidth, inventoryHeight)));
+        }
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
-        timeline.setMask(new RectangularMask(new Dimension(mainWidth, timelineHeight)));
+        timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
         Insets viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
         map.setInsets(viewInsets);

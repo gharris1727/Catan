@@ -82,7 +82,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
         @Override
         protected void renderContents() {
             clear();
-            int height = 1;
+            int height = 0;
             for (Trade t : game.getTrades(TradeRegion.this.local)) {
                 TradeListElement elt = new TradeListElement(t);
                 elt.setConfig(getConfig());
@@ -90,8 +90,6 @@ public class TradeRegion extends ConfigurableScreenRegion {
                 add(elt).setPosition(new Point(0, height));
                 height += tradeSize.getHeight();
             }
-            if (height > 1)
-                height--;
             setMask(new RectangularMask(new Dimension(tradeSize.getWidth(), height)));
         }
 
@@ -203,6 +201,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
         @Override
         protected void resizeContents(RenderMask mask) {
+            super.resizeContents(mask);
             background.setMask(mask);
         }
 

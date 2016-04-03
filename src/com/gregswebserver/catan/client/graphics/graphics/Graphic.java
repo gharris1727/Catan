@@ -31,8 +31,10 @@ public class Graphic implements Maskable {
     //Resource constructor, for cutting graphics from larger graphics.
     public Graphic(Graphic source, RenderMask mask, Point start, boolean transparency)  {
         this(mask, transparency);
-        BufferedImage part = source.buffer.getSubimage(start.x, start.y, mask.getWidth(), mask.getHeight());
-        buffer.getGraphics().drawImage(part, 0, 0, mask.getWidth(), mask.getHeight(), null);
+        if (source.getMask().hasContent() && mask.hasContent()) {
+            BufferedImage part = source.buffer.getSubimage(start.x, start.y, mask.getWidth(), mask.getHeight());
+            buffer.getGraphics().drawImage(part, 0, 0, mask.getWidth(), mask.getHeight(), null);
+        }
     }
 
     //Primary constructor for a blank Graphic object.
@@ -44,15 +46,22 @@ public class Graphic implements Maskable {
     //Initialize the graphic with the specified mask and transparency.
     protected void init(RenderMask mask, boolean transparency) {
         this.mask = mask;
-        this.buffer = new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB);
+        if (mask.hasContent())
+            this.buffer = new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB);
+        else
+            this.buffer = null;
         this.clickable = new int[mask.getWidth() * mask.getHeight()];
         this.transparency = transparency;
     }
 
     //Rasterize the image to the pixel buffer for manual rendering. De-accelerates the graphic.
     protected void loadRaster() {
-        if (pixels == null)
-            pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
+        if (pixels == null) {
+            if (buffer != null)
+                pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
+            else
+                pixels = new int[0];
+        }
     }
 
     //Find out whether the graphic is hardware accelerated or not.
@@ -164,7 +173,7 @@ public class Graphic implements Maskable {
 
     @Override
     public void setMask(RenderMask mask) {
-        throw new RuntimeException("You cant resize a graphic dummy.");
+        throw new UnsupportedOperationException("Cannot change the size of a graphic.");
     }
 
     //Get the color of the secondary array at a specified point.
@@ -174,25 +183,28 @@ public class Graphic implements Maskable {
 
     //Renders this Image onto another image, with this image's top corner located at tPos on the destination image.
     public void renderTo(Graphic to, Point toPos, int color) {
-        if (accelerated()) {
-            //If we are accelerated then do the hardware acceleration render.
-            to.buffer.getGraphics().drawImage(buffer, toPos.x, toPos.y, mask.getWidth(), mask.getHeight(), null);
-            for (int i = 0; i < mask.getHeight(); i++)
-                fillColor(to.clickable, to.getMask().getIndex(toPos.x, toPos.y + i), 1, color, mask.getWidth());
-        } else {
-            //Otherwise we need to do the traditional render.
-            loadRaster();
-            to.loadRaster();
-            maskRender(to, toPos, this, new Point(), color, transparency);
+        if (to.getMask().hasContent() && mask.hasContent()) {
+            if (accelerated()) {
+                //If we are accelerated then do the hardware acceleration render.
+                to.buffer.getGraphics().drawImage(buffer, toPos.x, toPos.y, mask.getWidth(), mask.getHeight(), null);
+                for (int i = 0; i < mask.getHeight(); i++)
+                    fillColor(to.clickable, to.getMask().getIndex(toPos.x, toPos.y + i), 1, color, mask.getWidth());
+            } else {
+                //Otherwise we need to do the traditional render.
+                loadRaster();
+                to.loadRaster();
+                maskRender(to, toPos, this, new Point(), color, transparency);
+            }
         }
     }
 
     //Render to a graphics, filling the space.
     public void renderTo(Graphics graphics, int width, int height) {
-        graphics.drawImage(buffer, 0, 0, width, height, null);
+        if (mask.hasContent() && width > 0 && height >0)
+            graphics.drawImage(buffer, 0, 0, width, height, null);
     }
 
-    public void swap(int from, int to ) {
+    public void swap(int from, int to) {
         loadRaster();
         int length = pixels.length;
         for (int i = 0; i < length; i++) {
@@ -203,15 +215,17 @@ public class Graphic implements Maskable {
 
     //Clear the image, trying to preserve acceleration.
     public void clear() {
-        if (accelerated()) {
-            Graphics graphics = buffer.getGraphics();
-            graphics.setColor(Color.black);
-            graphics.drawRect(0, 0, mask.getWidth(), mask.getHeight());
-        } else {
-            loadRaster();
-            Arrays.fill(pixels, transColor);
+        if (mask.hasContent()) {
+            if (accelerated()) {
+                Graphics graphics = buffer.getGraphics();
+                graphics.setColor(Color.black);
+                graphics.drawRect(0, 0, mask.getWidth(), mask.getHeight());
+            } else {
+                loadRaster();
+                Arrays.fill(pixels, transColor);
+            }
+            Arrays.fill(clickable, 0);
         }
-        Arrays.fill(clickable, 0);
     }
 
     public String toString() {
