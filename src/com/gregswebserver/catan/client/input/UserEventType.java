@@ -13,6 +13,7 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
  */
 public enum UserEventType implements EventType {
 
+    Register_Account(ConnectionInfo.class),
     Net_Connect(ConnectionInfo.class), //Begin connecting to a remote server
     Net_Disconnect(null), //Disconnects from a remote server.
     Net_Clear(null), //Clears the connection error message.

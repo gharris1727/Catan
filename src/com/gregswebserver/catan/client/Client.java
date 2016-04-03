@@ -4,17 +4,17 @@ import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.input.InputListener;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.renderer.RenderEvent;
-import com.gregswebserver.catan.client.renderer.RenderManager;
 import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.client.structure.ServerPool;
+import com.gregswebserver.catan.client.ui.RenderManager;
+import com.gregswebserver.catan.client.ui.ingame.TeamColors;
 import com.gregswebserver.catan.common.CoreThread;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.chat.ChatEvent;
 import com.gregswebserver.catan.common.chat.ChatThread;
-import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.config.ConfigurationException;
 import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.crypto.AuthToken;
@@ -38,7 +38,9 @@ import com.gregswebserver.catan.common.structure.event.ControlEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
-import com.gregswebserver.catan.common.structure.lobby.*;
+import com.gregswebserver.catan.common.structure.lobby.Lobby;
+import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
+import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 import java.net.UnknownHostException;
 
@@ -61,9 +63,6 @@ public class Client extends CoreThread {
     }
 
     private PropertiesFile config;
-    private PropertiesFile style;
-    private PropertiesFile layout;
-    private PropertiesFile locale;
     private PropertiesFile teamColors;
 
     private ChatThread chatThread;
@@ -76,7 +75,6 @@ public class Client extends CoreThread {
     private ServerPool serverPool;
     private Username username;
     private MatchmakingPool matchmakingPool;
-    private String disconnectReason;
 
     public Client() {
         this(new Logger());
@@ -86,34 +84,6 @@ public class Client extends CoreThread {
         super(logger);
         addEvent(new ClientEvent(this, ClientEventType.Startup, null));
         start();
-    }
-
-    public ServerPool getServerList() {
-        return serverPool;
-    }
-
-    public ClientPool getClientList() {
-        return matchmakingPool.getClientList();
-    }
-
-    public LobbyPool getLobbyList() {
-        return matchmakingPool.getLobbyList();
-    }
-
-    public Lobby getActiveLobby() {
-        return matchmakingPool.getLobbyList().userGetLobby(username);
-    }
-
-    public GameManager getGameManager() {
-        return gameManager;
-    }
-
-    public String getDisconnectMessage() {
-        return disconnectReason;
-    }
-
-    public ConfigSource getTeamColors() {
-        return teamColors;
     }
 
     @Override
@@ -140,7 +110,6 @@ public class Client extends CoreThread {
             userEvent((UserEvent) event);
         else
             throw new IllegalStateException();
-
     }
 
     // Client maintenance events, for startup shutdown etc.
@@ -152,6 +121,8 @@ public class Client extends CoreThread {
             case Quit_All:
                 shutdown();
                 break;
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -159,26 +130,34 @@ public class Client extends CoreThread {
     private void userEvent(UserEvent event) {
         ExternalEvent outgoing;
         switch (event.getType()) {
-            case Net_Connect:
-                //Connect to remote server
-                manager.displayServerConnectingScreen();
-                ConnectionInfo info = (ConnectionInfo) event.getPayload();
+            case Register_Account:
                 try {
-                    ServerLogin login = info.createServerLogin();
-                    username = login.login.username;
-                    connection = new ClientConnection(this, login);
+                    ServerLogin server = ((ConnectionInfo) event.getPayload()).createServerLogin();
+                    username = server.login.username;
+                    connection = new ClientConnection(this, server.remote, NetEventType.Register, server.login);
                     connection.connect();
                 } catch (UnknownHostException | NumberFormatException e) {
                     logger.log(e, LogLevel.WARN);
-                    disconnectReason = e.getMessage();
-                    manager.displayServerDisconnectingScreen();
+                    manager.displayServerDisconnectingScreen(e.getMessage());
+                }
+                break;
+            case Net_Connect:
+                manager.displayServerConnectingScreen();
+                try {
+                    ServerLogin server = ((ConnectionInfo) event.getPayload()).createServerLogin();
+                    username = server.login.username;
+                    connection = new ClientConnection(this, server.remote, NetEventType.Log_In, server.login);
+                    connection.connect();
+                } catch (UnknownHostException | NumberFormatException e) {
+                    logger.log(e, LogLevel.WARN);
+                    manager.displayServerDisconnectingScreen(e.getMessage());
                 }
                 break;
             case Net_Disconnect:
                 disconnect("Quitting");
                 break;
             case Net_Clear:
-                manager.displayServerConnectMenu();
+                manager.displayServerConnectMenu(serverPool);
                 break;
             case Lobby_Create:
                 outgoing = new LobbyEvent(username, LobbyEventType.Lobby_Create, new LobbyConfig(username));
@@ -197,7 +176,8 @@ public class Client extends CoreThread {
                 sendEvent(outgoing);
                 break;
             case Lobby_Start:
-                outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, getActiveLobby().getGameSettings());
+                Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(username);
+                outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, lobby.getGameSettings());
                 sendEvent(outgoing);
                 break;
             case Space_Clicked:
@@ -236,6 +216,8 @@ public class Client extends CoreThread {
             case History_Jump:
                 gameManager.jumpToEvent((Integer) event.getPayload());
                 break;
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -259,6 +241,7 @@ public class Client extends CoreThread {
                 throw new RuntimeException("Unimplemented");
             case Name_Change:
             case Pass_Change:
+            case Delete_Account:
                 throw new IllegalStateException();
             case Pass_Change_Success:
                 throw new RuntimeException("Unimplemented");
@@ -266,9 +249,11 @@ public class Client extends CoreThread {
                 throw new RuntimeException("Unimplemented");
             case User_Pool_Sync:
                 matchmakingPool = (MatchmakingPool) event.getPayload();
-                manager.displayLobbyJoinMenu();
+                manager.displayLobbyJoinMenu(matchmakingPool);
                 break;
             case Client_Disconnect:
+                throw new IllegalStateException();
+            default:
                 throw new IllegalStateException();
         }
     }
@@ -288,11 +273,11 @@ public class Client extends CoreThread {
                 case Lobby_Create:
                 case Lobby_Join:
                     if (username.equals(event.getOrigin()))
-                        manager.displayInLobbyScreen();
+                        manager.displayInLobbyScreen(matchmakingPool.getLobbyList().userGetLobby(username));
                     break;
                 case Lobby_Leave:
                     if (username.equals(event.getOrigin()))
-                        manager.displayLobbyJoinMenu();
+                        manager.displayLobbyJoinMenu(matchmakingPool);
                     break;
                 case Game_Start:
                     break;
@@ -302,8 +287,10 @@ public class Client extends CoreThread {
                     break;
                 case Game_Sync:
                     gameManager = new GameManager(this, (GameProgress) event.getPayload());
-                    manager.displayGameScreen();
+                    manager.displayGameScreen(username, gameManager, new TeamColors(teamColors));
                     break;
+                default:
+                    throw new IllegalStateException();
             }
             //Force update any relevant screens
             if (manager.lobbyJoinMenu != null)
@@ -320,20 +307,25 @@ public class Client extends CoreThread {
     @Override
     public void netEvent(NetEvent event) {
         switch (event.getType()) {
+            case Register:
             case Log_In:
                 throw new IllegalStateException();
-            case Log_In_Success:
+            case Auth_Success:
                 token = (AuthToken) event.getPayload();
                 break;
-            case Log_In_Failure:
+            case Register_Success:
+            case Register_Failure:
+                //TODO: determine something special to do to confirm/deny registration.
+            case Auth_Failure:
             case Disconnect:
             case Link_Error:
-                disconnectReason = (String) event.getPayload();
-                manager.displayServerDisconnectingScreen();
+                manager.displayServerDisconnectingScreen((String) event.getPayload());
                 break;
             case External_Event:
                 externalEvent((ExternalEvent) event.getPayload());
                 break;
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -344,17 +336,17 @@ public class Client extends CoreThread {
     private void startup() {
         config = ResourceLoader.getPropertiesFile(configFile);
         PropertiesFileInfo localeFile = new PropertiesFileInfo("locale/" + config.get("locale") + ".properties", "Locale information");
-        locale = ResourceLoader.getPropertiesFile(localeFile);
+        PropertiesFile locale = ResourceLoader.getPropertiesFile(localeFile);
         PropertiesFileInfo teamColorsFile = new PropertiesFileInfo("graphics/teams.properties","Team colors configuration");
         teamColors = ResourceLoader.getPropertiesFile(teamColorsFile);
-        layout = ResourceLoader.getPropertiesFile(uiLayoutFile);
-        manager = new RenderManager(this);
+        PropertiesFile layout = ResourceLoader.getPropertiesFile(uiLayoutFile);
+        manager = new RenderManager();
         PropertiesFileInfo styleFile = new PropertiesFileInfo("ui/"+config.get("style") + ".properties", "Style Information");
-        style = ResourceLoader.getPropertiesFile(styleFile);
+        PropertiesFile style = ResourceLoader.getPropertiesFile(styleFile);
         manager.setConfig(new UIConfig(style, layout, locale));
         new ClientWindow(this, new InputListener(this, manager));
         serverPool = new ServerPool(serverFile);
-        manager.displayServerConnectMenu();
+        manager.displayServerConnectMenu(serverPool);
         renderThread = new RenderThread(logger, manager);
         renderThread.start();
     }

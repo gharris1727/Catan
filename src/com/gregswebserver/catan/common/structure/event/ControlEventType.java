@@ -14,6 +14,7 @@ public enum ControlEventType implements EventType {
     Pass_Change(Password.class), //Client -> Server, when the client requests a password change.
     Pass_Change_Success(null), //Server -> Client, when a password change succeeds.
     Pass_Change_Failure(null), //Server -> Client, when a password change fails.
+    Delete_Account(null), //Client -> Server, when a client wishes to delete their user account.
     Server_Disconnect(String.class), //Server -> Broadcast, When the server disconnects, String why.
     Client_Disconnect(String.class), //Client -> Server, when a client disconnects, String why.
     User_Pool_Sync(MatchmakingPool.class); //Server -> Client, when first joining to send the current client pool state.

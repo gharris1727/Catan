@@ -62,7 +62,8 @@ public class ConnectionPool {
     }
 
     public void disconnectAll(String reason) {
-        for (Map.Entry<Username, Integer> entry : usernameConnectionIDs.entrySet()) {
+        Map<Username, Integer> connections = new HashMap<>(usernameConnectionIDs);
+        for (Map.Entry<Username, Integer> entry : connections.entrySet()) {
             disconnectUser(entry.getKey(), reason);
             disconnect(entry.getValue());
         }

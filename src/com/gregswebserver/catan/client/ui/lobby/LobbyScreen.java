@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.lobby;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
@@ -15,16 +14,20 @@ import java.awt.*;
  */
 public class LobbyScreen extends ClientScreen {
 
+    private int buttonsHeight;
+
+    private final Lobby lobby;
+
     private final LobbyUserList userList;
     private final LobbySettings settings;
     private final LobbyButtons buttons;
-    private int buttonsHeight;
 
-    public LobbyScreen(Client client) {
-        super(client, "inlobby");
+    public LobbyScreen(Lobby lobby) {
+        super("inlobby");
+        this.lobby = lobby;
         settings = new LobbySettings();
         buttons = new LobbyButtons();
-        userList = new LobbyUserList(client.getActiveLobby());
+        userList = new LobbyUserList(lobby);
         add(settings);
         add(buttons);
         add(userList);
@@ -33,10 +36,7 @@ public class LobbyScreen extends ClientScreen {
 
     @Override
     public void update() {
-        Lobby lobby = client.getActiveLobby();
-        if (lobby != null)
-            settings.setLobbyConfig(lobby.getConfig());
-        settings.forceRender();
+        settings.setLobbyConfig(lobby.getConfig());
         userList.forceRender();
     }
 

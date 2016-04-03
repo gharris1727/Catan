@@ -11,9 +11,12 @@ import com.gregswebserver.catan.common.structure.UserLogin;
  */
 public enum NetEventType implements EventType {
 
+    Register(UserLogin.class),
+    Register_Success(null),
+    Register_Failure(String.class),
     Log_In(UserLogin.class),
-    Log_In_Success(AuthToken.class),
-    Log_In_Failure(String.class),
+    Auth_Success(AuthToken.class),
+    Auth_Failure(String.class),
     Disconnect(String.class),
     Link_Error(String.class),
     External_Event(ExternalEvent.class);

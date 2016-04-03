@@ -1,30 +1,30 @@
-package com.gregswebserver.catan.client.ui.connecting;
+package com.gregswebserver.catan.client.ui.serverdetail;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
-import com.gregswebserver.catan.client.graphics.ui.TextLabel;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
+import com.gregswebserver.catan.client.structure.ServerLogin;
 
 /**
- * Created by Greg on 1/18/2015.
- * A screen that is shown while the client is connecting to a remote server.
+ * Created by greg on 4/2/16.
+ * Detailed creation and edit screen for server login details.
  */
-public class ConnectingScreen extends ClientScreen {
+public class ServerDetailMenu extends ClientScreen {
+
+    //TODO: provide fields for editing the server connection details.
 
     private final TiledBackground background;
-    private final TextLabel text;
 
-    public ConnectingScreen() {
-        super("connecting");
+    public ServerDetailMenu(ServerLogin login) {
+        super("serverdetail");
         background = new EdgedTiledBackground(0, "background");
-        text = new TextLabel(1, "message", "Connecting...");
         add(background).setClickable(this);
-        add(text).setClickable(this);
     }
 
     @Override
-    public void update() { }
+    public void update() {
+    }
 
     @Override
     protected void resizeContents(RenderMask mask) {
@@ -32,11 +32,7 @@ public class ConnectingScreen extends ClientScreen {
     }
 
     @Override
-    protected void renderContents() {
-        center(text);
-    }
-
     public String toString() {
-        return "ConnectingScreen";
+        return "ServerDetailMenu";
     }
 }

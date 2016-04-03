@@ -2,6 +2,7 @@ package com.gregswebserver.catan.client.renderer;
 
 import com.gregswebserver.catan.client.graphics.graphics.ScreenCanvas;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.client.ui.RenderManager;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.profiler.TimeSlice;

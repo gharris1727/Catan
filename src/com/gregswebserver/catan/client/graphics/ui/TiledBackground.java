@@ -35,16 +35,16 @@ public class TiledBackground extends DefaultConfigurableScreenRegion {
     protected void renderContents() {
         assertRenderable();
         clear();
-        renderFillerTiles(0,0,getMask().getWidth(),getMask().getHeight());
+        renderFillerTiles(getMask().getWidth(),getMask().getHeight());
     }
 
-    protected void renderFillerTiles(int xStart, int yStart, int xStop, int yStop) {
+    protected void renderFillerTiles(int xStop, int yStop) {
         RenderMask textureMask = graphics.getMask();
         int texWidth = textureMask.getWidth();
         int texHeight = textureMask.getHeight();
         Graphic center = graphics.getGraphic(Direction.center.ordinal());
-        for (int x = xStart; x < xStop; x += texWidth) {
-            for (int y = yStart; y < yStop; y += texHeight) {
+        for (int x = 0; x < xStop; x += texWidth) {
+            for (int y = 0; y < yStop; y += texHeight) {
                 add(new GraphicObject(0, center) {
                     public String toString() {
                         return "Tile inside " + TiledBackground.this;

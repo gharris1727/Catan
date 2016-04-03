@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Button;
@@ -8,6 +7,7 @@ import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -18,20 +18,21 @@ import java.awt.event.MouseEvent;
  */
 public class LobbyJoinMenu extends ClientScreen {
 
+    private int tabHeight;
+
     private final LobbyTabRegion lobbyTabs;
     private final LobbyListRegion pregameLobbies;
     private final LobbyListRegion ingameLobbies;
     private final LobbyCreateRegion createLobby;
     private final UserListRegion userList;
-    private int tabHeight;
 
-    public LobbyJoinMenu(Client client) {
-        super(client, "lobbylist");
+    public LobbyJoinMenu(MatchmakingPool matchmakingPool) {
+        super("lobbylist");
         lobbyTabs = new LobbyTabRegion();
-        pregameLobbies = new LobbyListRegion(3, "pregame", client.getLobbyList().getPregameLobbies());
-        ingameLobbies = new LobbyListRegion(2, "ingame", client.getLobbyList().getIngameLobbies());
+        pregameLobbies = new LobbyListRegion(3, "pregame", matchmakingPool.getLobbyList().getPregameLobbies());
+        ingameLobbies = new LobbyListRegion(2, "ingame", matchmakingPool.getLobbyList().getIngameLobbies());
         createLobby = new LobbyCreateRegion();
-        userList = new UserListRegion(client.getClientList());
+        userList = new UserListRegion(matchmakingPool.getClientList());
         //Add the screen contents
         add(lobbyTabs);
         add(pregameLobbies);

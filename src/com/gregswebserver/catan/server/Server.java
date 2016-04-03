@@ -30,10 +30,7 @@ import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 import com.gregswebserver.catan.common.structure.lobby.LobbyState;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
-import com.gregswebserver.catan.server.structure.ConnectionPool;
-import com.gregswebserver.catan.server.structure.GamePool;
-import com.gregswebserver.catan.server.structure.UserDatabase;
-import com.gregswebserver.catan.server.structure.UserNotFoundException;
+import com.gregswebserver.catan.server.structure.*;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -153,6 +150,14 @@ public class Server extends CoreThread {
                     logger.log(e, LogLevel.WARN);
                 }
                 break;
+            case Delete_Account:
+                try {
+                    database.removeAccount(event.getOrigin());
+                    addEvent(new ServerEvent(this, ServerEventType.User_Disconnect, event.getOrigin()));
+                } catch (UserNotFoundException e) {
+                    logger.log(e, LogLevel.WARN);
+                }
+                break;
             case Server_Disconnect:
             case Pass_Change_Success:
             case Pass_Change_Failure:
@@ -223,23 +228,38 @@ public class Server extends CoreThread {
         ServerConnection connection = (ServerConnection) event.getConnection();
         int id = connection.getConnectionID();
         switch (event.getType()) {
+            case Register:
+                try {
+                    //Register the client in the database
+                    database.registerAccount((UserLogin) event.getPayload());
+                    //Tell the client about the registration success.
+                    connection.sendEvent(new NetEvent(token, NetEventType.Register_Success, null));
+                } catch (RegistrationException e) {
+                    //Tell the client about the auth failure.
+                    connection.sendEvent(new NetEvent(token, NetEventType.Register_Failure, e.getMessage()));
+                }
+                //Kill their connection to the server.
+                addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, id));
+                break;
             case Log_In:
                 try {
                     //Authenticate the client and generate an AuthToken for them.
                     AuthToken clientToken = database.authenticate((UserLogin) event.getPayload());
                     //Tell the client about the auth success, send them their AuthToken.
-                    connection.sendEvent(new NetEvent(token, NetEventType.Log_In_Success, clientToken));
+                    connection.sendEvent(new NetEvent(token, NetEventType.Auth_Success, clientToken));
                     //Synchronize the user and process their join.
                     addEvent(new ServerEvent(connection, ServerEventType.User_Connect, clientToken.username));
                 } catch (AuthenticationException | UserNotFoundException e) {
                     //Tell the client about the auth failure.
-                    connection.sendEvent(new NetEvent(token, NetEventType.Log_In_Failure, e.getMessage()));
+                    connection.sendEvent(new NetEvent(token, NetEventType.Auth_Failure, e.getMessage()));
                     //Kill their connection to the server.
                     addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, id));
                 }
                 break;
-            case Log_In_Success:
-            case Log_In_Failure:
+            case Register_Success:
+            case Register_Failure:
+            case Auth_Success:
+            case Auth_Failure:
                 throw new IllegalStateException();
             case Disconnect:
             case Link_Error:
@@ -270,7 +290,7 @@ public class Server extends CoreThread {
         token = new AuthToken(new Username("Server"), new SecureRandom().nextInt()); //For use in chat and sending events originating here.
         window = new ServerWindow(this);
         connectionPool = new ConnectionPool(this);
-        database = new UserDatabase(logger, new PropertiesFileInfo(config.get("database"), "User database"));
+        database = new UserDatabase(new PropertiesFileInfo(config.get("database"), "User database"));
         matchmakingPool = new MatchmakingPool();
         gamePool = new GamePool(this);
         try {

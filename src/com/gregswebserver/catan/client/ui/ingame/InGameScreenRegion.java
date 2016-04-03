@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
-import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
@@ -34,19 +33,16 @@ public class InGameScreenRegion extends ClientScreen {
     private int timelineHeight;
     private Dimension borderBuffer;
 
-    public InGameScreenRegion(Client client) {
-        super(client, "ingame");
+    public InGameScreenRegion(Username username, GameManager manager, TeamColors teamColors) {
+        super("ingame");
         //Load relevant details
-        GameManager manager = client.getGameManager();
         game = manager.getLocalGame();
-        TeamColors teamColors = new TeamColors(client.getTeamColors());
         map = new ScrollingScreenContainer(0, "scroll", new MapRegion(game.getBoard(), teamColors)) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
             }
         };
-        Username username = client.getToken().username;
         playing = game.getTeams().getAllUsers().contains(username);
         trade = new TradeRegion(game, username);
         inventory = new InventoryRegion(game, username);

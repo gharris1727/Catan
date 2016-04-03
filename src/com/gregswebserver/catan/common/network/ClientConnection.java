@@ -1,9 +1,7 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.common.log.LogLevel;
-import com.gregswebserver.catan.common.structure.UserLogin;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,12 +15,14 @@ import java.net.Socket;
  */
 public class ClientConnection extends NetConnection {
 
-    private final UserLogin info;
+    private final NetEventType action;
+    private final Object payload;
 
-    public ClientConnection(Client client, ServerLogin login) {
+    public ClientConnection(Client client, NetID remote, NetEventType action, Object payload) {
         super(client);
-        this.info = login.login;
-        this.remote = login.remote;
+        this.remote = remote;
+        this.action = action;
+        this.payload = payload;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ClientConnection extends NetConnection {
             socket = new Socket(remote.address, remote.port);
             local = new NetID(socket);
             out = new ObjectOutputStream(socket.getOutputStream());
-            sendEvent(new NetEvent(host.getToken(), NetEventType.Log_In, info));
+            sendEvent(new NetEvent(host.getToken(), action, payload));
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
             receive.start();

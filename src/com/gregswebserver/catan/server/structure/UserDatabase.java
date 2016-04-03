@@ -2,8 +2,6 @@ package com.gregswebserver.catan.server.structure;
 
 import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.crypto.*;
-import com.gregswebserver.catan.common.log.LogLevel;
-import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.UserInfo;
@@ -18,13 +16,11 @@ import java.util.Map;
  */
 public class UserDatabase {
 
-    private final Logger logger;
     private final PropertiesFileInfo databaseFile;
     private final PropertiesFile database;
     private final Map<Username, UserAccount> accounts;
 
-    public UserDatabase(Logger logger, PropertiesFileInfo databaseFile) {
-        this.logger = logger;
+    public UserDatabase(PropertiesFileInfo databaseFile) {
         this.databaseFile = databaseFile;
         this.database = ResourceLoader.getPropertiesFile(databaseFile);
         accounts = new HashMap<>();
@@ -41,13 +37,11 @@ public class UserDatabase {
         ResourceLoader.savePropertiesFile(databaseFile);
     }
 
-    public void registerAccount(UserLogin login) {
-        try {
-            UserAccount user = new UserAccount(login.username, login.password);
-            accounts.put(login.username, user);
-        } catch (Exception e) {
-            logger.log(e, LogLevel.ERROR);
-        }
+    public void registerAccount(UserLogin login) throws RegistrationException {
+        if (accounts.containsKey(login.username))
+            throw new RegistrationException("Unable to add user account.");
+        UserAccount user = new UserAccount(login.username, login.password);
+        accounts.put(login.username, user);
     }
 
     public AuthToken authenticate(UserLogin login) throws UserNotFoundException, AuthenticationException {

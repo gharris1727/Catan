@@ -44,7 +44,7 @@ public class EdgedTiledBackground extends TiledBackground {
             addTile(new Point(0, y), left);
             addTile(new Point(corWidth, y), right);
         }
-        renderFillerTiles(0, 0, totWidth, totHeight);
+        renderFillerTiles(totWidth, totHeight);
     }
 
     private void addTile(Point position, Direction d) {
