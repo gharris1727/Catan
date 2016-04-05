@@ -3,11 +3,9 @@ package com.gregswebserver.catan.client.ui;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.Configurable;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.structure.GameManager;
-import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.client.structure.ServerPool;
 import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
 import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
@@ -16,26 +14,27 @@ import com.gregswebserver.catan.client.ui.ingame.TeamColors;
 import com.gregswebserver.catan.client.ui.lobby.LobbyScreen;
 import com.gregswebserver.catan.client.ui.lobbyjoinmenu.LobbyJoinMenu;
 import com.gregswebserver.catan.client.ui.serverconnectmenu.ServerConnectMenu;
-import com.gregswebserver.catan.client.ui.serverdetail.ServerDetailMenu;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by greg on 1/15/16.
  * Function to manage the different ScreenObjects that need to be displayed by the Render Thread.
  */
-public class RenderManager extends ScreenRegion implements Configurable{
+public class RenderManager extends ScreenRegion implements Configurable {
 
     private UIConfig config;
     private int taskbarHeight;
     private RenderMask liveMask;
     private Point livePosition;
+    private Insets popupInsets;
 
     public ServerConnectMenu serverConnectMenu;
-    public ServerDetailMenu serverDetailMenu;
     public ConnectingScreen connectingScreen;
     public DisconnectingScreen disconnectingScreen;
     public LobbyJoinMenu lobbyJoinMenu;
@@ -44,60 +43,81 @@ public class RenderManager extends ScreenRegion implements Configurable{
 
     private final TaskbarRegion taskbar;
     private ClientScreen live;
+    private List<PopupWindow> popups;
 
     public RenderManager() {
         super(0);
         taskbar = new TaskbarRegion();
-        liveMask = new RectangularMask(new Dimension(0,0));
-        livePosition = new Point();
         live = null;
-        add(taskbar);
+        popups = new LinkedList<>();
     }
 
     public void displayServerConnectMenu(ServerPool serverPool) {
         serverConnectMenu = new ServerConnectMenu(serverPool);
-        display(serverConnectMenu);
-    }
-
-    public void displayServerDetailMenu(ServerLogin login) {
-        serverDetailMenu = new ServerDetailMenu(login);
-        display(serverDetailMenu);
+        displayScreen(serverConnectMenu);
     }
 
     public void displayServerConnectingScreen() {
         connectingScreen = new ConnectingScreen();
-        display(connectingScreen);
+        displayScreen(connectingScreen);
     }
 
     public void displayServerDisconnectingScreen(String message) {
         disconnectingScreen = new DisconnectingScreen(message);
-        display(disconnectingScreen);
+        displayScreen(disconnectingScreen);
     }
 
     public void displayLobbyJoinMenu(MatchmakingPool matchmakingPool) {
         lobbyJoinMenu = new LobbyJoinMenu(matchmakingPool);
-        display(lobbyJoinMenu);
+        displayScreen(lobbyJoinMenu);
     }
 
     public void displayInLobbyScreen(Lobby lobby) {
         lobbyScreen = new LobbyScreen(lobby);
-        display(lobbyScreen);
+        displayScreen(lobbyScreen);
     }
 
     public void displayGameScreen(Username username, GameManager manager, TeamColors teamColors) {
         gameScreen = new InGameScreenRegion(username, manager, teamColors);
-        display(gameScreen);
+        displayScreen(gameScreen);
     }
 
-    public void display(ClientScreen region) {
-        if (live != null) {
-            region.setConfig(getConfig());
-            region.setMask(liveMask);
-            region.setPosition(livePosition);
+    public void displayPopup(PopupWindow popup) {
+        if (popup != null) {
+            popup.setRenderManager(this);
+            popup.setInsets(popupInsets);
+            popup.setConfig(getConfig());
+            center(popup);
+            popups.add(popup);
+            forceRender();
         }
-        remove(live);
+    }
+
+    public void removePopup(PopupWindow popup) {
+        popups.remove(popup);
+        forceRender();
+    }
+
+    public void displayScreen(ClientScreen region) {
+        if (region != null) {
+            if (getConfig() != null)
+                region.setConfig(getConfig());
+            if (liveMask != null) {
+                region.setMask(liveMask);
+                region.setPosition(livePosition);
+            }
+        }
         live = region;
+        forceRender();
+    }
+
+    @Override
+    protected void renderContents() {
+        clear();
+        add(taskbar);
         add(live);
+        for (PopupWindow popup : popups)
+            add(popup);
     }
 
     @Override
@@ -110,7 +130,11 @@ public class RenderManager extends ScreenRegion implements Configurable{
         taskbar.setMask(new RectangularMask(new Dimension(mask.getWidth(), taskbarHeight)));
         liveMask = new RectangularMask(new Dimension(mask.getWidth(), mask.getHeight() - taskbarHeight));
         livePosition = new Point(0, taskbarHeight);
-        display(live);
+        popupInsets = new Insets(taskbarHeight, 0, 0, 0);
+        if (live != null) {
+            live.setMask(liveMask);
+            live.setPosition(livePosition);
+        }
     }
 
     @Override
@@ -118,8 +142,8 @@ public class RenderManager extends ScreenRegion implements Configurable{
         this.config = config;
         taskbarHeight = config.getLayout().getInt("taskbar.height");
         taskbar.setConfig(config);
-        if (getMask() != null)
-            resizeContents(getMask());
+        if (live != null)
+            live.setConfig(config);
     }
 
     @Override

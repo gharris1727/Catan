@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
+import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
@@ -13,6 +14,8 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
  */
 public enum UserEventType implements EventType {
 
+    Display_Popup(PopupWindow.class),
+    Server_Change(ConnectionInfo.class),
     Register_Account(ConnectionInfo.class),
     Net_Connect(ConnectionInfo.class), //Begin connecting to a remote server
     Net_Disconnect(null), //Disconnects from a remote server.

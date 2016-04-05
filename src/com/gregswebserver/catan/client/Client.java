@@ -9,6 +9,7 @@ import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.structure.ServerLogin;
 import com.gregswebserver.catan.client.structure.ServerPool;
+import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.client.ui.RenderManager;
 import com.gregswebserver.catan.client.ui.ingame.TeamColors;
 import com.gregswebserver.catan.common.CoreThread;
@@ -130,6 +131,14 @@ public class Client extends CoreThread {
     private void userEvent(UserEvent event) {
         ExternalEvent outgoing;
         switch (event.getType()) {
+            case Display_Popup:
+                manager.displayPopup((PopupWindow) event.getPayload());
+                break;
+            case Server_Change:
+                serverPool.remove((ConnectionInfo) event.getOrigin());
+                serverPool.add((ConnectionInfo) event.getPayload());
+                manager.serverConnectMenu.update();
+                break;
             case Register_Account:
                 try {
                     ServerLogin server = ((ConnectionInfo) event.getPayload()).createServerLogin();

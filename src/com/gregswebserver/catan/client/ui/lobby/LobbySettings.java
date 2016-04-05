@@ -27,7 +27,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
         super(1, "settings");
         //Create sub-regions
         background = new EdgedTiledBackground(0, "background");
-        name = new TextBox(1, "name", "Lobby Name") {
+        name = new TextBox(1, "name", "Lobby Name", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -44,7 +44,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
                 return "LobbySettingsNameTextBox";
             }
         };
-        type = new TextBox(1, "type", "Game Type") {
+        type = new TextBox(1, "type", "Game Type", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -61,7 +61,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
                 return "LobbySettingsGameTypeTextBox";
             }
         };
-        generator = new TextBox(1, "generator", "Generator") {
+        generator = new TextBox(1, "generator", "Generator", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -78,7 +78,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
                 return "LobbySettingsGeneratorTextBox";
             }
         };
-        ruleset = new TextBox(1, "ruleset", "RuleSet") {
+        ruleset = new TextBox(1, "ruleset", "RuleSet", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -95,7 +95,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
                 return "LobbySettingsRuleSetTextBox";
             }
         };
-        clients = new TextBox(1, "clients", "# Clients") {
+        clients = new TextBox(1, "clients", "# Clients", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(

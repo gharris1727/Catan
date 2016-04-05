@@ -11,7 +11,6 @@ import java.awt.*;
 public abstract class ScrollingScreenContainer extends ConfigurableScreenRegion {
 
     private final ScrollingScreenRegion scroll;
-    private Insets insets;
 
     protected ScrollingScreenContainer(int priority, String configKey, ScrollingScreenRegion scroll) {
         super(priority, configKey);
@@ -29,13 +28,12 @@ public abstract class ScrollingScreenContainer extends ConfigurableScreenRegion 
     }
 
     public void setInsets(Insets insets) {
-        this.insets = insets;
-        scroll.setHostView(getMask(), insets);
+        scroll.setInsets(insets);
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        scroll.setHostView(mask, insets);
+        scroll.resizeContents(mask);
     }
 
     public ScrollingScreenRegion getScroll() {

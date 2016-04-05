@@ -3,10 +3,10 @@ package com.gregswebserver.catan.client.ui.lobbyjoinmenu;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Button;
-import com.gregswebserver.catan.client.graphics.ui.ClientScreen;
 import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 import java.awt.*;

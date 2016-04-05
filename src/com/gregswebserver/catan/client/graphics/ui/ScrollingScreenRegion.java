@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 import java.awt.*;
@@ -12,21 +13,19 @@ import java.awt.*;
 public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
 
     private final Point offset;
-    private RenderMask hostMask;
     private Insets insets;
-    private ScrollingScreenContainer host;
+    private ScreenRegion host;
 
     protected ScrollingScreenRegion(int priority, String configKey) {
         super(priority, configKey);
         this.offset = new Point();
     }
 
-    public void setHost(ScrollingScreenContainer host) {
+    public void setHost(ScreenRegion host) {
         this.host = host;
     }
 
-    public void setHostView(RenderMask hostMask, Insets insets) {
-        this.hostMask = hostMask;
+    public void setInsets(Insets insets) {
         this.insets = insets;
         checkBounds();
     }
@@ -41,10 +40,10 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
     public void center() {
         if (isRenderable()) {
             Point position = getPosition();
-            Dimension size = getMask().getSize();
-            Dimension host = hostMask.getSize();
-            position.x = (host.width - size.width + insets.left - insets.right)/2 + offset.x;
-            position.y = (host.height - size.height + insets.top - insets.bottom)/2 + offset.y;
+            Dimension thisSize = getMask().getSize();
+            Dimension hostMask = host.getMask().getSize();
+            position.x = (hostMask.width - thisSize.width + insets.left - insets.right)/2 + offset.x;
+            position.y = (hostMask.height - thisSize.height + insets.top - insets.bottom)/2 + offset.y;
             checkBounds();
         }
     }
@@ -62,10 +61,10 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
     private void checkBounds() {
         if (isRenderable()){
             Point position = getPosition();
-            Dimension size = getMask().getSize();
-            Dimension host = hostMask.getSize();
-            int minX = host.width - size.width;
-            int minY = host.height - size.height;
+            Dimension thisSize = getMask().getSize();
+            Dimension hostMask = host.getMask().getSize();
+            int minX = hostMask.width - thisSize.width;
+            int minY = hostMask.height - thisSize.height;
             if (position.x < minX + offset.x + insets.left)
                 position.x = minX + offset.x + insets.left;
             if (position.y < minY + offset.y + insets.top)
@@ -74,13 +73,13 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
                 position.x = offset.x - insets.right;
             if (position.y > offset.y - insets.bottom)
                 position.y = offset.y - insets.bottom;
-            this.host.forceRender();
+            host.forceRender();
         }
     }
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && host != null && hostMask != null && insets != null;
+        return super.isRenderable() && host != null && insets != null;
     }
 
     @Override
@@ -88,8 +87,6 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
         super.assertRenderable();
         if (host == null)
             throw new NotYetRenderableException(this + " has no host");
-        if (hostMask == null)
-            throw new NotYetRenderableException(this + " has no host mask");
         if (insets == null)
             throw new NotYetRenderableException(this + " has no insets");
     }

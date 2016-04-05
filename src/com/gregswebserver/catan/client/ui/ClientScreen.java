@@ -1,4 +1,6 @@
-package com.gregswebserver.catan.client.graphics.ui;
+package com.gregswebserver.catan.client.ui;
+
+import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 
 /**
  * Created by greg on 1/21/16.

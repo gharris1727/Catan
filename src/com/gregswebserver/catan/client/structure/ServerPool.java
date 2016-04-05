@@ -42,7 +42,8 @@ public class ServerPool implements Iterable<ConnectionInfo> {
     }
 
     public void add(ConnectionInfo login) {
-        list.add(0, login);
+        if (login != null)
+            list.add(0, login);
     }
 
     public void remove(ConnectionInfo login) { list.remove(login); }

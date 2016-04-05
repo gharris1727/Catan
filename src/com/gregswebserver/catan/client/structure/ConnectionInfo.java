@@ -62,4 +62,27 @@ public class ConnectionInfo {
         UserLogin userLogin = new UserLogin(new Username(username), password);
         return new ServerLogin(netID, userLogin);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ConnectionInfo that = (ConnectionInfo) o;
+
+        if (hostname != null ? !hostname.equals(that.hostname) : that.hostname != null) return false;
+        if (port != null ? !port.equals(that.port) : that.port != null) return false;
+        if (username != null ? !username.equals(that.username) : that.username != null) return false;
+        return password != null ? password.equals(that.password) : that.password == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = hostname != null ? hostname.hashCode() : 0;
+        result = 31 * result + (port != null ? port.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        return result;
+    }
 }

@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
+import com.gregswebserver.catan.client.ui.ClientScreen;
 
 import java.awt.event.MouseEvent;
 
