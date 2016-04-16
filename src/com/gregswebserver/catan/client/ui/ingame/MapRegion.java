@@ -93,11 +93,6 @@ public class MapRegion extends ScrollingScreenRegion {
     }
 
     @Override
-    protected void resizeContents(RenderMask mask) {
-        background.setMask(mask);
-    }
-
-    @Override
     public void loadConfig(UIConfig config) {
         unitSize = config.getLayout().getDimension("unit");
         resources = new GraphicSet(config.getLayout(), "land", null);
@@ -124,7 +119,9 @@ public class MapRegion extends ScrollingScreenRegion {
         buildings = new EnumMap<>(Team.class);
         for (Team team : Team.values())
             buildings.put(team,new GraphicSet(buildingSource, buildingMasks, teamColors.getSwaps(team)));
-        setMask(new RectangularMask(boardToScreen(board.getSize())));
+        RectangularMask mask = new RectangularMask(boardToScreen(board.getSize()));
+        setMask(mask);
+        background.setMask(mask);
     }
 
     @Override

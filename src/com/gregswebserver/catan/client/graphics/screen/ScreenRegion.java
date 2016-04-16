@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Resizable;
 import com.gregswebserver.catan.client.input.Clickable;
@@ -16,7 +15,7 @@ import java.util.List;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Graphical, Animated, Resizable {
+public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Animated, Resizable {
 
     private final TimeSlice timeSlice;
     private RenderMask mask;
@@ -114,15 +113,15 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return object;
     }
 
-    protected final Point center(ScreenObject other) {
-        if (other != null && other.isGraphical()) {
-            if (other instanceof Renderable)
-                ((Renderable) other).assertRenderable();
-            RenderMask mask = ((Graphical) other).getGraphic().getMask();
+    protected final Point center(ScreenObject object) {
+        if (object != null && object instanceof Graphical) {
+            Graphical graphical = (Graphical) object;
+            graphical.assertRenderable();
+            RenderMask mask = graphical.getGraphic().getMask();
             int x = (this.mask.getWidth() - mask.getWidth()) / 2;
             int y = (this.mask.getHeight() - mask.getHeight()) / 2;
-            other.setPosition(new Point(x, y));
-            return other.getPosition();
+            object.setPosition(new Point(x, y));
+            return object.getPosition();
         }
         return null;
     }
@@ -157,24 +156,16 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     @Override
-    public final boolean isAnimated() {
-        for (ScreenObject object : this)
-            if (object.isAnimated())
-                return true;
-        return false;
-    }
-
-    @Override
     public final void step() {
         for (ScreenObject object : this)
-            if (object.isAnimated())
+            if (object instanceof Animated)
                 ((Animated) object).step();
     }
 
     @Override
     public final void reset() {
         for (ScreenObject object : this)
-            if (object.isAnimated())
+            if (object instanceof Animated)
                 ((Animated) object).reset();
     }
 
@@ -193,14 +184,9 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     public final boolean needsRender() {
         if (needsRendering) return true;
         for (ScreenObject object : this)
-            if (object.needsRender())
+            if (object instanceof Graphical && ((Graphical) object).needsRender())
                 return true;
         return false;
-    }
-
-    @Override
-    public final boolean isGraphical() {
-        return true;
     }
 
     @Override
@@ -211,12 +197,11 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
             assertRenderable();
             graphic.clear();
             for (ScreenObject object : this)
-                if (object.isGraphical())
+                if (object instanceof Graphical)
                     try {
                         Graphic g = ((Graphical) object).getGraphic();
                         g.renderTo(graphic, object.getPosition(), object.getClickableColor());
-                        if (object instanceof Renderable)
-                            timeSlice.addChild(((Renderable) object).getRenderTime());
+                        timeSlice.addChild(((Graphical) object).getRenderTime());
                     } catch (Exception e) {
                         throw new NotYetRenderableException("Unable to render " + object, e);
                     }

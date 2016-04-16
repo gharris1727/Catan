@@ -1,7 +1,6 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
-import com.gregswebserver.catan.client.graphics.graphics.Graphical;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 /**
@@ -29,25 +28,30 @@ public abstract class GraphicObject extends ScreenObject implements Graphical {
     }
 
     @Override
-    public final boolean isAnimated() {
-        return false;
-    }
-
-    @Override
-    public final boolean isGraphical() {
-        return true;
-    }
-
-    @Override
     public final boolean needsRender() {
         return needsRender;
     }
 
     @Override
-    public final Graphic getGraphic() {
-        needsRender = false;
+    public void assertRenderable() {
         if (graphic == null)
             throw new NotYetRenderableException("No graphic assigned to " + this);
+    }
+
+    @Override
+    public boolean isRenderable() {
+        return graphic != null;
+    }
+
+    @Override
+    public void forceRender() {
+
+    }
+
+    @Override
+    public final Graphic getGraphic() {
+        needsRender = false;
+        assertRenderable();
         return graphic;
     }
 

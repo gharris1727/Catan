@@ -1,14 +1,14 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
-import com.gregswebserver.catan.client.graphics.screen.Renderable;
+import com.gregswebserver.catan.client.graphics.screen.Graphical;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
 
 /**
  * Created by greg on 2/28/16.
  * Class representing a graphic object that depends on a UIConfig
  */
-public abstract class ConfigurableGraphicObject extends GraphicObject implements Configurable, Renderable {
+public abstract class ConfigurableGraphicObject extends GraphicObject implements Configurable, Graphical {
 
     private final String configKey;
     private UIConfig config;

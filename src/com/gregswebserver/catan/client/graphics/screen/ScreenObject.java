@@ -115,15 +115,6 @@ public abstract class ScreenObject implements Clickable {
         return (redirect == null) ? this : redirect;
     }
 
-    //Tag to check if the ScreenObject can be rendered.
-    public abstract boolean isGraphical();
-
-    //Tag to check if the ScreenObject can be animated using step().
-    public abstract boolean isAnimated();
-
-    //Tag to check if this object needs re-rendering.
-    public abstract boolean needsRender();
-
     public abstract String toString();
 
     public boolean equals(Object o) {

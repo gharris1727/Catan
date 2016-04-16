@@ -9,19 +9,4 @@ public abstract class InvisibleObject extends ScreenObject {
     protected InvisibleObject(int priority) {
         super(priority);
     }
-
-    @Override
-    public boolean isAnimated() {
-        return false;
-    }
-
-    @Override
-    public boolean isGraphical() {
-        return false;
-    }
-
-    @Override
-    public boolean needsRender() {
-        return false;
-    }
 }

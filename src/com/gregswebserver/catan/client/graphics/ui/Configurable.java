@@ -1,12 +1,12 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
-import com.gregswebserver.catan.client.graphics.screen.Renderable;
+import com.gregswebserver.catan.client.graphics.screen.Graphical;
 
 /**
  * Created by greg on 1/15/16.
  * Abstraction for components that have a UIConfig associated with them.
  */
-public interface Configurable extends Renderable {
+public interface Configurable extends Graphical {
 
     void setConfig(UIConfig config);
 
