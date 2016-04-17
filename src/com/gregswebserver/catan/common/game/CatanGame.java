@@ -40,6 +40,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     private final DevelopmentCardRandomizer cards;
     private final TeamTurnManager teamTurns;
     private final Stack<GameEvent> eventStack;
+    private final Stack<Coordinate> robberLocations;
     private final Set<Trade> bankTrades;
 
     public CatanGame(GameSettings settings) {
@@ -51,6 +52,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         teamTurns = new TeamTurnManager(settings.seed, players.getTeamSet());
         eventStack = new Stack<>();
         eventStack.push(new GameEvent(null, GameEventType.Start, null));
+        robberLocations = new Stack<>();
         bankTrades = new HashSet<>();
         for (GameResource target : GameResource.values())
             for (GameResource source : GameResource.values())
@@ -58,6 +60,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     bankTrades.add(new PermanentTrade(source, target, 4));
     }
 
+    //TODO: check for odd issues with building roads.
     @Override
     public boolean test(GameEvent event) {
         Player player = players.getPlayer(event.getOrigin());
@@ -131,6 +134,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             case Player_Move_Robber:
                 player.moveRobber();
                 board.moveRobber(coordinate);
+                robberLocations.push(coordinate);
                 break;
             case Build_Settlement:
                 player.buildSettlement(board.buildSettlement(coordinate, team));
@@ -194,7 +198,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 teamTurns.prev();
                 break;
             case Player_Move_Robber:
-                board.undoRobber();
+                robberLocations.pop();
+                board.moveRobber(robberLocations.peek());
                 player.undoMoveRobber();
                 cards.prev();
                 break;

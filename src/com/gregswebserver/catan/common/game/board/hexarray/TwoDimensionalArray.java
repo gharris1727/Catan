@@ -8,15 +8,11 @@ import java.util.*;
  */
 public class TwoDimensionalArray<T> implements Iterable<T> {
 
-    public static final int MAX_SIZE = Integer.MAX_VALUE - 8;
-    public final int sizeX, sizeY;
+    private final int sizeX, sizeY;
     private final Object[] data;
     private int size;
 
     public TwoDimensionalArray(int x, int y) {
-        if (x < 0 || x >= MAX_SIZE || y < 0 || y >= MAX_SIZE) {
-            throw new IllegalArgumentException(indexMessage(x, y, MAX_SIZE, MAX_SIZE));
-        }
         sizeX = x;
         sizeY = y;
         data = new Object[x * y];

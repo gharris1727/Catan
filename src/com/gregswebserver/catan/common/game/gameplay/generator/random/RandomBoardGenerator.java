@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay.generator.random;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
+import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.paths.EmptyPath;
@@ -54,8 +55,8 @@ public class RandomBoardGenerator implements BoardGenerator {
         Coordinate robberLocation = null;
         while (resourceTiles.hasNext()) {
             Coordinate c = resourceTiles.next();
-            validVertices.addAll(hexArray.getAdjacentVerticesFromSpace(c).values());
-            validEdges.addAll(hexArray.getAdjacentEdgesFromSpace(c).values());
+            validVertices.addAll(CoordTransforms.getAdjacentVerticesFromSpace(c).values());
+            validEdges.addAll(CoordTransforms.getAdjacentEdgesFromSpace(c).values());
             Terrain t = terrain.next();
             if (t.equals(Terrain.Desert)) {
                 setResourceTile(hexArray, diceRolls, c, new ResourceTile(t, DiceRoll.Seven));

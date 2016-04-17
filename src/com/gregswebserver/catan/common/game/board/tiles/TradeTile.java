@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
+import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
@@ -63,7 +64,7 @@ public class TradeTile extends BeachTile {
         Coordinate[] coordinates = new Coordinate[directions.length];
         try {
             for (int i = 0; i < directions.length; i++)
-                coordinates[i] = getHexArray().getVertexCoordinateFromSpace(getPosition(), directions[i]);
+                coordinates[i] = CoordTransforms.getVertexCoordinateFromSpace(getPosition(), directions[i]);
         } catch (IllegalDirectionException ignored) {
         }
         return coordinates;

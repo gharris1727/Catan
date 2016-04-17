@@ -44,6 +44,7 @@ public class CopyGenerator implements BoardGenerator {
         //Replace the beaches with trading posts.
         while(ports.hasNext() && posts.hasNext())
             setTradingPost(hexArray, tradingPosts, ports.next(), posts.next());
+        ((ResourceTile) hexArray.getTile(layout.getRobber())).placeRobber();
         return new GameBoard(size, hexArray, diceRolls, tradingPosts, layout.getRobber());
     }
 

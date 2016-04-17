@@ -42,8 +42,8 @@ public class RenderManager extends ScreenRegion implements Configurable {
     public InGameScreenRegion gameScreen;
 
     private final TaskbarRegion taskbar;
+    private final List<PopupWindow> popups;
     private ClientScreen live;
-    private List<PopupWindow> popups;
 
     public RenderManager() {
         super(0);

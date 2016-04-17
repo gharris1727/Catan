@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay.generator;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
+import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
@@ -38,12 +39,12 @@ public interface BoardGenerator extends Serializable {
 
         Set<Coordinate> beachTiles = new HashSet<>();
         for (Coordinate c1 : landTiles)
-            beachTiles.addAll(hexArray.getAdjacentSpacesFromSpace(c1).values());
+            beachTiles.addAll(CoordTransforms.getAdjacentSpacesFromSpace(c1).values());
         beachTiles.removeAll(landTiles);
 
         for (Coordinate c : beachTiles) {
             Set<Direction> found = EnumSet.noneOf(Direction.class);
-            for (Map.Entry<Direction, Coordinate> e : hexArray.getAdjacentSpacesFromSpace(c).entrySet()) {
+            for (Map.Entry<Direction, Coordinate> e : CoordTransforms.getAdjacentSpacesFromSpace(c).entrySet()) {
                 Tile t = hexArray.getTile(e.getValue());
                 if (t != null && t instanceof ResourceTile)
                     found.add(e.getKey());

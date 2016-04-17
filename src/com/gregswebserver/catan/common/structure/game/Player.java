@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.structure.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.paths.Road;
@@ -169,7 +170,7 @@ public class Player implements Serializable {
         if (state == PlayerState.FirstTurn) {
             HexagonalArray hexArray = settlements.peek().getHexArray();
             Coordinate position = settlements.peek().getPosition();
-            for (Coordinate space : hexArray.getAdjacentSpacesFromVertex(position).values())
+            for (Coordinate space : CoordTransforms.getAdjacentSpacesFromVertex(position).values())
                 addResource(hexArray.getTile(space),1);
             state = PlayerState.Playing;
         } else if (state == PlayerState.Playing) {
@@ -188,7 +189,7 @@ public class Player implements Serializable {
             if (round == 0) {
                 HexagonalArray hexArray = settlements.peek().getHexArray();
                 Coordinate position = settlements.peek().getPosition();
-                for (Coordinate space : hexArray.getAdjacentSpacesFromVertex(position).values())
+                for (Coordinate space : CoordTransforms.getAdjacentSpacesFromVertex(position).values())
                     removeResource(hexArray.getTile(space), 1);
                 state = PlayerState.FirstTurn;
             } else {
