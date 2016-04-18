@@ -52,6 +52,7 @@ public class RoadSystem implements Comparable<RoadSystem>, Iterable<Path> {
             }
         }
         //If that fails, we have only cycles, so check starting everywhere.
+        //TODO: try to cull some obviously bad paths, checking everything is slow.
         if (maximum.size() == 0) {
             for (Path p : paths) {
                 List<Path> candidate = searchLongest(hexArray, p);

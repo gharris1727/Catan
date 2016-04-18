@@ -186,17 +186,17 @@ public class GameBoard {
         Path e = hexArray.getPath(c);
         if (!(e instanceof EmptyPath))
             return false;
-        Map<Direction, Coordinate> adjacentEdges = CoordTransforms.getAdjacentEdgesFromEdge(c);
-        for (Coordinate a : adjacentEdges.values()) {
-            Path p = hexArray.getPath(a);
-            if (p instanceof Road && p.getTeam() == team)
+        for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromEdge(c).values()) {
+            Town t  = hexArray.getTown(vertex);
+            if (t != null && t.getTeam() == team)
                 return true;
-        }
-        Map<Direction, Coordinate> adjacentVertices = CoordTransforms.getAdjacentVerticesFromEdge(c);
-        for (Coordinate a : adjacentVertices.values()) {
-            Town t = hexArray.getTown(a);
-            if ((t instanceof Settlement || t instanceof City) && t.getTeam() == team)
-                return true;
+            if (t == null || t instanceof EmptyTown) {
+                for (Coordinate edge : CoordTransforms.getAdjacentEdgesFromVertex(vertex).values()) {
+                    Path p = hexArray.getPath(edge);
+                    if (p instanceof Road && p.getTeam() == team)
+                        return true;
+                }
+            }
         }
         return false;
     }

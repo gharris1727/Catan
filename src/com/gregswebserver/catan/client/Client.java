@@ -235,7 +235,7 @@ public class Client extends CoreThread {
     }
 
     public void localFailure(EventConsumerException e) {
-        logger.log("Unable to perform local change!", e, LogLevel.WARN);
+        logger.log(this + " Local failure", e, LogLevel.WARN);
     }
 
     private void gameEvent(GameEvent event) {

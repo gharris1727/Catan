@@ -82,7 +82,7 @@ public class GameManager {
             }
             @Override
             protected void onFailure(EventConsumerException e) {
-                host.logger.log("Unable to perform remote change:", e, LogLevel.WARN);
+                host.logger.log(host + " Remote failure", e, LogLevel.WARN);
             }
         };
         events = new ArrayList<>();
