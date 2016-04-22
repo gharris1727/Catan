@@ -43,15 +43,17 @@ public class MapRegion extends ScrollingScreenRegion {
     private GraphicSet tradeBridges;
     private Map<Team,GraphicSet> buildings;
 
+    private final ContextRegion context;
     private final GameBoard board;
     private final TeamColors teamColors;
 
     private final TiledBackground background;
     private Dimension unitSize;
 
-    public MapRegion(GameBoard board, TeamColors teamColors) {
+    public MapRegion(ContextRegion context, GameBoard board, TeamColors teamColors) {
         super(0, "map");
         //Store the instance information.
+        this.context = context;
         this.board = board;
         this.teamColors = teamColors;
         //Create the sub-regions
@@ -134,6 +136,10 @@ public class MapRegion extends ScrollingScreenRegion {
         for (Town town : board.getTownMap().values())
             add(new TownObject(this, town)).setPosition(vertexToScreen(town.getPosition()));
         add(background);
+    }
+
+    public void target(Object o) {
+        context.target(o);
     }
 
     @Override

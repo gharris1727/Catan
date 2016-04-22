@@ -14,8 +14,12 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
  */
 public enum UserEventType implements EventType {
 
+    Shutdown(null),
+    Composite_Event(UserEvent[].class),
     Display_Popup(PopupWindow.class),
-    Server_Change(ConnectionInfo.class),
+    Expire_Popup(PopupWindow.class),
+    Server_Remove(ConnectionInfo.class),
+    Server_Add(ConnectionInfo.class),
     Register_Account(ConnectionInfo.class),
     Net_Connect(ConnectionInfo.class), //Begin connecting to a remote server
     Net_Disconnect(null), //Disconnects from a remote server.
@@ -25,17 +29,12 @@ public enum UserEventType implements EventType {
     Lobby_Quit(null), //Quit from the active lobby.
     Lobby_Edit(LobbyConfig.class), //Edit the current lobby's settings.
     Lobby_Start(null), //Start the game from the lobby.
-    Space_Clicked(Coordinate.class), //Indicate that a space was clicked on.
     Tile_Rob(Coordinate.class), //Place the robber on a tile.
     End_Turn(null), //End the player's turn.
-    Edge_Clicked(Coordinate.class), //Indicate that an edge was clicked on.
     Road_Purchase(Coordinate.class), //Purchase a road in the board.
-    Vertex_Clicked(Coordinate.class), //Indicate that a vertex was clicked on.
     Settlement_Purchase(Coordinate.class), //Purchase a settlement.
     City_Purchase(Coordinate.class), //Purchase a city.
-    Trade_Clicked(Trade.class), //Click on a trade.
     Make_Trade(Trade.class), //Complete a trade.
-    History_Clicked(Integer.class), //Click on a historical event.
     History_Jump(Integer.class); //Jump to that historical event.
 
     private final Class payloadType;

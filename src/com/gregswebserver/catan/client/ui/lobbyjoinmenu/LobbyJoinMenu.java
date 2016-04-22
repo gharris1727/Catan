@@ -74,7 +74,7 @@ public class LobbyJoinMenu extends ClientScreen {
     }
 
     @Override
-    public void update() {
+    public void refresh() {
         pregameLobbies.update();
         ingameLobbies.update();
         userList.forceRender();
@@ -95,7 +95,7 @@ public class LobbyJoinMenu extends ClientScreen {
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(pregameLobbies);
                     LobbyJoinMenu.this.add(userList);
-                    update();
+                    refresh();
                     return null;
                 }
 
@@ -111,7 +111,7 @@ public class LobbyJoinMenu extends ClientScreen {
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(ingameLobbies);
                     LobbyJoinMenu.this.add(userList);
-                    update();
+                    refresh();
                     return null;
                 }
 
@@ -127,7 +127,7 @@ public class LobbyJoinMenu extends ClientScreen {
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(createLobby);
                     LobbyJoinMenu.this.add(userList);
-                    update();
+                    refresh();
                     return null;
                 }
 

@@ -12,5 +12,5 @@ public abstract class ClientScreen extends ConfigurableScreenRegion {
         super(0, configKey);
     }
 
-    public abstract void update();
+    public abstract void refresh();
 }

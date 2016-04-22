@@ -24,7 +24,7 @@ public class ConnectingScreen extends ClientScreen {
     }
 
     @Override
-    public void update() { }
+    public void refresh() { }
 
     @Override
     protected void resizeContents(RenderMask mask) {

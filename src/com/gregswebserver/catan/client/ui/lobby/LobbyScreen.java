@@ -31,11 +31,11 @@ public class LobbyScreen extends ClientScreen {
         add(settings);
         add(buttons);
         add(userList);
-        update();
+        refresh();
     }
 
     @Override
-    public void update() {
+    public void refresh() {
         settings.setLobbyConfig(lobby.getConfig());
         userList.forceRender();
     }

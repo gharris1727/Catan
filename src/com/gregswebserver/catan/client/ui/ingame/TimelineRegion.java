@@ -5,7 +5,6 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.enums.Team;
@@ -27,6 +26,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 
     private final Map<Team, GraphicSet> eventGraphics;
 
+    private final ContextRegion context;
     private final List<GameEvent> events;
     private final PlayerPool teams;
     private final TeamColors teamColors;
@@ -35,9 +35,10 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     private final ScrollingScreenContainer timeline;
     private int eventBuffer;
 
-    public TimelineRegion(GameManager manager, TeamColors teamColors) {
+    public TimelineRegion(ContextRegion context, GameManager manager, TeamColors teamColors) {
         super(1, "timeline");
         //Load layout information
+        this.context = context;
         eventGraphics = new EnumMap<>(Team.class);
         //Store instance information
         this.events = manager.getEvents();
@@ -139,7 +140,8 @@ public class TimelineRegion extends ConfigurableScreenRegion {
             }
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                return new UserEvent(this, UserEventType.History_Clicked, index);
+                context.target(index);
+                return null;
             }
         }
 

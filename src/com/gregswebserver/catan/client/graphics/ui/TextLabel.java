@@ -3,6 +3,7 @@ package com.gregswebserver.catan.client.graphics.ui;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.graphics.TextGraphic;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
+import com.gregswebserver.catan.common.config.ConfigurationException;
 
 import java.awt.*;
 
@@ -12,11 +13,11 @@ import java.awt.*;
  */
 public class TextLabel extends ConfigurableGraphicObject {
 
-    private String text;
+    private final String text;
 
     public TextLabel(int priority, String configKey, String text) {
         super(priority, configKey);
-        setText(text);
+        this.text = text;
     }
 
     @Override
@@ -25,7 +26,14 @@ public class TextLabel extends ConfigurableGraphicObject {
     }
 
     public void setText(String text) {
-        this.text = text;
+        if (text == null) {
+            try {
+                String key = getConfig().getLayout().get("text");
+                text = getConfig().getLocalization(key);
+            } catch (ConfigurationException ignored) {
+                text = "!!";
+            }
+        }
         if (isRenderable() && text != null && text.length() > 0)
             setGraphic(new TextGraphic(getConfig(), getConfig().getLayout().get("style"), text));
         else

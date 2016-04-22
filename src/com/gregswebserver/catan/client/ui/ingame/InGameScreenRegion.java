@@ -22,10 +22,10 @@ public class InGameScreenRegion extends ClientScreen {
     private final CatanGame game;
     private final boolean playing;
 
+    private final ContextRegion context;
     private final ScrollingScreenContainer map;
     private final TradeRegion trade;
     private final InventoryRegion inventory;
-    private final ContextRegion context;
     private final TimelineRegion timeline;
     private int sidebarWidth;
     private int inventoryHeight;
@@ -37,17 +37,17 @@ public class InGameScreenRegion extends ClientScreen {
         super("ingame");
         //Load relevant details
         game = manager.getLocalGame();
-        map = new ScrollingScreenContainer(0, "scroll", new MapRegion(game.getBoard(), teamColors)) {
+        context = new ContextRegion(manager, username);
+        map = new ScrollingScreenContainer(0, "scroll", new MapRegion(context, game.getBoard(), teamColors)) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
             }
         };
         playing = game.getTeams().getAllUsers().contains(username);
-        trade = new TradeRegion(game, username);
+        trade = new TradeRegion(context, game, username);
         inventory = new InventoryRegion(game, username);
-        context = new ContextRegion(manager, username);
-        timeline = new TimelineRegion(manager, teamColors);
+        timeline = new TimelineRegion(context, manager, teamColors);
         //Add everything to the screen
         add(map);
         if (playing) {
@@ -56,6 +56,10 @@ public class InGameScreenRegion extends ClientScreen {
         }
         add(context);
         add(timeline);
+    }
+    
+    public void target(Object o) {
+        context.target(o);
     }
 
     public void spaceClicked(Coordinate coord) {
@@ -79,7 +83,7 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     @Override
-    public void update() {
+    public void refresh() {
         map.update();
         timeline.update();
         inventory.forceRender();

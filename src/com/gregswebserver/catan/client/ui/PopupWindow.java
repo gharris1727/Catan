@@ -2,6 +2,7 @@ package com.gregswebserver.catan.client.ui;
 
 import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 
 import java.awt.*;
 
@@ -11,19 +12,12 @@ import java.awt.*;
  */
 public abstract class PopupWindow extends ScrollingScreenRegion {
 
-    private RenderManager host;
-
     protected PopupWindow(String configKey) {
         super(2, configKey);
     }
 
-    public void setRenderManager(RenderManager host) {
-        this.host = host;
-        super.setHost(host);
-    }
-
-    public void expire() {
-        host.removePopup(this);
+    public UserEvent expire() {
+        return new UserEvent(this, UserEventType.Expire_Popup, this);
     }
 
     @Override

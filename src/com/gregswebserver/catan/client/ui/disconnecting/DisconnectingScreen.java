@@ -41,7 +41,7 @@ public class DisconnectingScreen extends ClientScreen {
     }
 
     @Override
-    public void update() { }
+    public void refresh() { }
 
     @Override
     public void loadConfig(UIConfig config) {

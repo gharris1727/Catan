@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
@@ -21,11 +20,13 @@ import java.awt.event.MouseEvent;
  */
 public class TileObject extends MapObject {
 
+    private final MapRegion container;
     private final Tile tile;
 
     TileObject(MapRegion container, Tile tile) {
         super(1, container);
         //Load layout information
+        this.container = container;
         this.tile = tile;
         setMask(container.getResourceGraphics().getMask());
         Graphic background;
@@ -51,7 +52,8 @@ public class TileObject extends MapObject {
 
     @Override
     public UserEvent onMouseClick(MouseEvent event) {
-        return new UserEvent(this, UserEventType.Space_Clicked, tile.getPosition());
+        container.target(tile);
+        return null;
     }
 
     @Override

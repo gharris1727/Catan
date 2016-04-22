@@ -4,7 +4,6 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
@@ -23,6 +22,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
     //TODO: provide an interface to create a new TemporaryTrade.
     private RenderMask tradeSize;
 
+    private final ContextRegion context;
     private final Username local;
 
     private final TradeListContainer container;
@@ -30,10 +30,10 @@ public class TradeRegion extends ConfigurableScreenRegion {
     private int panelHeight;
     private int tradeHeight;
 
-    public TradeRegion(CatanGame game, Username local) {
+    public TradeRegion(ContextRegion context, CatanGame game, Username local) {
         super(1, "trade");
-        //Load layout details.
         //Save instance details
+        this.context = context;
         this.local = local;
         //Create sub-regions
         container = new TradeListContainer(new TradeList(game));
@@ -137,7 +137,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                return new UserEvent(this, UserEventType.Trade_Clicked, trade);
+                context.target(trade);
+                return null;
             }
 
             @Override

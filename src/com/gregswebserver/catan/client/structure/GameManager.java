@@ -45,13 +45,13 @@ public class GameManager {
                         synchronized (GameManager.this) {
                             localhistoryIndex++;
                         }
-                        host.gameUpdate();
+                        host.refreshScreen();
                         break;
                     case Undo:
                         synchronized (GameManager.this) {
                             localhistoryIndex--;
                         }
-                        host.gameUpdate();
+                        host.refreshScreen();
                         break;
                 }
             }

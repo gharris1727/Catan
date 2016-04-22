@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
@@ -18,10 +17,12 @@ import java.awt.event.MouseEvent;
  */
 public class TownObject extends MapObject {
 
+    private final MapRegion container;
     private final Town town;
 
     TownObject(MapRegion container, Town town) {
         super(2, container);
+        this.container = container;
         this.town = town;
         Graphic background;
         if (town instanceof Settlement || town instanceof EmptyTown) {
@@ -41,7 +42,8 @@ public class TownObject extends MapObject {
 
     @Override
     public UserEvent onMouseClick(MouseEvent event) {
-        return new UserEvent(this, UserEventType.Vertex_Clicked, town.getPosition());
+        container.target(town);
+        return null;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class ServerConnectMenu extends ClientScreen {
     }
 
     @Override
-    public void update() {
+    public void refresh() {
         scroll.update();
     }
 
@@ -252,6 +252,7 @@ public class ServerConnectMenu extends ClientScreen {
         private UserEvent detail(ConnectionInfo selected) {
             if (editPopup == null) {
                 editPopup = new ServerDetailPopup(selected);
+                editPopup.setConfig(getConfig());
                 return new UserEvent(this, UserEventType.Display_Popup, editPopup);
             }
             return null;
@@ -347,8 +348,7 @@ public class ServerConnectMenu extends ClientScreen {
             cancelButton = new Button(1, "cancel", "Cancel") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    expire();
-                    return null;
+                    return expire();
                 }
                 @Override
                 public String toString() {
@@ -365,26 +365,27 @@ public class ServerConnectMenu extends ClientScreen {
         }
 
         @Override
-        public void expire() {
-            super.expire();
+        public UserEvent expire() {
             editPopup = null;
+            return super.expire();
         }
 
         private UserEvent delete() {
-            expire();
-            return new UserEvent(server, UserEventType.Server_Change, null);
+            UserEvent remove = new UserEvent(this, UserEventType.Server_Remove, server);
+            return new UserEvent(this, UserEventType.Composite_Event, new UserEvent[]{remove, expire()});
         }
 
         private UserEvent submit() {
-            expire();
             String hostnameText = hostname.getText();
             String portText = port.getText();
             String usernameText = username.getText();
             ConnectionInfo newInfo = new ConnectionInfo(hostnameText, portText, usernameText);
             if (!newInfo.equals(server) && hostnameText.length() > 0 && portText.length() > 0 && usernameText.length() >0) {
-                return new UserEvent(server, UserEventType.Server_Change, newInfo);
+                UserEvent remove = new UserEvent(this, UserEventType.Server_Remove, server);
+                UserEvent add = new UserEvent(this, UserEventType.Server_Add, newInfo);
+                return new UserEvent(this, UserEventType.Composite_Event, new UserEvent[]{remove, add, expire()});
             }
-            return null;
+            return expire();
         }
 
         @Override

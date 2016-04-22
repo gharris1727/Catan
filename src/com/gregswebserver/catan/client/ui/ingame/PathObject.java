@@ -3,7 +3,6 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 
 import java.awt.event.MouseEvent;
@@ -14,10 +13,12 @@ import java.awt.event.MouseEvent;
  */
 public class PathObject extends MapObject {
 
+    private final MapRegion container;
     private final Path path;
 
     protected PathObject(MapRegion container, Path path) {
         super(1, container);
+        this.container = container;
         this.path = path;
         int orientation = 0;
         if (path.getPosition().x % 6 == 0 || path.getPosition().x % 6 == 4) orientation = 1;
@@ -34,7 +35,8 @@ public class PathObject extends MapObject {
 
     @Override
     public UserEvent onMouseClick(MouseEvent event) {
-        return new UserEvent(this, UserEventType.Edge_Clicked, path.getPosition());
+        container.target(path);
+        return null;
     }
 
     @Override
