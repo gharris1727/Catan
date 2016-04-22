@@ -8,8 +8,6 @@ import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 
 import java.awt.*;
 
@@ -60,26 +58,6 @@ public class InGameScreenRegion extends ClientScreen {
     
     public void target(Object o) {
         context.target(o);
-    }
-
-    public void spaceClicked(Coordinate coord) {
-        context.target(game.getBoard().getTile(coord));
-    }
-
-    public void edgeClicked(Coordinate coord) {
-        context.target(game.getBoard().getPath(coord));
-    }
-
-    public void vertexClicked(Coordinate coord) {
-        context.target(game.getBoard().getTown(coord));
-    }
-
-    public void tradeClicked(Trade trade) {
-        context.target(trade);
-    }
-
-    public void timelineClicked(Integer index) {
-        context.target(index);
     }
 
     @Override

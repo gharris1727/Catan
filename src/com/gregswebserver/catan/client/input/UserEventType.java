@@ -14,13 +14,13 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
  */
 public enum UserEventType implements EventType {
 
-    Shutdown(null),
-    Composite_Event(UserEvent[].class),
-    Display_Popup(PopupWindow.class),
-    Expire_Popup(PopupWindow.class),
-    Server_Remove(ConnectionInfo.class),
-    Server_Add(ConnectionInfo.class),
-    Register_Account(ConnectionInfo.class),
+    Shutdown(null), //Command to shut down the client.
+    Composite_Event(UserEvent[].class), //A UserEvent that contains multiple other UserEvents.
+    Display_Popup(PopupWindow.class), //Display a popup on the screen.
+    Expire_Popup(PopupWindow.class), //Remove a popup from the screen.
+    Server_Remove(ConnectionInfo.class), //Remove a server from the server list.
+    Server_Add(ConnectionInfo.class), //Add a server to the server list.
+    Register_Account(ConnectionInfo.class), //Register an account on the remote server.
     Net_Connect(ConnectionInfo.class), //Begin connecting to a remote server
     Net_Disconnect(null), //Disconnects from a remote server.
     Net_Clear(null), //Clears the connection error message.
