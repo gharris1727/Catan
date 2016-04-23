@@ -12,45 +12,60 @@ import java.awt.*;
  */
 public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
 
-    private final Point offset;
     private Insets insets;
     private ScreenRegion host;
+    protected int minX;
+    protected int minY;
+    protected int maxX;
+    protected int maxY;
 
     protected ScrollingScreenRegion(int priority, String configKey) {
         super(priority, configKey);
-        this.offset = new Point();
     }
 
     public void setHost(ScreenRegion host) {
         this.host = host;
+        updateBounds();
+    }
+
+    protected RenderMask getHostMask() {
+        return host.getMask();
     }
 
     public void setInsets(Insets insets) {
         this.insets = insets;
-        checkBounds();
+        updateBounds();
     }
 
     // Rather than actually change the position, this changes the offset for scroll calculations.
     @Override
     public void setPosition(Point position) {
-        this.offset.setLocation(position);
+        getPosition().setLocation(position);
         checkBounds();
     }
 
     public void center() {
         if (isRenderable()) {
-            Point position = getPosition();
-            Dimension thisSize = getMask().getSize();
-            Dimension hostMask = host.getMask().getSize();
-            position.x = (hostMask.width - thisSize.width + insets.left - insets.right)/2 + offset.x;
-            position.y = (hostMask.height - thisSize.height + insets.top - insets.bottom)/2 + offset.y;
+            host.center(this);
             checkBounds();
         }
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        checkBounds();
+        updateBounds();
+    }
+
+    protected void updateBounds() {
+        if (isRenderable()) {
+            Dimension thisSize = getMask().getSize();
+            Dimension hostMask = getHostMask().getSize();
+            minX = hostMask.width - thisSize.width;
+            minY = hostMask.height - thisSize.height;
+            maxX = 0;
+            maxY = 0;
+            checkBounds();
+        }
     }
 
     public void scroll(int x, int y) {
@@ -59,22 +74,16 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
     }
 
     private void checkBounds() {
-        if (isRenderable()){
-            Point position = getPosition();
-            Dimension thisSize = getMask().getSize();
-            Dimension hostMask = host.getMask().getSize();
-            int minX = hostMask.width - thisSize.width;
-            int minY = hostMask.height - thisSize.height;
-            if (position.x < minX + offset.x + insets.left)
-                position.x = minX + offset.x + insets.left;
-            if (position.y < minY + offset.y + insets.top)
-                position.y = minY + offset.y + insets.top;
-            if (position.x > offset.x - insets.right)
-                position.x = offset.x - insets.right;
-            if (position.y > offset.y - insets.bottom)
-                position.y = offset.y - insets.bottom;
-            host.forceRender();
-        }
+        Point position = getPosition();
+        if (position.x < minX + insets.left)
+            position.x = minX + insets.left;
+        if (position.y < minY + insets.top)
+            position.y = minY + insets.top;
+        if (position.x > maxX - insets.right)
+            position.x = maxX - insets.right;
+        if (position.y > maxY - insets.bottom)
+            position.y = maxY - insets.bottom;
+        host.forceRender();
     }
 
     @Override

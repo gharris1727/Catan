@@ -1,6 +1,6 @@
 package com.gregswebserver.catan;
 
-import com.gregswebserver.catan.common.Startup;
+import com.gregswebserver.catan.common.Launcher;
 import com.gregswebserver.catan.common.log.Logger;
 
 /**
@@ -13,8 +13,9 @@ public class Main {
         // Create a logger to begin storing log information
         Logger logger = new Logger();
         logger.useStdOut();
-        // Initialize the startup window
-        Startup startup = new Startup(logger);
-        startup.setVisible(true);
+        // Initialize the launcher window
+        //TODO: add a command-line launcher to allow for headless servers.
+        Launcher launcher = new Launcher(logger);
+        launcher.setVisible(true);
     }
 }

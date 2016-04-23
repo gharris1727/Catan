@@ -51,6 +51,16 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
         addEvent((T) new ThreadStopEvent()); //Poison pill event stopper.
     }
 
+    public void join() {
+        if (running)
+            stop();
+        try {
+            run.join();
+        } catch (InterruptedException e) {
+            logger.log("Error when stopping thread", e, LogLevel.ERROR);
+        }
+    }
+
     //Adds an object to the processing queue.
     public void addEvent(T event) {
         try {
@@ -93,7 +103,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
         return running;
     }
 
-    protected static class ThreadStopEvent extends GenericEvent {
+    private static class ThreadStopEvent extends GenericEvent {
         @Override
         public boolean equals(Object o) {
             return o instanceof ThreadStopEvent;

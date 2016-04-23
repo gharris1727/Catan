@@ -44,9 +44,7 @@ public abstract class GraphicObject extends ScreenObject implements Graphical {
     }
 
     @Override
-    public void forceRender() {
-
-    }
+    public void forceRender() { }
 
     @Override
     public final Graphic getGraphic() {

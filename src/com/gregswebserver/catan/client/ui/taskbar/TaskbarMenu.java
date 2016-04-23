@@ -44,10 +44,10 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
         if (popup == null) {
             popup = createPopup();
             popup.setConfig(getConfig());
-            popup.setPosition(new Point(getPosition().x, getMask().getHeight()));
             return new UserEvent(this, UserEventType.Display_Popup, popup);
+        } else {
+            return popup.expire();
         }
-        return null;
     }
 
     @Override
@@ -106,6 +106,11 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
             @Override
             public void loadConfig(UIConfig config) {
                 setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
+            }
+
+            @Override
+            public UserEvent onMouseDrag(Point p) {
+                return TaskbarPopup.this.onMouseDrag(p);
             }
 
             @Override

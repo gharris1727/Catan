@@ -32,12 +32,6 @@ public abstract class CoreWindow extends JFrame {
             }
         });
         addComponentListener(new ComponentAdapter() {
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                onMove();
-            }
-
             @Override
             public void componentResized(ComponentEvent e) {
                 //Uses the insets of the window to get the real content size of the window.
@@ -50,7 +44,7 @@ public abstract class CoreWindow extends JFrame {
         });
         setTitle(title);
         setResizable(resizable);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
     protected void display() {
@@ -59,12 +53,7 @@ public abstract class CoreWindow extends JFrame {
     }
 
     // Gracefully close any pertinent threads when the window is closed.
-    protected void onClose() {
-    }
+    protected abstract void onClose();
 
-    protected void onMove() {
-    }
-
-    protected void onResize(Dimension size) {
-    }
+    protected abstract void onResize(Dimension size);
 }

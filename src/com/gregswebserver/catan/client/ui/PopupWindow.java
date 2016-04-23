@@ -21,6 +21,18 @@ public abstract class PopupWindow extends ScrollingScreenRegion {
     }
 
     @Override
+    protected void updateBounds() {
+        if (isRenderable()){
+            Dimension thisSize = getMask().getSize();
+            Dimension hostMask = getHostMask().getSize();
+            minX = 0;
+            minY = 0;
+            maxX = hostMask.width - thisSize.width;
+            maxY = hostMask.height - thisSize.height;
+        }
+    }
+
+    @Override
     public UserEvent onMouseDrag(Point p) {
         scroll(p.x, p.y);
         return null;

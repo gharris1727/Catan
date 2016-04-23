@@ -63,4 +63,11 @@ public class GamePool {
     public GameProgress getGameProgress(int gameID) {
         return games.get(gameID).getProgress();
     }
+
+    public void join() {
+        for (GameThread thread : games.values()) {
+            if (thread.isRunning())
+                thread.join();
+        }
+    }
 }

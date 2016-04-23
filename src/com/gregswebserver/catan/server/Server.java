@@ -322,7 +322,6 @@ public class Server extends CoreThread {
 
     private void shutdown() {
         database.save();
-        window.dispose();
         listening = false;
         connectionPool.disconnectAll("Server shutting down.");
         try {
@@ -336,6 +335,8 @@ public class Server extends CoreThread {
         } catch (ConfigurationException e) {
             logger.log("Unable to save configuration.", e, LogLevel.WARN);
         }
+        gamePool.join();
+        window.dispose();
         stop();
     }
 

@@ -29,8 +29,6 @@ public abstract class ConfigurableGraphicObject extends GraphicObject implements
         return config;
     }
 
-    @Override
-    public void forceRender() { }
 
     @Override
     public boolean isRenderable() {

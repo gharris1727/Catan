@@ -32,6 +32,10 @@ public class ServerWindow extends CoreWindow {
         server.addEvent(new ServerEvent(this, ServerEventType.Quit_All, null));
     }
 
+    @Override
+    protected void onResize(Dimension size) {
+    }
+
     public String toString() {
         return "ServerWindow";
     }

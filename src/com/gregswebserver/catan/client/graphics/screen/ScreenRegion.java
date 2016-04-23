@@ -113,11 +113,9 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         return object;
     }
 
-    protected final Point center(ScreenObject object) {
+    public final Point center(ScreenObject object) {
         if (object != null && object instanceof Graphical) {
-            Graphical graphical = (Graphical) object;
-            graphical.assertRenderable();
-            RenderMask mask = graphical.getGraphic().getMask();
+            RenderMask mask = ((Graphical) object).getGraphic().getMask();
             int x = (this.mask.getWidth() - mask.getWidth()) / 2;
             int y = (this.mask.getHeight() - mask.getHeight()) / 2;
             object.setPosition(new Point(x, y));

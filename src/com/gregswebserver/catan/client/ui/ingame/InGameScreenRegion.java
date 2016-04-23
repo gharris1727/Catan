@@ -17,7 +17,6 @@ import java.awt.*;
  */
 public class InGameScreenRegion extends ClientScreen {
 
-    private final CatanGame game;
     private final boolean playing;
 
     private final ContextRegion context;
@@ -34,7 +33,7 @@ public class InGameScreenRegion extends ClientScreen {
     public InGameScreenRegion(Username username, GameManager manager, TeamColors teamColors) {
         super("ingame");
         //Load relevant details
-        game = manager.getLocalGame();
+        CatanGame game = manager.getLocalGame();
         context = new ContextRegion(manager, username);
         map = new ScrollingScreenContainer(0, "scroll", new MapRegion(context, game.getBoard(), teamColors)) {
             @Override

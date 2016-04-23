@@ -10,21 +10,19 @@ import java.awt.*;
 
 /**
  * Created by Greg on 8/10/2014.
- * Splash screen to allow either starting a server or log into one.
+ * Launch window to select further actions. Replaces the command-line interface.
  */
-public class Startup extends CoreWindow {
+public class Launcher extends CoreWindow {
 
-    private final JPanel contentPane;
-    private final JButton[] buttons = new JButton[ActionButton.values().length];
-
-    public Startup(final Logger logger) {
-        //TODO: rewrite this whole thing. this whole thing is an abomination.
-        super("Settlers of Catan - Startup", new Dimension(300, 500), false, logger);
-        contentPane = new JPanel();
+    public Launcher(final Logger logger) {
+        //TODO: Clean up the graphical launcher to include features from the command line.
+        super("Settlers of Catan - Launcher", new Dimension(300, 500), false, logger);
+        JPanel contentPane = new JPanel();
         setContentPane(contentPane);
         setLayout(null);
 
         int j = 0;
+        JButton[] buttons = new JButton[ActionButton.values().length];
         for (ActionButton ab : ActionButton.values()) {
             JButton button = new JButton(ab.label);
             button.setBounds(ab.getBounds());
@@ -66,15 +64,18 @@ public class Startup extends CoreWindow {
         dispose();
     }
 
+    @Override
+    protected void onResize(Dimension size) { }
+
     public String toString() {
-        return "Startup";
+        return "Launcher";
     }
 
 
     private enum ActionButton {
 
-        Client("Start Client", 100, 350, 80, 24),
-        Server("Start Server", 200, 350, 80, 24);
+        Client("Start Client", 80, 350, 120, 24),
+        Server("Start Server", 220, 350, 120, 24);
 
         private final String label;
         private final Point position;
@@ -86,7 +87,7 @@ public class Startup extends CoreWindow {
             this.size = new Dimension(w, h);
         }
 
-        public Rectangle getBounds() {
+        private Rectangle getBounds() {
             return new Rectangle(position, size);
         }
     }

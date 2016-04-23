@@ -32,7 +32,7 @@ public class BaseRegion extends ScreenRegion implements Configurable {
 
     public BaseRegion() {
         super(0);
-        taskbar = new TaskbarRegion(this);
+        taskbar = new TaskbarRegion();
         live = null;
         popups = new LinkedList<>();
     }
@@ -41,6 +41,7 @@ public class BaseRegion extends ScreenRegion implements Configurable {
         if (popup != null) {
             popup.setHost(this);
             popup.setInsets(popupInsets);
+            center(popup);
             popups.add(popup);
             forceRender();
         }

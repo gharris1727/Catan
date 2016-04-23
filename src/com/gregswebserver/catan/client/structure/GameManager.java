@@ -133,9 +133,13 @@ public class GameManager {
         return local.getGame();
     }
 
-    public void stop() {
-        local.stop();
-        remote.stop();
+    public void join() {
+        if (remote.isRunning())
+            remote.stop();
+        remote.join();
+        if (local.isRunning())
+            local.stop();
+        local.join();
     }
 
     @Override

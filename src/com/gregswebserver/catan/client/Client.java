@@ -67,7 +67,7 @@ public class Client extends CoreThread {
     static {
         configFile = new PropertiesFileInfo("client.properties", "Client configuration file");
         serverFile = new PropertiesFileInfo("client/servers.properties", "Login details for servers");
-        uiLayoutFile = new PropertiesFileInfo("graphics/graphics.properties", "Graphics configuration");
+        uiLayoutFile = new PropertiesFileInfo("client/layout.properties", "UI Layout information");
     }
 
     private PropertiesFile config;
@@ -82,6 +82,7 @@ public class Client extends CoreThread {
     private ServerPool serverPool;
     private Username username;
     private MatchmakingPool matchmakingPool;
+    private ClientWindow clientWindow;
 
     public Client() {
         this(new Logger());
@@ -152,11 +153,11 @@ public class Client extends CoreThread {
                 break;
             case Server_Remove:
                 serverPool.remove((ConnectionInfo) event.getPayload());
+                refreshScreen();
                 break;
             case Server_Add:
                 serverPool.add((ConnectionInfo) event.getPayload());
-                //TODO: unsure if this is needed.
-                //changeScreen(new ServerConnectMenu(serverPool));
+                refreshScreen();
                 break;
             case Register_Account:
                 try {
@@ -355,7 +356,7 @@ public class Client extends CoreThread {
         //Load base configuration details
         config = ResourceLoader.getPropertiesFile(configFile);
         PropertiesFileInfo localeFile = new PropertiesFileInfo("locale/" + config.get("locale") + ".properties", "Locale information");
-        PropertiesFileInfo teamColorsFile = new PropertiesFileInfo("graphics/teams.properties","Team colors configuration");
+        PropertiesFileInfo teamColorsFile = new PropertiesFileInfo("client/teams.properties","Team colors configuration");
         PropertiesFileInfo styleFile = new PropertiesFileInfo("ui/"+config.get("style") + ".properties", "Style Information");
         //Load the auxiliary configuration files
         PropertiesFile locale = ResourceLoader.getPropertiesFile(localeFile);
@@ -365,7 +366,7 @@ public class Client extends CoreThread {
         //Create shared resources.
         serverPool = new ServerPool(serverFile);
         BaseRegion base = new BaseRegion();
-        new ClientWindow(this, new InputListener(this, base));
+        clientWindow = new ClientWindow(this, new InputListener(this, base));
         //Start and configure the renderer.
         renderThread = new RenderThread(logger, base);
         renderThread.addEvent(new RenderEvent(this, RenderEventType.Set_Configuration, new UIConfig(style, layout, locale)));
@@ -378,18 +379,18 @@ public class Client extends CoreThread {
         //Shut down the client and all running threads.
         disconnect("Quitting");
         if (renderThread != null && renderThread.isRunning())
-            renderThread.stop();
+            renderThread.join();
 //        if (chatThread != null && chatThread.isRunning())
-//            chatThread.stop();
+//            chatThread.join();
         if (gameManager != null)
-            gameManager.stop();
+            gameManager.join();
         serverPool.save();
         try {
             config.save();
         } catch (ConfigurationException e) {
             logger.log("Unable to save configuration", e, LogLevel.WARN);
         }
-        //TODO: close the ClientWindow if the event came from inside the application.
+        clientWindow.dispose();
         stop();
     }
 
