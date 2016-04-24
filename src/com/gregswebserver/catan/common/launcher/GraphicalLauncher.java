@@ -1,6 +1,7 @@
-package com.gregswebserver.catan.common;
+package com.gregswebserver.catan.common.launcher;
 
 import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.common.CoreWindow;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.server.Server;
@@ -12,9 +13,9 @@ import java.awt.*;
  * Created by Greg on 8/10/2014.
  * Launch window to select further actions. Replaces the command-line interface.
  */
-public class Launcher extends CoreWindow {
+public class GraphicalLauncher extends CoreWindow {
 
-    public Launcher(final Logger logger) {
+    public GraphicalLauncher(StartupOptions options, final Logger logger) {
         //TODO: Clean up the graphical launcher to include features from the command line.
         super("Settlers of Catan - Launcher", new Dimension(300, 500), false, logger);
         JPanel contentPane = new JPanel();
@@ -36,14 +37,14 @@ public class Launcher extends CoreWindow {
             try {
                 startClient();
             } catch (Exception ex) {
-                logger.log("Link_Error starting client", ex, LogLevel.ERROR);
+                logger.log("Error starting client", ex, LogLevel.ERROR);
             }
         });
         buttons[1].addActionListener(e -> {
             try {
                 startServer();
             } catch (Exception ex) {
-                logger.log("Link_Error while starting server", ex, LogLevel.ERROR);
+                logger.log("Error while starting server", ex, LogLevel.ERROR);
             }
         });
         display();
@@ -68,7 +69,7 @@ public class Launcher extends CoreWindow {
     protected void onResize(Dimension size) { }
 
     public String toString() {
-        return "Launcher";
+        return "GraphicalLauncher";
     }
 
 

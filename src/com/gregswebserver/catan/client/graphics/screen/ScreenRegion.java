@@ -69,6 +69,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     //Gets the clickable object under a certain point in the screen.
     @Override
     public Clickable getClickable(Point p) {
+        //TODO: if possible, use rectangular collision boxes rather than pixel based collisions.
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
         if (result == this && graphic != null && mask.containsPoint(p)) {

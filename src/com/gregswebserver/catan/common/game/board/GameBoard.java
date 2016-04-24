@@ -131,7 +131,6 @@ public class GameBoard {
                 //Now map this edge to the new path.
                 this.roadSystems.put(p.getPosition(), roadSystem);
             }
-            System.out.println("Longest road length:" + roadSystemLeaderboard.peek().getLength());
         }
     }
 

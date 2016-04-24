@@ -82,7 +82,7 @@ public class Client extends CoreThread {
     private ServerPool serverPool;
     private Username username;
     private MatchmakingPool matchmakingPool;
-    private ClientWindow clientWindow;
+    private ClientWindow window;
 
     public Client() {
         this(new Logger());
@@ -366,7 +366,7 @@ public class Client extends CoreThread {
         //Create shared resources.
         serverPool = new ServerPool(serverFile);
         BaseRegion base = new BaseRegion();
-        clientWindow = new ClientWindow(this, new InputListener(this, base));
+        window = new ClientWindow(this, new InputListener(this, base));
         //Start and configure the renderer.
         renderThread = new RenderThread(logger, base);
         renderThread.addEvent(new RenderEvent(this, RenderEventType.Set_Configuration, new UIConfig(style, layout, locale)));
@@ -390,7 +390,8 @@ public class Client extends CoreThread {
         } catch (ConfigurationException e) {
             logger.log("Unable to save configuration", e, LogLevel.WARN);
         }
-        clientWindow.dispose();
+        window.dispose();
+        window.waitForClose();
         stop();
     }
 

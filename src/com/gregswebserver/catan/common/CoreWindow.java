@@ -17,9 +17,13 @@ import java.awt.event.WindowEvent;
 public abstract class CoreWindow extends JFrame {
 
     private final Dimension size;
+    private final Logger logger;
+    private final Object closeNotification;
 
     protected CoreWindow(String title, Dimension size, boolean resizable, Logger logger) {
         this.size = size;
+        this.logger = logger;
+        closeNotification = new Object();
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -28,7 +32,11 @@ public abstract class CoreWindow extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                setVisible(false);
                 onClose();
+                synchronized (closeNotification) {
+                    closeNotification.notify();
+                }
             }
         });
         addComponentListener(new ComponentAdapter() {
@@ -56,4 +64,16 @@ public abstract class CoreWindow extends JFrame {
     protected abstract void onClose();
 
     protected abstract void onResize(Dimension size);
+
+    public void waitForClose() {
+        while (isVisible()) {
+            try {
+                synchronized (closeNotification) {
+                    closeNotification.wait();
+                }
+            } catch (InterruptedException e) {
+                logger.log(e, LogLevel.WARN);
+            }
+        }
+    }
 }

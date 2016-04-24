@@ -209,8 +209,11 @@ public class Server extends CoreThread {
                     break;
             }
             //Rebroadcast the event to everyone connected.
-            for (Username user : matchmakingPool.getClientList())
-                connectionPool.get(user).sendEvent(event);
+            for (Username user : matchmakingPool.getClientList()) {
+                ServerConnection client = connectionPool.get(user);
+                if (client != null)
+                    client.sendEvent(event);
+            }
         } catch (Exception e) {
             logger.log(e, LogLevel.ERROR);
         }
@@ -263,6 +266,7 @@ public class Server extends CoreThread {
                 throw new IllegalStateException();
             case Disconnect:
             case Link_Error:
+                //TODO: revisit disconnect handshake to make the disconnect clean.
                 //Check if the user was logged in
                 Username username = connectionPool.getUser(id);
                 if (username != null) {
@@ -337,6 +341,7 @@ public class Server extends CoreThread {
         }
         gamePool.join();
         window.dispose();
+        window.waitForClose();
         stop();
     }
 

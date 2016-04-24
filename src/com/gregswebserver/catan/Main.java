@@ -1,7 +1,11 @@
 package com.gregswebserver.catan;
 
-import com.gregswebserver.catan.common.Launcher;
+import com.gregswebserver.catan.common.launcher.GraphicalLauncher;
+import com.gregswebserver.catan.common.launcher.HeadlessLauncher;
+import com.gregswebserver.catan.common.launcher.StartupOptions;
 import com.gregswebserver.catan.common.log.Logger;
+
+import java.awt.*;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -10,12 +14,20 @@ import com.gregswebserver.catan.common.log.Logger;
 public class Main {
 
     public static void main(String[] args) {
-        // Create a logger to begin storing log information
-        Logger logger = new Logger();
-        logger.useStdOut();
-        // Initialize the launcher window
-        //TODO: add a command-line launcher to allow for headless servers.
-        Launcher launcher = new Launcher(logger);
-        launcher.setVisible(true);
+        // Interpret the command line arguments.
+        StartupOptions options = new StartupOptions(args);
+        if (options.hasError()) {
+            options.printError();
+        } else {
+            // Create a logger to begin storing log information
+            Logger logger = new Logger();
+            logger.useStdOut();
+            // Choose the relevant launcher.
+            if (GraphicsEnvironment.isHeadless()) {
+                new HeadlessLauncher(options, logger).waitForClose();
+            } else {
+                new GraphicalLauncher(options, logger).waitForClose();
+            }
+        }
     }
 }

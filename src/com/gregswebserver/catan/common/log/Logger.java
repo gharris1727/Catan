@@ -18,7 +18,11 @@ public class Logger {
     }
 
     public void useStdOut() {
-        addListener(new StdOutListener());
+        addListener(new PrintStreamListener(System.out));
+    }
+
+    public void useStdErr() {
+        addListener(new PrintStreamListener(System.err));
     }
 
     public void addListener(LogListener listener) {
