@@ -30,8 +30,12 @@ import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
 import com.gregswebserver.catan.common.structure.lobby.LobbyState;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
+import com.gregswebserver.catan.server.console.CommandLine;
+import com.gregswebserver.catan.server.console.Console;
+import com.gregswebserver.catan.server.console.ServerWindow;
 import com.gregswebserver.catan.server.structure.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,6 +52,7 @@ public class Server extends CoreThread {
 
     private PropertiesFile config;
 
+    private CommandLine commandLine;
     private ServerWindow window;
     private UserDatabase database;
     private ConnectionPool connectionPool;
@@ -61,6 +66,7 @@ public class Server extends CoreThread {
     static {
         configFile = new PropertiesFileInfo("server.properties", "Server Configuration");
     }
+
 
     public Server(int port) {
         this(new Logger(), port);
@@ -292,7 +298,11 @@ public class Server extends CoreThread {
     private void startup(int port) {
         config = ResourceLoader.getPropertiesFile(configFile);
         token = new AuthToken(new Username("Server"), new SecureRandom().nextInt()); //For use in chat and sending events originating here.
-        window = new ServerWindow(this);
+        Console console = new Console(this);
+        if (GraphicsEnvironment.isHeadless())
+            commandLine = new CommandLine(console);
+        else
+            window = new ServerWindow(this, console);
         connectionPool = new ConnectionPool(this);
         database = new UserDatabase(new PropertiesFileInfo(config.get("database"), "User database"));
         matchmakingPool = new MatchmakingPool();
@@ -340,8 +350,13 @@ public class Server extends CoreThread {
             logger.log("Unable to save configuration.", e, LogLevel.WARN);
         }
         gamePool.join();
-        window.dispose();
-        window.waitForClose();
+        if (commandLine != null) {
+            commandLine.close();
+        }
+        if (window != null) {
+            window.dispose();
+            window.waitForClose();
+        }
         stop();
     }
 

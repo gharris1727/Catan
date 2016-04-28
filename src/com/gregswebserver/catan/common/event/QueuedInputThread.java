@@ -47,13 +47,11 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
     //Stops the queue processing event.
     @SuppressWarnings("unchecked")
     public void stop() {
-        running = false;
         addEvent((T) new ThreadStopEvent()); //Poison pill event stopper.
     }
 
     public void join() {
-        if (running)
-            stop();
+        stop();
         try {
             run.join();
         } catch (InterruptedException e) {
