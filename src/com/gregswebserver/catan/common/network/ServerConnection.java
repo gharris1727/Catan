@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.network;
 
-import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.server.Server;
 
 import java.io.ObjectInputStream;
@@ -37,8 +36,7 @@ public class ServerConnection extends NetConnection {
             in = new ObjectInputStream(socket.getInputStream());
             receive.start(); //Start processing objects after the connection is established.
         } catch (Exception e) {
-            onDisconnect("Connect failure: " + e.getMessage() + ".");
-            logger.log("Connect Failure", e, LogLevel.ERROR);
+            onError("Connect", e);
         }
     }
 

@@ -5,7 +5,9 @@ import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -39,14 +41,11 @@ public abstract class NetConnection implements Runnable {
             public void run() {
                 while (open) {
                     try {
-                        NetEvent e = ((NetEvent) in.readObject());
-                        e.setConnection(NetConnection.this);
-                        host.addEvent(e);
-                    } catch (EOFException | SocketException | StreamCorruptedException ignored) {
-                        onDisconnect("Receive failure: connection closed.");
-                    } catch (ClassCastException | ClassNotFoundException | IOException e) {
-                        onDisconnect("Receive failure: " + e.getMessage() + ".");
-                        logger.log("Link_Error while receiving", e, LogLevel.ERROR);
+                        process((NetEvent) in.readObject());
+                    } catch (SocketException | EOFException e) {
+                        onClose(e);
+                    } catch (Exception e) {
+                        onError("Receive", e);
                     }
                 }
             }
@@ -65,32 +64,33 @@ public abstract class NetConnection implements Runnable {
                     if (socket != null)
                         socket.close();
                     receive.join();
-                } catch (InterruptedException ignored) {
-                    onDisconnect("Disconnect failure: synchronization error.");
-                } catch (SocketException ignored) {
-                    onDisconnect("Disconnect failure: connection closed.");
-                } catch (IOException e) {
-                    onDisconnect("Disconnect failure: " + e.getMessage() + ".");
-                    logger.log("Disconnect failure", e, LogLevel.ERROR);
+                } catch (Exception e) {
+                    onError("Disconnect", e);
                 }
             }
         };
     }
 
     public void sendEvent(NetEvent event) {
+        logger.debug(this, "Sending " + event);
         try {
             out.writeObject(event);
             out.flush();
-        } catch (SocketException ignored) {
-            onDisconnect("Send failure: connection closed.");
-        } catch (IOException e) {
-            onDisconnect("Send failure: " + e.getMessage() + ".");
-            logger.log("Send Failure", e, LogLevel.ERROR);
+        } catch (Exception e) {
+            onError("Send", e);
         }
     }
 
     public void sendEvent(ExternalEvent event) {
         sendEvent(new NetEvent(host.getToken(), NetEventType.External_Event, event));
+    }
+
+    protected void process(NetEvent event) {
+        if (event.getType() == NetEventType.Disconnect)
+            open = false;
+        logger.debug(this, "Processing " + event);
+        event.setConnection(this);
+        host.addEvent(event);
     }
 
     public void connect() {
@@ -105,11 +105,15 @@ public abstract class NetConnection implements Runnable {
         return open;
     }
 
-    protected void onDisconnect(String message) {
+    protected void onError(String message, Exception e) {
         open = false;
-        NetEvent error = new NetEvent(host.getToken(), NetEventType.Link_Error, message);
-        error.setConnection(this);
-        host.addEvent(error);
+        process(new NetEvent(host.getToken(), NetEventType.Link_Error, message + " error: " + e.getMessage()));
+        logger.log(message + " error", e, LogLevel.ERROR);
+    }
+
+    private void onClose(Exception e) {
+        open = false;
+        process(new NetEvent(host.getToken(), NetEventType.Disconnect, "Unexpected disconnect: " + e));
     }
 
     @Override

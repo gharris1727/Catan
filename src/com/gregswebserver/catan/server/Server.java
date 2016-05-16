@@ -127,7 +127,6 @@ public class Server extends CoreThread {
                 }
                 break;
             case User_Disconnect:
-                connectionPool.disconnectUser((Username) event.getPayload(), "Server-side Disconnect");
                 try {
                     database.invalidateSession((Username) event.getPayload());
                 } catch (UserNotFoundException e) {
@@ -272,7 +271,6 @@ public class Server extends CoreThread {
                 throw new IllegalStateException();
             case Disconnect:
             case Link_Error:
-                //TODO: revisit disconnect handshake to make the disconnect clean.
                 //Check if the user was logged in
                 Username username = connectionPool.getUser(id);
                 if (username != null) {

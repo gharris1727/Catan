@@ -1,12 +1,9 @@
 package com.gregswebserver.catan.common.network;
 
 import com.gregswebserver.catan.client.Client;
-import com.gregswebserver.catan.common.log.LogLevel;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.Socket;
 
 /**
@@ -36,11 +33,8 @@ public class ClientConnection extends NetConnection {
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
             receive.start();
-        } catch (ConnectException ignored) {
-            onDisconnect("Connect error: connection refused.");
-        } catch (IOException e) {
-            onDisconnect("Connect error: " + e.getMessage() + ".");
-            logger.log("Connection Link_Error", e, LogLevel.ERROR);
+        } catch (Exception e) {
+            onError("Connect", e);
         }
     }
 }
