@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
+import com.gregswebserver.catan.client.graphics.graphics.HitboxGraphic;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Resizable;
 import com.gregswebserver.catan.client.input.Clickable;
@@ -20,6 +21,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     private final TimeSlice timeSlice;
     private RenderMask mask;
     private Graphic graphic;
+    private HitboxGraphic pixelHitbox;
     private boolean transparency;
     private boolean needsRendering;
     private Map<Integer, List<ScreenObject>> priorityMap;
@@ -47,8 +49,10 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     public final void setMask(RenderMask mask) {
         this.mask = mask;
         graphic = null;
+        pixelHitbox = null;
         if (mask != null) {
             graphic = new Graphic(mask, transparency);
+            pixelHitbox = new HitboxGraphic(mask);
             forceRender();
             resizeContents(mask);
         }
@@ -72,9 +76,9 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         //TODO: if possible, use rectangular collision boxes rather than pixel based collisions.
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
-        if (result == this && graphic != null && mask.containsPoint(p)) {
+        if (result == this && pixelHitbox != null && mask.containsPoint(p)) {
             //There was no redirect object specified, and we are already rendered.
-            int color = graphic.getClickableColor(p);
+            int color = pixelHitbox.getClickableColor(p);
             ScreenObject object = clickableColorMap.get(color);
             if (object != null) { //There was something clicked on
                 Point position = object.getPosition();
@@ -144,12 +148,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
                     throw new NoSuchElementException();
                 if (listIterator == null || !listIterator.hasNext())
                     listIterator = treeIterator.next().iterator();
-                try {
-                    return listIterator.next();
-                } catch (ConcurrentModificationException e) {
-                    System.out.println("CME in " + ScreenRegion.this);
-                    throw e;
-                }
+                return listIterator.next();
             }
         };
     }
@@ -195,11 +194,13 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
             renderContents();
             assertRenderable();
             graphic.clear();
+            pixelHitbox.clear();
             for (ScreenObject object : this)
                 if (object instanceof Graphical)
                     try {
                         Graphic g = ((Graphical) object).getGraphic();
-                        g.renderTo(graphic, object.getPosition(), object.getClickableColor());
+                        graphic.renderFrom(g, object.getPosition(), object.getClickableColor());
+                        pixelHitbox.renderFrom(g, object.getPosition(), object.getClickableColor());
                         timeSlice.addChild(((Graphical) object).getRenderTime());
                     } catch (Exception e) {
                         throw new NotYetRenderableException("Unable to render " + object, e);
