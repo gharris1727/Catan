@@ -27,13 +27,7 @@ import java.util.Map;
  */
 public class MapRegion extends ScrollingScreenRegion {
 
-    //TODO: move these to config files.
-    private final Point[] bridgePositions = new Point[]{
-            new Point(), new Point(), new Point(), // C U D
-            new Point(0,42), new Point(70,42), // L R
-            new Point(20,-3), new Point(20,65),  // UL DL
-            new Point(60,-3), new Point(55,65) // UR DR
-    };
+    private Point[] bridgePositions;
 
     private GraphicSet resources;
     private GraphicSet diceRolls;
@@ -102,6 +96,14 @@ public class MapRegion extends ScrollingScreenRegion {
         singleBeach = new GraphicSet(config.getLayout(), "singlebeach", null);
         doubleBeach = new GraphicSet(config.getLayout(), "doublebeach", null);
         resourceIcons = new GraphicSet(config.getLayout(), "trade", null);
+
+        Point bridgeleft = config.getLayout().getPoint("bridges.left");
+        Point bridgeRight = config.getLayout().getPoint("bridges.right");
+        Point bridgeUpLeft = config.getLayout().getPoint("bridges.upleft");
+        Point bridgeDownLeft = config.getLayout().getPoint("bridges.downleft");
+        Point bridgeUpRight = config.getLayout().getPoint("bridges.upright");
+        Point bridgeDownRight = config.getLayout().getPoint("bridges.downright");
+        bridgePositions = new Point[] {null, null, null, bridgeleft, bridgeRight, bridgeUpLeft, bridgeDownLeft, bridgeUpRight, bridgeDownRight};
 
         GraphicSourceInfo bridgeSource = new GraphicSourceInfo(config.getLayout().get("bridges.path"));
         RenderMask bridgeHorizontal = RenderMask.parseMask(config.getLayout().narrow("bridges.horizontal"));
