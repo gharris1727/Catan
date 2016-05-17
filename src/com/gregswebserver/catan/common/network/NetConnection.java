@@ -72,7 +72,6 @@ public abstract class NetConnection implements Runnable {
     }
 
     public void sendEvent(NetEvent event) {
-        logger.debug(this, "Sending " + event);
         try {
             out.writeObject(event);
             out.flush();
@@ -88,7 +87,6 @@ public abstract class NetConnection implements Runnable {
     protected void process(NetEvent event) {
         if (event.getType() == NetEventType.Disconnect)
             open = false;
-        logger.debug(this, "Processing " + event);
         event.setConnection(this);
         host.addEvent(event);
     }
