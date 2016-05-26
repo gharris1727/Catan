@@ -9,7 +9,7 @@ import com.gregswebserver.catan.server.Server;
  */
 public class HeadlessLauncher {
 
-    private Server server;
+    private final Server server;
 
     public HeadlessLauncher(StartupOptions options, Logger logger) {
         //TODO: launch the requested features for a headless interface.

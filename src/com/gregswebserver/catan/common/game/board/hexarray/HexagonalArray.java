@@ -20,28 +20,25 @@ public class HexagonalArray {
         vertices = new TwoDimensionalArray<>(2 * (x + 1), y + 1); // number of vertices in a hex map is less than 2(x+1) * y+1
     }
 
-    public Tile setTile(Coordinate space, Tile tile) {
-        if (tile == null) return null;
+    public void setTile(Coordinate space, Tile tile) {
+        if (tile == null) return;
         tile.setHexArray(this);
         tile.setPosition(space);
         spaces.set(space, tile);
-        return tile;
     }
 
-    public Path setPath(Coordinate edge, Path path) {
-        if (path == null) return null;
+    public void setPath(Coordinate edge, Path path) {
+        if (path == null) return;
         path.setHexArray(this);
         path.setPosition(edge);
         edges.set(edge, path);
-        return path;
     }
 
-    public Town setTown(Coordinate vertex, Town town) {
-        if (town == null) return null;
+    public void setTown(Coordinate vertex, Town town) {
+        if (town == null) return;
         town.setHexArray(this);
         town.setPosition(vertex);
         vertices.set(vertex, town);
-        return town;
     }
 
     public Tile getTile(Coordinate space) {

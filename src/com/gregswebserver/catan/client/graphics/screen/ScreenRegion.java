@@ -106,7 +106,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
 
     //Remove a specific object from the screen.
     //This operation can be inefficient if there are many objects at the same render priority.
-    protected final ScreenObject remove(ScreenObject object) {
+    protected final void remove(ScreenObject object) {
         if (object != null) {
             clickableColorMap.remove(object.getClickableColor());
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
@@ -115,7 +115,6 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
                 forceRender();
             }
         }
-        return object;
     }
 
     public final Point center(ScreenObject object) {

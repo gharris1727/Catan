@@ -20,8 +20,8 @@ public enum TradingPostType {
     Grain(GameResource.Grain),
     Wildcard(null);
 
-    public final GameResource gameResource;
-    public final Set<Trade> trades;
+    private final GameResource gameResource;
+    private final Set<Trade> trades;
 
     TradingPostType(GameResource r) {
         gameResource = r;
