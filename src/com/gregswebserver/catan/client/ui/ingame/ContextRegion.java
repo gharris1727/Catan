@@ -8,15 +8,15 @@ import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.GameEvent;
 import com.gregswebserver.catan.common.game.board.BoardObject;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;

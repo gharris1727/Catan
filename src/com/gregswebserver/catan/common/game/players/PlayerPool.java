@@ -1,9 +1,9 @@
-package com.gregswebserver.catan.common.game.gameplay.players;
+package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.util.HashMap;

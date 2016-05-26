@@ -1,14 +1,14 @@
 package com.gregswebserver.catan.common.game.gameplay.generator.copy;
 
 import com.gregswebserver.catan.common.game.board.GameBoard;
+import com.gregswebserver.catan.common.game.board.Terrain;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 
 import java.awt.*;
 import java.util.*;

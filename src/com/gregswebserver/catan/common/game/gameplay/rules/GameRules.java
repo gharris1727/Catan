@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.common.game.gameplay.rules;
 
 import com.gregswebserver.catan.common.config.PropertiesFile;
-import com.gregswebserver.catan.common.game.gameplay.enums.AchievementCard;
-import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
+import com.gregswebserver.catan.common.game.gameplay.achievement.AchievementCard;
+import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 

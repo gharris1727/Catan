@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
 import com.gregswebserver.catan.common.util.ReversibleIterator;
 import com.gregswebserver.catan.common.util.ReversiblePRNG;
 

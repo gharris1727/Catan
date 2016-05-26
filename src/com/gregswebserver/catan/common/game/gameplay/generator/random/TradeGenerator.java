@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay.generator.random;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.game.gameplay.generator.FeatureGenerator;
+import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 
 import java.util.ArrayList;
 import java.util.Collections;

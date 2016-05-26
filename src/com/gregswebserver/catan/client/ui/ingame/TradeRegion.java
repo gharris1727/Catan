@@ -6,8 +6,8 @@ import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -117,7 +117,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
             private Point elementOffset;
             private Point elementSpacing;
 
-            protected TradeListElement(Trade trade) {
+            private TradeListElement(Trade trade) {
                 super(0, "element");
                 this.trade = trade;
                 background = new EdgedTiledBackground(0, "background");

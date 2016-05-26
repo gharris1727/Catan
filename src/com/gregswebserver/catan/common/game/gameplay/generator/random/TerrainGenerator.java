@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.generator.random;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
+import com.gregswebserver.catan.common.game.board.Terrain;
 import com.gregswebserver.catan.common.game.gameplay.generator.FeatureGenerator;
 
 import java.util.ArrayList;

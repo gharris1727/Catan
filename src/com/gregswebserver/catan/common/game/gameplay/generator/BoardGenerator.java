@@ -8,9 +8,9 @@ import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
+import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.io.Serializable;

@@ -6,9 +6,9 @@ import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.structure.GameManager;
-import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
-import com.gregswebserver.catan.common.game.gameplay.players.PlayerPool;
+import com.gregswebserver.catan.common.game.GameEvent;
+import com.gregswebserver.catan.common.game.players.PlayerPool;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;

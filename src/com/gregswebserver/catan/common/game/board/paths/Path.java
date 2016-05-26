@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.board.paths;
 
 import com.gregswebserver.catan.common.game.board.TeamOwned;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 /**
  * Created by Greg on 8/8/2014.

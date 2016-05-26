@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.common.game.gameplay.enums;
+package com.gregswebserver.catan.common.game.gameplay.trade;
 
-import com.gregswebserver.catan.common.game.gameplay.trade.PermanentTrade;
-import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,16 +1,15 @@
-package com.gregswebserver.catan.common.game.gameplay.players;
+package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
-import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
-import com.gregswebserver.catan.common.game.gameplay.enums.Purchase;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
-import com.gregswebserver.catan.common.structure.game.EnumCounter;
+import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.io.Serializable;
 import java.util.Map;

@@ -3,11 +3,10 @@ package com.gregswebserver.catan.common.game;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
 import com.gregswebserver.catan.common.resources.GameRulesInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
@@ -18,7 +17,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gregswebserver.catan.common.game.event.GameEventType.*;
+import static com.gregswebserver.catan.common.game.GameEventType.*;
 import static org.junit.Assert.fail;
 
 /**

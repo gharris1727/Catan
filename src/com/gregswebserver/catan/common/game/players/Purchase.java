@@ -1,6 +1,7 @@
-package com.gregswebserver.catan.common.game.gameplay.enums;
+package com.gregswebserver.catan.common.game.players;
 
-import com.gregswebserver.catan.common.structure.game.EnumCounter;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 /**
  * Created by Greg on 8/13/2014.

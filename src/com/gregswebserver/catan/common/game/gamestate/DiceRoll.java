@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.gameplay.enums;
+package com.gregswebserver.catan.common.game.gamestate;
 
 /**
  * Created by Greg on 8/10/2014.

@@ -1,7 +1,6 @@
-package com.gregswebserver.catan.common.game.event;
+package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.event.InternalEvent;
-import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.util.List;
 

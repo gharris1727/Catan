@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.gameplay.enums;
+package com.gregswebserver.catan.common.game.teams;
 
 import java.util.EnumSet;
 import java.util.Set;

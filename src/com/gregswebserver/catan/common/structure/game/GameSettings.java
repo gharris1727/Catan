@@ -2,10 +2,10 @@ package com.gregswebserver.catan.common.structure.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 import java.util.Map;
 

@@ -1,11 +1,11 @@
-package com.gregswebserver.catan.common.game.board;
+package com.gregswebserver.catan.common.game.gameplay.achievement;
 
 import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 import java.util.*;
 

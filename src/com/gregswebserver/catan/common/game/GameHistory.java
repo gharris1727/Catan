@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.event;
+package com.gregswebserver.catan.common.game;
 
 /**
  * Created by greg on 5/25/16.

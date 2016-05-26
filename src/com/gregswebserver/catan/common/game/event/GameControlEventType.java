@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.game.GameEvent;
 
 /**
  * Created by greg on 3/13/16.

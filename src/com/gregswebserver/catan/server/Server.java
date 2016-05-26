@@ -11,7 +11,7 @@ import com.gregswebserver.catan.common.crypto.Password;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
-import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.GameEvent;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.NetEvent;

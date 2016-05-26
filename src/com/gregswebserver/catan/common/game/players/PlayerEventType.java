@@ -1,11 +1,10 @@
-package com.gregswebserver.catan.common.game.gameplay.players;
+package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
-import com.gregswebserver.catan.common.game.gameplay.enums.Purchase;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
-import com.gregswebserver.catan.common.structure.game.EnumCounter;
+import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
 
 /**
  * Created by greg on 5/24/16.

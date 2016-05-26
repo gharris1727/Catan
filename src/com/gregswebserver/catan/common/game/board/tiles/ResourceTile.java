@@ -1,8 +1,8 @@
 package com.gregswebserver.catan.common.game.board.tiles;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
-import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
+import com.gregswebserver.catan.common.game.board.Terrain;
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 /**
  * Created by Greg on 8/22/2014.

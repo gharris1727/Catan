@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.util.ReversibleIterator;
 
 import java.util.*;

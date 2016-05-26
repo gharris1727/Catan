@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.structure.game;
+package com.gregswebserver.catan.common.game.util;
 
 import java.io.Serializable;
 import java.util.EnumMap;

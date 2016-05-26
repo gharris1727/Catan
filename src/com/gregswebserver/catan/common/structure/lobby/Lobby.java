@@ -1,13 +1,13 @@
 package com.gregswebserver.catan.common.structure.lobby;
 
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.better.BetterGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.copy.CopyGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
 import com.gregswebserver.catan.common.resources.GameRulesInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoadException;

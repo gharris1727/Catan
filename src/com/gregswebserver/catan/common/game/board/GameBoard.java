@@ -15,9 +15,10 @@ import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.gameplay.achievement.RoadSystem;
+import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;

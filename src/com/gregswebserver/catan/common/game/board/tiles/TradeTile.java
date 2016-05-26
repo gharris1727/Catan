@@ -3,7 +3,7 @@ package com.gregswebserver.catan.common.game.board.tiles;
 import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.IllegalDirectionException;
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
 import static com.gregswebserver.catan.common.util.Direction.*;

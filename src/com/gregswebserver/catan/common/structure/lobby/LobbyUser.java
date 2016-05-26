@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.structure.lobby;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 /**
  * Created by greg on 2/5/16.

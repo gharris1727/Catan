@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
-import com.gregswebserver.catan.common.structure.game.EnumCounter;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.io.Serializable;
 

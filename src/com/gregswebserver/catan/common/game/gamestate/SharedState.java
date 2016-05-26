@@ -2,9 +2,7 @@ package com.gregswebserver.catan.common.game.gamestate;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
-import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.util.EnumSet;

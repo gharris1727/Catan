@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.common.game.gameplay.layout;
 
+import com.gregswebserver.catan.common.game.board.Terrain;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
-import com.gregswebserver.catan.common.game.gameplay.enums.DiceRoll;
-import com.gregswebserver.catan.common.game.gameplay.enums.Terrain;
-import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
+import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 
 import java.awt.*;
 import java.util.Iterator;

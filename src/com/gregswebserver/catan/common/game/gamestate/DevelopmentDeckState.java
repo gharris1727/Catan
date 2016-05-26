@@ -1,6 +1,5 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
 import com.gregswebserver.catan.common.util.ReversibleIterator;
 

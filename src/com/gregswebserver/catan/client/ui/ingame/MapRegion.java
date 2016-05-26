@@ -13,7 +13,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.resources.GraphicSourceInfo;
 

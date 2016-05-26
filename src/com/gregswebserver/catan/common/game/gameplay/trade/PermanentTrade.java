@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 /**
  * Created by greg on 2/27/16.

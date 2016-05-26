@@ -1,10 +1,10 @@
-package com.gregswebserver.catan.common.game.event;
+package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.BoardEvent;
-import com.gregswebserver.catan.common.game.gameplay.players.PlayerEvent;
-import com.gregswebserver.catan.common.game.gameplay.players.TeamEvent;
 import com.gregswebserver.catan.common.game.gamestate.GameStateEvent;
+import com.gregswebserver.catan.common.game.players.PlayerEvent;
+import com.gregswebserver.catan.common.game.teams.TeamEvent;
 
 import java.util.List;
 

@@ -3,9 +3,9 @@ package com.gregswebserver.catan.client.ui.ingame;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.GameResource;
 import com.gregswebserver.catan.common.resources.GraphicSet;
-import com.gregswebserver.catan.common.structure.game.EnumCounter;
 
 import java.awt.*;
 

@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.event;
+package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;

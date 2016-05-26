@@ -4,8 +4,8 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.gameplay.enums.GameResource;
-import com.gregswebserver.catan.common.game.gameplay.players.Player;
+import com.gregswebserver.catan.common.game.players.Player;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.awt.*;
 
