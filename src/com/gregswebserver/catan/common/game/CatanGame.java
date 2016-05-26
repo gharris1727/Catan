@@ -269,21 +269,23 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     test(child);
                 break;
             case OR:
+                EventConsumerException fail = new EventConsumerException("No successful case", event);
                 for (LogicEvent child : (List<LogicEvent>) payload)
                     try {
                         test(child);
                         return;
-                    } catch (EventConsumerException ignored) {
+                    } catch (EventConsumerException e) {
+                        fail.addSuppressed(e);
                     }
-                throw new EventConsumerException("No successful case", event);
+                throw fail;
             case NOT:
-                boolean err = false;
+                boolean success = true;
                 try {
                     test((LogicEvent) payload);
                 } catch (EventConsumerException ignored) {
-                    err = true;
+                    success = false;
                 }
-                if (!err)
+                if (success)
                     throw new EventConsumerException("Event successful", (LogicEvent) payload);
             case NOP:
                 break;
@@ -311,24 +313,23 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     private LogicEvent execute(LogicEvent event) throws EventConsumerException {
         test(event);
         Object payload = event.getPayload();
-        List<LogicEvent> children;
         switch (event.getType()) {
             case AND:
-                children = (List<LogicEvent>) payload;
                 ArrayList<LogicEvent> newChildren = new ArrayList<>();
-                for (LogicEvent child : children)
+                for (LogicEvent child : (List<LogicEvent>) payload)
                     newChildren.add(execute(child));
                 return new LogicEvent(this, LogicEventType.AND, newChildren);
             case OR:
-                children = (List<LogicEvent>) payload;
-                for (LogicEvent child : children) {
+                EventConsumerException inconsistent = new EventConsumerException("Inconsistent", event);
+                for (LogicEvent child : (List<LogicEvent>) payload) {
                     try {
                         test(child);
                         return execute(child);
-                    } catch (EventConsumerException ignored) {
+                    } catch (EventConsumerException e) {
+                        inconsistent.addSuppressed(e);
                     }
                 }
-                throw new EventConsumerException("Inconsistent", event);
+                throw inconsistent;
             case NOT:
                 try {
                     test((LogicEvent) payload);
