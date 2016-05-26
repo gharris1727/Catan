@@ -35,7 +35,7 @@ public class ServerWindow extends CoreWindow {
     @Override
     protected void onClose() {
         server.logger.removeListener(graphicalConsole);
-        server.addEvent(new ServerEvent(this, ServerEventType.Quit_All, null));
+        server.addEvent(new ServerEvent(server, ServerEventType.Quit_All, null));
     }
 
     @Override

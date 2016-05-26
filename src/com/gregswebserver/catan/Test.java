@@ -35,7 +35,7 @@ public class Test {
         ConnectionInfo bobLogin = new ConnectionInfo("localhost", "25000", "Bob");
         bobLogin.setPassword("pw");
         //Add the events to the client event queues.
-        greg.addEvent(new UserEvent("Test", UserEventType.Net_Connect, gregLogin));
-        bob.addEvent(new UserEvent("Test", UserEventType.Net_Connect, bobLogin));
+        greg.addEvent(new UserEvent(null, UserEventType.Net_Connect, gregLogin));
+        bob.addEvent(new UserEvent(null, UserEventType.Net_Connect, bobLogin));
     }
 }
