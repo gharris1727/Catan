@@ -43,14 +43,13 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
                 gameEvent = (GameEvent) event.getPayload();
             switch (event.getType()){
                 case Test:
-                    if (!game.test(gameEvent))
-                        throw new EventConsumerException("Game action not allowed", gameEvent);
+                    game.test(gameEvent);
                     break;
                 case Execute:
                     game.execute(gameEvent);
                     break;
                 case Undo:
-                    game.undo(gameEvent);
+                    game.undo();
                     break;
             }
             onSuccess(event);

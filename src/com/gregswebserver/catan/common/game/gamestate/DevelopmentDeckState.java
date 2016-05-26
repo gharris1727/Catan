@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.gameplay.random;
+package com.gregswebserver.catan.common.game.gamestate;
 
 import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
@@ -13,12 +13,12 @@ import java.util.Random;
  * Created by greg on 2/27/16.
  * A random generator of development cards.
  */
-public class DevelopmentCardRandomizer implements ReversibleIterator<DevelopmentCard> {
+public class DevelopmentDeckState implements ReversibleIterator<DevelopmentCard> {
 
     private int index;
     private final List<DevelopmentCard> deck;
 
-    public DevelopmentCardRandomizer(GameRules rules, long seed) {
+    public DevelopmentDeckState(GameRules rules, long seed) {
         deck = new ArrayList<>();
         for (int i = 0; i < rules.getSoldierCount(); i++)
             deck.add(DevelopmentCard.Knight);
@@ -62,11 +62,16 @@ public class DevelopmentCardRandomizer implements ReversibleIterator<Development
     }
 
     @Override
+    public DevelopmentCard get() {
+        return deck.get(index);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DevelopmentCardRandomizer that = (DevelopmentCardRandomizer) o;
+        DevelopmentDeckState that = (DevelopmentDeckState) o;
 
         if (index != that.index) return false;
         return deck.equals(that.deck);
@@ -74,7 +79,7 @@ public class DevelopmentCardRandomizer implements ReversibleIterator<Development
 
     @Override
     public String toString() {
-        return "DevelopmentCardRandomizer{" +
+        return "DevelopmentDeckState{" +
                 "index=" + index +
                 ", deck=" + deck +
                 '}';

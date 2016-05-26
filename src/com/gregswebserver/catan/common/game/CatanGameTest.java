@@ -4,7 +4,7 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
@@ -38,9 +38,9 @@ public class CatanGameTest {
     public void setupTwoPlayers() {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
-        Map<Username, Team> players = new HashMap<>();
-        players.put(greg, Team.White);
-        players.put(bob, Team.Red);
+        Map<Username, TeamColor> players = new HashMap<>();
+        players.put(greg, TeamColor.White);
+        players.put(bob, TeamColor.Red);
         twoPlayers = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
@@ -48,11 +48,11 @@ public class CatanGameTest {
     public void setupFourPlayers() {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
-        Map<Username, Team> players = new HashMap<>();
-        players.put(greg, Team.White);
-        players.put(bob, Team.Red);
-        players.put(jeff, Team.Orange);
-        players.put(steve, Team.Blue);
+        Map<Username, TeamColor> players = new HashMap<>();
+        players.put(greg, TeamColor.White);
+        players.put(bob, TeamColor.Red);
+        players.put(jeff, TeamColor.Orange);
+        players.put(steve, TeamColor.Blue);
         fourPlayers = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
@@ -84,9 +84,9 @@ public class CatanGameTest {
         }
     }
 
-    private void assertUndo(CatanGame game, GameEvent event, boolean expectSuccess) {
+    private void assertUndo(CatanGame game, boolean expectSuccess) {
         try {
-            game.undo(event);
+            game.undo();
             if (!expectSuccess)
                 fail();
         } catch (EventConsumerException ignored) {
@@ -316,12 +316,12 @@ public class CatanGameTest {
         CatanGame game = startTwoPlayerGame();
         CatanGame game2 = startTwoPlayerGame();
         //undo into the starting states.
-        assertUndo(game2, new GameEvent(greg, Turn_Advance, null), true);
-        assertUndo(game2, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
-        assertUndo(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
-        assertUndo(game2, new GameEvent(bob, Turn_Advance, null), true);
-        assertUndo(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        assertUndo(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
+        assertUndo(game2, true);
+        assertUndo(game2, true);
+        assertUndo(game2, true);
+        assertUndo(game2, true);
+        assertUndo(game2, true);
+        assertUndo(game2, true);
         assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
         assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
         assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
@@ -330,7 +330,7 @@ public class CatanGameTest {
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
         //Turn advance then undo
-        assertUndo(game2, new GameEvent(greg, Turn_Advance, null), true);
+        assertUndo(game2, true);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
         //TODO: test more undo actions.

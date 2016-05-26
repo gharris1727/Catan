@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.common.game.gameplay.rules;
 
 import com.gregswebserver.catan.common.config.PropertiesFile;
+import com.gregswebserver.catan.common.game.gameplay.enums.AchievementCard;
+import com.gregswebserver.catan.common.game.gameplay.enums.DevelopmentCard;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
@@ -91,32 +93,32 @@ public class GameRules implements Serializable {
         return cityPoints;
     }
 
-    public int getArmyPoints() {
-        return armyPoints;
+    public int getAchievementPoints(AchievementCard card) {
+        switch (card) {
+            case LargestArmy:
+                return armyPoints;
+            case LongestRoad:
+                return roadPoints;
+            default:
+                return 0;
+        }
     }
 
-    public int getRoadPoints() {
-        return roadPoints;
-    }
-
-    public int getMarketPoints() {
-        return marketPoints;
-    }
-
-    public int getParliamentPoints() {
-        return parliamentPoints;
-    }
-
-    public int getUniversityPoints() {
-        return universityPoints;
-    }
-
-    public int getChapelPoints() {
-        return chapelPoints;
-    }
-
-    public int getLibraryPoints() {
-        return libraryPoints;
+    public int getDevelopmentCardPoints(DevelopmentCard card) {
+        switch (card) {
+            case Market:
+                return marketPoints;
+            case Parliament:
+                return parliamentPoints;
+            case University:
+                return universityPoints;
+            case Chapel:
+                return chapelPoints;
+            case Library:
+                return libraryPoints;
+            default:
+                return 0;
+        }
     }
 
     public int getMinimumPoints() {

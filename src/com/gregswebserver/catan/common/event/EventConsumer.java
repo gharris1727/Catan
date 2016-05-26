@@ -2,11 +2,16 @@ package com.gregswebserver.catan.common.event;
 
 /**
  * Created by Greg on 12/29/2014.
- * An object that can consume events. Offers mechanism for testing validity beforehand.
+ * A stateful object that can use incoming events to change state.
+ * Events can be checked before execution using the test() method.
+ * An exception in the test method describes the reason for failure
+ * and implies that the execution of that event should also fail.
+ * When correctly implemented, a successful call to test
+ * implies that execution of that same event will complete successfully.
  */
 public interface EventConsumer<T extends GenericEvent> {
 
-    boolean test(T event);
+    void test(T event) throws EventConsumerException;
 
     void execute(T event) throws EventConsumerException;
 

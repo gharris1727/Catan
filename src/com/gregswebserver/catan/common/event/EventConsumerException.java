@@ -6,7 +6,23 @@ package com.gregswebserver.catan.common.event;
  */
 public class EventConsumerException extends Exception {
 
+    public EventConsumerException(String message, GenericEvent event, Throwable t) {
+        super(message + (event != null ? ": " + event : ""), t);
+    }
+
+    public EventConsumerException(String message) {
+        this(message, null, null);
+    }
+
     public EventConsumerException(String message, GenericEvent event) {
-        super(message + ": " + event);
+        this(message, event, null);
+    }
+
+    public EventConsumerException(String message, Throwable t) {
+        this(message, null, t);
+    }
+
+    public EventConsumerException(GenericEvent event, Throwable t) {
+        this("Exception caused by", event, t);
     }
 }

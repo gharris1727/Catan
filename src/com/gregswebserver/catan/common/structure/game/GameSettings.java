@@ -2,8 +2,7 @@ package com.gregswebserver.catan.common.structure.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.game.board.GameBoard;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
@@ -20,9 +19,9 @@ public class GameSettings extends EventPayload {
     public final BoardLayout boardLayout;
     public final BoardGenerator boardGenerator;
     public final GameRules gameRules;
-    public final Map<Username, Team> playerTeams;
+    public final Map<Username, TeamColor> playerTeams;
 
-    public GameSettings(long seed, BoardLayout boardLayout, BoardGenerator boardGenerator, GameRules gameRules, Map<Username, Team> playerTeams) {
+    public GameSettings(long seed, BoardLayout boardLayout, BoardGenerator boardGenerator, GameRules gameRules, Map<Username, TeamColor> playerTeams) {
         this.seed = seed;
         this.boardLayout = boardLayout;
         this.boardGenerator = boardGenerator;
@@ -35,7 +34,4 @@ public class GameSettings extends EventPayload {
         return "GameSettings(" + seed + "/" + boardLayout + "/" + boardGenerator + "/" + gameRules + "/" + playerTeams + ")";
     }
 
-    public GameBoard generate() {
-        return boardGenerator.generate(boardLayout, seed);
-    }
 }

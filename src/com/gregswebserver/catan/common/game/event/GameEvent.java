@@ -16,27 +16,4 @@ public class GameEvent extends ExternalEvent<GameEventType> {
         super(origin, type, payload);
     }
 
-    public String getDescription() {
-        switch (getType() ) {
-            case Start:
-                return "Start Game";
-            case Turn_Advance:
-                return "End Turn";
-            case Player_Move_Robber:
-                return "Move Robber";
-            case Build_Settlement:
-                return "Build Settlement";
-            case Build_City:
-                return "Build City";
-            case Build_Road:
-                return "Build Road";
-            case Buy_Development:
-                return "Buy Development Card";
-            case Offer_Trade:
-                return "Propose Trade";
-            case Make_Trade:
-                return "Complete Trade";
-        }
-        return "NO DESCRIPTION";
-    }
 }

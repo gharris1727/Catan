@@ -8,6 +8,8 @@ import java.util.Iterator;
  */
 public interface ReversibleIterator<T> extends Iterator<T> {
 
+    T get();
+
     boolean hasPrev();
 
     T prev();

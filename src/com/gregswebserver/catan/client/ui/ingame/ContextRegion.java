@@ -15,7 +15,7 @@ import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
@@ -119,7 +119,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
             Path path = (Path) target;
             title.setText("Path: " + target);
             detail.setText("Owned by: " + path.getTeam());
-            if (localPlayerActive && path.getTeam().equals(Team.None)) {
+            if (localPlayerActive && path.getTeam().equals(TeamColor.None)) {
                 add(new ContextButton(5) {
                     @Override
                     public String toString() {
@@ -137,7 +137,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
             detail.setText("Owned by: " + ((Town) target).getTeam());
             if (localPlayerActive) {
                 Town town = (Town) target;
-                if (town.getTeam().equals(Team.None)) {
+                if (town.getTeam().equals(TeamColor.None)) {
                     add(new ContextButton(3) {
                         @Override
                         public String toString() {
@@ -148,7 +148,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
                             return new UserEvent(this, UserEventType.Settlement_Purchase, town.getPosition());
                         }
                     }).setPosition(getButtonLocation(1, 0));
-                } else if (town.getTeam().equals(game.getTeams().getPlayer(local).getTeam())) {
+                } else if (town.getTeam().equals(game.getTeams().getPlayer(local).getTeamColor())) {
                     add(new ContextButton(4) {
                         @Override
                         public String toString() {
@@ -178,7 +178,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
             }
         } else if (target instanceof Integer) {
             GameEvent event = manager.getEvents().get((Integer) target);
-            title.setText("Event: " + event.getDescription());
+            title.setText("Event: " + getEventDescription(event));
             if (event.getOrigin() != null)
                 detail.setText(event.getOrigin().toString());
             add(new ContextButton(9) {
@@ -197,6 +197,31 @@ public class ContextRegion extends ConfigurableScreenRegion {
 
         center(add(title)).y = getConfig().getLayout().getInt("title.y");
         center(add(detail)).y = getConfig().getLayout().getInt("detail.y");
+    }
+
+
+    private String getEventDescription(GameEvent event) {
+        switch (event.getType() ) {
+            case Start:
+                return "Start Game";
+            case Turn_Advance:
+                return "End Turn";
+            case Player_Move_Robber:
+                return "Move Robber";
+            case Build_Settlement:
+                return "Build Settlement";
+            case Build_City:
+                return "Build City";
+            case Build_Road:
+                return "Build Road";
+            case Buy_Development:
+                return "Buy Development Card";
+            case Offer_Trade:
+                return "Propose Trade";
+            case Make_Trade:
+                return "Complete Trade";
+        }
+        return "NO DESCRIPTION";
     }
 
     private Point getButtonLocation(int x, int y) {
