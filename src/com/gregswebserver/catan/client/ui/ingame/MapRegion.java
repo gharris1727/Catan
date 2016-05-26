@@ -13,7 +13,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.resources.GraphicSourceInfo;
 
@@ -35,7 +35,7 @@ public class MapRegion extends ScrollingScreenRegion {
     private GraphicSet doubleBeach;
     private GraphicSet resourceIcons;
     private GraphicSet tradeBridges;
-    private Map<Team,GraphicSet> buildings;
+    private Map<TeamColor,GraphicSet> buildings;
 
     private final ContextRegion context;
     private final GameBoard board;
@@ -56,8 +56,8 @@ public class MapRegion extends ScrollingScreenRegion {
         add(background).setClickable(this);
     }
 
-    public GraphicSet getBuildingGraphics(Team team) {
-        return buildings.get(team);
+    public GraphicSet getBuildingGraphics(TeamColor teamColor) {
+        return buildings.get(teamColor);
     }
 
     public GraphicSet getResourceGraphics() {
@@ -120,9 +120,9 @@ public class MapRegion extends ScrollingScreenRegion {
         RenderMask city = RenderMask.parseMask(config.getLayout().narrow("buildings.city"));
         RenderMask robber = RenderMask.parseMask(config.getLayout().narrow("buildings.robber"));
         RenderMask[] buildingMasks = new RenderMask[]{buildingHorizontal, buildingDiagonalUp, buildingDiagonalDown, settlement, city, robber};
-        buildings = new EnumMap<>(Team.class);
-        for (Team team : Team.values())
-            buildings.put(team,new GraphicSet(buildingSource, buildingMasks, teamColors.getSwaps(team)));
+        buildings = new EnumMap<>(TeamColor.class);
+        for (TeamColor teamColor : TeamColor.values())
+            buildings.put(teamColor,new GraphicSet(buildingSource, buildingMasks, teamColors.getSwaps(teamColor)));
         RectangularMask mask = new RectangularMask(boardToScreen(board.getSize()));
         setMask(mask);
         background.setMask(mask);

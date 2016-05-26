@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.board.towns;
 
 import com.gregswebserver.catan.common.game.board.TeamOwned;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -9,7 +9,7 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Team;
  */
 public abstract class Town extends TeamOwned {
 
-    Town(Team owner) {
+    Town(TeamColor owner) {
         super(owner);
     }
 }

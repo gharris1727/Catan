@@ -7,9 +7,9 @@ import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
+import com.gregswebserver.catan.common.game.gameplay.players.PlayerPool;
 import com.gregswebserver.catan.common.resources.GraphicSet;
-import com.gregswebserver.catan.common.structure.game.PlayerPool;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class TimelineRegion extends ConfigurableScreenRegion {
 
-    private final Map<Team, GraphicSet> eventGraphics;
+    private final Map<TeamColor, GraphicSet> eventGraphics;
 
     private final ContextRegion context;
     private final List<GameEvent> events;
@@ -39,7 +39,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         super(1, "timeline");
         //Load layout information
         this.context = context;
-        eventGraphics = new EnumMap<>(Team.class);
+        eventGraphics = new EnumMap<>(TeamColor.class);
         //Store instance information
         this.events = manager.getEvents();
         this.teams = manager.getLocalGame().getTeams();
@@ -61,8 +61,8 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     @Override
     public void loadConfig(UIConfig config) {
         eventBuffer = getConfig().getLayout().getInt("scroll.list.buffer");
-        for (Team team : Team.values())
-            eventGraphics.put(team,new GraphicSet(config.getLayout(), "source", teamColors.getSwaps(team)));
+        for (TeamColor teamColor : TeamColor.values())
+            eventGraphics.put(teamColor,new GraphicSet(config.getLayout(), "source", teamColors.getSwaps(teamColor)));
     }
 
     public void update() {
@@ -122,8 +122,8 @@ public class TimelineRegion extends ConfigurableScreenRegion {
                 super(0);
                 this.index = index;
                 GameEvent event = events.get(index);
-                Team team = event.getOrigin() == null ? Team.None : teams.getPlayer(event.getOrigin()).getTeam();
-                setGraphic(eventGraphics.get(team).getGraphic(event.getType()));
+                TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : teams.getPlayer(event.getOrigin()).getTeamColor();
+                setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
             }
 
             @Override

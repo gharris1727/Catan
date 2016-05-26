@@ -5,9 +5,9 @@ import java.util.Set;
 
 /**
  * Created by Greg on 8/9/2014.
- * Enum pertaining to the team allegiance of each player.
+ * Enum pertaining to the teamColor allegiance of each player.
  */
-public enum Team {
+public enum TeamColor {
 
     None("none"),
     White("white"),
@@ -17,13 +17,13 @@ public enum Team {
     Green("green"),
     Brown("brown");
 
-    public static Set<Team> getTeamSet() {
+    public static Set<TeamColor> getTeamSet() {
         return EnumSet.range(White, values()[values().length-1]);
     }
 
     public final String name;
 
-    Team(String name) {
+    TeamColor(String name) {
         this.name = name;
     }
 }

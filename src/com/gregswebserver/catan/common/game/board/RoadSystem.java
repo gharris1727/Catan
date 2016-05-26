@@ -5,7 +5,7 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.hexarray.HexagonalArray;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 import java.util.*;
 
@@ -67,7 +67,7 @@ public class RoadSystem implements Comparable<RoadSystem>, Iterable<Path> {
         List<Coordinate> out = new LinkedList<>();
         for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromEdge(path.getPosition()).values()) {
             Town town = hexArray.getTown(vertex);
-            if (town != null && (town.getTeam() == Team.None || town.getTeam() == path.getTeam())) {
+            if (town != null && (town.getTeam() == TeamColor.None || town.getTeam() == path.getTeam())) {
                 for (Coordinate edge : CoordTransforms.getAdjacentEdgesFromVertex(vertex).values()) {
                     Path neighbor = hexArray.getPath(edge);
                     if (neighbor != null && neighbor != path && neighbor.getTeam() == path.getTeam())

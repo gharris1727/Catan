@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.towns;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -8,7 +8,7 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Team;
  */
 public class Settlement extends Town {
 
-    public Settlement(Team owner) {
+    public Settlement(TeamColor owner) {
         super(owner);
     }
 

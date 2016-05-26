@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board.paths;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -9,7 +9,7 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Team;
 public class EmptyPath extends Path {
 
     public EmptyPath() {
-        super(Team.None);
+        super(TeamColor.None);
     }
 
     public String toString() {

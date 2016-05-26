@@ -8,7 +8,7 @@ import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 import com.gregswebserver.catan.common.game.gameplay.enums.TradingPostType;
 import com.gregswebserver.catan.common.util.Direction;
 
@@ -35,7 +35,7 @@ public class TileObject extends MapObject {
             background = container.getResourceGraphics().getGraphic(resource.getTerrain().ordinal());
             center(add(new DiceRollGraphicObject(resource)));
             if (resource.hasRobber())
-                center(add(new RobberGraphicObject(container.getBuildingGraphics(Team.None).getGraphic(5))));
+                center(add(new RobberGraphicObject(container.getBuildingGraphics(TeamColor.None).getGraphic(5))));
         } else if (tile instanceof BeachTile) {
             BeachTile beach = (BeachTile) tile;
             background = ( beach.getSides() == 1 ? container.getSingleBeachGraphics() : container.getDoubleBeachGraphics()).getGraphic(beach.getDirection().ordinal());

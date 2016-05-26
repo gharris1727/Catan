@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -8,13 +8,13 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Team;
  */
 public abstract class TeamOwned extends BoardObject {
 
-    private final Team owner;
+    private final TeamColor owner;
 
-    protected TeamOwned(Team owner) {
+    protected TeamOwned(TeamColor owner) {
         this.owner = owner;
     }
 
-    public Team getTeam() {
+    public TeamColor getTeam() {
         return owner;
     }
 

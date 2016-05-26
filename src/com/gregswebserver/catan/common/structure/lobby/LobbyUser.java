@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.structure.lobby;
 
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 /**
  * Created by greg on 2/5/16.
@@ -8,17 +8,17 @@ import com.gregswebserver.catan.common.game.gameplay.enums.Team;
  */
 public class LobbyUser {
 
-    private Team team;
+    private TeamColor teamColor;
 
     public LobbyUser() {
-        this.team = Team.None;
+        this.teamColor = TeamColor.None;
     }
 
-    public Team getTeam() {
-        return team;
+    public TeamColor getTeamColor() {
+        return teamColor;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setTeamColor(TeamColor teamColor) {
+        this.teamColor = teamColor;
     }
 }

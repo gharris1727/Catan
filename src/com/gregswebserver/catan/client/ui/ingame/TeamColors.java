@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.ui.ingame;
 
 import com.gregswebserver.catan.common.config.ConfigSource;
-import com.gregswebserver.catan.common.game.gameplay.enums.Team;
+import com.gregswebserver.catan.common.game.gameplay.enums.TeamColor;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -12,21 +12,21 @@ import java.util.Map;
  */
 public class TeamColors {
 
-    private final Map<Team, int[]> swaps;
+    private final Map<TeamColor, int[]> swaps;
 
     public TeamColors(ConfigSource source) {
-        this.swaps = new EnumMap<>(Team.class);
-        for (Team team : Team.values()) {
+        this.swaps = new EnumMap<>(TeamColor.class);
+        for (TeamColor teamColor : TeamColor.values()) {
             int[] colorSwaps = new int[]{
-                    source.getHexColor("none.primary"), source.getHexColor(team.name + ".primary"),
-                    source.getHexColor("none.highlight"), source.getHexColor(team.name + ".primary"),
-                    source.getHexColor("none.shadow"), source.getHexColor(team.name + ".shadow"),
+                    source.getHexColor("none.primary"), source.getHexColor(teamColor.name + ".primary"),
+                    source.getHexColor("none.highlight"), source.getHexColor(teamColor.name + ".primary"),
+                    source.getHexColor("none.shadow"), source.getHexColor(teamColor.name + ".shadow"),
             };
-            swaps.put(team, colorSwaps);
+            swaps.put(teamColor, colorSwaps);
         }
     }
 
-    public int[] getSwaps(Team team) {
-        return swaps.get(team);
+    public int[] getSwaps(TeamColor teamColor) {
+        return swaps.get(teamColor);
     }
 }
