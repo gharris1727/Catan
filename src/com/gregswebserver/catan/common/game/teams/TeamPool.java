@@ -6,15 +6,15 @@ import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
  * Created by greg on 5/25/16.
  * Collection of teams that can be interacted with through the event consumer interface.
  */
-public class TeamPool implements ReversibleEventConsumer<TeamEvent> {
+public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<TeamColor> {
 
     private final Map<TeamColor, Team> teams;
     private final Stack<TeamEvent> history;
@@ -30,8 +30,9 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent> {
         history = new Stack<>();
     }
 
-    public Set<TeamColor> getAll() {
-        return teams.keySet();
+    @Override
+    public Iterator<TeamColor> iterator() {
+        return teams.keySet().iterator();
     }
 
     public Team getTeam(TeamColor teamColor) {

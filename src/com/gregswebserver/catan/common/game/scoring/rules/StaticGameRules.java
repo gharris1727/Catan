@@ -1,8 +1,8 @@
-package com.gregswebserver.catan.common.game.gameplay.rules;
+package com.gregswebserver.catan.common.game.scoring.rules;
 
 import com.gregswebserver.catan.common.config.PropertiesFile;
-import com.gregswebserver.catan.common.game.gameplay.achievement.AchievementCard;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
+import com.gregswebserver.catan.common.game.scoring.achievement.AchievementCard;
 import com.gregswebserver.catan.common.resources.PropertiesFileInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Created by greg on 1/24/16.
  * A set of rules regarding playing the game and determining win conditions.
  */
-public class GameRules implements Serializable {
+public class StaticGameRules implements Serializable, GameRules {
 
     private final int settlementResources;
     private final int cityResources;
@@ -41,8 +41,10 @@ public class GameRules implements Serializable {
     private final int maxPaths;
     private final int maxSettlements;
     private final int maxCities;
+    private final int armyMinimum;
+    private final int roadMinimum;
 
-    public GameRules(String path) {
+    public StaticGameRules(String path) {
         PropertiesFile file = ResourceLoader.getPropertiesFile(new PropertiesFileInfo(path,"Game Rules"));
         settlementResources = file.getInt("rules.resources.settlement");
         cityResources = file.getInt("rules.resources.city");
@@ -51,6 +53,8 @@ public class GameRules implements Serializable {
         cityPoints = file.getInt("rules.points.build.city");
         armyPoints = file.getInt("rules.points.achievement.army");
         roadPoints = file.getInt("rules.points.achievement.road");
+        armyMinimum = file.getInt("rules.min.achievement.army");
+        roadMinimum = file.getInt("rules.min.achievement.road");
         marketPoints = file.getInt("rules.points.card.market");
         parliamentPoints = file.getInt("rules.points.card.parliament");
         universityPoints = file.getInt("rules.points.card.university");
@@ -73,26 +77,32 @@ public class GameRules implements Serializable {
         maxCities = file.getInt("rules.max.cities");
     }
 
+    @Override
     public int getSettlementResources() {
         return settlementResources;
     }
 
+    @Override
     public int getCityResources() {
         return cityResources;
     }
 
+    @Override
     public int getPathPoints() {
         return pathPoints;
     }
 
+    @Override
     public int getSettlementPoints() {
         return settlementPoints;
     }
 
+    @Override
     public int getCityPoints() {
         return cityPoints;
     }
 
+    @Override
     public int getAchievementPoints(AchievementCard card) {
         switch (card) {
             case LargestArmy:
@@ -104,6 +114,19 @@ public class GameRules implements Serializable {
         }
     }
 
+    @Override
+    public int getAchievementMinimum(AchievementCard card) {
+        switch (card) {
+            case LargestArmy:
+                return armyMinimum;
+            case LongestRoad:
+                return roadMinimum;
+            default:
+                return 0;
+        }
+    }
+
+    @Override
     public int getDevelopmentCardPoints(DevelopmentCard card) {
         switch (card) {
             case Market:
@@ -121,105 +144,64 @@ public class GameRules implements Serializable {
         }
     }
 
+    @Override
+    public int getDevelopmentCardCount(DevelopmentCard card) {
+        switch (card) {
+            case Knight:
+                return soldierCount;
+            case Market:
+                return marketCount;
+            case Parliament:
+                return parliamentCount;
+            case University:
+                return universityCount;
+            case Chapel:
+                return chapelCount;
+            case Library:
+                return libraryCount;
+            case Monopoly:
+                return monopolyCount;
+            case YearOfPlenty:
+                return plentyCount;
+            case RoadBuilding:
+                return roadbuildingCount;
+            default:
+                return 0;
+        }
+    }
+
+    @Override
     public int getMinimumPoints() {
         return minimumPoints;
     }
 
+    @Override
     public int getLeadPoints() {
         return leadPoints;
     }
 
-    public int getSoldierCount() {
-        return soldierCount;
-    }
-
-    public int getMarketCount() {
-        return marketCount;
-    }
-
-    public int getParliamentCount() {
-        return parliamentCount;
-    }
-
-    public int getUniversityCount() {
-        return universityCount;
-    }
-
-    public int getChapelCount() {
-        return chapelCount;
-    }
-
-    public int getLibraryCount() {
-        return libraryCount;
-    }
-
-    public int getMonopolyCount() {
-        return monopolyCount;
-    }
-
-    public int getRoadbuildingCount() {
-        return roadbuildingCount;
-    }
-
-    public int getPlentyCount() {
-        return plentyCount;
-    }
-
+    @Override
     public int getMaxCards() {
         return maxCards;
     }
 
+    @Override
     public int getMaxPaths() {
         return maxPaths;
     }
 
+    @Override
     public int getMaxSettlements() {
         return maxSettlements;
     }
 
+    @Override
     public int getMaxCities() {
         return maxCities;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        GameRules gameRules = (GameRules) o;
-
-        if (settlementResources != gameRules.settlementResources) return false;
-        if (cityResources != gameRules.cityResources) return false;
-        if (pathPoints != gameRules.pathPoints) return false;
-        if (settlementPoints != gameRules.settlementPoints) return false;
-        if (cityPoints != gameRules.cityPoints) return false;
-        if (armyPoints != gameRules.armyPoints) return false;
-        if (roadPoints != gameRules.roadPoints) return false;
-        if (marketPoints != gameRules.marketPoints) return false;
-        if (parliamentPoints != gameRules.parliamentPoints) return false;
-        if (universityPoints != gameRules.universityPoints) return false;
-        if (chapelPoints != gameRules.chapelPoints) return false;
-        if (libraryPoints != gameRules.libraryPoints) return false;
-        if (minimumPoints != gameRules.minimumPoints) return false;
-        if (leadPoints != gameRules.leadPoints) return false;
-        if (soldierCount != gameRules.soldierCount) return false;
-        if (marketCount != gameRules.marketCount) return false;
-        if (parliamentCount != gameRules.parliamentCount) return false;
-        if (universityCount != gameRules.universityCount) return false;
-        if (chapelCount != gameRules.chapelCount) return false;
-        if (libraryCount != gameRules.libraryCount) return false;
-        if (monopolyCount != gameRules.monopolyCount) return false;
-        if (roadbuildingCount != gameRules.roadbuildingCount) return false;
-        if (plentyCount != gameRules.plentyCount) return false;
-        if (maxCards != gameRules.maxCards) return false;
-        if (maxPaths != gameRules.maxPaths) return false;
-        if (maxSettlements != gameRules.maxSettlements) return false;
-        return maxCities == gameRules.maxCities;
-
-    }
-
-    @Override
     public String toString() {
-        return "GameRules";
+        return "StaticGameRules";
     }
 }

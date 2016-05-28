@@ -7,15 +7,15 @@ import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
  * Created by greg on 2/5/16.
  * A configuration of users and teams that are participating in a catan game.
  */
-public class PlayerPool implements ReversibleEventConsumer<PlayerEvent> {
+public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterable<Username> {
 
     private final Map<Username, Player> players;
     private final Stack<PlayerEvent> history;
@@ -27,8 +27,9 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent> {
         history = new Stack<>();
     }
 
-    public Set<Username> getAll() {
-        return players.keySet();
+    @Override
+    public Iterator<Username> iterator() {
+        return players.keySet().iterator();
     }
 
     public Player getPlayer(Username origin) {

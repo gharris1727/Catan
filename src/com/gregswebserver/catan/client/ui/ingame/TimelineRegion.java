@@ -28,7 +28,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 
     private final ContextRegion context;
     private final List<GameEvent> events;
-    private final PlayerPool teams;
+    private final PlayerPool players;
     private final TeamColors teamColors;
 
     private final TiledBackground background;
@@ -42,7 +42,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         eventGraphics = new EnumMap<>(TeamColor.class);
         //Store instance information
         this.events = manager.getEvents();
-        this.teams = manager.getLocalGame().getTeams();
+        this.players = manager.getLocalGame().getPlayers();
         this.teamColors = teamColors;
         //Create sub-regions
         background = new TiledBackground(0, "background");
@@ -122,7 +122,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
                 super(0);
                 this.index = index;
                 GameEvent event = events.get(index);
-                TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : teams.getPlayer(event.getOrigin()).getTeamColor();
+                TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : players.getPlayer(event.getOrigin()).getTeamColor();
                 setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
             }
 

@@ -1,10 +1,6 @@
 package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.game.board.BoardEvent;
-import com.gregswebserver.catan.common.game.gamestate.GameStateEvent;
-import com.gregswebserver.catan.common.game.players.PlayerEvent;
-import com.gregswebserver.catan.common.game.teams.TeamEvent;
 
 import java.util.List;
 
@@ -18,10 +14,7 @@ public enum LogicEventType implements EventType {
     OR(List.class),
     NOT(LogicEvent.class),
     NOP(null),
-    Player_Event(PlayerEvent.class),
-    Board_Event(BoardEvent.class),
-    Team_Event(TeamEvent.class),
-    GameState_Event(GameStateEvent.class);
+    Trigger(GameTriggerEvent.class);
 
     private final Class payloadType;
 

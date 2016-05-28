@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.gameplay.achievement;
+package com.gregswebserver.catan.common.game.scoring.achievement;
 
 /**
  * Created by Greg on 8/9/2014.

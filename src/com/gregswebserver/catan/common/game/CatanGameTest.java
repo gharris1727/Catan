@@ -5,7 +5,7 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
-import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
 import com.gregswebserver.catan.common.resources.GameRulesInfo;

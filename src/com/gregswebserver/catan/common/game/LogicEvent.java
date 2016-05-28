@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.event.InternalEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,26 +15,44 @@ public class LogicEvent extends InternalEvent<CatanGame, LogicEventType> {
         super(origin, type, payload);
     }
 
-    //TODO: find a clean way to print these events. It may be useful when debugging the game logic later.
-    @SuppressWarnings("unchecked")
     @Override
     public String toString() {
-        String out = "";
+        ArrayList<String> output = new ArrayList<>();
+        print(output, 0);
+        StringBuilder out = new StringBuilder();
+        for (String line : output) {
+            out.append('\n');
+            out.append(line);
+        }
+        return out.toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void print(List<String> output, int depth) {
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i <= depth; i++)
+            line.append('\t');
         switch (getType()) {
             case AND:
             case OR:
-                out += "\n";
-                for (LogicEvent child : (List<LogicEvent>)getPayload())
-                    out += getType() + " " + child + "\n";
+                line.append(getType().toString());
+                output.add(line.toString());
+                for (LogicEvent child : (List<LogicEvent>) getPayload())
+                    child.print(output, depth + 1);
                 break;
             case NOT:
+                line.append(getType().toString());
+                output.add(line.toString());
+                print(output, depth + 1);
+                break;
             case NOP:
-            case Player_Event:
-            case Board_Event:
-            case Team_Event:
-            case GameState_Event:
-                out += getType() + " " + getPayload().toString();
+                line.append(getType().toString());
+                output.add(line.toString());
+                break;
+            case Trigger:
+                line.append(getPayload().toString());
+                output.add(line.toString());
+                break;
         }
-        return "(" + out + ")";
     }
 }

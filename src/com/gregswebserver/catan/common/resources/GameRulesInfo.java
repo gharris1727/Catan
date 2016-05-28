@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.resources;
 
 /**
  * Created by greg on 1/28/16.
- * A cache lookup object for different GameRules objects.
+ * A cache lookup object for different StaticGameRules objects.
  */
 public final class GameRulesInfo extends ResourceCacheKey {
 

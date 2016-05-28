@@ -22,7 +22,7 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
 
     public SharedState(GameSettings settings) {
         dice = new DiceState(settings.seed);
-        cards = new DevelopmentDeckState(settings.gameRules, settings.seed);
+        cards = new DevelopmentDeckState(settings.rules, settings.seed);
         Set<TeamColor> set = EnumSet.noneOf(TeamColor.class);
         for (TeamColor color : settings.playerTeams.values())
             set.add(color);

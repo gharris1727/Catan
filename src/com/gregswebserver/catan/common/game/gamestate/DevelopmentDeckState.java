@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
-import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.util.ReversibleIterator;
 
 import java.util.ArrayList;
@@ -14,29 +14,17 @@ import java.util.Random;
  */
 public class DevelopmentDeckState implements ReversibleIterator<DevelopmentCard> {
 
-    private int index;
     private final List<DevelopmentCard> deck;
+    private int index;
 
     public DevelopmentDeckState(GameRules rules, long seed) {
-        deck = new ArrayList<>();
-        for (int i = 0; i < rules.getSoldierCount(); i++)
-            deck.add(DevelopmentCard.Knight);
-        for (int i = 0; i < rules.getMarketCount(); i++)
-            deck.add(DevelopmentCard.Market);
-        for (int i = 0; i < rules.getParliamentCount(); i++)
-            deck.add(DevelopmentCard.Parliament);
-        for (int i = 0; i < rules.getUniversityCount(); i++)
-            deck.add(DevelopmentCard.University);
-        for (int i = 0; i < rules.getChapelCount(); i++)
-            deck.add(DevelopmentCard.Chapel);
-        for (int i = 0; i < rules.getLibraryCount(); i++)
-            deck.add(DevelopmentCard.Library);
-        for (int i = 0; i < rules.getMonopolyCount(); i++)
-            deck.add(DevelopmentCard.Monopoly);
-        for (int i = 0; i < rules.getRoadbuildingCount(); i++)
-            deck.add(DevelopmentCard.RoadBuilding);
-        for (int i = 0; i < rules.getPlentyCount(); i++)
-            deck.add(DevelopmentCard.YearOfPlenty);
+        int total = 0;
+        for (DevelopmentCard card : DevelopmentCard.values())
+            total += rules.getDevelopmentCardCount(card);
+        deck = new ArrayList<>(total);
+        for (DevelopmentCard card : DevelopmentCard.values())
+            for (int i = 0; i < rules.getDevelopmentCardCount(card); i++)
+                deck.add(card);
         Collections.shuffle(deck, new Random(seed));
     }
 

@@ -15,7 +15,6 @@ import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.gameplay.achievement.RoadSystem;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
@@ -35,8 +34,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     private final HexagonalArray hexArray;
     private final Map<DiceRoll, List<Coordinate>> diceRolls;
     private final List<Coordinate> tradingPosts;
-    private final Map<Coordinate, RoadSystem> roadSystems;
-    private final PriorityQueue<RoadSystem> roadSystemLeaderboard;
     private final Stack<BoardEvent> history;
     private final Stack<Coordinate> robberLocations;
 
@@ -50,15 +47,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
         this.hexArray = hexArray;
         this.diceRolls = diceRolls;
         this.tradingPosts = tradingPosts;
-        this.roadSystems = new HashMap<>();
-        //Pass the priority queue an inverse comparator, because it by default minimizes the comparator.
-        //TODO: implement Road System scoring.
-        this.roadSystemLeaderboard = new PriorityQueue<>(new Comparator<RoadSystem>() {
-            @Override
-            public int compare(RoadSystem a, RoadSystem b) {
-                return -1*a.compareTo(b);
-            }
-        });
         this.history = new Stack<>();
         this.robberLocations = new Stack<>();
         this.robberLocations.push(initialRobberPosition);
@@ -134,28 +122,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
                 towns.add(town);
         }
         return towns;
-    }
-
-    private void discoverRoadSystem(Coordinate origin) {
-        //Get the path at the origin coordinate
-        Path originPath = hexArray.getPath(origin);
-        //If there is no edge, or it is a non-teamColor path then we shouldn't process anything.
-        if (originPath != null && originPath.getTeam() != TeamColor.None) {
-            //Create the new path
-            RoadSystem roadSystem = new RoadSystem(hexArray, origin);
-            //Add this path to the overall list of roadSystems.
-            roadSystemLeaderboard.add(roadSystem);
-            //For every path that is a member, we need to update their path pointers.
-            for (Path p : roadSystem.getPaths()) {
-                //Get the path that is associated with that edge.
-                RoadSystem existing = roadSystems.get(p.getPosition());
-                //If there was an existing path, it is now invalid so remove it from the priority queue.
-                if (existing != null)
-                    roadSystemLeaderboard.remove(existing);
-                //Now map this edge to the new path.
-                this.roadSystems.put(p.getPosition(), roadSystem);
-            }
-        }
     }
 
     @Override
@@ -279,9 +245,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     private void placeSettlement(TeamColor teamColor, Coordinate coord) {
         //Create the new settlement
         hexArray.setTown(coord, new Settlement(teamColor));
-        //Update the adjacent edges in case they were separated by the settlement building.
-        for (Coordinate adjacent : CoordTransforms.getAdjacentEdgesFromVertex(coord).values())
-            discoverRoadSystem(adjacent);
     }
 
     private boolean canPlaceCity(TeamColor teamColor, Coordinate coord) {
@@ -305,9 +268,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     private void destroyTown(Coordinate coord) {
         //Create a new empty town to go in place of the existing one.
         hexArray.setTown(coord, new EmptyTown());
-        //Update any adjacent roads in case they need to re-merge.
-        for (Coordinate adjacent : CoordTransforms.getAdjacentEdgesFromVertex(coord).values())
-            discoverRoadSystem(adjacent);
     }
 
     private boolean canBuildRoad(TeamColor teamColor, Coordinate coord) {
@@ -332,21 +292,11 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     private void placeRoad(TeamColor teamColor, Coordinate coord) {
         //Create the new road object, and put it in the array.
         hexArray.setPath(coord, new Road(teamColor));
-        //Compute the connected path for the new road
-        discoverRoadSystem(coord);
     }
 
     private void destroyRoad(Coordinate coord) {
         //Erase the path from the hexarray.
         hexArray.setPath(coord, new EmptyPath());
-        //Get the original path that we need to break up.
-        RoadSystem path = roadSystems.get(coord);
-        //Look at each of the neighbors of the edge being deleted.
-        for (Coordinate adjacent : CoordTransforms.getAdjacentEdgesFromEdge(coord).values()) {
-            //If the RoadSystem for the neighbor has not been updated, we need to update it.
-            if (roadSystems.get(adjacent) == path)
-                discoverRoadSystem(adjacent);
-        }
     }
 
     @Override

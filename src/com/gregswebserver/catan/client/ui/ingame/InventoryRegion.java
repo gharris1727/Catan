@@ -26,7 +26,7 @@ public class InventoryRegion extends ConfigurableScreenRegion {
     public InventoryRegion(CatanGame game, Username user) {
         super(2, "inventory");
         //Store instance information.
-        this.player = game.getTeams().getPlayer(user);
+        this.player = game.getPlayers().getPlayer(user);
         //Create sub-regions
         background = new EdgedTiledBackground(0, "background");
         username = new TextLabel(1, "username", user.username);

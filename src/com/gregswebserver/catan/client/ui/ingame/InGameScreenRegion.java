@@ -41,7 +41,7 @@ public class InGameScreenRegion extends ClientScreen {
                 return "MapScrollContainer";
             }
         };
-        playing = game.getTeams().getAll().contains(username);
+        playing = game.getPlayers().getPlayer(username) != null;
         trade = new TradeRegion(context, game, username);
         inventory = new InventoryRegion(game, username);
         timeline = new TimelineRegion(context, manager, teamColors);

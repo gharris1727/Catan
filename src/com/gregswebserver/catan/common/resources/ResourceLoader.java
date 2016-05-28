@@ -7,7 +7,8 @@ import com.gregswebserver.catan.common.config.PropertiesFile;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.layout.DynamicBoardLayout;
 import com.gregswebserver.catan.common.game.gameplay.layout.StaticBoardLayout;
-import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
+import com.gregswebserver.catan.common.game.scoring.rules.StaticGameRules;
 
 /**
  * Created by Greg on 1/7/2015.
@@ -33,7 +34,7 @@ public class ResourceLoader {
         @Override
         protected GameRules load(GameRulesInfo info) throws ResourceLoadException {
             try {
-                return new GameRules(info.getPath());
+                return new StaticGameRules(info.getPath());
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }

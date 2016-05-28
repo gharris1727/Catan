@@ -148,7 +148,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
                             return new UserEvent(this, UserEventType.Settlement_Purchase, town.getPosition());
                         }
                     }).setPosition(getButtonLocation(1, 0));
-                } else if (town.getTeam().equals(game.getTeams().getPlayer(local).getTeamColor())) {
+                } else if (town.getTeam().equals(game.getPlayers().getPlayer(local).getTeamColor())) {
                     add(new ContextButton(4) {
                         @Override
                         public String toString() {

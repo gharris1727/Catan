@@ -6,7 +6,7 @@ import com.gregswebserver.catan.common.game.gameplay.generator.better.BetterGene
 import com.gregswebserver.catan.common.game.gameplay.generator.copy.CopyGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
-import com.gregswebserver.catan.common.game.gameplay.rules.GameRules;
+import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
 import com.gregswebserver.catan.common.resources.GameRulesInfo;
@@ -95,7 +95,7 @@ public class Lobby {
         }
 
         //We really don't have an alternative than to spit the error back up.
-        GameRules gameRules = ResourceLoader.getGameRuleSet(new GameRulesInfo(config.getRulesetName()));
+        GameRules rules = ResourceLoader.getGameRuleSet(new GameRulesInfo(config.getRulesetName()));
 
         //Keyword 'copy' for selecting the copy generator
         Matcher copyGenerator = Pattern.compile("^[Cc]opy$").matcher(config.getGeneratorName());
@@ -138,7 +138,7 @@ public class Lobby {
             }
         }
 
-        return new GameSettings(System.nanoTime(), boardLayout, boardGenerator, gameRules, players);
+        return new GameSettings(System.nanoTime(), boardLayout, boardGenerator, rules, players);
     }
 
     public void setGameID(int gameID) {
