@@ -54,6 +54,8 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
                     break;
             }
             onSuccess(event);
+            if (game.finished())
+                onFinish(gameEvent);
         } catch (EventConsumerException e) {
             onFailure(e);
         }
@@ -62,5 +64,7 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
     protected abstract void onSuccess(GameControlEvent event);
 
     protected abstract void onFailure(EventConsumerException e);
+
+    protected abstract void onFinish(GameEvent event);
 
 }

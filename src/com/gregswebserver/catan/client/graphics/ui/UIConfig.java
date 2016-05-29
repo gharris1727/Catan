@@ -39,6 +39,10 @@ public class UIConfig {
         return layout;
     }
 
+    public ConfigSource getLocale() {
+        return locale;
+    }
+
     public String getLocalization(String key) {
         try {
             return locale.get(key);

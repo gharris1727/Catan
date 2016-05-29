@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game.map;
 
 import com.gregswebserver.catan.client.graphics.masks.FlippedMask;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
@@ -8,6 +8,7 @@ import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.ui.game.ContextRegion;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;

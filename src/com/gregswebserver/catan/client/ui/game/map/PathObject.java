@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game.map;
 
 import com.gregswebserver.catan.client.graphics.graphics.Graphic;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;

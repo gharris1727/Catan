@@ -4,12 +4,17 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
-import com.gregswebserver.catan.common.game.scoring.achievement.LargestArmyScoreKeeper;
-import com.gregswebserver.catan.common.game.scoring.achievement.LongestRoadScoreKeeper;
 import com.gregswebserver.catan.common.game.scoring.board.ConstructionScoreKeeper;
 import com.gregswebserver.catan.common.game.scoring.inventory.InventoryScoreKeeper;
-import com.gregswebserver.catan.common.game.scoring.reporting.TeamScorable;
-import com.gregswebserver.catan.common.game.scoring.reporting.TeamScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.ScoreException;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.NullScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.Scorable;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.ScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.SimpleScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.NullTeamScore;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.SimpleTeamReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScorable;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamPool;
 
@@ -24,14 +29,17 @@ import java.util.Stack;
  */
 public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScorable {
 
+    private final PlayerPool players;
     private final List<ScoreKeeper> listeners;
 
-    private Stack<List<ScoreKeeper>> history;
+    private final Stack<List<ScoreKeeper>> history;
 
     public ScoreState(GameBoard board, PlayerPool players, TeamPool teams) {
+        this.players = players;
         listeners = Arrays.asList(
-            new LargestArmyScoreKeeper(players),
-            new LongestRoadScoreKeeper(board),
+            //TODO: after fixing the achievements re-enable them.
+            //new LargestArmyScoreKeeper(players),
+            //new LongestRoadScoreKeeper(board),
             new ConstructionScoreKeeper(players),
             new InventoryScoreKeeper(players)
         );
@@ -85,7 +93,13 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
     }
 
     @Override
-    public TeamScoreReport score(GameRules rules) {
-        return null;
+    public TeamScoreReport score(GameRules rules) throws ScoreException {
+        if (listeners.isEmpty())
+            return NullTeamScore.INSTANCE;
+        ScoreReport report = NullScoreReport.INSTANCE;
+        for (Scorable scorable : listeners) {
+                report = new SimpleScoreReport(report, scorable.score(rules));
+        }
+        return new SimpleTeamReport(players, report);
     }
 }

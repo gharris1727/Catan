@@ -198,8 +198,7 @@ public class Server extends CoreThread {
                     break;
                 case Game_Start:
                     GameSettings settings = (GameSettings) event.getPayload();
-                    int gameID = gamePool.start(settings);
-                    lobby.setGameID(gameID);
+                    lobby.setGameID(gamePool.start(settings));
                     for (Username username : settings.playerTeams.keySet())
                         addEvent(new LobbyEvent(username, LobbyEventType.Game_Join, null));
                     break;
@@ -211,6 +210,9 @@ public class Server extends CoreThread {
                 case Game_Leave:
                     break;
                 case Game_Sync:
+                    break;
+                case Game_Finish:
+                    gamePool.finish(matchmakingPool.getLobbyList().userGetLobby(origin).getGameID());
                     break;
             }
             //Rebroadcast the event to everyone connected.

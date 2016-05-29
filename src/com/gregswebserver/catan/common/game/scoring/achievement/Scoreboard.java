@@ -69,7 +69,7 @@ public class Scoreboard<K,V extends Comparable<V>,O extends Comparable<O>> imple
     @Override
     public Iterator<K> iterator() {
         return new Iterator<K>() {
-            private Iterator<Entry> treeIterator = entries.iterator();
+            private final Iterator<Entry> treeIterator = entries.iterator();
 
             @Override
             public boolean hasNext() {

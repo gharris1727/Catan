@@ -1,9 +1,11 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game.playing;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.ui.game.ContextRegion;
+import com.gregswebserver.catan.client.ui.game.ResourceCounter;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;

@@ -1,10 +1,13 @@
 package com.gregswebserver.catan.common.game.scoring.board;
 
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.scoring.reporting.PlayerScorable;
-import com.gregswebserver.catan.common.game.scoring.reporting.PlayerScoreReport;
-import com.gregswebserver.catan.common.game.scoring.reporting.SimplePlayerScore;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScorable;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.SimplePlayerScore;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by greg on 5/27/16.
@@ -52,10 +55,10 @@ public class ConstructionCounter implements PlayerScorable {
 
     @Override
     public PlayerScoreReport score(GameRules rules) {
-        int points = 0;
-        points += settlements * rules.getSettlementPoints();
-        points += cities * rules.getCityPoints();
-        points += roads * rules.getPathPoints();
+        Map<String, Integer> points = new HashMap<>();
+        points.put("construction.settlement", settlements * rules.getSettlementPoints());
+        points.put("construction.city", cities * rules.getCityPoints());
+        points.put("construction.road", roads * rules.getPathPoints());
         return new SimplePlayerScore(username, points);
     }
 }

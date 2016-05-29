@@ -7,7 +7,8 @@ import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.scoring.ScoreEvent;
 import com.gregswebserver.catan.common.game.scoring.ScoreKeeper;
-import com.gregswebserver.catan.common.game.scoring.reporting.ScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.NullScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.ScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 
@@ -134,6 +135,6 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
     @Override
     public ScoreReport score(GameRules rules) {
         //TODO: implement score counting of longest road.
-        return null;
+        return NullScoreReport.INSTANCE;
     }
 }

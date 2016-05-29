@@ -6,7 +6,8 @@ import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.scoring.ScoreEvent;
 import com.gregswebserver.catan.common.game.scoring.ScoreKeeper;
-import com.gregswebserver.catan.common.game.scoring.reporting.ScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.NullScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.ScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 
 import java.util.Comparator;
@@ -73,6 +74,6 @@ public class LargestArmyScoreKeeper implements ScoreKeeper {
     @Override
     public ScoreReport score(GameRules rules) {
         //TODO: implement counting scores of largest army.
-        return null;
+        return NullScoreReport.INSTANCE;
     }
 }

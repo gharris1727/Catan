@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game.map;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;

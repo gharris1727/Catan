@@ -55,6 +55,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
             case Game_Join:
             case Game_Leave:
             case Game_Sync:
+            case Game_Finish:
                 if (!inLobby)
                     throw new EventConsumerException("User is not in a lobby");
                 break;
@@ -96,6 +97,9 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
                     lobbies.disconnect(origin);
                     break;
                 case Game_Sync:
+                    break;
+                case Game_Finish:
+                    lobbies.finish(origin);
                     break;
             }
         } catch (Exception e) {

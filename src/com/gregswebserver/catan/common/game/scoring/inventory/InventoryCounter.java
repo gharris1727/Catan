@@ -2,11 +2,14 @@ package com.gregswebserver.catan.common.game.scoring.inventory;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
-import com.gregswebserver.catan.common.game.scoring.reporting.PlayerScorable;
-import com.gregswebserver.catan.common.game.scoring.reporting.PlayerScoreReport;
-import com.gregswebserver.catan.common.game.scoring.reporting.SimplePlayerScore;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScorable;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.SimplePlayerScore;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by greg on 5/27/16.
@@ -32,9 +35,9 @@ public class InventoryCounter implements PlayerScorable {
 
     @Override
     public PlayerScoreReport score(GameRules rules) {
-        int points = 0;
+        Map<String, Integer> points = new HashMap<>();
         for (DevelopmentCard card : DevelopmentCard.values())
-            points += counts.get(card) * rules.getDevelopmentCardPoints(card);
+            points.put("inventory."+ card.toString(), counts.get(card) * rules.getDevelopmentCardPoints(card));
         return new SimplePlayerScore(username, points);
     }
 }

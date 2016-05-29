@@ -22,7 +22,8 @@ public enum LobbyEventType implements EventType {
     Game_Start(GameSettings.class), //Client -> Server -> Broadcast when a game starts.
     Game_Join(null), //(Client ->) Server -> Broadcast when a player joins a game in progress.
     Game_Leave(null), //Client -> Server -> Broadcast when a player leaves a game in progress
-    Game_Sync(GameProgress.class); //Server -> Client when a player joins a game and needs a synced list of GameEvents
+    Game_Sync(GameProgress.class), //Server -> Client when a player joins a game and needs a synced list of GameEvents
+    Game_Finish(null); //Server -> Client when a game finishes and will not be accepting further changes.
 
     private final Class payloadType;
 

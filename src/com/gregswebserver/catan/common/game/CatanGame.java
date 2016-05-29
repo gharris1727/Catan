@@ -22,6 +22,10 @@ import com.gregswebserver.catan.common.game.players.*;
 import com.gregswebserver.catan.common.game.scoring.ScoreEvent;
 import com.gregswebserver.catan.common.game.scoring.ScoreEventType;
 import com.gregswebserver.catan.common.game.scoring.ScoreState;
+import com.gregswebserver.catan.common.game.scoring.reporting.ScoreException;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.ScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.NullTeamScore;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.game.teams.TeamEvent;
@@ -121,6 +125,38 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     public boolean isPlayerActive(Username user) {
         Player player = players.getPlayer(user);
         return player != null && player.getTeamColor() == state.getActiveTeam();
+    }
+
+    public TeamScoreReport getScore() {
+        try {
+            return scoring.score(rules);
+        } catch (ScoreException e) {
+            return NullTeamScore.INSTANCE;
+        }
+    }
+
+    public TeamColor getWinner() {
+        try {
+            TeamColor winner = TeamColor.None;
+            int points = 0;
+            TeamScoreReport teamScoreReport = scoring.score(rules);
+            for (TeamColor color : teamScoreReport) {
+                ScoreReport report = teamScoreReport.getScoreReport(color);
+                if (points < report.getPoints()) {
+                    points = report.getPoints();
+                    winner = color;
+                }
+            }
+            if (points < rules.getMinimumPoints())
+                return TeamColor.None;
+            return winner;
+        } catch (ScoreException e) {
+            return TeamColor.None;
+        }
+    }
+
+    public boolean finished() {
+        return getWinner() != TeamColor.None;
     }
 
     private LogicEvent createTriggerEvent(GameTriggerEvent event) {

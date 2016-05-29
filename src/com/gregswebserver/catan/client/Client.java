@@ -14,8 +14,10 @@ import com.gregswebserver.catan.client.structure.ServerPool;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
 import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
-import com.gregswebserver.catan.client.ui.ingame.InGameScreenRegion;
-import com.gregswebserver.catan.client.ui.ingame.TeamColors;
+import com.gregswebserver.catan.client.ui.game.map.TeamColors;
+import com.gregswebserver.catan.client.ui.game.playing.PlayingScreenRegion;
+import com.gregswebserver.catan.client.ui.game.postgame.PostGameScreenRegion;
+import com.gregswebserver.catan.client.ui.game.spectate.SpectateScreenRegion;
 import com.gregswebserver.catan.client.ui.lobby.LobbyScreen;
 import com.gregswebserver.catan.client.ui.lobbyjoinmenu.LobbyJoinMenu;
 import com.gregswebserver.catan.client.ui.serverconnectmenu.ServerConnectMenu;
@@ -301,7 +303,14 @@ public class Client extends CoreThread {
                     break;
                 case Game_Sync:
                     gameManager = new GameManager(this, (GameProgress) event.getPayload());
-                    changeScreen(new InGameScreenRegion(username, gameManager, new TeamColors(teamColors)));
+                    if (gameManager.getLocalGame().getPlayers().getPlayer(username) != null)
+                        changeScreen(new PlayingScreenRegion(username, gameManager, new TeamColors(teamColors)));
+                    else
+                        changeScreen(new SpectateScreenRegion(gameManager, new TeamColors(teamColors)));
+                    break;
+                case Game_Finish:
+                    if (gameManager != null && gameManager.getLocalGame().getPlayers().getPlayer(event.getOrigin()) != null)
+                        changeScreen(new PostGameScreenRegion(gameManager, new TeamColors(teamColors)));
                     break;
                 default:
                     throw new IllegalStateException();

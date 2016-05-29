@@ -1,5 +1,6 @@
-package com.gregswebserver.catan.common.game.scoring.reporting;
+package com.gregswebserver.catan.common.game.scoring.reporting.scores;
 
+import com.gregswebserver.catan.common.game.scoring.reporting.ScoreException;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 
 /**
@@ -8,5 +9,5 @@ import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
  */
 public interface Scorable {
 
-    ScoreReport score(GameRules rules);
+    ScoreReport score(GameRules rules) throws ScoreException;
 }

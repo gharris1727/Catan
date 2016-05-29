@@ -6,6 +6,8 @@ import com.gregswebserver.catan.common.game.event.GameControlEvent;
 import com.gregswebserver.catan.common.game.event.GameControlEventType;
 import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.structure.event.LobbyEvent;
+import com.gregswebserver.catan.common.structure.event.LobbyEventType;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.server.Server;
@@ -50,6 +52,11 @@ public class GamePool {
             @Override
             protected void onFailure(EventConsumerException e) {
                 logger.log("Unable to execute game event!", e, LogLevel.ERROR);
+            }
+
+            @Override
+            protected void onFinish(GameEvent e) {
+                host.addEvent(new LobbyEvent(e.getOrigin(), LobbyEventType.Game_Finish, null));
             }
         };
         games.put(gameID, thread);

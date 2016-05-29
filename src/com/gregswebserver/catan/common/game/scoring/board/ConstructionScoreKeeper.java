@@ -5,9 +5,9 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.scoring.ScoreEvent;
 import com.gregswebserver.catan.common.game.scoring.ScoreKeeper;
-import com.gregswebserver.catan.common.game.scoring.reporting.PlayerScoreReport;
-import com.gregswebserver.catan.common.game.scoring.reporting.ScoreReport;
-import com.gregswebserver.catan.common.game.scoring.reporting.SimpleScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.ScoreReport;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.SimpleScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 
 import java.util.*;

@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game.playing;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
@@ -6,6 +6,11 @@ import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenContainer;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.ClientScreen;
+import com.gregswebserver.catan.client.ui.game.ContextRegion;
+import com.gregswebserver.catan.client.ui.game.InventoryRegion;
+import com.gregswebserver.catan.client.ui.game.TimelineRegion;
+import com.gregswebserver.catan.client.ui.game.map.MapRegion;
+import com.gregswebserver.catan.client.ui.game.map.TeamColors;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 
@@ -15,9 +20,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * The area that renders all features visible while the client is in a game.
  */
-public class InGameScreenRegion extends ClientScreen {
-
-    private final boolean playing;
+public class PlayingScreenRegion extends ClientScreen {
 
     private final ContextRegion context;
     private final ScrollingScreenContainer map;
@@ -30,8 +33,8 @@ public class InGameScreenRegion extends ClientScreen {
     private int timelineHeight;
     private Dimension borderBuffer;
 
-    public InGameScreenRegion(Username username, GameManager manager, TeamColors teamColors) {
-        super("ingame");
+    public PlayingScreenRegion(Username username, GameManager manager, TeamColors teamColors) {
+        super("playing");
         //Load relevant details
         CatanGame game = manager.getLocalGame();
         context = new ContextRegion(manager, username);
@@ -41,16 +44,13 @@ public class InGameScreenRegion extends ClientScreen {
                 return "MapScrollContainer";
             }
         };
-        playing = game.getPlayers().getPlayer(username) != null;
         trade = new TradeRegion(context, game, username);
         inventory = new InventoryRegion(game, username);
         timeline = new TimelineRegion(context, manager, teamColors);
         //Add everything to the screen
         add(map);
-        if (playing) {
-            add(trade);
-            add(inventory);
-        }
+        add(trade);
+        add(inventory);
         add(context);
         add(timeline);
     }
@@ -79,27 +79,21 @@ public class InGameScreenRegion extends ClientScreen {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        int mainWidth;
-        if (playing)
-            mainWidth = mask.getWidth() - sidebarWidth;
-        else
-            mainWidth = mask.getWidth();
+        int mainWidth = mask.getWidth() - sidebarWidth;
         int timelineWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - timelineHeight;
         int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;
 
-        if (playing) {
-            inventory.setPosition(new Point(timelineWidth, 0));
-            trade.setPosition(new Point(timelineWidth, inventoryHeight));
-        }
+        inventory.setPosition(new Point(timelineWidth, 0));
+        trade.setPosition(new Point(timelineWidth, inventoryHeight));
         context.setPosition(new Point(timelineWidth, inventoryHeight + tradeHeight));
         timeline.setPosition(new Point(0,mainHeight));
 
         map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
-        if (playing) {
-            trade.setMask(new RectangularMask(new Dimension(sidebarWidth, tradeHeight)));
-            inventory.setMask(new RectangularMask(new Dimension(sidebarWidth, inventoryHeight)));
-        }
+
+        trade.setMask(new RectangularMask(new Dimension(sidebarWidth, tradeHeight)));
+        inventory.setMask(new RectangularMask(new Dimension(sidebarWidth, inventoryHeight)));
+
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
@@ -109,6 +103,6 @@ public class InGameScreenRegion extends ClientScreen {
     }
 
     public String toString() {
-        return "InGameScreenRegion";
+        return "PlayingScreenRegion";
     }
 }

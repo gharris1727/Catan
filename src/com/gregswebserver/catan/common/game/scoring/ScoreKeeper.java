@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.scoring;
 
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
-import com.gregswebserver.catan.common.game.scoring.reporting.Scorable;
+import com.gregswebserver.catan.common.game.scoring.reporting.scores.Scorable;
 
 /**
  * Created by greg on 5/27/16.

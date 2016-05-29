@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
@@ -6,6 +6,7 @@ import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.structure.GameManager;
+import com.gregswebserver.catan.client.ui.game.map.TeamColors;
 import com.gregswebserver.catan.common.game.GameEvent;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.teams.TeamColor;

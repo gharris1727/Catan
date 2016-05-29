@@ -63,6 +63,10 @@ public class GameManager {
             protected void onFailure(EventConsumerException e) {
                 host.localFailure(e);
             }
+
+            @Override
+            protected void onFinish(GameEvent event) {
+            }
         };
         remote = new GameThread(host.logger, settings) {
             @Override
@@ -87,6 +91,11 @@ public class GameManager {
             @Override
             protected void onFailure(EventConsumerException e) {
                 host.logger.log(host + " Remote failure", e, LogLevel.WARN);
+            }
+
+            @Override
+            protected void onFinish(GameEvent event) {
+                remote.stop();
             }
         };
         events = new ArrayList<>();

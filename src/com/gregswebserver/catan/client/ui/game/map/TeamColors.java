@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.ingame;
+package com.gregswebserver.catan.client.ui.game.map;
 
 import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
