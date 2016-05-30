@@ -2,13 +2,17 @@ package com.gregswebserver.catan.client.ui.game.playing;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
+import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
 import com.gregswebserver.catan.client.ui.game.ResourceCounter;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.awt.*;
@@ -23,26 +27,28 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
     //Required instance information
     private final CatanGame game;
-    private final Username local;
+    private final Username username;
 
     //Optional interaction modules
     private ContextRegion context;
 
-    //TODO: provide an interface to create a new TemporaryTrade.
     //Configuration dependencies
     private RenderMask tradeSize;
     private int panelHeight;
     private int tradeHeight;
+    private Point elementOffset;
+    private Point elementSpacing;
+    private int buttonSpacing;
 
     //Sub-regions
     private final TradeListContainer container;
     private final TradeControlPanel panel;
 
-    public TradeRegion(CatanGame game, Username local) {
+    public TradeRegion(CatanGame game, Username username) {
         super(1, "trade");
         //Save instance details
         this.game = game;
-        this.local = local;
+        this.username = username;
         //Create sub-regions
         container = new TradeListContainer(new TradeList());
         panel = new TradeControlPanel();
@@ -62,7 +68,10 @@ public class TradeRegion extends ConfigurableScreenRegion {
     @Override
     public void loadConfig(UIConfig config) {
         panelHeight = config.getLayout().getInt("panel.height");
-        tradeHeight = config.getLayout().getInt("container.list.element.height");
+        tradeHeight = config.getLayout().getInt("element.height");
+        elementOffset = config.getLayout().getPoint("element.offset");
+        elementSpacing = config.getLayout().getPoint("element.spacing");
+        buttonSpacing = config.getLayout().getInt("panel.spacing");
     }
 
     @Override
@@ -92,7 +101,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
         protected void renderContents() {
             clear();
             int height = 0;
-            for (Trade t : game.getTrades(local)) {
+            for (Trade t : game.getTrades(username)) {
                 TradeListElement elt = new TradeListElement(t);
                 elt.setConfig(getConfig());
                 elt.setMask(tradeSize);
@@ -123,8 +132,6 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
             private final Trade trade;
-            private Point elementOffset;
-            private Point elementSpacing;
 
             private TradeListElement(Trade trade) {
                 super(0, "element");
@@ -154,12 +161,6 @@ public class TradeRegion extends ConfigurableScreenRegion {
             @Override
             protected void resizeContents(RenderMask mask) {
                 background.setMask(mask);
-            }
-
-            @Override
-            public void loadConfig(UIConfig config) {
-                elementOffset = config.getLayout().getPoint("offset");
-                elementSpacing = config.getLayout().getPoint("spacing");
             }
 
             @Override
@@ -224,12 +225,41 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
     private class TradeControlPanel extends ConfigurableScreenRegion {
 
+        private final TemporaryTrade assembling;
+
         private final TiledBackground background;
+        private final Button propose;
+        private final Button cancel;
 
         private TradeControlPanel() {
             super(2, "panel");
+            assembling = new TemporaryTrade(username);
             background = new EdgedTiledBackground(0, "background");
+            propose = new Button(1, "propose", "Propose") {
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    return new UserEvent(this, UserEventType.Propose_Trade, new TemporaryTrade(assembling));
+                }
+
+                @Override
+                public String toString() {
+                    return "TradeControlPanelProposeButton";
+                }
+            };
+            cancel = new Button(2, "cancel", "Cancel") {
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    return new UserEvent(this, UserEventType.Propose_Trade, null);
+                }
+
+                @Override
+                public String toString() {
+                    return "TradeControlPanelCancelButton";
+                }
+            };
             add(background).setClickable(this);
+            add(propose);
+            add(cancel);
         }
 
         @Override
@@ -238,8 +268,70 @@ public class TradeRegion extends ConfigurableScreenRegion {
         }
 
         @Override
+        protected void renderContents() {
+            assertRenderable();
+            clear();
+            int index = 0;
+            for (GameResource gameResource : GameResource.values()) {
+                ResourceCounter request = new EditingResourceCounter(assembling.request, gameResource);
+                ResourceCounter offer = new EditingResourceCounter(assembling.offer, gameResource);
+                add(request).setPosition(new Point(
+                    elementOffset.x + index * elementSpacing.x,
+                    elementOffset.y));
+                request.setConfig(getConfig());
+                add(offer).setPosition(new Point(
+                    elementOffset.x + index * elementSpacing.x,
+                    elementOffset.y + elementSpacing.y));
+                offer.setConfig(getConfig());
+                index++;
+            }
+            add(background);
+            add(propose);
+            Point proposePosition = center(propose);
+            proposePosition.setLocation(proposePosition.x - buttonSpacing,elementOffset.y + elementSpacing.y*2);
+            add(cancel);
+            Point cancelPosition = center(cancel);
+            cancelPosition.setLocation(cancelPosition.x + buttonSpacing, elementOffset.y + elementSpacing.y*2);
+        }
+
+        @Override
         public String toString() {
             return "TradeControlPanel";
+        }
+
+        private class EditingResourceCounter extends ResourceCounter {
+
+            private final EnumCounter<GameResource> counter;
+            private final GameResource gameResource;
+
+            private EditingResourceCounter(EnumCounter<GameResource> counter, GameResource gameResource) {
+                super(3, counter, gameResource);
+                this.counter = counter;
+                this.gameResource = gameResource;
+            }
+
+            @Override
+            public String toString() {
+                return "EditingResourceCounter";
+            }
+
+            @Override
+            public UserEvent onMouseClick(MouseEvent event) {
+                switch (event.getButton()) {
+                    case MouseEvent.BUTTON1: //LEFT
+                        counter.increment(gameResource, 1);
+                        break;
+                    case MouseEvent.BUTTON2: //MIDDLE
+                        counter.clear(gameResource);
+                        break;
+                    case MouseEvent.BUTTON3: //RIGHT
+                        if (counter.contains(gameResource, 1))
+                            counter.decrement(gameResource, 1);
+                        break;
+                }
+                TradeControlPanel.this.forceRender();
+                return null;
+            }
         }
     }
 }

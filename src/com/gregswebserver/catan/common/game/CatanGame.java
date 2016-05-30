@@ -148,8 +148,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     winner = color;
                 }
             }
-            //if (points < rules.getMinimumPoints())
-                //return TeamColor.None;
+            if (points < rules.getMinimumPoints())
+                return TeamColor.None;
             return winner;
         } catch (ScoreException e) {
             return TeamColor.None;

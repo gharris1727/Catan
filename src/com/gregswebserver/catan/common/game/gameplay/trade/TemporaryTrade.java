@@ -14,6 +14,11 @@ public class TemporaryTrade extends Trade {
         this.seller = seller;
     }
 
+    public TemporaryTrade(TemporaryTrade other) {
+        super(other);
+        this.seller = other.seller;
+    }
+
     public boolean equals(Object o) {
         if (o == this)
             return true;

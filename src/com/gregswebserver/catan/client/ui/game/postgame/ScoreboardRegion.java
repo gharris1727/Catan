@@ -3,8 +3,6 @@ package com.gregswebserver.catan.client.ui.game.postgame;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScoreReport;
-import com.gregswebserver.catan.common.game.scoring.reporting.scores.ScoreReport;
 import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.locale.game.LocalizedTeamScorePrinter;
 
@@ -24,6 +22,8 @@ public class ScoreboardRegion extends ConfigurableScreenRegion {
     private final TiledBackground background;
     private final TextLabel text;
 
+    //TODO: replace this lazy printing string method to a fancy UI.
+
     public ScoreboardRegion(CatanGame game) {
         super(1, "scoreboard");
         this.game = game;
@@ -37,7 +37,6 @@ public class ScoreboardRegion extends ConfigurableScreenRegion {
     protected void renderContents() {
         TeamScoreReport report = game.getScore();
         String localization = teamScorePrinter.getLocalization(report);
-        System.out.print(localization);
         text.setText(localization);
         center(text);
     }
@@ -57,38 +56,4 @@ public class ScoreboardRegion extends ConfigurableScreenRegion {
         return "ScoreboardRegion";
     }
 
-    private class TeamScoreboard extends ConfigurableScreenRegion {
-
-        private TeamScoreboard(ScoreReport report) {
-            super(1, "team");
-        }
-
-        @Override
-        protected void resizeContents(RenderMask mask) {
-
-        }
-
-        @Override
-        public String toString() {
-            return null;
-        }
-
-        private class PlayerScoreboard extends ConfigurableScreenRegion {
-
-
-            private PlayerScoreboard(PlayerScoreReport report) {
-                super(1, "player");
-            }
-
-            @Override
-            protected void resizeContents(RenderMask mask) {
-
-            }
-
-            @Override
-            public String toString() {
-                return null;
-            }
-        }
-    }
 }

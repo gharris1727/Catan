@@ -19,6 +19,11 @@ public abstract class Trade implements Comparable<Trade>, Serializable{
         request = new EnumCounter<>(GameResource.class);
     }
 
+    protected Trade(Trade other) {
+        this.offer = new EnumCounter<>(other.offer);
+        this.request = new EnumCounter<>(other.request);
+    }
+
     public boolean equals(Object o) {
         if (o == this)
             return true;

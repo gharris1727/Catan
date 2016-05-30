@@ -230,6 +230,9 @@ public class Client extends CoreThread {
             case History_Jump:
                 gameManager.jumpToEvent((Integer) event.getPayload());
                 break;
+            case Propose_Trade:
+                gameManager.local(new GameEvent(username, GameEventType.Offer_Trade, event.getPayload()));
+                break;
             default:
                 throw new IllegalStateException();
         }

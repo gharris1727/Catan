@@ -11,11 +11,12 @@ import com.gregswebserver.catan.common.locale.LocalizedPrinter;
  */
 public class LocalizedTeamScorePrinter extends LocalizedPrinter<TeamScoreReport> {
 
-
+    private final LocalizedTeamColorPrinter teamColorPrinter;
     private final LocalizedScoreReportPrinter scoreReportPrinter;
 
     public LocalizedTeamScorePrinter(ConfigSource locale) {
         super(locale);
+        teamColorPrinter = new LocalizedTeamColorPrinter(locale);
         scoreReportPrinter = new LocalizedScoreReportPrinter(locale);
     }
 
@@ -25,8 +26,8 @@ public class LocalizedTeamScorePrinter extends LocalizedPrinter<TeamScoreReport>
         output.append("Team Report");
         for (TeamColor teamColor : instance) {
             output.append('\n');
-            output.append(teamColor);
-            output.append(" Team:\n");
+            output.append(teamColorPrinter.getLocalization(teamColor));
+            output.append(":\n");
             output.append(scoreReportPrinter.getLocalization(instance.getScoreReport(teamColor)));
         }
         return output.toString();

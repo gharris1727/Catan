@@ -30,14 +30,14 @@ public class TextGraphic extends Graphic {
             //Figure out the width and height of this image.
             Rectangle2D bounds = f.getStringBounds(line, frc);
             //Add the ascent spacing.
-            height += (int) layout.getAscent();
+            height += (int) layout.getAscent() + 1;
             //Calculate the line width
             int linewidth = (int) bounds.getWidth() + 1;
             //Keep the largest line width.
             if (width < linewidth)
                 width = linewidth;
             //Add on the trailing spacing.
-            height += (int) layout.getDescent() + textStyle.getLineSpacing();
+            height += (int) layout.getDescent() + textStyle.getLineSpacing() + 1;
         }
         height -= textStyle.getLineSpacing();
         //Initialize this object with transparency.
@@ -53,13 +53,13 @@ public class TextGraphic extends Graphic {
         for (String line : text.split("\\r?\\n")) {
             TextLayout layout = new TextLayout(line, f, frc);
             //Add the ascent spacing.
-            height += (int) layout.getAscent();
+            height += (int) layout.getAscent() + 1;
             //Always left justified... does it look like i can right justify???
             //TODO: see if complicated justification is worth the effort.
             //Draw the text onto the graphic.
             layout.draw((Graphics2D) g, 0, height);
             //Add on the trailing spacing.
-            height += (int) layout.getDescent() + textStyle.getLineSpacing();
+            height += (int) layout.getDescent() + textStyle.getLineSpacing() + 1;
         }
     }
 }

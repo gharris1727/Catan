@@ -56,9 +56,9 @@ public class ConstructionCounter implements PlayerScorable {
     @Override
     public PlayerScoreReport score(GameRules rules) {
         Map<String, Integer> points = new HashMap<>();
-        points.put("construction.settlement", settlements * rules.getSettlementPoints());
-        points.put("construction.city", cities * rules.getCityPoints());
-        points.put("construction.road", roads * rules.getPathPoints());
+        points.put("game.scoring.construction.settlement", settlements * rules.getSettlementPoints());
+        points.put("game.scoring.construction.city", cities * rules.getCityPoints());
+        points.put("game.scoring.construction.road", roads * rules.getPathPoints());
         return new SimplePlayerScore(username, points);
     }
 }

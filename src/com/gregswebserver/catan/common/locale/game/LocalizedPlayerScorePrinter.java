@@ -22,7 +22,7 @@ public class LocalizedPlayerScorePrinter extends LocalizedPrinter<PlayerScoreRep
                 if (output.length() != 0)
                     output.append('\n');
                 output.append(getLocalization(category));
-                output.append('\t');
+                output.append(" \t");
                 output.append(instance.getPoints(category));
             }
         }

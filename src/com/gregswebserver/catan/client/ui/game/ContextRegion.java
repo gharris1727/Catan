@@ -229,8 +229,10 @@ public class ContextRegion extends ConfigurableScreenRegion {
     private void renderHistory() {
         GameEvent event = manager.getEvents().get(targetHistory);
         title.setText("Event: " + gameEventPrinter.getLocalization(event));
+        String detailText = "";
         if (event.getOrigin() != null)
-            detail.setText(event.getOrigin().toString());
+            detailText = event.getOrigin().toString();
+        detail.setText(detailText);
         add(new ContextButton(9) {
             @Override
             public String toString() {

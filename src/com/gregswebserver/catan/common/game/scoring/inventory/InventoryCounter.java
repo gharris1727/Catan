@@ -37,7 +37,7 @@ public class InventoryCounter implements PlayerScorable {
     public PlayerScoreReport score(GameRules rules) {
         Map<String, Integer> points = new HashMap<>();
         for (DevelopmentCard card : DevelopmentCard.values())
-            points.put("inventory."+ card.toString(), counts.get(card) * rules.getDevelopmentCardPoints(card));
+            points.put("game.scoring.inventory."+ card, counts.get(card) * rules.getDevelopmentCardPoints(card));
         return new SimplePlayerScore(username, points);
     }
 }

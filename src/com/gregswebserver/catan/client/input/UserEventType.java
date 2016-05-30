@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 
@@ -35,7 +36,8 @@ public enum UserEventType implements EventType {
     Settlement_Purchase(Coordinate.class), //Purchase a settlement.
     City_Purchase(Coordinate.class), //Purchase a city.
     Make_Trade(Trade.class), //Complete a trade.
-    History_Jump(Integer.class); //Jump to that historical event.
+    History_Jump(Integer.class), //Jump to that historical event.
+    Propose_Trade(TemporaryTrade.class); //advertise a temporary trade to other players.
 
     private final Class payloadType;
 

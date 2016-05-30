@@ -160,10 +160,12 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
                 break;
             case Offer_Trade:
             case Fill_Trade:
-                for (GameResource r : GameResource.values()) {
-                    if (!inventory.contains(r, ((TemporaryTrade) event.getPayload()).offer.get(r)))
-                        throw new EventConsumerException("Insufficient funds");
-                }
+                TemporaryTrade trade = (TemporaryTrade) event.getPayload();
+                if (trade != null)
+                    for (GameResource r : GameResource.values()) {
+                        if (!inventory.contains(r, trade.offer.get(r)))
+                            throw new EventConsumerException("Insufficient funds");
+                    }
                 break;
             case Make_Trade:
                 if (!canMakeTrade((Trade) event.getPayload()))
