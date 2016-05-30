@@ -7,16 +7,17 @@ import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.GameEvent;
-import com.gregswebserver.catan.common.game.board.BoardObject;
+import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
+import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
+import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
+import com.gregswebserver.catan.common.locale.game.LocalizedGameEventPrinter;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
@@ -27,24 +28,30 @@ import java.awt.event.MouseEvent;
  * A screen region that lives in the bottom corner of the in-game screen.
  */
 public class ContextRegion extends ConfigurableScreenRegion {
-    
-    private final GameManager manager;
-    private final CatanGame game;
-    private final Username local;
-    private Object target;
-    
+
+    //Instance information
+    private Coordinate targetCoord;
+    private Trade targetTrade;
+    private int targetHistory;
+    private ContextTarget target;
+
+    //Optional modules
+    private Username username; //Used when generating real game-changing events
+    private GameManager manager; //Used to control the local game and create game-changing events.
+
+    //Configuration dependencies
+    private GraphicSet graphics;
+    private LocalizedGameEventPrinter gameEventPrinter;
+
+    //Sub-regions
     private final TiledBackground background;
     private final TextLabel title;
     private final TextLabel detail;
-    private GraphicSet graphics;
 
-    public ContextRegion(GameManager manager, Username local) {
+    public ContextRegion() {
         super(2, "context");
-        //Load layout information.
-        //Store instance information.
-        this.manager = manager;
-        this.game = manager.getLocalGame();
-        this.local = local;
+        //Initialize instance information
+        target = ContextTarget.None;
         //Create sub-regions
         background = new EdgedTiledBackground(0, "background");
         title = new TextLabel(1, "title", "");
@@ -55,25 +62,51 @@ public class ContextRegion extends ConfigurableScreenRegion {
         add(detail).setClickable(this);
     }
 
+    public void setUsername(Username username) {
+        this.username = username;
+    }
+
+    public void setGameManager(GameManager manager) {
+        this.manager = manager;
+    }
+
+    private boolean isLocalPlayerActive() {
+        return manager != null && manager.getLocalGame().isPlayerActive(username);
+    }
+
     @Override
     public void loadConfig(UIConfig config) {
         graphics = new GraphicSet(config.getLayout(), "icons", null);
+        gameEventPrinter = new LocalizedGameEventPrinter(config.getLocale());
     }
 
     @Override
     protected void renderContents() {
         //Clear the context region of everything
         clear();
-        //If we already clicked on something, update and see if it changed.
-        if (target instanceof BoardObject)
-            target = game.getBoard().refresh(((BoardObject) target));
-        if (target instanceof Trade && !game.getTrades(local).contains(target))
-            target = null;
-        //Clear the text so that if we unselected, it all goes blank.
-        title.setText("");
-        detail.setText("");
-        boolean localPlayerActive = game.isPlayerActive(local);
-        if (localPlayerActive) {
+        switch (target) {
+            case None:
+                //Clear the text to blank when not selecting anything.
+                title.setText("");
+                detail.setText("");
+                break;
+            case Tile:
+                renderTile();
+                break;
+            case Path:
+                renderPath();
+                break;
+            case Town:
+                renderTown();
+                break;
+            case Trade:
+                renderTrade();
+                break;
+            case History:
+                renderHistory();
+                break;
+        }
+        if (isLocalPlayerActive()) {
             add(new ContextButton(1) {
                 @Override
                 public String toString() {
@@ -86,15 +119,23 @@ public class ContextRegion extends ConfigurableScreenRegion {
                 }
             }).setPosition(getButtonLocation(0, 0));
         }
-        //Decide what to render based on what we clicked.
-        if (target instanceof ResourceTile) {
-            ResourceTile tile = (ResourceTile) target;
+
+        add(background);
+
+        center(add(title)).y = getConfig().getLayout().getInt("title.y");
+        center(add(detail)).y = getConfig().getLayout().getInt("detail.y");
+    }
+
+    private void renderTile() {
+        Tile targetTile = manager.getLocalGame().getBoard().getTile(targetCoord);
+        if (targetTile instanceof ResourceTile) {
+            ResourceTile tile = (ResourceTile) targetTile;
             title.setText("Tile: " + tile.getTerrain());
             if (tile.getResource() != null)
                 detail.setText("Produces: " + tile.getResource());
             else
                 detail.setText("Produces: Nothing");
-            if (localPlayerActive && !tile.hasRobber()) {
+            if (isLocalPlayerActive() && !tile.hasRobber()) {
                 add(new ContextButton(2) {
                     @Override
                     public String toString() {
@@ -107,121 +148,100 @@ public class ContextRegion extends ConfigurableScreenRegion {
                     }
                 }).setPosition(getButtonLocation(1, 0));
             }
-        } else if (target instanceof TradeTile) {
-            TradeTile tile = (TradeTile) target;
+        } else if (targetTile instanceof TradeTile) {
+            TradeTile tile = (TradeTile) targetTile;
             title.setText("Tile: " + tile.getTradingPostType() + " Port");
             detail.setText("Facing: " + tile.getDirection());
-        } else if (target instanceof BeachTile) {
-            BeachTile tile = (BeachTile) target;
+        } else if (targetTile instanceof BeachTile) {
+            BeachTile tile = (BeachTile) targetTile;
             title.setText("Tile: Beach");
             detail.setText("Facing: " + tile.getDirection());
-        } else if (target instanceof Path) {
-            Path path = (Path) target;
-            title.setText("Path: " + target);
-            detail.setText("Owned by: " + path.getTeam());
-            if (localPlayerActive && path.getTeam().equals(TeamColor.None)) {
-                add(new ContextButton(5) {
-                    @Override
-                    public String toString() {
-                        return "Path";
-                    }
+        }
+    }
 
-                    @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Road_Purchase, path.getPosition());
-                    }
-                }).setPosition(getButtonLocation(1, 0));
-            }
-        } else if (target instanceof Town) {
-            title.setText("Town: " + target);
-            detail.setText("Owned by: " + ((Town) target).getTeam());
-            if (localPlayerActive) {
-                Town town = (Town) target;
-                if (town.getTeam().equals(TeamColor.None)) {
-                    add(new ContextButton(3) {
-                        @Override
-                        public String toString() {
-                            return "Town";
-                        }
-                        @Override
-                        public UserEvent onMouseClick(MouseEvent event) {
-                            return new UserEvent(this, UserEventType.Settlement_Purchase, town.getPosition());
-                        }
-                    }).setPosition(getButtonLocation(1, 0));
-                } else if (town.getTeam().equals(game.getPlayers().getPlayer(local).getTeamColor())) {
-                    add(new ContextButton(4) {
-                        @Override
-                        public String toString() {
-                            return "Town";
-                        }
-
-                        @Override
-                        public UserEvent onMouseClick(MouseEvent event) {
-                            return new UserEvent(this, UserEventType.City_Purchase, town.getPosition());
-                        }
-                    }).setPosition(getButtonLocation(1, 0));
-                }
-            }
-        } else if (target instanceof Trade) {
-            if (localPlayerActive) {
-                add(new ContextButton(8) {
-                    @Override
-                    public String toString() {
-                        return "ConfirmTrade";
-                    }
-
-                    @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Make_Trade, target);
-                    }
-                }).setPosition(getButtonLocation(1, 0));
-            }
-        } else if (target instanceof Integer) {
-            GameEvent event = manager.getEvents().get((Integer) target);
-            title.setText("Event: " + getEventDescription(event));
-            if (event.getOrigin() != null)
-                detail.setText(event.getOrigin().toString());
-            add(new ContextButton(9) {
+    private void renderPath() {
+        Path path = manager.getLocalGame().getBoard().getPath(targetCoord);
+        title.setText("Path: " + path);
+        detail.setText("Owned by: " + path.getTeam());
+        if (isLocalPlayerActive() && path.getTeam().equals(TeamColor.None)) {
+            add(new ContextButton(5) {
                 @Override
                 public String toString() {
-                    return "JumpToEvent";
+                    return "Path";
                 }
 
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.History_Jump, target);
+                    return new UserEvent(this, UserEventType.Road_Purchase, path.getPosition());
                 }
-            }).setPosition(getButtonLocation(1,0));
+            }).setPosition(getButtonLocation(1, 0));
         }
-        add(background);
-
-        center(add(title)).y = getConfig().getLayout().getInt("title.y");
-        center(add(detail)).y = getConfig().getLayout().getInt("detail.y");
     }
 
+    private void renderTown() {
+        Town town = manager.getLocalGame().getBoard().getTown(targetCoord);
+        title.setText("Town: " + town);
+        detail.setText("Owned by: " + town.getTeam());
+        if (isLocalPlayerActive()) {
+            if (town.getTeam().equals(TeamColor.None)) {
+                add(new ContextButton(3) {
+                    @Override
+                    public String toString() {
+                        return "Town";
+                    }
+                    @Override
+                    public UserEvent onMouseClick(MouseEvent event) {
+                        return new UserEvent(this, UserEventType.Settlement_Purchase, town.getPosition());
+                    }
+                }).setPosition(getButtonLocation(1, 0));
+            } else if (town.getTeam().equals(manager.getLocalGame().getPlayers().getPlayer(username).getTeamColor())) {
+                add(new ContextButton(4) {
+                    @Override
+                    public String toString() {
+                        return "Town";
+                    }
 
-    private String getEventDescription(GameEvent event) {
-        switch (event.getType() ) {
-            case Start:
-                return "Start Game";
-            case Turn_Advance:
-                return "End Turn";
-            case Player_Move_Robber:
-                return "Move Robber";
-            case Build_Settlement:
-                return "Build Settlement";
-            case Build_City:
-                return "Build City";
-            case Build_Road:
-                return "Build Road";
-            case Buy_Development:
-                return "Buy Development Card";
-            case Offer_Trade:
-                return "Propose Trade";
-            case Make_Trade:
-                return "Complete Trade";
+                    @Override
+                    public UserEvent onMouseClick(MouseEvent event) {
+                        return new UserEvent(this, UserEventType.City_Purchase, town.getPosition());
+                    }
+                }).setPosition(getButtonLocation(1, 0));
+            }
         }
-        return "NO DESCRIPTION";
+    }
+
+    private void renderTrade() {
+        if (isLocalPlayerActive() && manager.getLocalGame().getTrades(username).contains(targetTrade)) {
+            add(new ContextButton(8) {
+                @Override
+                public String toString() {
+                    return "ConfirmTrade";
+                }
+
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    return new UserEvent(this, UserEventType.Make_Trade, targetTrade);
+                }
+            }).setPosition(getButtonLocation(1, 0));
+        }
+    }
+
+    private void renderHistory() {
+        GameEvent event = manager.getEvents().get(targetHistory);
+        title.setText("Event: " + gameEventPrinter.getLocalization(event));
+        if (event.getOrigin() != null)
+            detail.setText(event.getOrigin().toString());
+        add(new ContextButton(9) {
+            @Override
+            public String toString() {
+                return "JumpToEvent";
+            }
+
+            @Override
+            public UserEvent onMouseClick(MouseEvent event) {
+                return new UserEvent(this, UserEventType.History_Jump, targetHistory);
+            }
+        }).setPosition(getButtonLocation(1,0));
     }
 
     private Point getButtonLocation(int x, int y) {
@@ -239,8 +259,33 @@ public class ContextRegion extends ConfigurableScreenRegion {
         return "ContextScreenArea";
     }
 
-    public void target(Object target) {
-        this.target = target;
+    public void targetTile(Coordinate position) {
+        targetCoord = position;
+        target = ContextTarget.Tile;
+        forceRender();
+    }
+
+    public void targetPath(Coordinate position) {
+        targetCoord = position;
+        target = ContextTarget.Path;
+        forceRender();
+    }
+
+    public void targetTown(Coordinate position) {
+        targetCoord = position;
+        target = ContextTarget.Town;
+        forceRender();
+    }
+
+    public void targetTrade(Trade trade) {
+        targetTrade = trade;
+        target = ContextTarget.Trade;
+        forceRender();
+    }
+
+    public void targetHistory(int index) {
+        targetHistory = index;
+        target = ContextTarget.History;
         forceRender();
     }
 
@@ -248,5 +293,9 @@ public class ContextRegion extends ConfigurableScreenRegion {
         private ContextButton(int icon) {
             super(2, graphics.getGraphic(icon));
         }
+    }
+
+    private enum ContextTarget {
+        None, Tile, Path, Town, Trade, History
     }
 }

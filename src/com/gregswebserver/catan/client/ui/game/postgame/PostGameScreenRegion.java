@@ -7,11 +7,8 @@ import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
+import com.gregswebserver.catan.client.ui.game.MapRegion;
 import com.gregswebserver.catan.client.ui.game.TimelineRegion;
-import com.gregswebserver.catan.client.ui.game.map.MapRegion;
-import com.gregswebserver.catan.client.ui.game.map.TeamColors;
-import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.scoring.reporting.team.LocalizedTeamScorePrinter;
 
 import java.awt.*;
 
@@ -22,79 +19,70 @@ import java.awt.*;
  */
 public class PostGameScreenRegion extends ClientScreen {
 
-    private final CatanGame game;
+    //Configuration dependencies
+    private int sidebarWidth;
+    private int contextHeight;
+    private int timelineHeight;
+
+    //Sub-regions
     private final ContextRegion context;
     private final ScrollingScreenContainer map;
     private final TimelineRegion timeline;
+    private final ScoreboardRegion scoreboard;
 
-    private int sidebarWidth;
-    private int inventoryHeight;
-    private int contextHeight;
-    private int timelineHeight;
-    private Dimension borderBuffer;
-
-    public PostGameScreenRegion(GameManager manager, TeamColors teamColors) {
+    public PostGameScreenRegion(GameManager manager) {
         super("postgame");
-        this.game = manager.getLocalGame();
-        context = new ContextRegion(manager, null);
-        map = new ScrollingScreenContainer(0, "scroll", new MapRegion(context, game.getBoard(), teamColors)) {
+        context = new ContextRegion();
+        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
+        map = new ScrollingScreenContainer(0, "scroll", mapRegion) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
             }
         };
-        timeline = new TimelineRegion(context, manager, teamColors);
-        //TODO: add sidebar with score information about the game.
+        scoreboard = new ScoreboardRegion(manager.getLocalGame());
+        timeline = new TimelineRegion(manager);
+        context.setGameManager(manager);
+        mapRegion.setContext(context);
+        timeline.setContext(context);
         add(context);
         add(map);
+        add(scoreboard);
         add(timeline);
-    }
-
-    public void target(Object o) {
-        context.target(o);
     }
 
     @Override
     public void refresh() {
         map.update();
         timeline.update();
+        scoreboard.forceRender();
         context.forceRender();
     }
 
     @Override
     public void loadConfig(UIConfig config) {
         sidebarWidth = config.getLayout().getInt("sidebar.width");
-        inventoryHeight = config.getLayout().getInt("inventory.height");
         contextHeight = config.getLayout().getInt("context.height");
         timelineHeight = config.getLayout().getInt("timeline.height");
-        borderBuffer = config.getLayout().getDimension("borderbuffer");
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        int mainWidth = mask.getWidth();
+        int mainWidth = mask.getWidth() - sidebarWidth;
         int timelineWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - timelineHeight;
-        int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;
+        int tradeHeight = mask.getHeight() - contextHeight;
 
-        context.setPosition(new Point(timelineWidth, inventoryHeight + tradeHeight));
+        context.setPosition(new Point(timelineWidth, tradeHeight));
         timeline.setPosition(new Point(0,mainHeight));
+        scoreboard.setPosition(new Point(timelineWidth, 0));
 
         map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
-
+        scoreboard.setMask(new RectangularMask(new Dimension(sidebarWidth, tradeHeight)));
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
-        Insets viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
-        map.setInsets(viewInsets);
         map.center();
-    }
-
-    private void printScore() {
-        if (getConfig() != null) {
-            LocalizedTeamScorePrinter p = new LocalizedTeamScorePrinter(getConfig().getLocale());
-            System.out.println(p.getLocalization(game.getScore()));
-        }
     }
 
     public String toString() {

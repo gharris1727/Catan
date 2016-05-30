@@ -7,12 +7,9 @@ import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
-import com.gregswebserver.catan.client.ui.game.InventoryRegion;
+import com.gregswebserver.catan.client.ui.game.MapRegion;
 import com.gregswebserver.catan.client.ui.game.TimelineRegion;
-import com.gregswebserver.catan.client.ui.game.map.MapRegion;
-import com.gregswebserver.catan.client.ui.game.map.TeamColors;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
 
@@ -22,41 +19,45 @@ import java.awt.*;
  */
 public class PlayingScreenRegion extends ClientScreen {
 
+    //Configuration dependencies
+    private int sidebarWidth;
+    private int inventoryHeight;
+    private int contextHeight;
+    private int timelineHeight;
+
+    //Sub-regions
     private final ContextRegion context;
     private final ScrollingScreenContainer map;
     private final TradeRegion trade;
     private final InventoryRegion inventory;
     private final TimelineRegion timeline;
-    private int sidebarWidth;
-    private int inventoryHeight;
-    private int contextHeight;
-    private int timelineHeight;
-    private Dimension borderBuffer;
 
-    public PlayingScreenRegion(Username username, GameManager manager, TeamColors teamColors) {
+    public PlayingScreenRegion(Username username, GameManager manager) {
         super("playing");
-        //Load relevant details
-        CatanGame game = manager.getLocalGame();
-        context = new ContextRegion(manager, username);
-        map = new ScrollingScreenContainer(0, "scroll", new MapRegion(context, game.getBoard(), teamColors)) {
+        //Create sub-regions
+        context = new ContextRegion();
+        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
+        map = new ScrollingScreenContainer(0, "scroll", mapRegion) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
             }
         };
-        trade = new TradeRegion(context, game, username);
-        inventory = new InventoryRegion(game, username);
-        timeline = new TimelineRegion(context, manager, teamColors);
+        trade = new TradeRegion(manager.getLocalGame(), username);
+        inventory = new InventoryRegion(manager.getLocalGame().getPlayers().getPlayer(username));
+        timeline = new TimelineRegion(manager);
+        //Link the context region into everything else
+        context.setUsername(username);
+        context.setGameManager(manager);
+        mapRegion.setContext(context);
+        trade.setContext(context);
+        timeline.setContext(context);
         //Add everything to the screen
         add(map);
         add(trade);
         add(inventory);
         add(context);
         add(timeline);
-    }
-    
-    public void target(Object o) {
-        context.target(o);
     }
 
     @Override
@@ -74,7 +75,6 @@ public class PlayingScreenRegion extends ClientScreen {
         inventoryHeight = config.getLayout().getInt("inventory.height");
         contextHeight = config.getLayout().getInt("context.height");
         timelineHeight = config.getLayout().getInt("timeline.height");
-        borderBuffer = config.getLayout().getDimension("borderbuffer");
     }
 
     @Override
@@ -96,9 +96,6 @@ public class PlayingScreenRegion extends ClientScreen {
 
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
-
-        Insets viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
-        map.setInsets(viewInsets);
         map.center();
     }
 

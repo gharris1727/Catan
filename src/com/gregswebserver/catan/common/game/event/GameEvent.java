@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game;
+package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.ExternalEvent;

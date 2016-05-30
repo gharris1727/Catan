@@ -3,6 +3,7 @@ package com.gregswebserver.catan.common.game;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
+import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
@@ -17,7 +18,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gregswebserver.catan.common.game.GameEventType.*;
+import static com.gregswebserver.catan.common.game.event.GameEventType.*;
 import static org.junit.Assert.fail;
 
 /**
@@ -57,7 +58,7 @@ public class CatanGameTest {
 
     private CatanGame startTwoPlayerGame() {
         CatanGame game = new CatanGame(twoPlayers);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18, 6)), true);
         assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
         assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
         assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);

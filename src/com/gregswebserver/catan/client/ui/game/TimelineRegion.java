@@ -6,8 +6,7 @@ import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.structure.GameManager;
-import com.gregswebserver.catan.client.ui.game.map.TeamColors;
-import com.gregswebserver.catan.common.game.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
@@ -25,26 +24,25 @@ import java.util.Map;
  */
 public class TimelineRegion extends ConfigurableScreenRegion {
 
-    private final Map<TeamColor, GraphicSet> eventGraphics;
-
-    private final ContextRegion context;
+    //Required instance details
     private final List<GameEvent> events;
     private final PlayerPool players;
-    private final TeamColors teamColors;
 
+    //Optional interactions
+    private ContextRegion context;
+
+    //Configuration dependencies
+    private Map<TeamColor, GraphicSet> eventGraphics;
+
+    //Sub-regions
     private final TiledBackground background;
     private final ScrollingScreenContainer timeline;
-    private int eventBuffer;
 
-    public TimelineRegion(ContextRegion context, GameManager manager, TeamColors teamColors) {
+    public TimelineRegion(GameManager manager) {
         super(1, "timeline");
-        //Load layout information
-        this.context = context;
-        eventGraphics = new EnumMap<>(TeamColor.class);
         //Store instance information
         this.events = manager.getEvents();
         this.players = manager.getLocalGame().getPlayers();
-        this.teamColors = teamColors;
         //Create sub-regions
         background = new TiledBackground(0, "background");
         timeline = new ScrollingScreenContainer(1, "scroll", new EventList()) {
@@ -59,11 +57,16 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         timeline.setTransparency(true);
     }
 
+    public void setContext(ContextRegion context) {
+        this.context = context;
+    }
+
     @Override
     public void loadConfig(UIConfig config) {
-        eventBuffer = getConfig().getLayout().getInt("scroll.list.buffer");
+        eventGraphics = new EnumMap<>(TeamColor.class);
+        TeamColorSwaps teamColorSwaps = new TeamColorSwaps(config.getTeamColors());
         for (TeamColor teamColor : TeamColor.values())
-            eventGraphics.put(teamColor,new GraphicSet(config.getLayout(), "source", teamColors.getSwaps(teamColor)));
+            eventGraphics.put(teamColor,new GraphicSet(config.getLayout(), "source", teamColorSwaps.getSwaps(teamColor)));
     }
 
     public void update() {
@@ -99,6 +102,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
             eventSpacing = config.getLayout().getInt("spacing");
             eventBuffer = config.getLayout().getInt("buffer");
             eventHeight = config.getLayout().getInt("height");
+            setInsets(new Insets(0, eventBuffer, 0, eventBuffer));
         }
 
         @Override
@@ -141,7 +145,8 @@ public class TimelineRegion extends ConfigurableScreenRegion {
             }
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                context.target(index);
+                if (context != null)
+                    context.targetHistory(index);
                 return null;
             }
         }
@@ -156,8 +161,6 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     protected void resizeContents(RenderMask mask) {
         timeline.setMask(mask);
         background.setMask(mask);
-        Insets viewInsets = new Insets(0, eventBuffer, 0, eventBuffer);
-        timeline.setInsets(viewInsets);
     }
 
     @Override

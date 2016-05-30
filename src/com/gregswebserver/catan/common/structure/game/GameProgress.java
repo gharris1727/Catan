@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.structure.game;
 
 import com.gregswebserver.catan.common.event.EventPayload;
-import com.gregswebserver.catan.common.game.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEvent;
 
 import java.util.List;
 

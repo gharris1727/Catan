@@ -3,7 +3,6 @@ package com.gregswebserver.catan.common.game.event;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
-import com.gregswebserver.catan.common.game.GameEvent;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;

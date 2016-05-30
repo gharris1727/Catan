@@ -1,9 +1,9 @@
 package com.gregswebserver.catan.server.structure;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
-import com.gregswebserver.catan.common.game.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameControlEvent;
 import com.gregswebserver.catan.common.game.event.GameControlEventType;
+import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;

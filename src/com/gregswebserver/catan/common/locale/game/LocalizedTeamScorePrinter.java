@@ -1,7 +1,7 @@
-package com.gregswebserver.catan.common.game.scoring.reporting.team;
+package com.gregswebserver.catan.common.locale.game;
 
 import com.gregswebserver.catan.common.config.ConfigSource;
-import com.gregswebserver.catan.common.game.scoring.reporting.scores.LocalizedScoreReportPrinter;
+import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.locale.LocalizedPrinter;
 

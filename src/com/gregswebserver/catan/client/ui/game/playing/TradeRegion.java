@@ -21,28 +21,38 @@ import java.awt.event.MouseWheelEvent;
  */
 public class TradeRegion extends ConfigurableScreenRegion {
 
-    //TODO: provide an interface to create a new TemporaryTrade.
-    private RenderMask tradeSize;
-
-    private final ContextRegion context;
+    //Required instance information
+    private final CatanGame game;
     private final Username local;
 
-    private final TradeListContainer container;
-    private final TradeControlPanel panel;
+    //Optional interaction modules
+    private ContextRegion context;
+
+    //TODO: provide an interface to create a new TemporaryTrade.
+    //Configuration dependencies
+    private RenderMask tradeSize;
     private int panelHeight;
     private int tradeHeight;
 
-    public TradeRegion(ContextRegion context, CatanGame game, Username local) {
+    //Sub-regions
+    private final TradeListContainer container;
+    private final TradeControlPanel panel;
+
+    public TradeRegion(CatanGame game, Username local) {
         super(1, "trade");
         //Save instance details
-        this.context = context;
+        this.game = game;
         this.local = local;
         //Create sub-regions
-        container = new TradeListContainer(new TradeList(game));
+        container = new TradeListContainer(new TradeList());
         panel = new TradeControlPanel();
         //Add everything to the screen.
         add(container);
         add(panel);
+    }
+
+    public void setContext(ContextRegion context) {
+        this.context = context;
     }
 
     public void update() {
@@ -73,11 +83,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
     private class TradeList extends ScrollingScreenRegion {
 
-        private final CatanGame game;
-
-        private TradeList(CatanGame game) {
+        private TradeList() {
             super(1, "list");
-            this.game = game;
             setTransparency(true);
         }
 
@@ -85,7 +92,7 @@ public class TradeRegion extends ConfigurableScreenRegion {
         protected void renderContents() {
             clear();
             int height = 0;
-            for (Trade t : game.getTrades(TradeRegion.this.local)) {
+            for (Trade t : game.getTrades(local)) {
                 TradeListElement elt = new TradeListElement(t);
                 elt.setConfig(getConfig());
                 elt.setMask(tradeSize);
@@ -139,7 +146,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
-                context.target(trade);
+                if (context != null)
+                    context.targetTrade(trade);
                 return null;
             }
 
@@ -150,8 +158,8 @@ public class TradeRegion extends ConfigurableScreenRegion {
 
             @Override
             public void loadConfig(UIConfig config) {
-                elementOffset = getConfig().getLayout().getPoint("offset");
-                elementSpacing = getConfig().getLayout().getPoint("spacing");
+                elementOffset = config.getLayout().getPoint("offset");
+                elementSpacing = config.getLayout().getPoint("spacing");
             }
 
             @Override

@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.scoring;
 
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.GameTriggerEvent;
+import com.gregswebserver.catan.common.game.event.GameTriggerEvent;
 
 /**
  * Created by greg on 5/26/16.

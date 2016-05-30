@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
-import com.gregswebserver.catan.common.game.GameTriggerEvent;
+import com.gregswebserver.catan.common.game.event.GameTriggerEvent;
 
 /**
  * Created by greg on 5/25/16.

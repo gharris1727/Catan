@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game;
+package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.event.InternalEvent;

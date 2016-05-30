@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.client.ui.game.map;
+package com.gregswebserver.catan.client.ui.game;
 
 import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
@@ -10,11 +10,11 @@ import java.util.Map;
  * Created by greg on 3/20/16.
  *
  */
-public class TeamColors {
+public class TeamColorSwaps {
 
     private final Map<TeamColor, int[]> swaps;
 
-    public TeamColors(ConfigSource source) {
+    public TeamColorSwaps(ConfigSource source) {
         this.swaps = new EnumMap<>(TeamColor.class);
         for (TeamColor teamColor : TeamColor.values()) {
             int[] colorSwaps = new int[]{

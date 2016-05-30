@@ -2,7 +2,7 @@ package com.gregswebserver.catan.common.game.listeners;
 
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
-import com.gregswebserver.catan.common.game.GameTriggerEvent;
+import com.gregswebserver.catan.common.game.event.GameTriggerEvent;
 
 /**
  * Created by greg on 5/28/16.

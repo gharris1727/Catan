@@ -88,7 +88,7 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && host != null && insets != null;
+        return super.isRenderable() && host != null && host.isRenderable() && insets != null;
     }
 
     @Override
@@ -96,6 +96,8 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
         super.assertRenderable();
         if (host == null)
             throw new NotYetRenderableException(this + " has no host");
+        if (!host.isRenderable())
+            throw new NotYetRenderableException(this + " has no renderable host");
         if (insets == null)
             throw new NotYetRenderableException(this + " has no insets");
     }

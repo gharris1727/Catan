@@ -14,7 +14,6 @@ import com.gregswebserver.catan.client.structure.ServerPool;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.connecting.ConnectingScreen;
 import com.gregswebserver.catan.client.ui.disconnecting.DisconnectingScreen;
-import com.gregswebserver.catan.client.ui.game.map.TeamColors;
 import com.gregswebserver.catan.client.ui.game.playing.PlayingScreenRegion;
 import com.gregswebserver.catan.client.ui.game.postgame.PostGameScreenRegion;
 import com.gregswebserver.catan.client.ui.game.spectate.SpectateScreenRegion;
@@ -34,9 +33,9 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
-import com.gregswebserver.catan.common.game.GameEvent;
-import com.gregswebserver.catan.common.game.GameEventType;
 import com.gregswebserver.catan.common.game.event.GameControlEvent;
+import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ClientConnection;
@@ -73,7 +72,6 @@ public class Client extends CoreThread {
     }
 
     private PropertiesFile config;
-    private PropertiesFile teamColors;
 
     private ChatThread chatThread;
     private GameManager gameManager;
@@ -304,13 +302,13 @@ public class Client extends CoreThread {
                 case Game_Sync:
                     gameManager = new GameManager(this, (GameProgress) event.getPayload());
                     if (gameManager.getLocalGame().getPlayers().getPlayer(username) != null)
-                        changeScreen(new PlayingScreenRegion(username, gameManager, new TeamColors(teamColors)));
+                        changeScreen(new PlayingScreenRegion(username, gameManager));
                     else
-                        changeScreen(new SpectateScreenRegion(gameManager, new TeamColors(teamColors)));
+                        changeScreen(new SpectateScreenRegion(gameManager));
                     break;
                 case Game_Finish:
                     if (gameManager != null && gameManager.getLocalGame().getPlayers().getPlayer(event.getOrigin()) != null)
-                        changeScreen(new PostGameScreenRegion(gameManager, new TeamColors(teamColors)));
+                        changeScreen(new PostGameScreenRegion(gameManager));
                     break;
                 default:
                     throw new IllegalStateException();
@@ -371,14 +369,14 @@ public class Client extends CoreThread {
         PropertiesFile locale = ResourceLoader.getPropertiesFile(localeFile);
         PropertiesFile layout = ResourceLoader.getPropertiesFile(uiLayoutFile);
         PropertiesFile style = ResourceLoader.getPropertiesFile(styleFile);
-        teamColors = ResourceLoader.getPropertiesFile(teamColorsFile);
+        PropertiesFile teamColors = ResourceLoader.getPropertiesFile(teamColorsFile);
         //Create shared resources.
         serverPool = new ServerPool(serverFile);
         BaseRegion base = new BaseRegion();
         window = new ClientWindow(this, new InputListener(this, base));
         //Start and configure the renderer.
         renderThread = new RenderThread(logger, base);
-        renderThread.addEvent(new RenderEvent(this, RenderEventType.Set_Configuration, new UIConfig(style, layout, locale)));
+        renderThread.addEvent(new RenderEvent(this, RenderEventType.Set_Configuration, new UIConfig(style, layout, locale, teamColors)));
         changeScreen(new ServerConnectMenu(serverPool));
         addMenu(new FileMenu());
         renderThread.start();

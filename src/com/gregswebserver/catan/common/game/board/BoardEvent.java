@@ -1,6 +1,6 @@
 package com.gregswebserver.catan.common.game.board;
 
-import com.gregswebserver.catan.common.game.GameTriggerEvent;
+import com.gregswebserver.catan.common.game.event.GameTriggerEvent;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 /**

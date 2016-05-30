@@ -18,21 +18,24 @@ public class UIConfig {
     private static final String fontStyleKey = ".style";
     private static final String fontSizeKey = ".size";
     private static final String fontColorKey = ".color";
+    private static final String fontSpacingKey = ".spacing";
     private static final String backgroundRootKey = "background.";
     private static final String iconRootKey = "icons.";
 
     private final ConfigSource style;
     private final ConfigSource layout;
     private final ConfigSource locale;
+    private final ConfigSource teamColors;
 
-    public UIConfig(ConfigSource style, ConfigSource layout, ConfigSource locale) {
+    public UIConfig(ConfigSource style, ConfigSource layout, ConfigSource locale, ConfigSource teamColors) {
         this.style = style;
         this.layout = layout;
         this.locale = locale;
+        this.teamColors = teamColors;
     }
 
     public UIConfig narrow(String prefix) {
-        return new UIConfig(style, layout.narrow(prefix), locale.narrow(prefix));
+        return new UIConfig(style, layout.narrow(prefix), locale, teamColors);
     }
 
     public ConfigSource getLayout() {
@@ -41,6 +44,10 @@ public class UIConfig {
 
     public ConfigSource getLocale() {
         return locale;
+    }
+
+    public ConfigSource getTeamColors() {
+        return teamColors;
     }
 
     public String getLocalization(String key) {
@@ -71,6 +78,7 @@ public class UIConfig {
 
         private final Font font;
         private final Color color;
+        private final int spacing;
 
         @SuppressWarnings("MagicConstant")
         private TextStyle(String textStyleKey) {
@@ -79,6 +87,7 @@ public class UIConfig {
             int fontSize = style.getInt(textStyleKey + fontSizeKey);
             this.color = style.getColor(textStyleKey + fontColorKey);
             this.font = new Font(fontName, getFontStyle(fontStyleName), fontSize);
+            this.spacing = style.getInt(textStyleKey + fontSpacingKey);
         }
 
         private int getFontStyle(String fontStyleName) {
@@ -96,6 +105,10 @@ public class UIConfig {
 
         public Color getColor() {
             return color;
+        }
+
+        public int getLineSpacing() {
+            return spacing;
         }
     }
 }

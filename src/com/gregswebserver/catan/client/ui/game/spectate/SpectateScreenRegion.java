@@ -7,10 +7,8 @@ import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
+import com.gregswebserver.catan.client.ui.game.MapRegion;
 import com.gregswebserver.catan.client.ui.game.TimelineRegion;
-import com.gregswebserver.catan.client.ui.game.map.MapRegion;
-import com.gregswebserver.catan.client.ui.game.map.TeamColors;
-import com.gregswebserver.catan.common.game.CatanGame;
 
 import java.awt.*;
 
@@ -20,35 +18,35 @@ import java.awt.*;
  */
 public class SpectateScreenRegion extends ClientScreen {
 
+    //Configuration dependencies
+    private int sidebarWidth;
+    private int contextHeight;
+    private int timelineHeight;
+
+    //Sub-regions
     private final ContextRegion context;
     private final ScrollingScreenContainer map;
     private final TimelineRegion timeline;
-    private int sidebarWidth;
-    private int inventoryHeight;
-    private int contextHeight;
-    private int timelineHeight;
-    private Dimension borderBuffer;
 
-    public SpectateScreenRegion(GameManager manager, TeamColors teamColors) {
+    public SpectateScreenRegion(GameManager manager) {
         super("spectate");
         //Load relevant details
-        CatanGame game = manager.getLocalGame();
-        context = new ContextRegion(manager, null);
-        map = new ScrollingScreenContainer(0, "scroll", new MapRegion(context, game.getBoard(), teamColors)) {
+        context = new ContextRegion();
+        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
+        map = new ScrollingScreenContainer(0, "scroll", mapRegion) {
             @Override
             public String toString() {
                 return "MapScrollContainer";
             }
         };
-        timeline = new TimelineRegion(context, manager, teamColors);
+        timeline = new TimelineRegion(manager);
+        context.setGameManager(manager);
+        mapRegion.setContext(context);
+        timeline.setContext(context);
         //Add everything to the screen
         add(map);
         add(context);
         add(timeline);
-    }
-
-    public void target(Object o) {
-        context.target(o);
     }
 
     @Override
@@ -61,10 +59,8 @@ public class SpectateScreenRegion extends ClientScreen {
     @Override
     public void loadConfig(UIConfig config) {
         sidebarWidth = config.getLayout().getInt("sidebar.width");
-        inventoryHeight = config.getLayout().getInt("inventory.height");
         contextHeight = config.getLayout().getInt("context.height");
         timelineHeight = config.getLayout().getInt("timeline.height");
-        borderBuffer = config.getLayout().getDimension("borderbuffer");
     }
 
     @Override
@@ -72,9 +68,9 @@ public class SpectateScreenRegion extends ClientScreen {
         int mainWidth = mask.getWidth();
         int timelineWidth = mask.getWidth() - sidebarWidth;
         int mainHeight = mask.getHeight() - timelineHeight;
-        int tradeHeight = mask.getHeight() - inventoryHeight - contextHeight;
+        int tradeHeight = mask.getHeight() - contextHeight;
 
-        context.setPosition(new Point(timelineWidth, inventoryHeight + tradeHeight));
+        context.setPosition(new Point(timelineWidth, tradeHeight));
         timeline.setPosition(new Point(0,mainHeight));
 
         map.setMask(new RectangularMask(new Dimension(mainWidth, mainHeight)));
@@ -82,8 +78,6 @@ public class SpectateScreenRegion extends ClientScreen {
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
-        Insets viewInsets = new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width);
-        map.setInsets(viewInsets);
         map.center();
     }
 

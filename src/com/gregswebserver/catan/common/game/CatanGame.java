@@ -12,6 +12,7 @@ import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
+import com.gregswebserver.catan.common.game.event.*;
 import com.gregswebserver.catan.common.game.gameplay.trade.PermanentTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
@@ -147,8 +148,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     winner = color;
                 }
             }
-            if (points < rules.getMinimumPoints())
-                return TeamColor.None;
+            //if (points < rules.getMinimumPoints())
+                //return TeamColor.None;
             return winner;
         } catch (ScoreException e) {
             return TeamColor.None;
@@ -408,7 +409,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             }
             if (valid) {
                 try {
-                    listener.test(event);
+                    listener.execute(event);
                 } catch (Exception e) {
                     if (e instanceof EventConsumerException)
                         listener.reportExecuteError((EventConsumerException) e);

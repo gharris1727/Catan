@@ -1,9 +1,8 @@
-package com.gregswebserver.catan.client.ui.game;
+package com.gregswebserver.catan.client.ui.game.playing;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.client.ui.game.ResourceCounter;
 import com.gregswebserver.catan.common.game.players.Player;
 import com.gregswebserver.catan.common.game.util.GameResource;
 
@@ -23,13 +22,13 @@ public class InventoryRegion extends ConfigurableScreenRegion {
     private Point elementSpacing;
     private int usernameHeight;
 
-    public InventoryRegion(CatanGame game, Username user) {
+    public InventoryRegion(Player player) {
         super(2, "inventory");
         //Store instance information.
-        this.player = game.getPlayers().getPlayer(user);
+        this.player = player;
         //Create sub-regions
         background = new EdgedTiledBackground(0, "background");
-        username = new TextLabel(1, "username", user.username);
+        username = new TextLabel(1, "username", player.getName().username);
         //Add everything to the screen.
         add(background).setClickable(this);
         add(username).setClickable(this);
