@@ -1,7 +1,5 @@
 package com.gregswebserver.catan.common.resources;
 
-import com.gregswebserver.catan.ExternalResource;
-
 /**
  * Created by Greg on 1/7/2015.
  * Information about how to load various game modes, that can be loaded by the ResourceLoader
@@ -29,7 +27,7 @@ public final class BoardLayoutInfo extends ResourceCacheKey {
     }
 
     public String getPath() {
-        return ExternalResource.getConfigDirectory() + "games/" + name + ".properties";
+        return "games/" + name + ".properties";
     }
 
     public long getSeed() {
