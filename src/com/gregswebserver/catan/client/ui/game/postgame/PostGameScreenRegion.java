@@ -41,7 +41,7 @@ public class PostGameScreenRegion extends ClientScreen {
             }
         };
         scoreboard = new ScoreboardRegion(manager.getLocalGame());
-        timeline = new TimelineRegion(manager);
+        timeline = new TimelineRegion(manager.getRemoteGame());
         context.setGameManager(manager);
         mapRegion.setContext(context);
         timeline.setContext(context);

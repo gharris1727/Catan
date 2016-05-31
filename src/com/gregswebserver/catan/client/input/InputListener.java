@@ -1,9 +1,14 @@
 package com.gregswebserver.catan.client.input;
 
 import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.common.event.QueuedInputThread;
+import com.gregswebserver.catan.common.log.Logger;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -14,6 +19,7 @@ import java.awt.event.*;
 public class InputListener implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private final Client client;
+    private final HoverTimingThread queue;
     private final Clickable nullClickable;
     private final Clickable root;
     private Clickable selected;
@@ -22,10 +28,16 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     public InputListener(Client client, Clickable root) {
         this.client = client;
+        this.queue = new HoverTimingThread(client.logger);
+        queue.start();
         this.root = root;
         this.nullClickable = new NullClickable();
         this.selected = nullClickable;
         this.hover = nullClickable;
+    }
+
+    public QueuedInputThread<HoverEvent> getThread() {
+        return queue;
     }
 
     private void sendEvent(UserEvent event) {
@@ -39,7 +51,14 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         if (hover != next) {
             sendEvent(hover.onUnHover());
             hover = next;
-            sendEvent(hover.onHover());
+            UserEvent event = hover.onHover();
+            if (event != null && event.getType() == UserEventType.Linger_Trigger) {
+                HoverEvent hoverEvent = new HoverEvent(hover, (Long) event.getPayload());
+                client.logger.debug(this, "Waiting " + hoverEvent.getDelay(TimeUnit.MILLISECONDS) + "msecs");
+                queue.addEvent(hoverEvent);
+             } else {
+                sendEvent(event);
+            }
             //client.logger.log("Hovered "+ hover, LogLevel.DEBUG);
         }
     }
@@ -118,4 +137,45 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         return "InputListener";
     }
 
+    private class HoverEvent implements Delayed {
+
+        private final Clickable clickable;
+        private final long targetTime;
+
+        private HoverEvent(Clickable clickable, long msecDelay) {
+            this.clickable = clickable;
+            this.targetTime = System.currentTimeMillis() + msecDelay;
+        }
+
+        @Override
+        public long getDelay(TimeUnit timeUnit) {
+            return timeUnit.convert(targetTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public int compareTo(Delayed delayed) {
+            long d = this.targetTime - ((HoverEvent) delayed).targetTime;
+            return ((d == 0) ? 0 : ((d < 0) ? -1 : 1));
+        }
+    }
+
+    private class HoverTimingThread extends QueuedInputThread<HoverEvent> {
+
+        private HoverTimingThread(Logger logger) {
+            super(logger, new DelayQueue<>());
+        }
+
+        @Override
+        protected void execute() throws ThreadStop {
+            HoverEvent event = getEvent(true);
+            if (event.clickable == hover)
+                sendEvent(event.clickable.onLinger());
+            logger.debug(this,"Lingered on " + event.clickable);
+        }
+
+        @Override
+        public String toString() {
+            return "HoverTimingThread";
+        }
+    }
 }

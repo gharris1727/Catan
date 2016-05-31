@@ -82,6 +82,7 @@ public class Client extends CoreThread {
     private ServerPool serverPool;
     private Username username;
     private MatchmakingPool matchmakingPool;
+    private InputListener listener;
     private ClientWindow window;
 
     public Client() {
@@ -376,7 +377,8 @@ public class Client extends CoreThread {
         //Create shared resources.
         serverPool = new ServerPool(serverFile);
         BaseRegion base = new BaseRegion();
-        window = new ClientWindow(this, new InputListener(this, base));
+        listener = new InputListener(this, base);
+        window = new ClientWindow(this, listener);
         //Start and configure the renderer.
         renderThread = new RenderThread(logger, base);
         renderThread.addEvent(new RenderEvent(this, RenderEventType.Set_Configuration, new UIConfig(style, layout, locale, teamColors)));
@@ -388,12 +390,14 @@ public class Client extends CoreThread {
     private void shutdown() {
         //Shut down the client and all running threads.
         disconnect("Quitting");
-        if (renderThread != null && renderThread.isRunning())
+        if (renderThread.isRunning())
             renderThread.join();
-//        if (chatThread != null && chatThread.isRunning())
+//        if (chatThread.isRunning())
 //            chatThread.join();
         if (gameManager != null)
             gameManager.join();
+        if (listener.getThread().isRunning())
+            listener.getThread().join();
         serverPool.save();
         try {
             config.save();

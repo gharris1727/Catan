@@ -134,12 +134,12 @@ public class GameManager {
         remote.addEvent(new GameControlEvent(this, GameControlEventType.Execute,event));
     }
 
-    public List<GameEvent> getEvents() {
-        return events;
-    }
-
     public CatanGame getLocalGame() {
         return local.getGame();
+    }
+
+    public CatanGame getRemoteGame() {
+        return remote.getGame();
     }
 
     public void join() {

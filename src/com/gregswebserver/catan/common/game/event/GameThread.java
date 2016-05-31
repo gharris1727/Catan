@@ -3,9 +3,13 @@ package com.gregswebserver.catan.common.game.event;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -29,7 +33,10 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
     }
 
     public GameProgress getProgress() {
-        return new GameProgress(settings, game.getEventList());
+        List<GameEvent> events = new ArrayList<>(game.getHistory().size());
+        for (GameHistory h : game.getHistory())
+            events.add(h.getGameEvent());
+        return new GameProgress(settings, events);
     }
 
     //Process GameEvents from the event queue.
@@ -53,7 +60,7 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
                     break;
             }
             onSuccess(event);
-            if (game.finished())
+            if (game.getWinner() != TeamColor.None)
                 onFinish(gameEvent);
         } catch (EventConsumerException e) {
             onFailure(e);

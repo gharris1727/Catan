@@ -37,7 +37,8 @@ public enum UserEventType implements EventType {
     City_Purchase(Coordinate.class), //Purchase a city.
     Make_Trade(Trade.class), //Complete a trade.
     History_Jump(Integer.class), //Jump to that historical event.
-    Propose_Trade(TemporaryTrade.class); //advertise a temporary trade to other players.
+    Propose_Trade(TemporaryTrade.class), //advertise a temporary trade to other players.
+    Linger_Trigger(Long.class); //Trigger a delay to call the onLinger method.
 
     private final Class payloadType;
 

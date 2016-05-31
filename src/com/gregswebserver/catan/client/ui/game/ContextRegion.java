@@ -14,7 +14,7 @@ import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
 import com.gregswebserver.catan.common.game.board.towns.Town;
-import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameHistory;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.locale.game.LocalizedGameEventPrinter;
@@ -227,11 +227,12 @@ public class ContextRegion extends ConfigurableScreenRegion {
     }
 
     private void renderHistory() {
-        GameEvent event = manager.getEvents().get(targetHistory);
-        title.setText("Event: " + gameEventPrinter.getLocalization(event));
+        GameHistory event = manager.getRemoteGame().getHistory().get(targetHistory);
+        Username origin = event.getGameEvent().getOrigin();
+        title.setText("Event: " + gameEventPrinter.getLocalization(event.getGameEvent()));
         String detailText = "";
-        if (event.getOrigin() != null)
-            detailText = event.getOrigin().toString();
+        if (origin != null)
+            detailText = origin.toString();
         detail.setText(detailText);
         add(new ContextButton(9) {
             @Override

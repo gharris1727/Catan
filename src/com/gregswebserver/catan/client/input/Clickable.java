@@ -32,6 +32,8 @@ public interface Clickable {
 
     UserEvent onUnHover();
 
+    UserEvent onLinger();
+
     UserEvent onSelect();
 
     UserEvent onDeselect();

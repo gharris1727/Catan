@@ -96,11 +96,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return players;
     }
 
-    public List<GameEvent> getEventList() {
-        ArrayList<GameEvent> out = new ArrayList<>(history.size());
-        for (GameHistory h : history)
-            out.add(h.getGameEvent());
-        return out;
+    public List<GameHistory> getHistory() {
+        return history;
     }
 
     public List<Trade> getTrades(Username user) {
@@ -137,27 +134,19 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     }
 
     public TeamColor getWinner() {
-        try {
-            TeamColor winner = TeamColor.None;
-            int points = 0;
-            TeamScoreReport teamScoreReport = scoring.score(rules);
-            for (TeamColor color : teamScoreReport) {
-                ScoreReport report = teamScoreReport.getScoreReport(color);
-                if (points < report.getPoints()) {
-                    points = report.getPoints();
-                    winner = color;
-                }
+        TeamColor winner = TeamColor.None;
+        int points = 0;
+        TeamScoreReport teamScoreReport = getScore();
+        for (TeamColor color : teamScoreReport) {
+            ScoreReport report = teamScoreReport.getScoreReport(color);
+            if (points < report.getPoints()) {
+                points = report.getPoints();
+                winner = color;
             }
-            if (points < rules.getMinimumPoints())
-                return TeamColor.None;
-            return winner;
-        } catch (ScoreException e) {
-            return TeamColor.None;
         }
-    }
-
-    public boolean finished() {
-        return getWinner() != TeamColor.None;
+        if (points < rules.getMinimumPoints())
+            return TeamColor.None;
+        return winner;
     }
 
     private LogicEvent createTriggerEvent(GameTriggerEvent event) {

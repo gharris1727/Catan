@@ -45,7 +45,7 @@ public class PlayingScreenRegion extends ClientScreen {
         };
         trade = new TradeRegion(manager.getLocalGame(), username);
         inventory = new InventoryRegion(manager.getLocalGame().getPlayers().getPlayer(username));
-        timeline = new TimelineRegion(manager);
+        timeline = new TimelineRegion(manager.getRemoteGame());
         //Link the context region into everything else
         context.setUsername(username);
         context.setGameManager(manager);

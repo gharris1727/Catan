@@ -91,6 +91,7 @@ public class Lobby implements Serializable {
                 info = new BoardLayoutInfo(System.nanoTime());
             boardLayout = ResourceLoader.getBoardLayout(info);
         } catch (ResourceLoadException e) {
+            e.printStackTrace();
             // Fall back to the text seeded map.
             boardLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo(config.getLayoutName().hashCode()));
         }

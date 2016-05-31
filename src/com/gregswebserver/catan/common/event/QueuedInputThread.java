@@ -3,6 +3,7 @@ package com.gregswebserver.catan.common.event;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -11,16 +12,20 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Calls the execute() function repeatedly, but does not necessarily have to block for events.
  * execute() will continue looping until stop() is called and running is set to false.
  */
-public abstract class QueuedInputThread<T extends GenericEvent> {
+public abstract class QueuedInputThread<T> {
 
     public final Logger logger;
-    private final LinkedBlockingQueue<T> eventQueue;
+    private final BlockingQueue<T> queue;
     private final Thread run;
     private boolean running;
 
     protected QueuedInputThread(Logger logger) {
+        this(logger, new LinkedBlockingQueue<>());
+    }
+
+    protected QueuedInputThread(Logger logger, BlockingQueue<T> queue) {
         this.logger = logger;
-        eventQueue = new LinkedBlockingQueue<>();
+        this.queue = queue;
         run = new Thread(toString()) {
             @Override
             public void run() {
@@ -47,7 +52,8 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
     //Stops the queue processing event.
     @SuppressWarnings("unchecked")
     public void stop() {
-        addEvent((T) new ThreadStopEvent()); //Poison pill event stopper.
+        running = false;
+        run.interrupt();
     }
 
     public void join() {
@@ -62,7 +68,7 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
     //Adds an object to the processing queue.
     public void addEvent(T event) {
         try {
-            eventQueue.put(event);
+            queue.put(event);
         } catch (InterruptedException e) {
             logger.log("Error adding to event queue", e, LogLevel.ERROR);
         }
@@ -70,22 +76,15 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
 
     //pulls an object from the queue, blocks if argument is true.
     protected T getEvent(boolean block) throws ThreadStop {
-        T obj;
-        if (!block) obj = eventQueue.poll();
+        if (!block)
+            return queue.poll();
         else {
             try {
-                obj = eventQueue.take();
+                return queue.take();
             } catch (InterruptedException e) {
-                logger.log("Error removing from event queue", e, LogLevel.ERROR);
                 throw new ThreadStop();
             }
-
         }
-        if (obj instanceof ThreadStopEvent) {
-            running = false;
-            throw new ThreadStop();
-        }
-        return obj;
     }
 
     //Processing function that is called repeatedly.
@@ -101,17 +100,6 @@ public abstract class QueuedInputThread<T extends GenericEvent> {
         return running;
     }
 
-    private static class ThreadStopEvent extends GenericEvent {
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof ThreadStopEvent;
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-    }
     protected static class ThreadStop extends Exception {
     }
 }

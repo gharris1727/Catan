@@ -111,6 +111,11 @@ public abstract class ScreenObject implements Clickable {
     }
 
     @Override
+    public UserEvent onLinger() {
+        return (redirect == null) ? null : redirect.onLinger();
+    }
+
+    @Override
     public Clickable getClickable(Point p) {
         return (redirect == null) ? this : redirect;
     }

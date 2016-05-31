@@ -61,6 +61,11 @@ public class NullClickable implements Clickable {
     }
 
     @Override
+    public UserEvent onLinger() {
+        return null;
+    }
+
+    @Override
     public UserEvent onSelect() {
         return null;
     }

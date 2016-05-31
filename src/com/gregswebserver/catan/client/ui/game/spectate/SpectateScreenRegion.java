@@ -39,7 +39,7 @@ public class SpectateScreenRegion extends ClientScreen {
                 return "MapScrollContainer";
             }
         };
-        timeline = new TimelineRegion(manager);
+        timeline = new TimelineRegion(manager.getRemoteGame());
         context.setGameManager(manager);
         mapRegion.setContext(context);
         timeline.setContext(context);

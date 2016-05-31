@@ -5,8 +5,9 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.structure.GameManager;
+import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameHistory;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class TimelineRegion extends ConfigurableScreenRegion {
 
     //Required instance details
-    private final List<GameEvent> events;
+    private final List<GameHistory> history;
     private final PlayerPool players;
 
     //Optional interactions
@@ -38,11 +39,11 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     private final TiledBackground background;
     private final ScrollingScreenContainer timeline;
 
-    public TimelineRegion(GameManager manager) {
+    public TimelineRegion(CatanGame game) {
         super(1, "timeline");
         //Store instance information
-        this.events = manager.getEvents();
-        this.players = manager.getLocalGame().getPlayers();
+        history = game.getHistory();
+        players = game.getPlayers();
         //Create sub-regions
         background = new TiledBackground(0, "background");
         timeline = new ScrollingScreenContainer(1, "scroll", new EventList()) {
@@ -81,7 +82,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 
         private EventList() {
             super(0, "list");
-            lastCount = events.size();
+            lastCount = history.size();
             setTransparency(true);
         }
 
@@ -109,24 +110,25 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         protected void renderContents() {
             clear();
             int width = 1;
-            for (int i = 0; i < events.size(); i++) {
+            for (int i = 0; i < history.size(); i++) {
                 add(new EventListElement(i)).setPosition(new Point(width, 0));
                 width += eventSpacing;
             }
             width += eventBuffer;
             setMask(new RectangularMask(new Dimension(width, eventHeight)));
             //Scroll the bar over as new events come in.
-            scroll(-eventSpacing * (events.size() - lastCount), 0);
-            lastCount = events.size();
+            scroll(-eventSpacing * (history.size() - lastCount), 0);
+            lastCount = history.size();
         }
 
         private class EventListElement extends GraphicObject {
+
             private final int index;
 
             private EventListElement(int index) {
                 super(0);
                 this.index = index;
-                GameEvent event = events.get(index);
+                GameEvent event = history.get(index).getGameEvent();
                 TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : players.getPlayer(event.getOrigin()).getTeamColor();
                 setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
             }
@@ -149,6 +151,21 @@ public class TimelineRegion extends ConfigurableScreenRegion {
                     context.targetHistory(index);
                 return null;
             }
+            //TODO: use linger triggers to implement a tooltip popup.
+//            @Override
+//            public UserEvent onHover() {
+//                //TODO: move tooltip delays to the UIConfig.
+//                return new UserEvent(this, UserEventType.Linger_Trigger, 1000L);
+//            }
+//            @Override
+//            public UserEvent onUnHover() {
+//                return new UserEvent(this, UserEventType.Expire_Popup, popup);
+//            }
+//
+//            @Override
+//            public UserEvent onLinger() {
+//                return new UserEvent(this, UserEventType.Display_Popup, popup);
+//            }
         }
 
         @Override
