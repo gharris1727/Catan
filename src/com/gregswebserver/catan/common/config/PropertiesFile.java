@@ -17,38 +17,25 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
     private final String comment;
     private final Properties config;
     private boolean needsSaving;
-    private Source source;
 
     public PropertiesFile(String path, String comment) {
         this.path = path;
         this.comment = comment;
         config = new Properties();
         needsSaving = false;
-        source = Source.UNLOADED;
+        //Load defaults that come packaged with the program
         try {
-            config.load(new BufferedReader(new FileReader(
-                    ExternalResource.getCurrentDirectory() +
-                            ExternalResource.getConfigDirectory() +
-                            path)));
-            source = Source.CURRENTDIR;
-        } catch (IOException a) {
-            try {
-                config.load(new BufferedReader(new FileReader(
-                        ExternalResource.getUserDataDirectory() +
-                                ExternalResource.getConfigDirectory() +
-                                path)));
-                source = Source.USERDIR;
-            } catch (IOException b) {
-                try {
-                    config.load(ExternalResource.class.getResourceAsStream(
-                            ExternalResource.getResourceDataDirectory() +
-                                    ExternalResource.getConfigDirectory() +
-                                    path));
-                    source = Source.DEFAULT;
-                } catch (IOException c) {
-                    throw new ConfigurationException("Unable to save configuration data.");
-                }
-            }
+            config.load(ExternalResource.getStaticResource(path));
+        } catch (IOException e) {
+            throw new ConfigurationException("Unable to load default config", e);
+        }
+        //Override the defaults with user configurable versions
+        try {
+            config.load(new BufferedReader(new FileReader(ExternalResource.getUserResource(path))));
+        } catch (FileNotFoundException ignored) {
+            //We ignore errors when the file does not exist
+        } catch (IOException e) {
+            throw new ConfigurationException("Unable to read overridden settings", e);
         }
     }
 
@@ -56,15 +43,7 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
     public void save() {
         if (needsSaving) {
             try {
-                File file;
-                switch (source) {
-                    case CURRENTDIR:
-                        file = new File(ExternalResource.getCurrentDirectory() + path);
-                        break;
-                    default:
-                        file = new File(ExternalResource.getUserDataDirectory() + path);
-                        break;
-                }
+                File file = ExternalResource.getUserResource(path);
                 if (!file.exists() && file.getParentFile().mkdirs()) {
                     if (!file.createNewFile())
                         throw new IOException("Unable to create new file to save.");
@@ -127,9 +106,5 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
                 };
             }
         };
-    }
-
-    private enum Source {
-        UNLOADED, CURRENTDIR, USERDIR, DEFAULT
     }
 }

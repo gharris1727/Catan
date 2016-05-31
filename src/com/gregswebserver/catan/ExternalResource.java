@@ -1,6 +1,8 @@
 package com.gregswebserver.catan;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * Created by greg on 1/19/16.
@@ -8,19 +10,22 @@ import java.io.File;
  */
 public class ExternalResource {
 
-    public static String getCurrentDirectory() {
-        return System.getProperty("user.dir");
-    }
-
-    public static String getUserDataDirectory() {
-        return System.getProperty("user.home") + File.separator + ".catan" + File.separator;
-    }
-
-    public static String getResourceDataDirectory() {
-        return File.separator;
-    }
-
     public static String getConfigDirectory() {
-        return "config" + File.separator;
+        return "config/";
+    }
+
+    public static String getGraphicsDirectory() {
+        return "graphics/";
+    }
+
+    public static InputStream getStaticResource(String s) throws FileNotFoundException {
+        InputStream stream = ExternalResource.class.getResourceAsStream("/" + s);
+        if (stream == null)
+            throw new FileNotFoundException("Unable to load: " + s);
+        return stream;
+    }
+
+    public static File getUserResource(String s) {
+        return new File(System.getProperty("user.home") + "/.catan/" + s);
     }
 }

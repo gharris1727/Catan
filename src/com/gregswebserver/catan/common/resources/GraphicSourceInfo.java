@@ -15,7 +15,7 @@ public final class GraphicSourceInfo extends ResourceCacheKey{
     }
 
     public String getPath() {
-        return ExternalResource.getResourceDataDirectory() + path;
+        return ExternalResource.getGraphicsDirectory() + path;
     }
 
     @Override

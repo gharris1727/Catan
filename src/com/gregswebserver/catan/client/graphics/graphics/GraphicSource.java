@@ -16,7 +16,7 @@ public class GraphicSource extends Graphic {
 
     public GraphicSource(String path) throws IOException {
         //Load the external image.
-        BufferedImage image = ImageIO.read(ExternalResource.class.getResourceAsStream(path));
+        BufferedImage image = ImageIO.read(ExternalResource.getStaticResource(path));
         //Calculate the dimensions we need to save.
         int width = image.getWidth(), height = image.getHeight();
         //Create a buffer to import the RGBA pixels.

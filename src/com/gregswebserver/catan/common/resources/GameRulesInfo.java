@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.common.resources;
 
+import com.gregswebserver.catan.ExternalResource;
+
 /**
  * Created by greg on 1/28/16.
  * A cache lookup object for different StaticGameRules objects.
@@ -13,7 +15,7 @@ public final class GameRulesInfo extends ResourceCacheKey {
     }
 
     public String getPath() {
-        return "rules/" + name + ".properties";
+        return ExternalResource.getConfigDirectory() + "rules/" + name + ".properties";
     }
 
     @Override

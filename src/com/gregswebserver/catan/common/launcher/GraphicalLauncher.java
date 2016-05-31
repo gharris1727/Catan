@@ -15,9 +15,12 @@ import java.awt.*;
  */
 public class GraphicalLauncher extends CoreWindow {
 
-    public GraphicalLauncher(StartupOptions options, final Logger logger) {
+    private final Logger logger;
+
+    public GraphicalLauncher(StartupOptions options, Logger logger) {
         //TODO: Clean up the graphical launcher to include features from the command line.
         super("Settlers of Catan - Launcher", new Dimension(300, 500), false, logger);
+        this.logger = logger;
         JPanel contentPane = new JPanel();
         setContentPane(contentPane);
         setLayout(null);
@@ -53,11 +56,11 @@ public class GraphicalLauncher extends CoreWindow {
 
 
     private void startClient() {
-        new Client();
+        new Client(logger);
     }
 
     private void startServer() {
-        new Server(25000);
+        new Server(logger, 25000);
     }
 
     @Override

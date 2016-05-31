@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.common.resources;
 
+import com.gregswebserver.catan.ExternalResource;
+
 /**
  * Created by greg on 2/28/16.
  * Information on how to load a properties file from disk.
@@ -15,7 +17,7 @@ public final class PropertiesFileInfo extends ResourceCacheKey {
     }
 
     public String getPath() {
-        return path;
+        return ExternalResource.getConfigDirectory() + path;
     }
 
     public String getComment() {
