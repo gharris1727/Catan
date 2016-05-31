@@ -14,6 +14,7 @@ import com.gregswebserver.catan.common.resources.ResourceLoadException;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +23,7 @@ import java.util.regex.Pattern;
  * Created by Greg on 8/22/2014.
  * A lobby containing information relevant to organizing groups of users setting up for a game.
  */
-public class Lobby {
+public class Lobby implements Serializable {
 
     private final Map<Username, LobbyUser> users;
     private final Set<Username> connected;
