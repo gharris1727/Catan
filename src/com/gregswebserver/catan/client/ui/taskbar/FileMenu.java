@@ -1,8 +1,10 @@
 package com.gregswebserver.catan.client.ui.taskbar;
 
+import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
@@ -29,11 +31,15 @@ public class FileMenu extends TaskbarMenu {
 
         private FileMenuPopup() {
             super("popup");
-            //TODO: add a text label to the quit button
-            addListItem(new TaskbarMenuItem(1, "quit") {
+            addListItem(new Button(1, "quit", null) {
                 @Override
                 public String toString() {
                     return "QuitMenuItem";
+                }
+
+                @Override
+                public UserEvent onMouseDrag(Point p) {
+                    return FileMenuPopup.this.onMouseDrag(p);
                 }
 
                 @Override
@@ -48,4 +54,5 @@ public class FileMenu extends TaskbarMenu {
             return "FileMenuPopup";
         }
     }
+
 }

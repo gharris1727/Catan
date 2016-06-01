@@ -59,14 +59,14 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
 
     protected abstract class TaskbarPopup extends PopupWindow {
 
-        private final List<TaskbarMenuItem> items;
+        private final List<DefaultConfigurableScreenRegion> items;
 
         protected TaskbarPopup(String configKey) {
             super(configKey);
             items = new ArrayList<>();
         }
 
-        protected void addListItem(TaskbarMenuItem item) {
+        protected void addListItem(DefaultConfigurableScreenRegion item) {
             items.add(item);
             forceRender();
         }
@@ -82,7 +82,7 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
             clear();
             int height = 0;
             int width = 0;
-            for (TaskbarMenuItem item : items) {
+            for (DefaultConfigurableScreenRegion item : items) {
                 item.setConfig(getConfig());
                 RenderMask itemSize = item.getMask();
                 height += itemSize.getHeight();
@@ -91,32 +91,6 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
                 add(item);
             }
             setMask(new RectangularMask(new Dimension(width, height)));
-        }
-
-        protected abstract class TaskbarMenuItem extends ConfigurableScreenRegion {
-
-            private final TiledBackground background;
-
-            protected TaskbarMenuItem(int priority, String configKey) {
-                super(priority, configKey);
-                background = new EdgedTiledBackground(0, "background");
-                add(background).setClickable(this);
-            }
-
-            @Override
-            public void loadConfig(UIConfig config) {
-                setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
-            }
-
-            @Override
-            public UserEvent onMouseDrag(Point p) {
-                return TaskbarPopup.this.onMouseDrag(p);
-            }
-
-            @Override
-            protected void resizeContents(RenderMask mask) {
-                background.setMask(mask);
-            }
         }
     }
 
