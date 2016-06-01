@@ -12,6 +12,7 @@ import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.common.IllegalStateException;
+import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
@@ -50,6 +51,10 @@ public class MapRegion extends ScrollingScreenRegion {
 
     //Configuration dependencies
     private Point[] bridgePositions;
+    private Point[] tilePositions;
+    private Point[] pathPositions;
+    private Point[] townPositions;
+    private Point townOffset;
     private GraphicSet resources;
     private GraphicSet diceRolls;
     private GraphicSet singleBeach;
@@ -78,35 +83,56 @@ public class MapRegion extends ScrollingScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
-        unitSize = config.getLayout().getDimension("unit");
-        resources = new GraphicSet(config.getLayout(), "land", null);
-        diceRolls = new GraphicSet(config.getLayout(), "dice", null);
-        singleBeach = new GraphicSet(config.getLayout(), "singlebeach", null);
-        doubleBeach = new GraphicSet(config.getLayout(), "doublebeach", null);
-        resourceIcons = new GraphicSet(config.getLayout(), "trade", null);
+        ConfigSource layout = config.getLayout();
+        unitSize = layout.getDimension("unit");
+        resources = new GraphicSet(layout, "land", null);
+        diceRolls = new GraphicSet(layout, "dice", null);
+        singleBeach = new GraphicSet(layout, "singlebeach", null);
+        doubleBeach = new GraphicSet(layout, "doublebeach", null);
+        resourceIcons = new GraphicSet(layout, "trade", null);
 
-        Point bridgeleft = config.getLayout().getPoint("bridges.left");
-        Point bridgeRight = config.getLayout().getPoint("bridges.right");
-        Point bridgeUpLeft = config.getLayout().getPoint("bridges.upleft");
-        Point bridgeDownLeft = config.getLayout().getPoint("bridges.downleft");
-        Point bridgeUpRight = config.getLayout().getPoint("bridges.upright");
-        Point bridgeDownRight = config.getLayout().getPoint("bridges.downright");
+        Point bridgeleft = layout.getPoint("bridges.left");
+        Point bridgeRight = layout.getPoint("bridges.right");
+        Point bridgeUpLeft = layout.getPoint("bridges.upleft");
+        Point bridgeDownLeft = layout.getPoint("bridges.downleft");
+        Point bridgeUpRight = layout.getPoint("bridges.upright");
+        Point bridgeDownRight = layout.getPoint("bridges.downright");
         bridgePositions = new Point[] {null, null, null, bridgeleft, bridgeRight, bridgeUpLeft, bridgeDownLeft, bridgeUpRight, bridgeDownRight};
 
-        GraphicSourceInfo bridgeSource = new GraphicSourceInfo(config.getLayout().get("bridges.path"));
-        RenderMask bridgeHorizontal = RenderMask.parseMask(config.getLayout().narrow("bridges.horizontal"));
-        RenderMask bridgeDiagonalUp = RenderMask.parseMask(config.getLayout().narrow("bridges.diagonal.up"));
+        Point tile0 = layout.getPoint("tiles.0");
+        Point tile1 = layout.getPoint("tiles.1");
+        tilePositions = new Point[] {tile0, tile1};
+
+        Point path0 = layout.getPoint("paths.0");
+        Point path1 = layout.getPoint("paths.1");
+        Point path2 = layout.getPoint("paths.2");
+        Point path3 = layout.getPoint("paths.3");
+        Point path4 = layout.getPoint("paths.4");
+        Point path5 = layout.getPoint("paths.5");
+        pathPositions = new Point[] {path0, path1, path2, path3, path4, path5};
+
+        Point town0 = layout.getPoint("towns.0");
+        Point town1 = layout.getPoint("towns.1");
+        Point town2 = layout.getPoint("towns.2");
+        Point town3 = layout.getPoint("towns.3");
+        townPositions = new Point[] {town0, town1, town2, town3};
+
+        townOffset = layout.getPoint("towns.offset");
+
+        GraphicSourceInfo bridgeSource = new GraphicSourceInfo(layout.get("bridges.path"));
+        RenderMask bridgeHorizontal = RenderMask.parseMask(layout.narrow("bridges.horizontal"));
+        RenderMask bridgeDiagonalUp = RenderMask.parseMask(layout.narrow("bridges.diagonal.up"));
         RenderMask brigeDiagonalDown = new FlippedMask(bridgeDiagonalUp, FlippedMask.Direction.VERTICAL);
         RenderMask[] masks = new RenderMask[]{null, null, null, bridgeHorizontal, bridgeHorizontal, brigeDiagonalDown, bridgeDiagonalUp, bridgeDiagonalUp, brigeDiagonalDown};
         tradeBridges = new GraphicSet(bridgeSource, masks, null);
 
-        GraphicSourceInfo buildingSource = new GraphicSourceInfo(config.getLayout().get("buildings.source"));
-        RenderMask buildingHorizontal = RenderMask.parseMask(config.getLayout().narrow("buildings.horizontal"));
-        RenderMask buildingDiagonalUp = RenderMask.parseMask(config.getLayout().narrow("buildings.diagonal.up"));
-        RenderMask buildingDiagonalDown = RenderMask.parseMask(config.getLayout().narrow("buildings.diagonal.down"));
-        RenderMask settlement = RenderMask.parseMask(config.getLayout().narrow("buildings.settlement"));
-        RenderMask city = RenderMask.parseMask(config.getLayout().narrow("buildings.city"));
-        RenderMask robber = RenderMask.parseMask(config.getLayout().narrow("buildings.robber"));
+        GraphicSourceInfo buildingSource = new GraphicSourceInfo(layout.get("buildings.source"));
+        RenderMask buildingHorizontal = RenderMask.parseMask(layout.narrow("buildings.horizontal"));
+        RenderMask buildingDiagonalUp = RenderMask.parseMask(layout.narrow("buildings.diagonal.up"));
+        RenderMask buildingDiagonalDown = RenderMask.parseMask(layout.narrow("buildings.diagonal.down"));
+        RenderMask settlement = RenderMask.parseMask(layout.narrow("buildings.settlement"));
+        RenderMask city = RenderMask.parseMask(layout.narrow("buildings.city"));
+        RenderMask robber = RenderMask.parseMask(layout.narrow("buildings.robber"));
         RenderMask[] buildingMasks = new RenderMask[]{buildingHorizontal, buildingDiagonalUp, buildingDiagonalDown, settlement, city, robber};
         buildings = new EnumMap<>(TeamColor.class);
         TeamColorSwaps teamColorSwaps = new TeamColorSwaps(config.getTeamColors());
@@ -114,7 +140,7 @@ public class MapRegion extends ScrollingScreenRegion {
             buildings.put(teamColor, new GraphicSet(buildingSource, buildingMasks, teamColorSwaps.getSwaps(teamColor)));
         RectangularMask mask = new RectangularMask(boardToScreen(board.getSize()));
 
-        Dimension borderBuffer = config.getLayout().getDimension("borderbuffer");
+        Dimension borderBuffer = layout.getDimension("borderbuffer");
         setInsets(new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width));
         setMask(mask);
         background.setMask(mask);
@@ -142,17 +168,6 @@ public class MapRegion extends ScrollingScreenRegion {
         return "MapRegion";
     }
 
-    //TODO: load these from config data.
-    private static final int[][] tileOffsets = {
-            {12, 112}, //Horizontal
-            {16, 72}}; //Vertical
-    private static final int[][] edgeOffsets = {
-            {0, 0, 36, 100, 100, 136}, //Horizontal
-            {9, 65, 0, 9, 65, 56}}; //Vertical
-    private static final int[][] vertOffsets = {
-            {0, 24, 100, 124}, //Horizontal
-            {56, 0, 0, 56}}; //Vertical
-
     private Dimension boardToScreen(Dimension size) {
         int outW = ((size.width + 1) / 2) * unitSize.width;
         int outH = (size.height + 1) * unitSize.height;
@@ -162,24 +177,26 @@ public class MapRegion extends ScrollingScreenRegion {
     private Point tileToScreen(Coordinate c) {
         int outX = (c.x / 2) * unitSize.width;
         int outY = (c.y) * unitSize.height;
-        outX += tileOffsets[0][c.x % 2];
-        outY += tileOffsets[1][c.x % 2];
+        outX += tilePositions[c.x % 2].x;
+        outY += tilePositions[c.x % 2].y;
         return new Point(outX, outY);
     }
 
     private Point edgeToScreen(Coordinate c) {
         int outX = (c.x / 6) * unitSize.width;
         int outY = (c.y) * unitSize.height;
-        outX += edgeOffsets[0][c.x % 6];
-        outY += edgeOffsets[1][c.x % 6];
+        outX += pathPositions[c.x % 6].x;
+        outY += pathPositions[c.x % 6].y;
         return new Point(outX, outY);
     }
 
     private Point vertexToScreen(Coordinate c) {
         int outX = (c.x / 4) * unitSize.width;
         int outY = (c.y) * unitSize.height;
-        outX += vertOffsets[0][c.x % 4]-4;
-        outY += vertOffsets[1][c.x % 4]-2;
+        outX += townOffset.x;
+        outY += townOffset.y;
+        outX += townPositions[c.x % 4].x;
+        outY += townPositions[c.x % 4].y;
         return new Point(outX, outY);
     }
 
