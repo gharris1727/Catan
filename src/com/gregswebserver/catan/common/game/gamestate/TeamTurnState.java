@@ -48,7 +48,7 @@ public class TeamTurnState implements ReversibleIterator<TeamColor> {
     @Override
     public TeamColor get() {
         return secondRound() ?
-                turnOrder.get((1 + turnOrder.size()-turnNumber) % turnOrder.size()) :
+                turnOrder.get(turnOrder.size()-(turnNumber % turnOrder.size()) - 1) :
                 turnOrder.get(turnNumber % turnOrder.size());
     }
 
