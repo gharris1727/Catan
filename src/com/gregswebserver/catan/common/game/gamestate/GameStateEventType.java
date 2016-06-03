@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
 import com.gregswebserver.catan.common.event.EventType;
+import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 /**
  * Created by greg on 5/25/16.
@@ -10,7 +11,8 @@ public enum GameStateEventType implements EventType {
 
     Roll_Dice(null),
     Draw_DevelopmentCard(null),
-    Advance_Turn(null);
+    Advance_Turn(null),
+    Active_Turn(TeamColor.class);
 
     private final Class payloadType;
 

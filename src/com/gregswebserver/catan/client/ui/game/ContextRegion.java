@@ -74,10 +74,6 @@ public class ContextRegion extends ConfigurableScreenRegion {
         this.manager = manager;
     }
 
-    private boolean isLocalPlayerActive() {
-        return manager != null && manager.getLocalGame().isPlayerActive(username);
-    }
-
     @Override
     public void loadConfig(UIConfig config) {
         graphics = new GraphicSet(config.getLayout(), "icons", null);

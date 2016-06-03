@@ -164,7 +164,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return trigger(new TeamEvent(origin, type, payload));
     }
 
-    private LogicEvent state(Object origin, GameStateEventType type, Object payload) {
+    private LogicEvent state(Username origin, GameStateEventType type, Object payload) {
         return trigger(new GameStateEvent(origin, type, payload));
     }
 
@@ -185,16 +185,18 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             case Turn_Advance:
                 //Advancing the turn requires all of these events to fire.
                 return compound(LogicEventType.AND,
+                    //Needs to be their turn.
+                    state(origin, GameStateEventType.Active_Turn, teamColor),
                     //Need to pass the turn to the next team
-                    state(this, GameStateEventType.Advance_Turn, null),
+                    state(origin, GameStateEventType.Advance_Turn, null),
                     //Roll the dice to get the next income round.
-                    state(this, GameStateEventType.Roll_Dice, null),
+                    state(origin, GameStateEventType.Roll_Dice, null),
                     //Choose whether this is a starter turn or a real turn.
                     compound(LogicEventType.OR,
                         //If its a starter turn, signal we are ready to advance.
                         team(teamColor, TeamEventType.Finish_Setup_Turn, null),
                         //Otherwise it might be a regular turn.
-                            compound(LogicEventType.AND,
+                        compound(LogicEventType.AND,
                             //Advance the turn as regular
                             team(teamColor, TeamEventType.Finish_Turn, null),
                             //ive everyone their income
@@ -207,6 +209,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             case Player_Move_Robber:
                 //Moving the robber requires checking if the move can be made, and the player is allowed to do it.
                 return compound(LogicEventType.AND,
+                    //Needs to be their turn.
+                    state(origin, GameStateEventType.Active_Turn, teamColor),
                     //Choose whether to use up the free robber from the start of turn or use a development card.
                     compound(LogicEventType.OR,
                         team(teamColor, TeamEventType.Use_Robber, event.getPayload()),
@@ -221,6 +225,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             case Build_Settlement:
                 //A settlement build can happen as an outpost or as a normal settlement.
                 return compound(LogicEventType.AND,
+                    //Needs to be their turn.
+                    state(origin, GameStateEventType.Active_Turn, teamColor),
                     compound(LogicEventType.OR,
                         //If we make a regular settlement, the purchase and placement must be valid
                         compound(LogicEventType.AND,
@@ -244,26 +250,42 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             case Build_City:
                 //All cities are purchased manually.
                 return compound(LogicEventType.AND,
+                    //Needs to be their turn.
+                    state(origin, GameStateEventType.Active_Turn, teamColor),
+                    //Need to be able to purchase the city
                     player(origin, PlayerEventType.Make_Purchase, Purchase.City),
+                    //Place the city on the board
                     board(teamColor, BoardEventType.Place_City, event.getPayload()),
+                    //Need to notify the scorers.
                     score(origin, ScoreEventType.Build_City, event.getPayload())
                 );
             case Build_Road:
                 //A road can be built either using the free outpost or as a purchase.
                 return compound(LogicEventType.AND,
+                    //Needs to be their turn.
+                    state(origin, GameStateEventType.Active_Turn, teamColor),
+                    //Decide between the free or purchased road
                    compound(LogicEventType.OR,
                         team(teamColor, TeamEventType.Build_Free_Road, event.getPayload()),
                         player(origin, PlayerEventType.Make_Purchase, Purchase.Road)
                     ),
+                    //Place the road on the board.
                     board(teamColor, BoardEventType.Place_Road, event.getPayload()),
+                    //Notify the scorers.
                     score(origin, ScoreEventType.Build_Road, event.getPayload())
                 );
             case Buy_Development:
                 //In order to gain a development card, one must exist and the user must have enough resources.
                 return compound(LogicEventType.AND,
-                    state(this, GameStateEventType.Draw_DevelopmentCard, null),
+                    //Needs to be their turn.
+                    state(origin, GameStateEventType.Active_Turn, teamColor),
+                    //Need to remove a card from the deck
+                    state(origin, GameStateEventType.Draw_DevelopmentCard, null),
+                    //Need to purchase a card
                     player(origin, PlayerEventType.Make_Purchase, Purchase.DevelopmentCard),
+                    //Need to add the development card to their inventory
                     player(origin, PlayerEventType.Gain_DevelopmentCard, state.getDevelopmentCard()),
+                    //Need to notify the scorers.
                     score(origin, ScoreEventType.Buy_Development, state.getDevelopmentCard())
                 );
             case Offer_Trade:
@@ -271,12 +293,24 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             case Make_Trade:
                 if (event.getPayload() instanceof TemporaryTrade) {
                     TemporaryTrade t = (TemporaryTrade) event.getPayload();
+                    TeamColor otherTeam = players.getPlayer(t.seller).getTeamColor();
                     return compound(LogicEventType.AND,
+                        compound(LogicEventType.OR,
+                            //Needs to be our turn
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            //Needs to be the other players turn
+                            state(origin, GameStateEventType.Active_Turn, otherTeam)
+                        ),
                         player(origin, PlayerEventType.Make_Trade, t),
                         player(t.seller, PlayerEventType.Fill_Trade, t)
                     );
                 } else {
-                    return player(origin, PlayerEventType.Make_Trade, event.getPayload());
+                    return compound(LogicEventType.AND,
+                        //Needs to be their turn.
+                        state(origin, GameStateEventType.Active_Turn, teamColor),
+                        //Make the trade
+                        player(origin, PlayerEventType.Make_Trade, event.getPayload())
+                    );
                 }
         }
         return new LogicEvent(this, LogicEventType.NOP, null);

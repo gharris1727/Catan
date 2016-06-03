@@ -46,6 +46,8 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
                 case Advance_Turn:
                     turns.prev();
                     break;
+                case Active_Turn:
+                    break;
             }
         } catch (Exception e) {
             throw new EventConsumerException(event, e);
@@ -69,6 +71,10 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
                 if (!turns.hasNext())
                     throw new EventConsumerException("No next turn");
                 break;
+            case Active_Turn:
+                if (turns.get() != event.getPayload())
+                    throw new EventConsumerException("Not your turn");
+                break;
         }
     }
 
@@ -86,6 +92,8 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
                     break;
                 case Advance_Turn:
                     turns.next();
+                    break;
+                case Active_Turn:
                     break;
             }
         } catch (Exception e) {
