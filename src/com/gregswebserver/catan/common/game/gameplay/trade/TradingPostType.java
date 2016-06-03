@@ -25,12 +25,12 @@ public enum TradingPostType {
     TradingPostType(GameResource r) {
         gameResource = r;
         trades = new HashSet<>();
-        for (GameResource source : GameResource.values()) {
+        for (GameResource request : GameResource.values()) {
             if (r == null) {
-                for (GameResource target : GameResource.values())
-                    trades.add(new PermanentTrade(source, target, 3));
+                for (GameResource offer : GameResource.values())
+                    trades.add(new PermanentTrade(offer, request, 3));
             } else {
-                trades.add(new PermanentTrade(source, r, 2));
+                trades.add(new PermanentTrade(r, request, 2));
             }
         }
     }

@@ -7,16 +7,20 @@ import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
 import com.gregswebserver.catan.common.game.board.tiles.ResourceTile;
 import com.gregswebserver.catan.common.game.board.tiles.Tile;
 import com.gregswebserver.catan.common.game.board.tiles.TradeTile;
+import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
+import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
+import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.event.GameHistory;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
-import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.locale.game.LocalizedGameEventPrinter;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
@@ -106,7 +110,8 @@ public class ContextRegion extends ConfigurableScreenRegion {
                 renderHistory();
                 break;
         }
-        if (isLocalPlayerActive()) {
+        try {
+            manager.getLocalGame().test(new GameEvent(username, GameEventType.Turn_Advance, null));
             add(new ContextButton(1) {
                 @Override
                 public String toString() {
@@ -118,6 +123,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
                     return new UserEvent(this, UserEventType.End_Turn, null);
                 }
             }).setPosition(getButtonLocation(0, 0));
+        } catch (EventConsumerException ignored) {
         }
 
         add(background);
@@ -135,7 +141,8 @@ public class ContextRegion extends ConfigurableScreenRegion {
                 detail.setText("Produces: " + tile.getResource());
             else
                 detail.setText("Produces: Nothing");
-            if (isLocalPlayerActive() && !tile.hasRobber()) {
+            try {
+                manager.getLocalGame().test(new GameEvent(username, GameEventType.Player_Move_Robber, targetCoord));
                 add(new ContextButton(2) {
                     @Override
                     public String toString() {
@@ -144,9 +151,10 @@ public class ContextRegion extends ConfigurableScreenRegion {
 
                     @Override
                     public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Tile_Rob, tile.getPosition());
+                        return new UserEvent(this, UserEventType.Tile_Rob, targetCoord);
                     }
                 }).setPosition(getButtonLocation(1, 0));
+            } catch (EventConsumerException ignored) {
             }
         } else if (targetTile instanceof TradeTile) {
             TradeTile tile = (TradeTile) targetTile;
@@ -163,7 +171,8 @@ public class ContextRegion extends ConfigurableScreenRegion {
         Path path = manager.getLocalGame().getBoard().getPath(targetCoord);
         title.setText("Path: " + path);
         detail.setText("Owned by: " + path.getTeam());
-        if (isLocalPlayerActive() && path.getTeam().equals(TeamColor.None)) {
+        try {
+            manager.getLocalGame().test(new GameEvent(username, GameEventType.Build_Road, targetCoord));
             add(new ContextButton(5) {
                 @Override
                 public String toString() {
@@ -172,9 +181,10 @@ public class ContextRegion extends ConfigurableScreenRegion {
 
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Road_Purchase, path.getPosition());
+                    return new UserEvent(this, UserEventType.Road_Purchase, targetCoord);
                 }
             }).setPosition(getButtonLocation(1, 0));
+        } catch (EventConsumerException ignored) {
         }
     }
 
@@ -182,19 +192,22 @@ public class ContextRegion extends ConfigurableScreenRegion {
         Town town = manager.getLocalGame().getBoard().getTown(targetCoord);
         title.setText("Town: " + town);
         detail.setText("Owned by: " + town.getTeam());
-        if (isLocalPlayerActive()) {
-            if (town.getTeam().equals(TeamColor.None)) {
+        try {
+            if (town instanceof EmptyTown) {
+                manager.getLocalGame().test(new GameEvent(username, GameEventType.Build_Settlement, targetCoord));
                 add(new ContextButton(3) {
                     @Override
                     public String toString() {
                         return "Town";
                     }
+
                     @Override
                     public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Settlement_Purchase, town.getPosition());
+                        return new UserEvent(this, UserEventType.Settlement_Purchase, targetCoord);
                     }
                 }).setPosition(getButtonLocation(1, 0));
-            } else if (town.getTeam().equals(manager.getLocalGame().getPlayers().getPlayer(username).getTeamColor())) {
+            } else if (town instanceof Settlement) {
+                manager.getLocalGame().test(new GameEvent(username, GameEventType.Build_City, targetCoord));
                 add(new ContextButton(4) {
                     @Override
                     public String toString() {
@@ -203,15 +216,17 @@ public class ContextRegion extends ConfigurableScreenRegion {
 
                     @Override
                     public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.City_Purchase, town.getPosition());
+                        return new UserEvent(this, UserEventType.City_Purchase, targetCoord);
                     }
                 }).setPosition(getButtonLocation(1, 0));
             }
+        } catch (EventConsumerException ignored) {
         }
     }
 
     private void renderTrade() {
-        if (isLocalPlayerActive() && manager.getLocalGame().getTrades(username).contains(targetTrade)) {
+        try {
+            manager.getLocalGame().test(new GameEvent(username, GameEventType.Make_Trade, targetTrade));
             add(new ContextButton(8) {
                 @Override
                 public String toString() {
@@ -223,6 +238,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
                     return new UserEvent(this, UserEventType.Make_Trade, targetTrade);
                 }
             }).setPosition(getButtonLocation(1, 0));
+        } catch (EventConsumerException ignored) {
         }
     }
 

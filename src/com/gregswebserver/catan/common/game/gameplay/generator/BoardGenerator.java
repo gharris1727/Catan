@@ -59,4 +59,8 @@ public interface BoardGenerator extends Serializable {
         hexArray.setTile(c, new TradeTile(beach.getDirection(), beach.getSides(), tradeType));
         tradingPosts.add(c);
     }
+
+    default void setRobber(HexagonalArray hexArray, Coordinate robberLocation) {
+        ((ResourceTile)  hexArray.getTile(robberLocation)).placeRobber();
+    }
 }

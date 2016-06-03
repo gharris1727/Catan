@@ -148,28 +148,32 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return winner;
     }
 
-    private LogicEvent createTriggerEvent(GameTriggerEvent event) {
+    private LogicEvent trigger(GameTriggerEvent event) {
         return new LogicEvent(this, LogicEventType.Trigger, event);
     }
 
-    private LogicEvent createPlayerEvent(Username origin, PlayerEventType type, Object payload) {
-        return createTriggerEvent(new PlayerEvent(origin, type, payload));
+    private LogicEvent player(Username origin, PlayerEventType type, Object payload) {
+        return trigger(new PlayerEvent(origin, type, payload));
     }
 
-    private LogicEvent createBoardEvent(TeamColor origin, BoardEventType type, Object payload) {
-        return createTriggerEvent(new BoardEvent(origin, type, payload));
+    private LogicEvent board(TeamColor origin, BoardEventType type, Object payload) {
+        return trigger(new BoardEvent(origin, type, payload));
     }
 
-    private LogicEvent createTeamEvent(TeamColor origin, TeamEventType type, Object payload) {
-        return createTriggerEvent(new TeamEvent(origin, type, payload));
+    private LogicEvent team(TeamColor origin, TeamEventType type, Object payload) {
+        return trigger(new TeamEvent(origin, type, payload));
     }
 
-    private LogicEvent createStateEvent(Object origin, GameStateEventType type, Object payload) {
-        return createTriggerEvent(new GameStateEvent(origin, type, payload));
+    private LogicEvent state(Object origin, GameStateEventType type, Object payload) {
+        return trigger(new GameStateEvent(origin, type, payload));
     }
 
-    private LogicEvent createScoreEvent(Username origin, ScoreEventType type, Object payload) {
-        return createTriggerEvent(new ScoreEvent(origin, type, payload));
+    private LogicEvent score(Username origin, ScoreEventType type, Object payload) {
+        return trigger(new ScoreEvent(origin, type, payload));
+    }
+
+    private LogicEvent compound(LogicEventType type, LogicEvent... list) {
+        return new LogicEvent(this, type, Arrays.asList(list));
     }
 
     private LogicEvent getLogicEvent(GameEvent event) {
@@ -180,97 +184,99 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 break;
             case Turn_Advance:
                 //Advancing the turn requires all of these events to fire.
-                return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
+                return compound(LogicEventType.AND,
                     //Need to pass the turn to the next team
-                    createStateEvent(this, GameStateEventType.Advance_Turn, null),
+                    state(this, GameStateEventType.Advance_Turn, null),
                     //Roll the dice to get the next income round.
-                    createStateEvent(this, GameStateEventType.Roll_Dice, null),
+                    state(this, GameStateEventType.Roll_Dice, null),
                     //Choose whether this is a starter turn or a real turn.
-                    new LogicEvent(this, LogicEventType.OR, Arrays.asList(
+                    compound(LogicEventType.OR,
                         //If its a starter turn, signal we are ready to advance.
-                        createTeamEvent(teamColor, TeamEventType.Finish_Setup_Turn, null),
+                        team(teamColor, TeamEventType.Finish_Setup_Turn, null),
                         //Otherwise it might be a regular turn.
-                        new LogicEvent(this, LogicEventType.AND, Arrays.asList(
+                            compound(LogicEventType.AND,
                             //Advance the turn as regular
-                            createTeamEvent(teamColor, TeamEventType.Finish_Turn, null),
+                            team(teamColor, TeamEventType.Finish_Turn, null),
                             //ive everyone their income
                             getIncomeEvents(state.getDiceRoll())
-                        ))
-                    )),
+                        )
+                    ),
                     //Mature all of the cards that a user bought this turn.
-                    createTriggerEvent(players.getPlayer(origin).getMatureEvent())
-                ));
+                    trigger(players.getPlayer(origin).getMatureEvent())
+                );
             case Player_Move_Robber:
                 //Moving the robber requires checking if the move can be made, and the player is allowed to do it.
-                return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
+                return compound(LogicEventType.AND,
                     //Choose whether to use up the free robber from the start of turn or use a development card.
-                    new LogicEvent(this, LogicEventType.OR, Arrays.asList(
-                        createTeamEvent(teamColor, TeamEventType.Use_Robber, event.getPayload()),
-                        createPlayerEvent(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Knight),
-                        createScoreEvent(origin, ScoreEventType.Play_Development, DevelopmentCard.Knight)
-                    )),
+                    compound(LogicEventType.OR,
+                        team(teamColor, TeamEventType.Use_Robber, event.getPayload()),
+                        compound(LogicEventType.AND,
+                            player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Knight),
+                            score(origin, ScoreEventType.Play_Development, DevelopmentCard.Knight)
+                        )
+                    ),
                     //Check the board to see if the robber is in a valid location.
-                    createBoardEvent(teamColor, BoardEventType.Place_Robber, event.getPayload())
-                ));
+                    board(teamColor, BoardEventType.Place_Robber, event.getPayload())
+                );
             case Build_Settlement:
                 //A settlement build can happen as an outpost or as a normal settlement.
-                return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                    new LogicEvent(this, LogicEventType.OR, Arrays.asList(
+                return compound(LogicEventType.AND,
+                    compound(LogicEventType.OR,
                         //If we make a regular settlement, the purchase and placement must be valid
-                        new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                            createPlayerEvent(origin, PlayerEventType.Make_Purchase, Purchase.Settlement),
-                            createBoardEvent(teamColor, BoardEventType.Place_Settlement, event.getPayload())
-                        )),
+                        compound(LogicEventType.AND,
+                            player(origin, PlayerEventType.Make_Purchase, Purchase.Settlement),
+                            board(teamColor, BoardEventType.Place_Settlement, event.getPayload())
+                        ),
                         //If we make a first outpost, we need to check for outpost placement
-                        new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                            createTeamEvent(teamColor, TeamEventType.Build_First_Outpost, event.getPayload()),
-                            createBoardEvent(teamColor, BoardEventType.Place_Outpost, event.getPayload())
-                        )),
+                        compound(LogicEventType.AND,
+                            team(teamColor, TeamEventType.Build_First_Outpost, event.getPayload()),
+                            board(teamColor, BoardEventType.Place_Outpost, event.getPayload())
+                        ),
                         //If we make a second outpost, we need to allocate the correct resources.
-                        new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                            createTeamEvent(teamColor, TeamEventType.Build_Second_Outpost, event.getPayload()),
-                            createBoardEvent(teamColor, BoardEventType.Place_Outpost, event.getPayload()),
-                            createPlayerEvent(origin, PlayerEventType.Gain_Resources, getTownIncome((Coordinate) event.getPayload()))
-                        ))
-                    )),
-                    createScoreEvent(origin, ScoreEventType.Build_Settlement, event.getPayload())
-                ));
+                        compound(LogicEventType.AND,
+                            team(teamColor, TeamEventType.Build_Second_Outpost, event.getPayload()),
+                            board(teamColor, BoardEventType.Place_Outpost, event.getPayload()),
+                            player(origin, PlayerEventType.Gain_Resources, getTownIncome((Coordinate) event.getPayload()))
+                        )
+                    ),
+                    score(origin, ScoreEventType.Build_Settlement, event.getPayload())
+                );
             case Build_City:
                 //All cities are purchased manually.
-                return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                    createPlayerEvent(origin, PlayerEventType.Make_Purchase, Purchase.City),
-                    createBoardEvent(teamColor, BoardEventType.Place_City, event.getPayload()),
-                    createScoreEvent(origin, ScoreEventType.Build_City, event.getPayload())
-                ));
+                return compound(LogicEventType.AND,
+                    player(origin, PlayerEventType.Make_Purchase, Purchase.City),
+                    board(teamColor, BoardEventType.Place_City, event.getPayload()),
+                    score(origin, ScoreEventType.Build_City, event.getPayload())
+                );
             case Build_Road:
                 //A road can be built either using the free outpost or as a purchase.
-                return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                    new LogicEvent(this, LogicEventType.OR, Arrays.asList(
-                        createTeamEvent(teamColor, TeamEventType.Build_Free_Road, event.getPayload()),
-                        createPlayerEvent(origin, PlayerEventType.Make_Purchase, Purchase.Road)
-                    )),
-                    createBoardEvent(teamColor, BoardEventType.Place_Road, event.getPayload()),
-                    createScoreEvent(origin, ScoreEventType.Build_Road, event.getPayload())
-                ));
+                return compound(LogicEventType.AND,
+                   compound(LogicEventType.OR,
+                        team(teamColor, TeamEventType.Build_Free_Road, event.getPayload()),
+                        player(origin, PlayerEventType.Make_Purchase, Purchase.Road)
+                    ),
+                    board(teamColor, BoardEventType.Place_Road, event.getPayload()),
+                    score(origin, ScoreEventType.Build_Road, event.getPayload())
+                );
             case Buy_Development:
                 //In order to gain a development card, one must exist and the user must have enough resources.
-                return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                    createStateEvent(this, GameStateEventType.Draw_DevelopmentCard, null),
-                    createPlayerEvent(origin, PlayerEventType.Make_Purchase, Purchase.DevelopmentCard),
-                    createPlayerEvent(origin, PlayerEventType.Gain_DevelopmentCard, state.getDevelopmentCard()),
-                    createScoreEvent(origin, ScoreEventType.Buy_Development, state.getDevelopmentCard())
-                ));
+                return compound(LogicEventType.AND,
+                    state(this, GameStateEventType.Draw_DevelopmentCard, null),
+                    player(origin, PlayerEventType.Make_Purchase, Purchase.DevelopmentCard),
+                    player(origin, PlayerEventType.Gain_DevelopmentCard, state.getDevelopmentCard()),
+                    score(origin, ScoreEventType.Buy_Development, state.getDevelopmentCard())
+                );
             case Offer_Trade:
-                return createPlayerEvent(origin, PlayerEventType.Offer_Trade, event.getPayload());
+                return player(origin, PlayerEventType.Offer_Trade, event.getPayload());
             case Make_Trade:
                 if (event.getPayload() instanceof TemporaryTrade) {
                     TemporaryTrade t = (TemporaryTrade) event.getPayload();
-                    return new LogicEvent(this, LogicEventType.AND, Arrays.asList(
-                        createPlayerEvent(origin, PlayerEventType.Make_Trade, t),
-                        createPlayerEvent(t.seller, PlayerEventType.Fill_Trade, t)
-                    ));
+                    return compound(LogicEventType.AND,
+                        player(origin, PlayerEventType.Make_Trade, t),
+                        player(t.seller, PlayerEventType.Fill_Trade, t)
+                    );
                 } else {
-                    return createPlayerEvent(origin, PlayerEventType.Make_Trade, event.getPayload());
+                    return player(origin, PlayerEventType.Make_Trade, event.getPayload());
                 }
         }
         return new LogicEvent(this, LogicEventType.NOP, null);
@@ -301,7 +307,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         ArrayList<LogicEvent> events = new ArrayList<>();
         for (Map.Entry<TeamColor, EnumCounter<GameResource>> entry : income.entrySet())
             for (Username name : teams.getTeam(entry.getKey()).getPlayers())
-                events.add(createPlayerEvent(name, PlayerEventType.Gain_Resources, entry.getValue()));
+                events.add(player(name, PlayerEventType.Gain_Resources, entry.getValue()));
         return new LogicEvent(this, LogicEventType.AND, events);
     }
 

@@ -59,12 +59,14 @@ public class RandomBoardGenerator implements BoardGenerator {
             validEdges.addAll(CoordTransforms.getAdjacentEdgesFromSpace(c).values());
             Terrain t = terrain.next();
             if (t.equals(Terrain.Desert)) {
-                setResourceTile(hexArray, diceRolls, c, new ResourceTile(t, DiceRoll.Seven));
+                setResourceTile(hexArray, diceRolls, c,  new ResourceTile(t, DiceRoll.Seven));
                 robberLocation = c;
             } else {
                 setResourceTile(hexArray, diceRolls, c, new ResourceTile(t, tokens.next()));
             }
         }
+
+        setRobber(hexArray, robberLocation);
 
         //Place all of the empty features that fill the rest of the valid map.
         for (Coordinate c : validVertices) {
