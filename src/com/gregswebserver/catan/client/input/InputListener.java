@@ -31,7 +31,12 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         this.queue = new HoverTimingThread(client.logger);
         queue.start();
         this.root = root;
-        this.nullClickable = new NullClickable();
+        this.nullClickable = new ClickableAdapter() {
+            @Override
+            public String toString() {
+                return "NullClickable";
+            }
+        };
         this.selected = nullClickable;
         this.hover = nullClickable;
     }

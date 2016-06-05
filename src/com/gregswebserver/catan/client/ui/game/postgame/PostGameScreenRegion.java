@@ -31,15 +31,10 @@ public class PostGameScreenRegion extends ClientScreen {
     private final ScoreboardRegion scoreboard;
 
     public PostGameScreenRegion(GameManager manager) {
-        super("postgame");
+        super("PostgameScreen", "postgame");
         context = new ContextRegion();
         MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
-        map = new ScrollingScreenContainer(0, "scroll", mapRegion) {
-            @Override
-            public String toString() {
-                return "MapScrollContainer";
-            }
-        };
+        map = new ScrollingScreenContainer("MapScroll", 0, mapRegion);
         scoreboard = new ScoreboardRegion(manager.getLocalGame());
         timeline = new TimelineRegion(manager.getRemoteGame());
         context.setGameManager(manager);
@@ -52,11 +47,11 @@ public class PostGameScreenRegion extends ClientScreen {
     }
 
     @Override
-    public void refresh() {
+    public void update() {
         map.update();
         timeline.update();
-        scoreboard.forceRender();
-        context.forceRender();
+        scoreboard.update();
+        context.update();
     }
 
     @Override
@@ -83,9 +78,5 @@ public class PostGameScreenRegion extends ClientScreen {
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
         map.center();
-    }
-
-    public String toString() {
-        return "PostGameScreenRegion";
     }
 }

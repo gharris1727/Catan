@@ -16,15 +16,15 @@ public class ConnectingScreen extends ClientScreen {
     private final TextLabel text;
 
     public ConnectingScreen() {
-        super("connecting");
-        background = new EdgedTiledBackground(0, "background");
-        text = new TextLabel(1, "message", "Connecting...");
+        super("Connecting Screen", "connecting");
+        background = new EdgedTiledBackground();
+        text = new TextLabel("Connecting Progress", 1, "message", "Connecting...");
         add(background).setClickable(this);
         add(text).setClickable(this);
     }
 
     @Override
-    public void refresh() { }
+    public void update() { }
 
     @Override
     protected void resizeContents(RenderMask mask) {
@@ -34,9 +34,5 @@ public class ConnectingScreen extends ClientScreen {
     @Override
     protected void renderContents() {
         center(text);
-    }
-
-    public String toString() {
-        return "ConnectingScreen";
     }
 }

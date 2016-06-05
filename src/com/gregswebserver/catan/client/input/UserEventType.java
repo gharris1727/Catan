@@ -4,7 +4,6 @@ import com.gregswebserver.catan.client.structure.ConnectionInfo;
 import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
@@ -30,11 +29,6 @@ public enum UserEventType implements EventType {
     Lobby_Quit(null), //Quit from the active lobby.
     Lobby_Edit(LobbyConfig.class), //Edit the current lobby's settings.
     Lobby_Start(null), //Start the game from the lobby.
-    Tile_Rob(Coordinate.class), //Place the robber on a tile.
-    End_Turn(null), //End the player's turn.
-    Road_Purchase(Coordinate.class), //Purchase a road in the board.
-    Settlement_Purchase(Coordinate.class), //Purchase a settlement.
-    City_Purchase(Coordinate.class), //Purchase a city.
     Make_Trade(Trade.class), //Complete a trade.
     History_Jump(Integer.class), //Jump to that historical event.
     Propose_Trade(TemporaryTrade.class), //advertise a temporary trade to other players.

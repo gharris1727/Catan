@@ -56,6 +56,10 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
         return inventory;
     }
 
+    public EnumCounter<DevelopmentCard> getDevelopmentCards() {
+        return active;
+    }
+
     public TemporaryTrade getTrade() {
         return trade;
     }
@@ -161,11 +165,18 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
             case Offer_Trade:
             case Fill_Trade:
                 TemporaryTrade trade = (TemporaryTrade) event.getPayload();
-                if (trade != null)
+                if (trade == null && this.trade == null)
+                    throw new EventConsumerException("No trade to cancel");
+                else if (trade != null) {
+                    if (trade.equals(this.trade))
+                        throw new EventConsumerException("Already proposed");
+                    if (trade.equals(new TemporaryTrade(name)))
+                        throw new EventConsumerException("Empty Trade");
                     for (GameResource r : GameResource.values()) {
                         if (!inventory.contains(r, trade.offer.get(r)))
                             throw new EventConsumerException("Insufficient funds");
                     }
+                }
                 break;
             case Make_Trade:
                 if (!canMakeTrade((Trade) event.getPayload()))

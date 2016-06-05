@@ -9,8 +9,8 @@ import com.gregswebserver.catan.common.config.ConfigurationException;
  */
 public abstract class DefaultConfigurableScreenRegion extends ConfigurableScreenRegion {
 
-    protected DefaultConfigurableScreenRegion(int priority, String configKey) {
-        super(priority, configKey);
+    protected DefaultConfigurableScreenRegion(String name, int priority, String configKey) {
+        super(name, priority, configKey);
     }
 
     @Override

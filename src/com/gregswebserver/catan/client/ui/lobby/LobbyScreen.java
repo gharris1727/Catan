@@ -23,7 +23,7 @@ public class LobbyScreen extends ClientScreen {
     private final LobbyButtons buttons;
 
     public LobbyScreen(Lobby lobby) {
-        super("inlobby");
+        super("LobbyScreen", "inlobby");
         this.lobby = lobby;
         settings = new LobbySettings();
         buttons = new LobbyButtons();
@@ -31,11 +31,11 @@ public class LobbyScreen extends ClientScreen {
         add(settings);
         add(buttons);
         add(userList);
-        refresh();
+        update();
     }
 
     @Override
-    public void refresh() {
+    public void update() {
         settings.setLobbyConfig(lobby.getConfig());
         userList.forceRender();
     }
@@ -56,9 +56,5 @@ public class LobbyScreen extends ClientScreen {
         userList.setPosition(new Point());
         settings.setPosition(new Point(userListWidth, 0));
         buttons.setPosition(new Point(userListWidth, settingsHeight));
-    }
-
-    public String toString() {
-        return "LobbyScreen";
     }
 }

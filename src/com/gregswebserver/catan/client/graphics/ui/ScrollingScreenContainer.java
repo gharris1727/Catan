@@ -8,19 +8,32 @@ import java.awt.*;
  * Created by greg on 2/7/16.
  * An integrated container for a ScrollingScreenRegion.
  */
-public abstract class ScrollingScreenContainer extends ConfigurableScreenRegion {
+public class ScrollingScreenContainer extends ConfigurableScreenRegion implements Updatable {
 
     private final ScrollingScreenRegion scroll;
 
-    protected ScrollingScreenContainer(int priority, String configKey, ScrollingScreenRegion scroll) {
-        super(priority, configKey);
+    public ScrollingScreenContainer(String name, int priority, ScrollingScreenRegion scroll) {
+        super(name, priority, "ignored");
+        enableTransparency();
         this.scroll = scroll;
         scroll.setHost(this);
         add(scroll);
     }
 
+    @Override
+    public void setConfig(UIConfig config) {
+        //This is specifically designed to counteract the .narrow call and prevent the narrowing.
+        super.setConfig(new UIConfig(config) {
+            @Override
+            public UIConfig narrow(String prefix) {
+                return config;
+            }
+        });
+    }
+
+    @Override
     public void update() {
-        scroll.forceRender();
+        scroll.update();
     }
 
     public void center() {

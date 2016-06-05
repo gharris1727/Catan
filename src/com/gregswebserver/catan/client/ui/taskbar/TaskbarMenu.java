@@ -21,15 +21,15 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
     private final TiledBackground background;
     private TaskbarPopup popup;
 
-    protected TaskbarMenu(int priority, String configKey) {
-        super(priority, configKey);
-        background = new EdgedTiledBackground(0, "background");
+    protected TaskbarMenu(String name, int priority, String configKey) {
+        super(name, priority, configKey);
+        background = new EdgedTiledBackground();
         popup = null;
     }
 
     @Override
     public void loadConfig(UIConfig config) {
-        TextLabel label = new TextLabel(1, "label", null);
+        TextLabel label = new TextLabel(toString() + "Label", 1, "label", null);
         background.setConfig(config);
         label.setConfig(config);
         setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
@@ -61,8 +61,8 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
 
         private final List<DefaultConfigurableScreenRegion> items;
 
-        protected TaskbarPopup(String configKey) {
-            super(configKey);
+        protected TaskbarPopup(String name, String configKey) {
+            super(name, configKey);
             items = new ArrayList<>();
         }
 

@@ -14,10 +14,10 @@ public abstract class Button extends DefaultConfigurableScreenRegion {
     private final TiledBackground background;
     private final TextLabel text;
 
-    protected Button(int priority, String configKey, String label) {
-        super(priority, configKey);
-        background = new EdgedTiledBackground(0, "background");
-        text = new TextLabel(1, "label", label);
+    protected Button(String name, int priority, String configKey, String label) {
+        super(name, priority, configKey);
+        background = new EdgedTiledBackground();
+        text = new TextLabel(name + "Label", 1, "label", label);
         add(background).setClickable(this);
         add(text).setClickable(this);
     }

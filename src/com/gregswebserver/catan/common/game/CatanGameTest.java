@@ -84,14 +84,11 @@ public class CatanGameTest {
         }
     }
 
-    private void assertUndo(CatanGame game, boolean expectSuccess) {
+    private void assertUndo(CatanGame game) {
         try {
             game.undo();
-            if (!expectSuccess)
-                fail();
         } catch (EventConsumerException ignored) {
-            if (expectSuccess)
-                fail();
+            fail();
         }
     }
 
@@ -316,12 +313,12 @@ public class CatanGameTest {
         CatanGame game = startTwoPlayerGame();
         CatanGame game2 = startTwoPlayerGame();
         //undo into the starting states.
-        assertUndo(game2, true);
-        assertUndo(game2, true);
-        assertUndo(game2, true);
-        assertUndo(game2, true);
-        assertUndo(game2, true);
-        assertUndo(game2, true);
+        assertUndo(game2);
+        assertUndo(game2);
+        assertUndo(game2);
+        assertUndo(game2);
+        assertUndo(game2);
+        assertUndo(game2);
         assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
         assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
         assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
@@ -330,7 +327,7 @@ public class CatanGameTest {
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
         //Turn advance then undo
-        assertUndo(game2, true);
+        assertUndo(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
         //TODO: test more undo actions.

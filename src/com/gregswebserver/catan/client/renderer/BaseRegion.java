@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.ScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.Configurable;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
+import com.gregswebserver.catan.client.graphics.ui.Updatable;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.client.ui.taskbar.TaskbarMenu;
@@ -18,7 +19,7 @@ import java.util.List;
  * Created by greg on 4/22/16.
  * Top-level screen region to composite all of the window functionality together.
  */
-public class BaseRegion extends ScreenRegion implements Configurable {
+public class BaseRegion extends ScreenRegion implements Configurable, Updatable {
 
     private UIConfig config;
     private int taskbarHeight;
@@ -31,7 +32,7 @@ public class BaseRegion extends ScreenRegion implements Configurable {
     private ClientScreen live;
 
     public BaseRegion() {
-        super(0);
+        super("Base Region", 0);
         taskbar = new TaskbarRegion();
         live = null;
         popups = new LinkedList<>();
@@ -73,9 +74,10 @@ public class BaseRegion extends ScreenRegion implements Configurable {
         forceRender();
     }
 
-    public void refresh() {
+    @Override
+    public void update() {
         if (live != null)
-            live.refresh();
+            live.update();
     }
 
     @Override
@@ -85,11 +87,6 @@ public class BaseRegion extends ScreenRegion implements Configurable {
         add(live);
         for (PopupWindow popup : popups)
             add(popup);
-    }
-
-    @Override
-    public String toString() {
-        return "BaseRegion";
     }
 
     @Override

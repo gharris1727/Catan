@@ -12,8 +12,8 @@ import java.awt.*;
  */
 public abstract class PopupWindow extends ScrollingScreenRegion {
 
-    protected PopupWindow(String configKey) {
-        super(2, configKey);
+    protected PopupWindow(String name, String configKey) {
+        super(name, 2, configKey);
     }
 
     public UserEvent expire() {

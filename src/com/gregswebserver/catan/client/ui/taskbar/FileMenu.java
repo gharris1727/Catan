@@ -14,7 +14,7 @@ import java.awt.event.MouseEvent;
 public class FileMenu extends TaskbarMenu {
 
     public FileMenu() {
-        super(1, "file");
+        super("FileMenu", 1, "file");
     }
 
     @Override
@@ -22,20 +22,11 @@ public class FileMenu extends TaskbarMenu {
         return new FileMenuPopup();
     }
 
-    @Override
-    public String toString() {
-        return "FileMenu";
-    }
-
     private class FileMenuPopup extends TaskbarPopup {
 
         private FileMenuPopup() {
-            super("popup");
-            addListItem(new Button(1, "quit", null) {
-                @Override
-                public String toString() {
-                    return "QuitMenuItem";
-                }
+            super("FileMenuPopup", "popup");
+            addListItem(new Button("QuitButton", 1, "quit", null) {
 
                 @Override
                 public UserEvent onMouseDrag(Point p) {
@@ -50,8 +41,7 @@ public class FileMenu extends TaskbarMenu {
         }
 
         @Override
-        public String toString() {
-            return "FileMenuPopup";
+        public void update() {
         }
     }
 

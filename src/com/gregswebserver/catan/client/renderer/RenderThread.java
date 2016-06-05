@@ -49,7 +49,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                     base.displayScreen((ClientScreen) event.getPayload());
                     break;
                 case Screen_Refresh:
-                    base.refresh();
+                    base.update();
                     break;
                 case Taskbar_Add:
                     base.addMenu((TaskbarMenu) event.getPayload());

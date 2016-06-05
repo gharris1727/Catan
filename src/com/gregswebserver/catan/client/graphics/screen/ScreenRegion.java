@@ -29,14 +29,14 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
 
     //The constructor of a screen region is meant to store relevant references,
     //and create any permanent ScreenObjects needed in the render.
-    protected ScreenRegion(int priority) {
-        super(priority);
+    protected ScreenRegion(String name, int priority) {
+        super(name, priority);
         timeSlice = new TimeSlice(this.toString());
         clear();
     }
 
-    public final void setTransparency(boolean transparency) {
-        this.transparency = transparency;
+    public final void enableTransparency() {
+        this.transparency = true;
     }
 
     @Override
@@ -90,7 +90,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     //Add an object to be rendered on the next render pass.
-    protected final ScreenObject add(ScreenObject object) {
+    protected ScreenObject add(ScreenObject object) {
         if (object != null) {
             clickableColorMap.put(object.getClickableColor(), object);
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
@@ -106,7 +106,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
 
     //Remove a specific object from the screen.
     //This operation can be inefficient if there are many objects at the same render priority.
-    protected final void remove(ScreenObject object) {
+    protected void remove(ScreenObject object) {
         if (object != null) {
             clickableColorMap.remove(object.getClickableColor());
             List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
@@ -118,8 +118,8 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     public final Point center(ScreenObject object) {
-        if (object != null && object instanceof Graphical) {
-            RenderMask mask = ((Graphical) object).getGraphic().getMask();
+        if (object != null) {
+            RenderMask mask = object.getGraphic().getMask();
             int x = (this.mask.getWidth() - mask.getWidth()) / 2;
             int y = (this.mask.getHeight() - mask.getHeight()) / 2;
             object.setPosition(new Point(x, y));
@@ -181,7 +181,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     public final boolean needsRender() {
         if (needsRendering) return true;
         for (ScreenObject object : this)
-            if (object instanceof Graphical && ((Graphical) object).needsRender())
+            if (object.needsRender())
                 return true;
         return false;
     }
@@ -195,15 +195,14 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
             graphic.clear();
             pixelHitbox.clear();
             for (ScreenObject object : this)
-                if (object instanceof Graphical)
-                    try {
-                        Graphic g = ((Graphical) object).getGraphic();
-                        graphic.renderFrom(g, object.getPosition(), object.getClickableColor());
-                        pixelHitbox.renderFrom(g, object.getPosition(), object.getClickableColor());
-                        timeSlice.addChild(((Graphical) object).getRenderTime());
-                    } catch (Exception e) {
-                        throw new NotYetRenderableException("Unable to render " + object, e);
-                    }
+                try {
+                    Graphic g = object.getGraphic();
+                    graphic.renderFrom(g, object.getPosition(), object.getClickableColor());
+                    pixelHitbox.renderFrom(g, object.getPosition(), object.getClickableColor());
+                    timeSlice.addChild(object.getRenderTime());
+                } catch (Exception e) {
+                    throw new NotYetRenderableException("Unable to render " + object, e);
+                }
             needsRendering = false;
         }
         assertRenderable();

@@ -13,8 +13,8 @@ public abstract class ConfigurableScreenRegion extends ScreenRegion implements C
     private final String configKey;
     private UIConfig config;
 
-    protected ConfigurableScreenRegion(int priority, String configKey) {
-        super(priority);
+    protected ConfigurableScreenRegion(String name, int priority, String configKey) {
+        super(name, priority);
         this.configKey = configKey;
     }
 

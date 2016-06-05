@@ -13,8 +13,8 @@ public abstract class ConfigurableGraphicObject extends GraphicObject implements
     private final String configKey;
     private UIConfig config;
 
-    protected ConfigurableGraphicObject(int priority, String configKey) {
-        super(priority);
+    protected ConfigurableGraphicObject(String name, int priority, String configKey) {
+        super(name, priority);
         this.configKey = configKey;
     }
 

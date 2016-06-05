@@ -210,21 +210,6 @@ public class Client extends CoreThread {
                 outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, lobby.getGameSettings());
                 sendEvent(outgoing);
                 break;
-            case Tile_Rob:
-                gameManager.local(new GameEvent(username, GameEventType.Player_Move_Robber, event.getPayload()));
-                break;
-            case End_Turn:
-                gameManager.local(new GameEvent(username, GameEventType.Turn_Advance, null));
-                break;
-            case Road_Purchase:
-                gameManager.local(new GameEvent(username, GameEventType.Build_Road, event.getPayload()));
-                break;
-            case Settlement_Purchase:
-                gameManager.local(new GameEvent(username, GameEventType.Build_Settlement, event.getPayload()));
-                break;
-            case City_Purchase:
-                gameManager.local(new GameEvent(username, GameEventType.Build_City, event.getPayload()));
-                break;
             case Make_Trade:
                 gameManager.local(new GameEvent(username, GameEventType.Make_Trade, event.getPayload()));
                 break;

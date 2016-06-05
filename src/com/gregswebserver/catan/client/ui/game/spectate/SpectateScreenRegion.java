@@ -29,16 +29,11 @@ public class SpectateScreenRegion extends ClientScreen {
     private final TimelineRegion timeline;
 
     public SpectateScreenRegion(GameManager manager) {
-        super("spectate");
+        super("SpectatorScreen", "spectate");
         //Load relevant details
         context = new ContextRegion();
         MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
-        map = new ScrollingScreenContainer(0, "scroll", mapRegion) {
-            @Override
-            public String toString() {
-                return "MapScrollContainer";
-            }
-        };
+        map = new ScrollingScreenContainer("MapScroll", 0, mapRegion);
         timeline = new TimelineRegion(manager.getRemoteGame());
         context.setGameManager(manager);
         mapRegion.setContext(context);
@@ -50,10 +45,10 @@ public class SpectateScreenRegion extends ClientScreen {
     }
 
     @Override
-    public void refresh() {
+    public void update() {
         map.update();
         timeline.update();
-        context.forceRender();
+        context.update();
     }
 
     @Override
@@ -79,10 +74,5 @@ public class SpectateScreenRegion extends ClientScreen {
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
         map.center();
-    }
-
-    @Override
-    public String toString() {
-        return "SpectateScreenRegion";
     }
 }

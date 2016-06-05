@@ -20,15 +20,11 @@ public class DisconnectingScreen extends ClientScreen {
     private int spacing;
 
     public DisconnectingScreen(String disconnectMessage) {
-        super("disconnecting");
+        super("DisconnectingScreen", "disconnecting");
         //Create subregions
-        background = new EdgedTiledBackground(0, "background");
-        text = new TextLabel(1, "message", disconnectMessage);
-        button = new Button(2, "return", "Return to connect menu.") {
-            public String toString() {
-                return "DisconnectingScreenDisconnectButton";
-            }
-
+        background = new EdgedTiledBackground();
+        text = new TextLabel("DisconnectMessageLabel", 1, "message", disconnectMessage);
+        button = new Button("DisconnectButton", 2, "return", "Return to connect menu.") {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return new UserEvent(this, UserEventType.Net_Clear, null);
@@ -41,7 +37,7 @@ public class DisconnectingScreen extends ClientScreen {
     }
 
     @Override
-    public void refresh() { }
+    public void update() { }
 
     @Override
     public void loadConfig(UIConfig config) {
@@ -57,9 +53,5 @@ public class DisconnectingScreen extends ClientScreen {
     protected void renderContents() {
         center(text).y -= spacing;
         center(button).y += spacing;
-    }
-
-    public String toString() {
-        return "DisconnectingScreen";
     }
 }

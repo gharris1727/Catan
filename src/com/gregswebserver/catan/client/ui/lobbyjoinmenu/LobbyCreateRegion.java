@@ -20,16 +20,12 @@ public class LobbyCreateRegion extends ConfigurableScreenRegion {
     private final Button submitButton;
 
     public LobbyCreateRegion() {
-        super(0, "create");
-        background = new EdgedTiledBackground(0, "background");
-        submitButton = new Button(1, "submit", "Create new") {
+        super("CreateLobby", 0, "create");
+        background = new EdgedTiledBackground();
+        submitButton = new Button("CreateButton", 1, "submit", "Create new") {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return new UserEvent(this, UserEventType.Lobby_Create, null);
-            }
-            @Override
-            public String toString() {
-                return "LobbyListCreateButton";
             }
         };
         add(background).setClickable(this);
@@ -40,10 +36,5 @@ public class LobbyCreateRegion extends ConfigurableScreenRegion {
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
         center(submitButton).y = 64;
-    }
-
-    @Override
-    public String toString() {
-        return "LobbyCreateRegion";
     }
 }

@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenContainer;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
+import com.gregswebserver.catan.client.graphics.ui.Updatable;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
@@ -17,7 +18,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * The area that renders all features visible while the client is in a game.
  */
-public class PlayingScreenRegion extends ClientScreen {
+public class PlayingScreenRegion extends ClientScreen implements Updatable {
 
     //Configuration dependencies
     private int sidebarWidth;
@@ -33,16 +34,11 @@ public class PlayingScreenRegion extends ClientScreen {
     private final TimelineRegion timeline;
 
     public PlayingScreenRegion(Username username, GameManager manager) {
-        super("playing");
+        super("PlayingScreen", "playing");
         //Create sub-regions
         context = new ContextRegion();
         MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
-        map = new ScrollingScreenContainer(0, "scroll", mapRegion) {
-            @Override
-            public String toString() {
-                return "MapScrollContainer";
-            }
-        };
+        map = new ScrollingScreenContainer("MapScrollContainer", 0, mapRegion);
         trade = new TradeRegion(manager.getLocalGame(), username);
         inventory = new InventoryRegion(manager.getLocalGame().getPlayers().getPlayer(username));
         timeline = new TimelineRegion(manager.getRemoteGame());
@@ -61,12 +57,12 @@ public class PlayingScreenRegion extends ClientScreen {
     }
 
     @Override
-    public void refresh() {
+    public void update() {
         map.update();
         timeline.update();
-        inventory.forceRender();
+        inventory.update();
         trade.update();
-        context.forceRender();
+        context.update();
     }
 
     @Override
@@ -97,9 +93,5 @@ public class PlayingScreenRegion extends ClientScreen {
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
         map.center();
-    }
-
-    public String toString() {
-        return "PlayingScreenRegion";
     }
 }

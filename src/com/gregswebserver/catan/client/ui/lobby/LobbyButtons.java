@@ -19,29 +19,19 @@ public class LobbyButtons extends ConfigurableScreenRegion {
     private int spacing;
 
     public LobbyButtons() {
-        super(2, "panel");
+        super("LobbyButtons", 2, "panel");
         //Create sub-regions
-        background = new EdgedTiledBackground(0, "background");
-        startButton = new Button(1, "start", "Start Game") {
+        background = new EdgedTiledBackground();
+        startButton = new Button("StartButton", 1, "start", "Start Game") {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return new UserEvent(this, UserEventType.Lobby_Start, null);
             }
-
-            @Override
-            public String toString() {
-                return "LobbyButtonsStart";
-            }
         };
-        leaveButton = new Button(2, "leave", "Leave Lobby") {
+        leaveButton = new Button("LeaveButton", 2, "leave", "Leave Lobby") {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return new UserEvent(this, UserEventType.Lobby_Quit, null);
-            }
-
-            @Override
-            public String toString() {
-                return "LobbyButtonsQuit";
             }
         };
         //Add everything to the screen
@@ -64,10 +54,5 @@ public class LobbyButtons extends ConfigurableScreenRegion {
     protected void renderContents() {
         center(startButton).y -= spacing;
         center(leaveButton).y += spacing;
-    }
-
-    @Override
-    public String toString() {
-        return "LobbyButtons";
     }
 }

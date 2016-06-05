@@ -16,9 +16,13 @@ public class TiledBackground extends DefaultConfigurableScreenRegion {
 
     protected GraphicSet graphics;
 
-    public TiledBackground(int priority, String configKey) {
-        super(priority, configKey);
+    public TiledBackground() {
+        this("Background", 0, "background");
         //TODO: add texture tiling features using 16 tile tile sets
+    }
+
+    public TiledBackground(String name, int priority, String configKey) {
+        super(name, priority, configKey);
     }
 
     @Override
@@ -45,16 +49,9 @@ public class TiledBackground extends DefaultConfigurableScreenRegion {
         Graphic center = graphics.getGraphic(Direction.center.ordinal());
         for (int x = 0; x < xStop; x += texWidth) {
             for (int y = 0; y < yStop; y += texHeight) {
-                add(new GraphicObject(0, center) {
-                    public String toString() {
-                        return "Tile inside " + TiledBackground.this;
-                    }
-                }).setClickable(this).setPosition(new Point(x,y));
+                GraphicObject tile = new GraphicObject("Tile inside " + this, 0, center);
+                add(tile).setClickable(this).setPosition(new Point(x,y));
             }
         }
-    }
-
-    public String toString() {
-        return "TiledBackground";
     }
 }

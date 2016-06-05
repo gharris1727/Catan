@@ -20,9 +20,9 @@ public class LobbyUserList extends ConfigurableScreenRegion {
     private int spacing;
 
     public LobbyUserList(Lobby lobby) {
-        super(2, "users");
+        super("LobbyUserList", 2, "users");
         this.lobby = lobby;
-        background = new EdgedTiledBackground(0, "background");
+        background = new EdgedTiledBackground();
         add(background).setClickable(this);
     }
 
@@ -59,9 +59,9 @@ public class LobbyUserList extends ConfigurableScreenRegion {
         private final TextLabel name;
 
         private LobbyUserListElement(Username username) {
-            super(1, "element");
-            background = new TiledBackground(0, "background");
-            name = new TextLabel(1, "name", username.username);
+            super("UserListElement", 1, "element");
+            background = new TiledBackground();
+            name = new TextLabel("UserListNameLabel", 1, "name", username.username);
             add(background).setClickable(this);
             add(name).setClickable(this);
         }
@@ -75,15 +75,5 @@ public class LobbyUserList extends ConfigurableScreenRegion {
         protected void renderContents() {
             center(name);
         }
-
-        @Override
-        public String toString() {
-            return "LobbyUserListElement";
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "LobbyUserList";
     }
 }

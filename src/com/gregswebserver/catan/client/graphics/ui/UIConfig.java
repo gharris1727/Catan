@@ -34,6 +34,13 @@ public class UIConfig {
         this.teamColors = teamColors;
     }
 
+    public UIConfig(UIConfig config) {
+        this.style = config.style;
+        this.layout = config.layout;
+        this.locale = config.locale;
+        this.teamColors = config.teamColors;
+    }
+
     public UIConfig narrow(String prefix) {
         return new UIConfig(style, layout.narrow(prefix), locale, teamColors);
     }

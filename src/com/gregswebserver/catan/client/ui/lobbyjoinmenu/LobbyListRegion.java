@@ -33,9 +33,9 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     private int arrowWidth;
 
     private int lobbyNameColumnWidth;
-    private RenderMask lobbySize;
 
     private final LobbyListHeader header;
+    private final LobbyList list;
     private final LobbyListScrollContainer container;
     private final LobbyListFooter footer;
 
@@ -44,14 +44,15 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     private Lobby selected;
 
     public LobbyListRegion(int priority, String configKey, Iterable<Lobby> lobbies) {
-        super(priority, configKey);
+        super("LobbyList", priority, configKey);
         //Store instance information
         this.lobbies = lobbies;
         sortOption = LobbySortOption.Lobby_Name_Asc;
         //Create the child regions
         header = new LobbyListHeader();
         footer = new LobbyListFooter();
-        container = new LobbyListScrollContainer(new LobbyListScroll());
+        list = new LobbyList();
+        container = new LobbyListScrollContainer(list);
         //Add everything to the screen
         add(header);
         add(footer);
@@ -60,22 +61,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        //Get the new overall size of the window.
-        int width = mask.getWidth();
-        int height = mask.getHeight();
-        //Calculate intermediate dimensions
-        int windowHeight = (height - headerHeight - footerHeight);
-        lobbyNameColumnWidth = mask.getWidth() - openSlotsColumnWidth - currentClientsColumnWidth - gameTypeColumnWidth;
-        //Set the window locations
-        header.setPosition(new Point());
-        container.setPosition(new Point(0,headerHeight));
-        footer.setPosition(new Point(0,height-footerHeight));
-        //Resize the windows
-        container.setMask(new RectangularMask(new Dimension(width,windowHeight)));
-        header.setMask(new RectangularMask(new Dimension(width,headerHeight)));
-        footer.setMask(new RectangularMask(new Dimension(width,footerHeight)));
-        lobbySize = new RectangularMask(new Dimension(width,lobbyHeight));
-        container.setInsets(new Insets(0,0,0,0));
     }
 
     @Override
@@ -96,13 +81,28 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         return null;
     }
 
-    @Override
-    public String toString() {
-        return "LobbyListRegion";
-    }
-
     public void update() {
         container.update();
+    }
+
+    @Override
+    protected void renderContents() {
+        //Get the new overall size of the window.
+        int width = getMask().getWidth();
+        int height = getMask().getHeight();
+        //Calculate intermediate dimensions
+        int windowHeight = (height - headerHeight - footerHeight);
+        lobbyNameColumnWidth = width - openSlotsColumnWidth - currentClientsColumnWidth - gameTypeColumnWidth;
+        //Set the window locations
+        header.setPosition(new Point());
+        container.setPosition(new Point(0,headerHeight));
+        footer.setPosition(new Point(0,height-footerHeight));
+        //Resize the windows
+        container.setMask(new RectangularMask(new Dimension(width,windowHeight)));
+        header.setMask(new RectangularMask(new Dimension(width,headerHeight)));
+        footer.setMask(new RectangularMask(new Dimension(width,footerHeight)));
+        list.setElementSize(new RectangularMask(new Dimension(width,lobbyHeight)));
+        container.setInsets(new Insets(0,0,0,0));
     }
 
     private class LobbyListHeader extends ConfigurableScreenRegion {
@@ -113,7 +113,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         private final LobbyListHeaderElement openSlotsHeader;
 
         private LobbyListHeader() {
-            super(2, "header");
+            super("Header", 2, "header");
             lobbyNameHeader = new LobbyListHeaderElement(
                     LobbySortOption.Lobby_Name_Asc, LobbySortOption.Lobby_Name_Desc);
             gameTypeHeader = new LobbyListHeaderElement(
@@ -141,11 +141,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             openSlotsHeader.setPosition(new Point(lobbyNameColumnWidth + gameTypeColumnWidth + currentClientsColumnWidth, 0));
         }
 
-        @Override
-        public String toString() {
-            return "LobbyListHeader";
-        }
-
         private class LobbyListHeaderElement extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
@@ -154,9 +149,9 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             private final DownArrow downArrow;
 
             private LobbyListHeaderElement(LobbySortOption ascend, LobbySortOption descend) {
-                super(0, "element");
-                background = new EdgedTiledBackground(0, "background");
-                labelGraphic = new TextLabel(1, "label", ascend.getTitle());
+                super("HeaderElement", 0, "element");
+                background = new EdgedTiledBackground();
+                labelGraphic = new TextLabel("Label", 1, "label", ascend.getTitle());
                 upArrow = new UpArrow(ascend);
                 downArrow = new DownArrow(descend);
                 //Add the objects to the screen.
@@ -188,11 +183,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 downArrow.index = 1;
             }
 
-            @Override
-            public String toString() {
-                return "LobbyListHeaderElement";
-            }
-
             private class DownArrow extends ConfigurableGraphicObject {
 
                 private final LobbySortOption descend;
@@ -200,7 +190,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 private GraphicSet graphics;
 
                 private DownArrow(LobbySortOption descend) {
-                    super(1, "down");
+                    super("DownArrow", 1, "down");
                     this.descend = descend;
                     index = 1;
                 }
@@ -213,11 +203,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
                 public void update() {
                     setGraphic(graphics.getGraphic(index));
-                }
-
-                @Override
-                public String toString() {
-                    return "LobbyListHeaderDownArrow " + descend.getTitle();
                 }
 
                 @Override
@@ -248,7 +233,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 private GraphicSet graphics;
 
                 private UpArrow(LobbySortOption ascend) {
-                    super(1, "up");
+                    super("UpArrow", 1, "up");
                     this.ascend = ascend;
                     index = 0;
                 }
@@ -261,11 +246,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
                 public void update() {
                     setGraphic(graphics.getGraphic(index));
-                }
-
-                @Override
-                public String toString() {
-                    return "LobbyListHeaderElementUpArrow " + ascend.getTitle();
                 }
 
                 @Override
@@ -296,8 +276,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         private final TiledBackground background;
 
         private LobbyListScrollContainer(ScrollingScreenRegion scroll) {
-            super(1, "container", scroll);
-            background = new TiledBackground(0, "background");
+            super("LobbyList", 1, scroll);
+            background = new TiledBackground();
             add(background).setClickable(this);
         }
 
@@ -306,17 +286,17 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             super.resizeContents(mask);
             background.setMask(mask);
         }
-
-        @Override
-        public String toString() {
-            return "LobbyListScrollContainer";
-        }
     }
 
-    private class LobbyListScroll extends ScrollingScreenRegion {
+    private class LobbyList extends ScrollingList {
 
-        private LobbyListScroll() {
-            super(1, "scroll");
+        private LobbyList() {
+            super("Scroll", 1, "list");
+        }
+
+        @Override
+        public void update() {
+            forceRender();
         }
 
         @Override
@@ -327,18 +307,12 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 for (Lobby lobby : lobbies)
                     sorted.add(lobby);
             }
-            int height = 0;
-            for (Lobby lobby : sorted) {
-                LobbyListScrollElement elt = new LobbyListScrollElement(lobby);
-                elt.setConfig(getConfig());
-                elt.setMask(lobbySize);
-                add(elt).setPosition(new Point(0, height));
-                height += lobbyHeight;
-            }
-            setMask(new RectangularMask(new Dimension(LobbyListRegion.this.getMask().getWidth(),height)));
+            for (Lobby lobby : sorted)
+                add(new Element(lobby));
+            super.renderContents();
         }
 
-        private class LobbyListScrollElement extends ConfigurableScreenRegion {
+        private class Element extends ConfigurableScreenRegion {
 
             private final TiledBackground background;
 
@@ -349,14 +323,14 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
             private final Lobby lobby;
 
-            private LobbyListScrollElement(Lobby lobby) {
-                super(0, "element");
+            private Element(Lobby lobby) {
+                super("ListScrollElement", 0, "element");
                 this.lobby = lobby;
-                background = new TiledBackground(0, "background");
-                lobbyNameText = new TextLabel(1, "name", lobby.getConfig().getLobbyName());
-                gameTypeText = new TextLabel(1, "type", lobby.getConfig().getLayoutName());
-                currentClientsText = new TextLabel(1, "current", "" + lobby.size());
-                openSlotsText = new TextLabel(1, "open", "" + (lobby.getConfig().getMaxPlayers() - lobby.size()));
+                background = new TiledBackground();
+                lobbyNameText = new TextLabel("LobbyName", 1, "name", lobby.getConfig().getLobbyName());
+                gameTypeText = new TextLabel("GameType", 1, "type", lobby.getConfig().getLayoutName());
+                currentClientsText = new TextLabel("CurrentClients", 1, "current", "" + lobby.size());
+                openSlotsText = new TextLabel("OpenSlots", 1, "open", "" + (lobby.getConfig().getMaxPlayers() - lobby.size()));
                 add(background).setClickable(this);
                 add(lobbyNameText).setClickable(this);
                 add(gameTypeText).setClickable(this);
@@ -386,17 +360,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
             @Override
             public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return LobbyListScroll.this.onMouseScroll(event);
+                return LobbyList.this.onMouseScroll(event);
             }
-
-            @Override
-            public String toString() {
-                return "LobbyListScrollElement "+ lobby;
-            }
-        }
-
-        public String toString() {
-            return "LobbyListScroll";
         }
     }
 
@@ -406,15 +371,12 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         private final Button joinButton;
 
         private LobbyListFooter() {
-            super(2, "footer");
-            background = new EdgedTiledBackground(0, "background");
-            joinButton = new Button(1, "join", "Join") {
+            super("Footer", 2, "footer");
+            background = new EdgedTiledBackground();
+            joinButton = new Button("JoinButton", 1, "join", "Join") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayer());
-                }
-                public String toString() {
-                    return "LobbyListJoinButton";
                 }
             };
             //Add objects to the screen.
@@ -430,11 +392,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         @Override
         public UserEvent onMouseScroll(MouseWheelEvent event) {
             return container.onMouseScroll(event);
-        }
-
-        @Override
-        public String toString() {
-            return "LobbyListFooter";
         }
     }
 }

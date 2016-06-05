@@ -14,8 +14,11 @@ import static com.gregswebserver.catan.common.util.Direction.*;
  */
 public class EdgedTiledBackground extends TiledBackground {
 
-    public EdgedTiledBackground(int priority, String configKey) {
-        super(priority, configKey);
+    public EdgedTiledBackground() {
+    }
+
+    public EdgedTiledBackground(String name, int priority, String configKey) {
+        super(name, priority, configKey);
     }
 
     @Override
@@ -48,14 +51,7 @@ public class EdgedTiledBackground extends TiledBackground {
     }
 
     private void addTile(Point position, Direction d) {
-        add(new GraphicObject(d.ordinal(), graphics.getGraphic(d.ordinal())) {
-            public String toString() {
-                return "Tile inside " + EdgedTiledBackground.this;
-            }
-        }).setClickable(this).setPosition(position);
-    }
-
-    public String toString() {
-        return "Edged" + super.toString();
+        GraphicObject tile = new GraphicObject("Tile inside " + this, d.ordinal(), graphics.getGraphic(d.ordinal()));
+        add(tile).setClickable(this).setPosition(position);
     }
 }

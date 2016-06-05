@@ -10,7 +10,7 @@ import java.awt.*;
  * Created by greg on 1/21/16.
  * A screen region that supports smooth scrolling, and keeps within specified bounds.
  */
-public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
+public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion implements Updatable {
 
     private Insets insets;
     private ScreenRegion host;
@@ -19,8 +19,8 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion {
     protected int maxX;
     protected int maxY;
 
-    protected ScrollingScreenRegion(int priority, String configKey) {
-        super(priority, configKey);
+    protected ScrollingScreenRegion(String name, int priority, String configKey) {
+        super(name, priority, configKey);
     }
 
     public void setHost(ScreenRegion host) {

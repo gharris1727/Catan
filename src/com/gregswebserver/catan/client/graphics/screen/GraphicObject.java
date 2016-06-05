@@ -7,18 +7,18 @@ import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
  * Created by Greg on 8/19/2014.
  * A ScreenObject that never needs to be re-rendered, and cannot have any child ScreenObjects.
  */
-public abstract class GraphicObject extends ScreenObject implements Graphical {
+public class GraphicObject extends ScreenObject {
 
     private Graphic graphic;
     private boolean needsRender;
 
-    protected GraphicObject(int priority) {
-        super(priority);
+    public GraphicObject(String name, int priority) {
+        super(name, priority);
         needsRender = true;
     }
 
-    protected GraphicObject(int priority, Graphic graphic) {
-        super(priority);
+    public GraphicObject(String name, int priority, Graphic graphic) {
+        super(name, priority);
         setGraphic(graphic);
     }
 

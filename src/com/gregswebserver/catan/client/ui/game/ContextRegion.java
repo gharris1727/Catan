@@ -26,12 +26,14 @@ import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Greg on 1/6/2015.
  * A screen region that lives in the bottom corner of the in-game screen.
  */
-public class ContextRegion extends ConfigurableScreenRegion {
+public class ContextRegion extends ConfigurableScreenRegion implements Updatable {
 
     //Instance information
     private Coordinate targetCoord;
@@ -51,15 +53,17 @@ public class ContextRegion extends ConfigurableScreenRegion {
     private final TiledBackground background;
     private final TextLabel title;
     private final TextLabel detail;
+    private final List<ContextButton> buttons;
 
     public ContextRegion() {
-        super(2, "context");
+        super("ContextRegion", 2, "context");
         //Initialize instance information
         target = ContextTarget.None;
         //Create sub-regions
-        background = new EdgedTiledBackground(0, "background");
-        title = new TextLabel(1, "title", "");
-        detail = new TextLabel(2, "detail", "");
+        background = new EdgedTiledBackground();
+        title = new TextLabel("Title", 1, "title", "");
+        detail = new TextLabel("Detail", 2, "detail", "");
+        buttons = new ArrayList<>();
         //Add everything to the screen.
         add(background).setClickable(this);
         add(title).setClickable(this);
@@ -84,6 +88,8 @@ public class ContextRegion extends ConfigurableScreenRegion {
     protected void renderContents() {
         //Clear the context region of everything
         clear();
+        buttons.clear();
+        renderTurnAdvance();
         switch (target) {
             case None:
                 //Clear the text to blank when not selecting anything.
@@ -106,26 +112,28 @@ public class ContextRegion extends ConfigurableScreenRegion {
                 renderHistory();
                 break;
         }
-        try {
-            manager.getLocalGame().test(new GameEvent(username, GameEventType.Turn_Advance, null));
-            add(new ContextButton(1) {
-                @Override
-                public String toString() {
-                    return "TurnAdvanceButton";
-                }
-
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.End_Turn, null);
-                }
-            }).setPosition(getButtonLocation(0, 0));
-        } catch (EventConsumerException ignored) {
+        renderDevelopmentCard();
+        renderJumpToLive();
+        int index = 0;
+        for (ContextButton button : buttons) {
+            add(button);
+            //TODO: make buttons fall to secon
+            button.setPosition(getButtonLocation(index++, 0));
         }
-
         add(background);
 
         center(add(title)).y = getConfig().getLayout().getInt("title.y");
         center(add(detail)).y = getConfig().getLayout().getInt("detail.y");
+    }
+
+    private Point getButtonLocation(int x, int y) {
+        Point offset = getConfig().getLayout().getPoint("offset");
+        Point spacing = getConfig().getLayout().getPoint("spacing");
+        return new Point(offset.x + x*spacing.x, offset.y + y*spacing.y);
+    }
+
+    private void renderTurnAdvance() {
+        generateButton("TurnAdvance", 0, GameEventType.Turn_Advance, null);
     }
 
     private void renderTile() {
@@ -137,21 +145,7 @@ public class ContextRegion extends ConfigurableScreenRegion {
                 detail.setText("Produces: " + tile.getResource());
             else
                 detail.setText("Produces: Nothing");
-            try {
-                manager.getLocalGame().test(new GameEvent(username, GameEventType.Player_Move_Robber, targetCoord));
-                add(new ContextButton(2) {
-                    @Override
-                    public String toString() {
-                        return "Path";
-                    }
-
-                    @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Tile_Rob, targetCoord);
-                    }
-                }).setPosition(getButtonLocation(1, 0));
-            } catch (EventConsumerException ignored) {
-            }
+            generateButton("RobTile", 1, GameEventType.Player_Move_Robber, targetCoord);
         } else if (targetTile instanceof TradeTile) {
             TradeTile tile = (TradeTile) targetTile;
             title.setText("Tile: " + tile.getTradingPostType() + " Port");
@@ -167,75 +161,25 @@ public class ContextRegion extends ConfigurableScreenRegion {
         Path path = manager.getLocalGame().getBoard().getPath(targetCoord);
         title.setText("Path: " + path);
         detail.setText("Owned by: " + path.getTeam());
-        try {
-            manager.getLocalGame().test(new GameEvent(username, GameEventType.Build_Road, targetCoord));
-            add(new ContextButton(5) {
-                @Override
-                public String toString() {
-                    return "Path";
-                }
-
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Road_Purchase, targetCoord);
-                }
-            }).setPosition(getButtonLocation(1, 0));
-        } catch (EventConsumerException ignored) {
-        }
+        generateButton("PurchaseRoad", 2, GameEventType.Build_Road, targetCoord);
     }
 
     private void renderTown() {
         Town town = manager.getLocalGame().getBoard().getTown(targetCoord);
         title.setText("Town: " + town);
         detail.setText("Owned by: " + town.getTeam());
-        try {
-            if (town instanceof EmptyTown) {
-                manager.getLocalGame().test(new GameEvent(username, GameEventType.Build_Settlement, targetCoord));
-                add(new ContextButton(3) {
-                    @Override
-                    public String toString() {
-                        return "Town";
-                    }
-
-                    @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.Settlement_Purchase, targetCoord);
-                    }
-                }).setPosition(getButtonLocation(1, 0));
-            } else if (town instanceof Settlement) {
-                manager.getLocalGame().test(new GameEvent(username, GameEventType.Build_City, targetCoord));
-                add(new ContextButton(4) {
-                    @Override
-                    public String toString() {
-                        return "Town";
-                    }
-
-                    @Override
-                    public UserEvent onMouseClick(MouseEvent event) {
-                        return new UserEvent(this, UserEventType.City_Purchase, targetCoord);
-                    }
-                }).setPosition(getButtonLocation(1, 0));
-            }
-        } catch (EventConsumerException ignored) {
-        }
+        if (town instanceof EmptyTown)
+            generateButton("PurchaseSettlement", 3, GameEventType.Build_Settlement, targetCoord);
+        else if (town instanceof Settlement)
+            generateButton("PurchaseCity", 4, GameEventType.Build_City, targetCoord);
     }
 
     private void renderTrade() {
-        try {
-            manager.getLocalGame().test(new GameEvent(username, GameEventType.Make_Trade, targetTrade));
-            add(new ContextButton(8) {
-                @Override
-                public String toString() {
-                    return "ConfirmTrade";
-                }
+        generateButton("ConfirmTradeButton", 5, GameEventType.Make_Trade, targetTrade);
+    }
 
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Make_Trade, targetTrade);
-                }
-            }).setPosition(getButtonLocation(1, 0));
-        } catch (EventConsumerException ignored) {
-        }
+    private void renderDevelopmentCard() {
+        generateButton("BuyDevelopment", 6, GameEventType.Buy_Development, null);
     }
 
     private void renderHistory() {
@@ -246,32 +190,28 @@ public class ContextRegion extends ConfigurableScreenRegion {
         if (origin != null)
             detailText = origin.toString();
         detail.setText(detailText);
-        add(new ContextButton(9) {
-            @Override
-            public String toString() {
-                return "JumpToEvent";
-            }
-
+        buttons.add(new ContextButton("HistoryJumpButton", 14, null) {
             @Override
             public UserEvent onMouseClick(MouseEvent event) {
                 return new UserEvent(this, UserEventType.History_Jump, targetHistory);
             }
-        }).setPosition(getButtonLocation(1,0));
+        });
     }
 
-    private Point getButtonLocation(int x, int y) {
-        Point offset = getConfig().getLayout().getPoint("offset");
-        Point spacing = getConfig().getLayout().getPoint("spacing");
-        return new Point(offset.x + x*spacing.x, offset.y + y*spacing.y);
+    private void renderJumpToLive() {
+        if (!manager.isLive()) {
+            buttons.add(new ContextButton("JumpToLive", 15, null) {
+                @Override
+                public UserEvent onMouseClick(MouseEvent event) {
+                    return new UserEvent(this, UserEventType.History_Jump, -1);
+                }
+            });
+        }
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-    }
-
-    public String toString() {
-        return "ContextScreenArea";
     }
 
     public void targetTile(Coordinate position) {
@@ -304,9 +244,35 @@ public class ContextRegion extends ConfigurableScreenRegion {
         forceRender();
     }
 
-    private abstract class ContextButton extends GraphicObject {
-        private ContextButton(int icon) {
-            super(2, graphics.getGraphic(icon));
+    @Override
+    public void update() {
+        forceRender();
+    }
+
+    private void generateButton(String name, int icon, GameEventType type, Object payload) {
+        if (username != null) {
+            try {
+                GameEvent event = new GameEvent(username, type, payload);
+                manager.getLocalGame().test(event);
+                buttons.add(new ContextButton(name, icon, event));
+            } catch (EventConsumerException ignored) {
+            }
+        }
+    }
+
+    private class ContextButton extends GraphicObject {
+
+        private final GameEvent event;
+
+        private ContextButton(String name, int icon, GameEvent event) {
+            super(name, 2, graphics.getGraphic(icon));
+            this.event = event;
+        }
+
+        @Override
+        public UserEvent onMouseClick(MouseEvent event) {
+            manager.local(this.event);
+            return null;
         }
     }
 

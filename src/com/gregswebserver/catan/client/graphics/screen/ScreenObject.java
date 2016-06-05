@@ -12,15 +12,17 @@ import java.awt.event.MouseWheelEvent;
  * Created by Greg on 8/19/2014.
  * A set of methods that all object that appear on the screen must implement.
  */
-public abstract class ScreenObject implements Clickable {
+public abstract class ScreenObject implements Clickable, Graphical {
 
     private final Point position;
+    private final String name;
     private final int priority;
     private final int clickableColor;
     private Clickable redirect;
 
-    protected ScreenObject(int priority) {
+    protected ScreenObject(String name, int priority) {
         this.position = new Point();
+        this.name = name;
         this.priority = priority;
         clickableColor = UniqueColor.getNext();
         redirect = null;
@@ -120,18 +122,7 @@ public abstract class ScreenObject implements Clickable {
         return (redirect == null) ? this : redirect;
     }
 
-    public abstract String toString();
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof ScreenObject) {
-            ScreenObject other = (ScreenObject) o;
-            return other.clickableColor == this.clickableColor;
-        }
-        return false;
-    }
-
-    public int hashCode() {
-        return clickableColor;
+    public final String toString() {
+        return name;
     }
 }

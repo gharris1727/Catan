@@ -24,7 +24,6 @@ public class ServerConnectMenu extends ClientScreen {
 
     private RenderMask serverSize;
     private RenderMask footerSize;
-    private int padding;
     private int spacing;
 
     private final ServerPool serverPool;
@@ -37,13 +36,14 @@ public class ServerConnectMenu extends ClientScreen {
     private ServerDetailPopup editPopup;
 
     public ServerConnectMenu(ServerPool serverPool) {
-        super("connect");
+        super("ConnectMenu", "connect");
         //Store instance information
         this.serverPool = serverPool;
         selected = null;
         //Create sub-regions
-        background = new EdgedTiledBackground(0, "background");
-        scroll = new ServerListScrollContainer(new ServerListScroll());
+        background = new EdgedTiledBackground();
+        scroll = new ScrollingScreenContainer("ServerScroll", 1, new ServerList());
+        scroll.enableTransparency();
         footer = new ServerListFooter();
         //Add everything to the screen.
         add(background).setClickable(this);
@@ -71,43 +71,25 @@ public class ServerConnectMenu extends ClientScreen {
 
     @Override
     public void loadConfig(UIConfig config) {
-        serverSize = new RoundedRectangularMask(config.getLayout().getDimension("server"));
+        serverSize = new RoundedRectangularMask(config.getLayout().getDimension("list.mask.size"));
         footerSize = new RoundedRectangularMask(config.getLayout().getDimension("footer"));
-        padding = config.getLayout().getInt("padding");
         spacing = config.getLayout().getInt("spacing");
     }
 
-    public String toString() {
-        return "ServerConnectMenu";
-    }
-
     @Override
-    public void refresh() {
+    public void update() {
         scroll.update();
     }
 
-    private class ServerListScrollContainer extends ScrollingScreenContainer {
+    private class ServerList extends ScrollingList {
 
-        private ServerListScrollContainer(ScrollingScreenRegion scroll) {
-            super(1, "container", scroll);
-            setTransparency(true);
+        private ServerList() {
+            super("ServerList", 1, "list");
         }
 
         @Override
-        public String toString() {
-            return "ServerListScrollContainer";
-        }
-    }
-
-    private class ServerListScroll extends ScrollingScreenRegion {
-
-        private ServerListScroll() {
-            super(1, "scroll");
-        }
-
-        @Override
-        public String toString() {
-            return "ServerListScroll";
+        public void loadConfig(UIConfig config) {
+            setElementSize(RenderMask.parseMask(config.getLayout().narrow("mask")));
         }
 
         @Override
@@ -123,23 +105,22 @@ public class ServerConnectMenu extends ClientScreen {
         }
 
         @Override
+        public void update() {
+            forceRender();
+        }
+
+        @Override
         protected void renderContents() {
             //Completely re-render all children
             clear();
+            //TODO: selection logic should not depend on the rendering.
             selected = null;
-            int height = 0;
-            for (ConnectionInfo elt : serverPool) {
-                ServerListItem item = new ServerListItem(elt);
-                item.setMask(serverSize);
-                item.setConfig(getConfig());
-                item.setPosition(new Point(0,height));
-                add(item);
-                height += serverSize.getHeight() + padding;
-            }
-            setMask(new RectangularMask(new Dimension(serverSize.getWidth(), height)));
+            for (ConnectionInfo elt : serverPool)
+                add(new Element(elt));
+            super.renderContents();
         }
 
-        private class ServerListItem extends ConfigurableScreenRegion {
+        private class Element extends ConfigurableScreenRegion {
 
             private final ConnectionInfo info;
 
@@ -147,13 +128,13 @@ public class ServerConnectMenu extends ClientScreen {
             private final TextLabel address;
             private final TextLabel login;
 
-            private ServerListItem(ConnectionInfo info) {
-                super(1, "item");
+            private Element(ConnectionInfo info) {
+                super("Element", 1, "item");
                 this.info = info;
                 //Create all of the screen objects.
-                background = new EdgedTiledBackground(0, "background");
-                address = new TextLabel(1, "address", "Remote Address : " + info.getHostname() + ":" + info.getPort());
-                login = new TextLabel(2, "login", "Username: " + info.getUsername());
+                background = new EdgedTiledBackground();
+                address = new TextLabel("AddressText", 1, "address", "Remote Address : " + info.getHostname() + ":" + info.getPort());
+                login = new TextLabel("LoginText", 2, "login", "Username: " + info.getUsername());
                 //Add everything to the screen.
                 add(login).setClickable(this);
                 add(background).setClickable(this);
@@ -175,17 +156,12 @@ public class ServerConnectMenu extends ClientScreen {
 
             @Override
             public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return ServerListScroll.this.onMouseScroll(event);
+                return ServerList.this.onMouseScroll(event);
             }
 
             @Override
             public UserEvent onMouseDrag(Point p) {
-                return ServerListScroll.this.onMouseDrag(p);
-            }
-
-            @Override
-            public String toString() {
-                return "ServerListItemArea " + info;
+                return ServerList.this.onMouseDrag(p);
             }
         }
     }
@@ -199,46 +175,30 @@ public class ServerConnectMenu extends ClientScreen {
         private final TextBox passwordBox;
 
         private ServerListFooter() {
-            super(2, "footer");
-            background = new EdgedTiledBackground(0, "background");
-            newButton = new Button(1, "new", "New") {
+            super("Footer", 2, "footer");
+            background = new EdgedTiledBackground();
+            newButton = new Button("NewButton", 1, "new", "New") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return detail(null);
                 }
-                @Override
-                public String toString() {
-                    return "ServerListNewButton";
-                }
             };
-            editButton = new Button(1, "edit", "Edit") {
+            editButton = new Button("EditButton", 1, "edit", "Edit") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return selected == null ? null : detail(selected);
                 }
-                @Override
-                public String toString() {
-                    return "ServerListEditButton";
-                }
             };
-            connectButton = new Button(1, "connect", "Connect") {
-                @Override
-                public String toString() {
-                    return "ServerListFooterConnectButton";
-                }
+            connectButton = new Button("ConenctButton", 1, "connect", "Connect") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return connect();
                 }
             };
-            passwordBox = new TextBox(1, "password", "Password", false) {
+            passwordBox = new TextBox("PasswordBox", 1, "password", "Password", false) {
                 @Override
                 public UserEvent onAccept() {
                     return connect();
-                }
-                @Override
-                public String toString() {
-                    return "ServerListFooterPasswordBox";
                 }
             };
             //Add the objects to the screen
@@ -273,10 +233,6 @@ public class ServerConnectMenu extends ClientScreen {
         protected void resizeContents(RenderMask mask) {
             background.setMask(mask);
         }
-
-        public String toString() {
-            return "ServerListFooter";
-        }
     }
 
     private class ServerDetailPopup extends PopupWindow {
@@ -292,67 +248,43 @@ public class ServerConnectMenu extends ClientScreen {
         private final Button cancelButton;
 
         private ServerDetailPopup(ConnectionInfo server) {
-            super("serverdetail");
+            super("ServerDetails", "serverdetail");
             this.server = server;
-            background = new EdgedTiledBackground(0, "background");
-            hostname = new TextBox(1, "hostname" ,(server == null) ? "Hostname" : server.getHostname(), server != null) {
+            background = new EdgedTiledBackground();
+            hostname = new TextBox("HostnameBox", 1, "hostname" ,(server == null) ? "Hostname" : server.getHostname(), server != null) {
                 @Override
                 protected UserEvent onAccept() {
                     return submit();
                 }
-                @Override
-                public String toString() {
-                    return "HostnameTextBox";
-                }
             };
-            port = new TextBox(1, "port" ,(server == null) ? "Port" : server.getPort(), server != null) {
+            port = new TextBox("PortBox", 1, "port" ,(server == null) ? "Port" : server.getPort(), server != null) {
                 @Override
                 protected UserEvent onAccept() {
                     return submit();
                 }
-                @Override
-                public String toString() {
-                    return "HostnameTextBox";
-                }
             };
-            username = new TextBox(1, "username" ,(server == null) ? "Username" : server.getUsername(), server != null) {
+            username = new TextBox("UsernameBox", 1, "username" ,(server == null) ? "Username" : server.getUsername(), server != null) {
                 @Override
                 protected UserEvent onAccept() {
                     return submit();
                 }
-                @Override
-                public String toString() {
-                    return "HostnameTextBox";
-                }
             };
-            saveButton = new Button(1, "save", "Save") {
+            saveButton = new Button("SaveButton", 1, "save", "Save") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return submit();
                 }
-                @Override
-                public String toString() {
-                    return "ServerDetailPopupCloseButton";
-                }
             };
-            deleteButton = new Button(1, "delete", "Delete") {
+            deleteButton = new Button("DeleteButton", 1, "delete", "Delete") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return delete();
                 }
-                @Override
-                public String toString() {
-                    return "ServerDetailPopupDeleteButton";
-                }
             };
-            cancelButton = new Button(1, "cancel", "Cancel") {
+            cancelButton = new Button("CancelButton", 1, "cancel", "Cancel") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     return expire();
-                }
-                @Override
-                public String toString() {
-                    return "ServerDetailPopupCancelButton";
                 }
             };
             add(background).setClickable(this);
@@ -394,8 +326,7 @@ public class ServerConnectMenu extends ClientScreen {
         }
 
         @Override
-        public String toString() {
-            return "ServerDetailPopup";
+        public void update() {
         }
     }
 }

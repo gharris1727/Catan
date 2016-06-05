@@ -7,9 +7,9 @@ import java.awt.event.MouseWheelEvent;
 
 /**
  * Created by greg on 2/6/16.
- * A clickable that does nothing.
+ * A clickable that does nothing by default
  */
-public class NullClickable implements Clickable {
+public abstract class ClickableAdapter implements Clickable {
     @Override
     public UserEvent onMouseClick(MouseEvent event) {
         return null;
@@ -78,9 +78,5 @@ public class NullClickable implements Clickable {
     @Override
     public Clickable getClickable(Point p) {
         return this;
-    }
-
-    public String toString() {
-        return "NullClickable";
     }
 }

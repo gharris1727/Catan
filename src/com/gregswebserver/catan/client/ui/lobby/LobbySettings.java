@@ -24,10 +24,10 @@ public class LobbySettings extends ConfigurableScreenRegion {
     private LobbyConfig config;
 
     public LobbySettings() {
-        super(1, "settings");
+        super("LobbySettings", 1, "settings");
         //Create sub-regions
-        background = new EdgedTiledBackground(0, "background");
-        name = new TextBox(1, "name", "Lobby Name", false) {
+        background = new EdgedTiledBackground();
+        name = new TextBox("LobbyNameBox", 1, "name", "Lobby Name", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -38,13 +38,8 @@ public class LobbySettings extends ConfigurableScreenRegion {
                         config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
-
-            @Override
-            public String toString() {
-                return "LobbySettingsNameTextBox";
-            }
         };
-        type = new TextBox(1, "type", "Game Type", false) {
+        type = new TextBox("GameTypeBox", 1, "type", "Game Type", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -55,13 +50,8 @@ public class LobbySettings extends ConfigurableScreenRegion {
                         config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
-
-            @Override
-            public String toString() {
-                return "LobbySettingsGameTypeTextBox";
-            }
         };
-        generator = new TextBox(1, "generator", "Generator", false) {
+        generator = new TextBox("MapGeneratorBox", 1, "generator", "Generator", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -72,13 +62,8 @@ public class LobbySettings extends ConfigurableScreenRegion {
                         config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
-
-            @Override
-            public String toString() {
-                return "LobbySettingsGeneratorTextBox";
-            }
         };
-        ruleset = new TextBox(1, "ruleset", "RuleSet", false) {
+        ruleset = new TextBox("RulsesetBox", 1, "ruleset", "RuleSet", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -89,13 +74,8 @@ public class LobbySettings extends ConfigurableScreenRegion {
                         config.getMaxPlayers());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
             }
-
-            @Override
-            public String toString() {
-                return "LobbySettingsRuleSetTextBox";
-            }
         };
-        clients = new TextBox(1, "clients", "# Clients", false) {
+        clients = new TextBox("ClientLimitBox", 1, "clients", "# Clients", false) {
             @Override
             public UserEvent onAccept() {
                 LobbyConfig newConfig = new LobbyConfig(
@@ -105,11 +85,6 @@ public class LobbySettings extends ConfigurableScreenRegion {
                         config.getRulesetName(),
                         this.getInt());
                 return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
-            }
-
-            @Override
-            public String toString() {
-                return "LobbySettingsClientsTextBox";
             }
         };
         //Add everything to the screen.
@@ -147,10 +122,5 @@ public class LobbySettings extends ConfigurableScreenRegion {
         center(generator).y = type.getPosition().y + type.getMask().getHeight() + spacing;
         center(ruleset).y = generator.getPosition().y + generator.getMask().getHeight() + spacing;
         center(clients).y = ruleset.getPosition().y + ruleset.getMask().getHeight() + spacing;
-    }
-
-    @Override
-    public String toString() {
-        return "LobbySettings";
     }
 }

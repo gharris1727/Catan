@@ -18,11 +18,11 @@ public abstract class TextBox extends DefaultConfigurableScreenRegion {
     private final TiledBackground background;
     private final TextLabel label;
 
-    protected TextBox(int priority, String configKey, String prepopulate, boolean keepExisting) {
-        super(priority, configKey);
+    protected TextBox(String name, int priority, String configKey, String prepopulate, boolean keepExisting) {
+        super(name, priority, configKey);
         text = new StringBuilder();
-        background = new TiledBackground(0, "background");
-        label = new TextLabel(1, "label", prepopulate);
+        background = new TiledBackground();
+        label = new TextLabel(name + "Label", 1, "label", prepopulate);
         if (keepExisting)
             text.append(prepopulate);
         add(background).setClickable(this);

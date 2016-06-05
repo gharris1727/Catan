@@ -1,10 +1,10 @@
 package com.gregswebserver.catan.client.ui.game.playing;
 
+import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.client.ui.game.ResourceCounter;
+import com.gregswebserver.catan.client.ui.game.CardList;
 import com.gregswebserver.catan.common.game.players.Player;
-import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.awt.*;
 
@@ -12,26 +12,27 @@ import java.awt.*;
  * Created by Greg on 1/5/2015.
  * Area responsible for rendering the inventory of the player.
  */
-public class InventoryRegion extends ConfigurableScreenRegion {
+public class InventoryRegion extends ConfigurableScreenRegion implements Updatable {
 
-    private final Player player;
+    //Configuration Dependencies
+    private int usernameHeight;
+    private Point cardBorder;
 
+    //Sub-regions
     private final TiledBackground background;
     private final TextLabel username;
-    private Point elementOffset;
-    private Point elementSpacing;
-    private int usernameHeight;
+    private final CardList cards;
 
     public InventoryRegion(Player player) {
-        super(2, "inventory");
-        //Store instance information.
-        this.player = player;
+        super(player.getName() + "\'sInventory", 2, "inventory");
         //Create sub-regions
-        background = new EdgedTiledBackground(0, "background");
-        username = new TextLabel(1, "username", player.getName().username);
+        background = new EdgedTiledBackground();
+        username = new TextLabel("Username", 1, "username", player.getName().username + " " + player.getTeamColor());
+        cards = new CardList("CardList", 2, "cards", player.getInventory(), player.getDevelopmentCards());
         //Add everything to the screen.
         add(background).setClickable(this);
         add(username).setClickable(this);
+        add(cards).setClickable(this);
     }
 
     @Override
@@ -41,43 +42,21 @@ public class InventoryRegion extends ConfigurableScreenRegion {
 
     @Override
     public void loadConfig(UIConfig config) {
-        elementOffset = config.getLayout().getPoint("element.offset");
-        elementSpacing = config.getLayout().getPoint("element.spacing");
-        usernameHeight = config.getLayout().getInt("username.position.y");
-    }   
+        usernameHeight = config.getLayout().getInt("username.height");
+        cardBorder = config.getLayout().getPoint("border");
+    }
 
     @Override
     protected void renderContents() {
-        assertRenderable();
-        clear();
-        int index = 0;
-        for (GameResource gameResource : GameResource.values()) {
-            ResourceCounter element = new ResourceCounter(2, player.getInventory(), gameResource) {
-                @Override
-                public String toString() {
-                    return "InventoryResourceCounter";
-                }
-
-                @Override
-                protected void renderContents() {
-                    int current = player.getInventory().get(gameResource);
-                    count.setText("" + current);
-                    super.renderContents();
-                }
-            };
-            add(element).setClickable(this).setPosition(new Point(
-                    elementOffset.x + index * elementSpacing.x,
-                    elementOffset.y));
-            element.setConfig(getConfig());
-            index++;
-        }
-        //Add everything to the screen.
-        add(background).setClickable(this);
-        add(username).setClickable(this);
+        cards.setPosition(new Point(cardBorder.x, cardBorder.y + usernameHeight));
+        int width = getMask().getWidth() - 2 * cardBorder.x;
+        int height = getMask().getHeight() - 2 * cardBorder.y;
+        cards.setMask(new RectangularMask(new Dimension(width, height)));
         center(username).y = usernameHeight;
     }
 
-    public String toString() {
-        return "InventoryScreenArea " + player;
+    @Override
+    public void update() {
+        cards.forceRender();
     }
 }

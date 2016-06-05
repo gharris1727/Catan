@@ -25,6 +25,7 @@ import com.gregswebserver.catan.common.game.board.towns.EmptyTown;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.resources.GraphicSourceInfo;
@@ -68,11 +69,11 @@ public class MapRegion extends ScrollingScreenRegion {
     private final TiledBackground background;
 
     public MapRegion(GameBoard board) {
-        super(0, "map");
+        super("MapRegion", 0, "map");
         //Store the instance information.
         this.board = board;
         //Create the sub-regions
-        background = new EdgedTiledBackground(0, "background");
+        background = new EdgedTiledBackground();
         //Add everything to the screen.
         add(background).setClickable(this);
     }
@@ -147,6 +148,11 @@ public class MapRegion extends ScrollingScreenRegion {
     }
 
     @Override
+    public void update() {
+        forceRender();
+    }
+
+    @Override
     protected void renderContents() {
         clear();
         for (Tile tile : board.getTileMap().values())
@@ -162,10 +168,6 @@ public class MapRegion extends ScrollingScreenRegion {
     public UserEvent onMouseDrag(Point p) {
         scroll(p.x, p.y);
         return null;
-    }
-
-    public String toString() {
-        return "MapRegion";
     }
 
     private Dimension boardToScreen(Dimension size) {
@@ -202,8 +204,8 @@ public class MapRegion extends ScrollingScreenRegion {
 
     private abstract class MapObject extends ScreenRegion {
 
-        private MapObject(int priority) {
-            super(priority);
+        private MapObject(String name, int priority) {
+            super(name, priority);
         }
 
         @Override
@@ -221,18 +223,17 @@ public class MapRegion extends ScrollingScreenRegion {
         private final Path path;
 
         private PathObject(Path path) {
-            super(1);
+            super(path.toString(), 1);
             this.path = path;
-            int orientation = 0;
-            if (path.getPosition().x % 6 == 0 || path.getPosition().x % 6 == 4) orientation = 1;
-            if (path.getPosition().x % 6 == 1 || path.getPosition().x % 6 == 3) orientation = 2;
+            //The pattern of orientation repeats every 6 x indices
+            int type = path.getPosition().x % 6;
+            //The pattern goes 1 2 0 2 1 0 for each
+            int orientation = (type == 0 || type == 4) ? 1 : ((type == 1 || type == 3) ? 2 : 0);
+            //Load the background graphic based on the team and the orientation chosen.
             Graphic background = buildings.get(path.getTeam()).getGraphic(orientation);
-            add(new GraphicObject(0, background) {
-                @Override
-                public String toString() {
-                    return "PathBackground";
-                }
-            }).setClickable(this);
+            //Add a new graphic object using that graphic background.
+            add(new GraphicObject("PathBackground", 0, background)).setClickable(this);
+            //Shape this object based on the background.
             setMask(background.getMask());
         }
 
@@ -242,11 +243,6 @@ public class MapRegion extends ScrollingScreenRegion {
                 context.targetPath(path.getPosition());
             return null;
         }
-
-        @Override
-        public String toString() {
-            return "PathObject";
-        }
     }
 
     private class TileObject extends MapObject {
@@ -254,29 +250,61 @@ public class MapRegion extends ScrollingScreenRegion {
         private final Tile tile;
 
         private TileObject(Tile tile) {
-            super(1);
-            //Load layout information
+            super(tile.toString(), 1);
             this.tile = tile;
+            //We know our size ahead of time, its always a hexagon.
             setMask(resources.getMask());
+            //We need to choose a background image based on the contents of the tile.
             Graphic background;
+            //Break into cases of the different types of tiles.
             if (tile instanceof ResourceTile) {
                 ResourceTile resource = (ResourceTile) tile;
+                //The background of a resource tile come from the resources GraphicSet.
                 background = resources.getGraphic(resource.getTerrain().ordinal());
-                center(add(new DiceRollGraphicObject(resource)));
-                if (resource.hasRobber())
-                    center(add(new RobberGraphicObject(buildings.get(TeamColor.None).getGraphic(5))));
+                //Get the dice roll from the resource tile.
+                DiceRoll diceRoll = resource.getDiceRoll();
+                //Create the graphic for the dice roll chit.
+                GraphicObject diceRollGraphic = new GraphicObject(diceRoll.toString(), 1,  diceRolls.getGraphic(diceRoll.ordinal()));
+                //Add the dice roll graphic to the object.
+                add(diceRollGraphic).setClickable(this);
+                //Center it on the tile.
+                center(diceRollGraphic);
+                //If we are robbed, we need to render the robber.
+                if (resource.hasRobber()) {
+                    //Create the graphic for the robber.
+                    GraphicObject robberGraphic = new GraphicObject("RobberGraphic", 2, buildings.get(TeamColor.None).getGraphic(5));
+                    //Add it to the screen
+                    add(robberGraphic).setClickable(this);
+                    //Center it on the tile.
+                    center(robberGraphic);
+                }
             } else if (tile instanceof BeachTile) {
                 BeachTile beach = (BeachTile) tile;
-                background = ( beach.getSides() == 1 ? singleBeach : doubleBeach).getGraphic(beach.getDirection().ordinal());
+                //The beach tile background depends on the number of sides and the direction of the beach.
+                background = (beach.getSides() == 1 ? singleBeach : doubleBeach).getGraphic(beach.getDirection().ordinal());
+                //If it also happens to be a trading post, then we need to render the trading post details.
                 if (tile instanceof TradeTile) {
                     TradeTile trade = (TradeTile) tile;
-                    for (Direction d : trade.getTradingPostDirections())
-                        add(new TradeBridgeGraphicObject(d));
-                    center(add(new TradeIconGraphicObject(trade.getTradingPostType())));
+                    //For each of the trading post directions, we need to render a bridge.
+                    for (Direction d : trade.getTradingPostDirections()) {
+                        //Create the bridge graphic
+                        GraphicObject bridgeGraphic = new GraphicObject(d + " Bridge", 1, tradeBridges.getGraphic(d.ordinal()));
+                        //Place it based on the preset position data.
+                        add(bridgeGraphic).setClickable(this).setPosition(bridgePositions[d.ordinal()]);
+                    }
+                    //Get the type of trading post we need to render.
+                    TradingPostType tradingPostType = trade.getTradingPostType();
+                    //Create the trade icon graphic
+                    GraphicObject tradeIcon = new GraphicObject(tradingPostType.toString(), 2, resourceIcons.getGraphic(tradingPostType.ordinal()));
+                    //Add the trade icon to the tile
+                    add(tradeIcon).setClickable(this);
+                    //Center it on the tile
+                    center(tradeIcon);
                 }
-            } else
+            } else //We dont know how to render this tile.
                 throw new IllegalStateException();
-            add(new TileBackgroundGraphicObject(background));
+            //Add the background object itself to the screen.
+            add(new GraphicObject("TileBackground", 0, background)).setClickable(this);
         }
 
         @Override
@@ -286,73 +314,6 @@ public class MapRegion extends ScrollingScreenRegion {
             return null;
         }
 
-        @Override
-        public String toString() {
-            return "TileObject";
-        }
-
-        private class TradeBridgeGraphicObject extends GraphicObject {
-
-            private TradeBridgeGraphicObject(Direction d) {
-                super(1, tradeBridges.getGraphic(d.ordinal()));
-                setPosition(bridgePositions[d.ordinal()]);
-                setClickable(TileObject.this);
-            }
-
-            @Override
-            public String toString() {
-                return "TradeBridge";
-            }
-        }
-
-        private class DiceRollGraphicObject extends GraphicObject {
-
-            private DiceRollGraphicObject(ResourceTile resource) {
-                super(1, diceRolls.getGraphic(resource.getDiceRoll().ordinal()));
-                setClickable(TileObject.this);
-            }
-
-            @Override
-            public String toString() {
-                return "TileDiceRoll";
-            }
-        }
-
-        private class TileBackgroundGraphicObject extends GraphicObject {
-
-            private TileBackgroundGraphicObject(Graphic graphic) {
-                super(0, graphic);
-                setClickable(TileObject.this);
-            }
-
-            @Override
-            public String toString() {
-                return "TileBackgroundGraphicObject";
-            }
-        }
-
-        private class TradeIconGraphicObject extends GraphicObject {
-            private TradeIconGraphicObject(TradingPostType tradingPostType) {
-                super(2, resourceIcons.getGraphic(tradingPostType.ordinal()));
-                setClickable(TileObject.this);
-            }
-
-            @Override
-            public String toString() {
-                return "TradeIconGraphicObject";
-            }
-        }
-
-        private class RobberGraphicObject extends GraphicObject {
-            private RobberGraphicObject(Graphic robberGraphic) {
-                super(2, robberGraphic);
-            }
-
-            @Override
-            public String toString() {
-                return "TileRobberGraphicObject";
-            }
-        }
     }
 
     private class TownObject extends MapObject {
@@ -360,21 +321,21 @@ public class MapRegion extends ScrollingScreenRegion {
         private final Town town;
 
         private TownObject(Town town) {
-            super(2);
+            super(town.toString(), 2);
             this.town = town;
+            //Decide on the background graphic
             Graphic background;
             if (town instanceof Settlement || town instanceof EmptyTown) {
+                //We render it as a settlement
                 background = buildings.get(town.getTeam()).getGraphic(3);
             } else if (town instanceof City) {
+                //We render it as a city.
                 background = buildings.get(town.getTeam()).getGraphic(4);
-            } else
+            } else //We dont know how to render it.
                 throw new IllegalStateException();
-            add(new GraphicObject(0, background) {
-                @Override
-                public String toString() {
-                    return "TownObjectBackground";
-                }
-            }).setClickable(this);
+            //Add the background to the screen.
+            add(new GraphicObject("TownBackground", 0, background)).setClickable(this);
+            //Shape this like the town graphic.
             setMask(background.getMask());
         }
 
@@ -383,11 +344,6 @@ public class MapRegion extends ScrollingScreenRegion {
             if (context != null)
                 context.targetTown(town.getPosition());
             return null;
-        }
-
-        @Override
-        public String toString() {
-            return "TownObject";
         }
     }
 }

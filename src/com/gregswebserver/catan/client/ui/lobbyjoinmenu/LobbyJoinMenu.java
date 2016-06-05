@@ -27,7 +27,7 @@ public class LobbyJoinMenu extends ClientScreen {
     private final UserListRegion userList;
 
     public LobbyJoinMenu(MatchmakingPool matchmakingPool) {
-        super("lobbylist");
+        super("LobbyJoinMenu", "lobbylist");
         lobbyTabs = new LobbyTabRegion();
         pregameLobbies = new LobbyListRegion(3, "pregame", matchmakingPool.getLobbyList().getPregameLobbies());
         ingameLobbies = new LobbyListRegion(2, "ingame", matchmakingPool.getLobbyList().getIngameLobbies());
@@ -69,15 +69,11 @@ public class LobbyJoinMenu extends ClientScreen {
         userList.setMask(new RectangularMask(new Dimension(userListWidth,height)));
     }
 
-    public String toString() {
-        return "LobbyJoinMenu";
-    }
-
     @Override
-    public void refresh() {
+    public void update() {
         pregameLobbies.update();
         ingameLobbies.update();
-        userList.forceRender();
+        userList.update();
     }
 
     private class LobbyTabRegion extends ConfigurableScreenRegion {
@@ -87,53 +83,38 @@ public class LobbyJoinMenu extends ClientScreen {
         private final Button create;
 
         private LobbyTabRegion() {
-            super(0, "tabs");
-            pregame = new Button(0, "pregame", "Join") {
+            super("LobbyTabs", 0, "tabs");
+            pregame = new Button("PregameButton", 0, "pregame", "Join") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     LobbyJoinMenu.this.clear();
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(pregameLobbies);
                     LobbyJoinMenu.this.add(userList);
-                    refresh();
+                    update();
                     return null;
                 }
-
-                @Override
-                public String toString() {
-                    return "PregameButton";
-                }
             };
-            ingame = new Button(0, "pregame", "Spectate") {
+            ingame = new Button("SpectateButton", 0, "ingame", "Spectate") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     LobbyJoinMenu.this.clear();
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(ingameLobbies);
                     LobbyJoinMenu.this.add(userList);
-                    refresh();
+                    update();
                     return null;
                 }
-
-                @Override
-                public String toString() {
-                    return "PregameButton";
-                }
             };
-            create = new Button(0, "pregame", "Create Game") {
+            create = new Button("CreateNew", 0, "create", "Create Game") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
                     LobbyJoinMenu.this.clear();
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(createLobby);
                     LobbyJoinMenu.this.add(userList);
-                    refresh();
+                    update();
                     return null;
-                }
-
-                @Override
-                public String toString() {
-                    return "PregameButton";
                 }
             };
             add(pregame);
@@ -150,11 +131,6 @@ public class LobbyJoinMenu extends ClientScreen {
             pregame.setMask(thirdMask);
             ingame.setMask(thirdMask);
             create.setMask(new RectangularMask(new Dimension(mask.getWidth()-2*thirdWidth, mask.getHeight())));
-        }
-
-        @Override
-        public String toString() {
-            return "LobbyTabRegion";
         }
     }
 }

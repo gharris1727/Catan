@@ -102,25 +102,19 @@ public class GameManager {
         localhistoryIndex = 0;
     }
 
-    private synchronized boolean isLive() {
+    public synchronized boolean isLive() {
         return localhistoryIndex == events.size() - 1;
     }
 
     public synchronized void jumpToEvent(int index) {
         if (index < 0 || index > events.size())
-            return;
+            index = events.size() - 1;
         if (localhistoryIndex < index)
             for (int i = localhistoryIndex + 1; i <= index; i++)
                 local.addEvent(new GameControlEvent(this, GameControlEventType.Execute, events.get(i)));
         else
             for (int i = localhistoryIndex; i > index; i--)
                 local.addEvent(new GameControlEvent(this, GameControlEventType.Undo, events.get(i)));
-
-    }
-
-    public void jumpToLive() {
-        if (!isLive())
-            jumpToEvent(events.size());
     }
 
     public void local(GameEvent gameEvent) {

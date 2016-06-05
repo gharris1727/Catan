@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by greg on 3/11/16.
  * A game timeline allowing the user to view the progression of the game, and manually step through the history of the game.
  */
-public class TimelineRegion extends ConfigurableScreenRegion {
+public class TimelineRegion extends ConfigurableScreenRegion implements Updatable {
 
     //Required instance details
     private final List<GameHistory> history;
@@ -40,22 +40,17 @@ public class TimelineRegion extends ConfigurableScreenRegion {
     private final ScrollingScreenContainer timeline;
 
     public TimelineRegion(CatanGame game) {
-        super(1, "timeline");
+        super("Timeline", 1, "timeline");
         //Store instance information
         history = game.getHistory();
         players = game.getPlayers();
         //Create sub-regions
-        background = new TiledBackground(0, "background");
-        timeline = new ScrollingScreenContainer(1, "scroll", new EventList()) {
-            @Override
-            public String toString() {
-                return "TimelineScrollContainer";
-            }
-        };
+        background = new TiledBackground();
+        timeline = new ScrollingScreenContainer("TimelineScrollContainer", 1, new EventList());
         //Add everything to the screen.
         add(background).setClickable(this);
         add(timeline);
-        timeline.setTransparency(true);
+        timeline.enableTransparency();
     }
 
     public void setContext(ContextRegion context) {
@@ -70,6 +65,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
             eventGraphics.put(teamColor,new GraphicSet(config.getLayout(), "source", teamColorSwaps.getSwaps(teamColor)));
     }
 
+    @Override
     public void update() {
         timeline.update();
     }
@@ -81,9 +77,9 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         private int eventHeight;
 
         private EventList() {
-            super(0, "list");
+            super("TimelineEventList", 0, "list");
             lastCount = history.size();
-            setTransparency(true);
+            enableTransparency();
         }
 
         @Override
@@ -109,7 +105,7 @@ public class TimelineRegion extends ConfigurableScreenRegion {
         @Override
         protected void renderContents() {
             clear();
-            int width = 1;
+            int width = 0;
             for (int i = 0; i < history.size(); i++) {
                 add(new EventListElement(i)).setPosition(new Point(width, 0));
                 width += eventSpacing;
@@ -121,21 +117,21 @@ public class TimelineRegion extends ConfigurableScreenRegion {
             lastCount = history.size();
         }
 
+        @Override
+        public void update() {
+            forceRender();
+        }
+
         private class EventListElement extends GraphicObject {
 
             private final int index;
 
             private EventListElement(int index) {
-                super(0);
+                super("Event " + index, 0);
                 this.index = index;
                 GameEvent event = history.get(index).getGameEvent();
                 TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : players.getPlayer(event.getOrigin()).getTeamColor();
                 setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
-            }
-
-            @Override
-            public String toString() {
-                return "EventListElement";
             }
             @Override
             public UserEvent onMouseScroll(MouseWheelEvent event) {
@@ -167,21 +163,11 @@ public class TimelineRegion extends ConfigurableScreenRegion {
 //                return new UserEvent(this, UserEventType.Display_Popup, popup);
 //            }
         }
-
-        @Override
-        public String toString() {
-            return "TimelineEventList";
-        }
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
         timeline.setMask(mask);
         background.setMask(mask);
-    }
-
-    @Override
-    public String toString() {
-        return "TimelineRegion";
     }
 }

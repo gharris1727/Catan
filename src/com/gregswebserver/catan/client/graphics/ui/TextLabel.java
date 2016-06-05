@@ -15,8 +15,8 @@ public class TextLabel extends ConfigurableGraphicObject {
 
     private final String text;
 
-    public TextLabel(int priority, String configKey, String text) {
-        super(priority, configKey);
+    public TextLabel(String name, int priority, String configKey, String text) {
+        super(name, priority, configKey);
         this.text = text;
     }
 
@@ -38,9 +38,5 @@ public class TextLabel extends ConfigurableGraphicObject {
             setGraphic(new TextGraphic(getConfig(), getConfig().getLayout().get("style"), text));
         else
             setGraphic(new Graphic(new RectangularMask(new Dimension(1, 1)), true));
-    }
-
-    public String toString() {
-        return "TextLabel(" + text + ")";
     }
 }

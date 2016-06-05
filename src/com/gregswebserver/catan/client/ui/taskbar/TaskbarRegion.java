@@ -18,9 +18,9 @@ public class TaskbarRegion extends ConfigurableScreenRegion {
     private final TreeSet<TaskbarMenu> menus;
 
     public TaskbarRegion() {
-        super(1, "taskbar");
+        super("Taskbar", 1, "taskbar");
         menus = new TreeSet<>();
-        background = new TiledBackground(0, "background");
+        background = new TiledBackground();
         add(background).setClickable(this);
     }
 
@@ -47,10 +47,5 @@ public class TaskbarRegion extends ConfigurableScreenRegion {
     @Override
     protected void resizeContents(RenderMask mask) {
         background.setMask(mask);
-    }
-
-    @Override
-    public String toString() {
-        return "Taskbar";
     }
 }

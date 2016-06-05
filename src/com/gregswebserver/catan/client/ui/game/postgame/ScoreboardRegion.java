@@ -10,7 +10,7 @@ import com.gregswebserver.catan.common.locale.game.LocalizedTeamScorePrinter;
  * Created by greg on 5/30/16.
  * Region to display post-game score information
  */
-public class ScoreboardRegion extends ConfigurableScreenRegion {
+public class ScoreboardRegion extends ConfigurableScreenRegion implements Updatable {
 
     //Required instance information
     private final CatanGame game;
@@ -25,10 +25,10 @@ public class ScoreboardRegion extends ConfigurableScreenRegion {
     //TODO: replace this lazy printing string method to a fancy UI.
 
     public ScoreboardRegion(CatanGame game) {
-        super(1, "scoreboard");
+        super("ScoreboardRegion", 1, "scoreboard");
         this.game = game;
-        background = new EdgedTiledBackground(0, "background");
-        text = new TextLabel(1, "all", null);
+        background = new EdgedTiledBackground();
+        text = new TextLabel("ScoreboardText", 1, "all", null);
         add(background).setClickable(this);
         add(text).setClickable(this);
     }
@@ -52,8 +52,7 @@ public class ScoreboardRegion extends ConfigurableScreenRegion {
     }
 
     @Override
-    public String toString() {
-        return "ScoreboardRegion";
+    public void update() {
+        forceRender();
     }
-
 }
