@@ -58,8 +58,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             hover = next;
             UserEvent event = hover.onHover();
             if (event != null && event.getType() == UserEventType.Linger_Trigger) {
-                HoverEvent hoverEvent = new HoverEvent(hover, (Long) event.getPayload());
-                client.logger.debug(this, "Waiting " + hoverEvent.getDelay(TimeUnit.MILLISECONDS) + "msecs");
+                HoverEvent hoverEvent = new HoverEvent(hover, (Number) event.getPayload());
+                //client.logger.debug(this, "Waiting " + hoverEvent.getDelay(TimeUnit.MILLISECONDS) + "msecs");
                 queue.addEvent(hoverEvent);
              } else {
                 sendEvent(event);
@@ -147,9 +147,9 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         private final Clickable clickable;
         private final long targetTime;
 
-        private HoverEvent(Clickable clickable, long msecDelay) {
+        private HoverEvent(Clickable clickable, Number msecDelay) {
             this.clickable = clickable;
-            this.targetTime = System.currentTimeMillis() + msecDelay;
+            this.targetTime = System.currentTimeMillis() + msecDelay.longValue();
         }
 
         @Override
@@ -175,7 +175,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             HoverEvent event = getEvent(true);
             if (event.clickable == hover)
                 sendEvent(event.clickable.onLinger());
-            logger.debug(this,"Lingered on " + event.clickable);
+            //logger.debug(this,"Lingered on " + event.clickable);
         }
 
         @Override

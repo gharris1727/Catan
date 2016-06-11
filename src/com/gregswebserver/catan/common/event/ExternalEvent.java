@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by Greg on 8/12/2014.
  * Event that is capable of being sent across the network, carries origin username information.
  */
-public abstract class ExternalEvent<T extends EventType> extends GenericEvent implements Serializable {
+public abstract class ExternalEvent<T extends EventType> extends GenericEvent implements Serializable, TypedPayloadEvent<Username, T> {
 
     public static final long serialVersionUID = 1L;
 
@@ -27,14 +27,17 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
             throw new EventPayloadException(payload, Serializable.class);
     }
 
+    @Override
     public Username getOrigin() {
         return origin;
     }
 
+    @Override
     public T getType() {
         return type;
     }
 
+    @Override
     public Object getPayload() {
         return payload;
     }

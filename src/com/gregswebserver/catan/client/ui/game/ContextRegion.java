@@ -21,7 +21,7 @@ import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.event.GameHistory;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
-import com.gregswebserver.catan.common.locale.game.LocalizedGameEventPrinter;
+import com.gregswebserver.catan.common.locale.LocalizedEventPrinter;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
@@ -47,7 +47,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
 
     //Configuration dependencies
     private GraphicSet graphics;
-    private LocalizedGameEventPrinter gameEventPrinter;
+    private LocalizedEventPrinter gameEventPrinter;
 
     //Sub-regions
     private final TiledBackground background;
@@ -81,7 +81,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     @Override
     public void loadConfig(UIConfig config) {
         graphics = new GraphicSet(config.getLayout(), "icons", null);
-        gameEventPrinter = new LocalizedGameEventPrinter(config.getLocale());
+        gameEventPrinter = new LocalizedEventPrinter(config.getLocale(), "game.event");
     }
 
     @Override

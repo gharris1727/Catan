@@ -4,7 +4,6 @@ import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.ui.PopupWindow;
 
 import java.awt.*;
@@ -44,7 +43,7 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
         if (popup == null) {
             popup = createPopup();
             popup.setConfig(getConfig());
-            return new UserEvent(this, UserEventType.Display_Popup, popup);
+            return popup.display();
         } else {
             return popup.expire();
         }
@@ -62,7 +61,7 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
         private final List<DefaultConfigurableScreenRegion> items;
 
         protected TaskbarPopup(String name, String configKey) {
-            super(name, configKey);
+            super(name, configKey, TaskbarMenu.this);
             items = new ArrayList<>();
         }
 

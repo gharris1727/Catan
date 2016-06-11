@@ -8,6 +8,8 @@ import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 
+import java.util.List;
+
 /**
  * Created by Greg on 1/4/2015.
  * The types of events that can be sent as InputEvents.
@@ -15,7 +17,7 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 public enum UserEventType implements EventType {
 
     Shutdown(null), //Command to shut down the client.
-    Composite_Event(UserEvent[].class), //A UserEvent that contains multiple other UserEvents.
+    Composite_Event(List.class), //A UserEvent that contains multiple other UserEvents.
     Display_Popup(PopupWindow.class), //Display a popup on the screen.
     Expire_Popup(PopupWindow.class), //Remove a popup from the screen.
     Server_Remove(ConnectionInfo.class), //Remove a server from the server list.
@@ -32,7 +34,7 @@ public enum UserEventType implements EventType {
     Make_Trade(Trade.class), //Complete a trade.
     History_Jump(Integer.class), //Jump to that historical event.
     Propose_Trade(TemporaryTrade.class), //advertise a temporary trade to other players.
-    Linger_Trigger(Long.class); //Trigger a delay to call the onLinger method.
+    Linger_Trigger(Number.class); //Trigger a delay to call the onLinger method.
 
     private final Class payloadType;
 

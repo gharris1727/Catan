@@ -52,6 +52,7 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -143,7 +144,8 @@ public class Client extends CoreThread {
                 addEvent(new ClientEvent(this, ClientEventType.Quit_All, null));
                 break;
             case Composite_Event:
-                for (UserEvent child : (UserEvent[]) event.getPayload())
+                //noinspection unchecked
+                for (UserEvent child : (List<UserEvent>) event.getPayload())
                     addEvent(child);
                 break;
             case Display_Popup:

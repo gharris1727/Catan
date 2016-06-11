@@ -15,6 +15,7 @@ import com.gregswebserver.catan.client.ui.PopupWindow;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.Arrays;
 
 /**
  * Created by Greg on 1/5/2015.
@@ -213,7 +214,7 @@ public class ServerConnectMenu extends ClientScreen {
             if (editPopup == null) {
                 editPopup = new ServerDetailPopup(selected);
                 editPopup.setConfig(getConfig());
-                return new UserEvent(this, UserEventType.Display_Popup, editPopup);
+                return editPopup.display();
             }
             return null;
         }
@@ -248,7 +249,7 @@ public class ServerConnectMenu extends ClientScreen {
         private final Button cancelButton;
 
         private ServerDetailPopup(ConnectionInfo server) {
-            super("ServerDetails", "serverdetail");
+            super("ServerDetails", "serverdetail", ServerConnectMenu.this);
             this.server = server;
             background = new EdgedTiledBackground();
             hostname = new TextBox("HostnameBox", 1, "hostname" ,(server == null) ? "Hostname" : server.getHostname(), server != null) {
@@ -304,7 +305,7 @@ public class ServerConnectMenu extends ClientScreen {
 
         private UserEvent delete() {
             UserEvent remove = new UserEvent(this, UserEventType.Server_Remove, server);
-            return new UserEvent(this, UserEventType.Composite_Event, new UserEvent[]{remove, expire()});
+            return new UserEvent(this, UserEventType.Composite_Event, Arrays.asList(remove, expire()));
         }
 
         private UserEvent submit() {
@@ -315,7 +316,7 @@ public class ServerConnectMenu extends ClientScreen {
             if (!newInfo.equals(server) && hostnameText.length() > 0 && portText.length() > 0 && usernameText.length() >0) {
                 UserEvent remove = new UserEvent(this, UserEventType.Server_Remove, server);
                 UserEvent add = new UserEvent(this, UserEventType.Server_Add, newInfo);
-                return new UserEvent(this, UserEventType.Composite_Event, new UserEvent[]{remove, add, expire()});
+                return new UserEvent(this, UserEventType.Composite_Event, Arrays.asList(remove, add, expire()));
             }
             return expire();
         }

@@ -9,21 +9,10 @@ import java.util.Set;
  */
 public enum TeamColor {
 
-    None("none"),
-    White("white"),
-    Red("red"),
-    Orange("orange"),
-    Blue("blue"),
-    Green("green"),
-    Brown("brown");
+    None, White, Red, Orange, Blue, Green, Brown;
 
     public static Set<TeamColor> getTeamSet() {
         return EnumSet.range(White, values()[values().length-1]);
     }
 
-    public final String name;
-
-    TeamColor(String name) {
-        this.name = name;
-    }
 }

@@ -18,9 +18,9 @@ public class TeamColorSwaps {
         this.swaps = new EnumMap<>(TeamColor.class);
         for (TeamColor teamColor : TeamColor.values()) {
             int[] colorSwaps = new int[]{
-                    source.getHexColor("none.primary"), source.getHexColor(teamColor.name + ".primary"),
-                    source.getHexColor("none.highlight"), source.getHexColor(teamColor.name + ".primary"),
-                    source.getHexColor("none.shadow"), source.getHexColor(teamColor.name + ".shadow"),
+                    source.getHexColor("None.primary"), source.getHexColor(teamColor + ".primary"),
+                    source.getHexColor("None.highlight"), source.getHexColor(teamColor + ".primary"),
+                    source.getHexColor("None.shadow"), source.getHexColor(teamColor + ".shadow"),
             };
             swaps.put(teamColor, colorSwaps);
         }

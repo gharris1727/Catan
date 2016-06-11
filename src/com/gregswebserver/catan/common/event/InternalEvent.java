@@ -4,7 +4,7 @@ package com.gregswebserver.catan.common.event;
  * Created by Greg on 8/12/2014.
  * Event that does not cross over a network connection under any condition. Used for events fired inside the application.
  */
-public abstract class InternalEvent<O, T extends EventType> extends GenericEvent {
+public abstract class InternalEvent<O, T extends EventType> extends GenericEvent implements TypedPayloadEvent<O, T> {
 
     private final O origin;
     private final T type;
@@ -19,14 +19,17 @@ public abstract class InternalEvent<O, T extends EventType> extends GenericEvent
         type.checkPayload(payload);
     }
 
+    @Override
     public O getOrigin() {
         return origin;
     }
 
+    @Override
     public T getType() {
         return type;
     }
 
+    @Override
     public Object getPayload() {
         return payload;
     }

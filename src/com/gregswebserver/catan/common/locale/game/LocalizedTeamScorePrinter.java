@@ -3,6 +3,7 @@ package com.gregswebserver.catan.common.locale.game;
 import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
+import com.gregswebserver.catan.common.locale.LocalizedEnumPrinter;
 import com.gregswebserver.catan.common.locale.LocalizedPrinter;
 
 /**
@@ -11,12 +12,12 @@ import com.gregswebserver.catan.common.locale.LocalizedPrinter;
  */
 public class LocalizedTeamScorePrinter extends LocalizedPrinter<TeamScoreReport> {
 
-    private final LocalizedTeamColorPrinter teamColorPrinter;
+    private final LocalizedEnumPrinter teamColorPrinter;
     private final LocalizedScoreReportPrinter scoreReportPrinter;
 
     public LocalizedTeamScorePrinter(ConfigSource locale) {
         super(locale);
-        teamColorPrinter = new LocalizedTeamColorPrinter(locale);
+        teamColorPrinter = new LocalizedEnumPrinter(locale, "game.teamcolor");
         scoreReportPrinter = new LocalizedScoreReportPrinter(locale);
     }
 

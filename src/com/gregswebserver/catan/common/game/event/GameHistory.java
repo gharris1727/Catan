@@ -1,5 +1,7 @@
 package com.gregswebserver.catan.common.game.event;
 
+import java.util.List;
+
 /**
  * Created by greg on 5/25/16.
  * A historical step in the history of a CatanGame.
@@ -7,18 +9,18 @@ package com.gregswebserver.catan.common.game.event;
 public class GameHistory {
 
     private final GameEvent gameEvent;
-    private final LogicEvent logicEvent;
+    private final List<GameTriggerEvent> triggeredEvents;
 
-    public GameHistory(GameEvent gameEvent, LogicEvent logicEvent) {
+    public GameHistory(GameEvent gameEvent, List<GameTriggerEvent> triggeredEvents) {
         this.gameEvent = gameEvent;
-        this.logicEvent = logicEvent;
+        this.triggeredEvents = triggeredEvents;
     }
 
     public GameEvent getGameEvent() {
         return gameEvent;
     }
 
-    public LogicEvent getLogicEvent() {
-        return logicEvent;
+    public List<GameTriggerEvent> getTriggeredEvents() {
+        return triggeredEvents;
     }
 }
