@@ -26,4 +26,9 @@ public enum Purchase {
         return cost.get(r);
     }
 
+    //TODO: remove this in favor of an iterable way to access the data.
+    public EnumCounter<GameResource> getCost() {
+        return cost;
+    }
+
 }

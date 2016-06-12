@@ -21,6 +21,7 @@ public enum GameEventType implements EventType {
     Build_Road(Coordinate.class),
     Buy_Development(null),
     Offer_Trade(TemporaryTrade.class),
+    Cancel_Trade(null),
     Make_Trade(Trade.class);
 
     private final Class payloadType;

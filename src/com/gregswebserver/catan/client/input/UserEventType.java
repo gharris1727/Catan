@@ -33,7 +33,8 @@ public enum UserEventType implements EventType {
     Lobby_Start(null), //Start the game from the lobby.
     Make_Trade(Trade.class), //Complete a trade.
     History_Jump(Integer.class), //Jump to that historical event.
-    Propose_Trade(TemporaryTrade.class), //advertise a temporary trade to other players.
+    Propose_Trade(TemporaryTrade.class), //Advertise a temporary trade to other players.
+    Cancel_Trade(null), //Cancel advertising your trade.
     Linger_Trigger(Number.class); //Trigger a delay to call the onLinger method.
 
     private final Class payloadType;

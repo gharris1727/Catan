@@ -18,6 +18,7 @@ public enum PlayerEventType implements EventType {
     Mature_DevelopmentCards(EnumCounter.class),
     Use_DevelopmentCard(DevelopmentCard.class),
     Offer_Trade(TemporaryTrade.class),
+    Cancel_Trade(null),
     Fill_Trade(TemporaryTrade.class),
     Make_Trade(Trade.class);
 

@@ -50,6 +50,9 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
         TeamEvent event = events.pop();
         try {
             switch (event.getType()) {
+                case Roll_Robber:
+                    freeRobber = false;
+                    break;
                 case Use_Robber:
                     freeRobber = true;
                     break;
@@ -75,6 +78,10 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
     @Override
     public void test(TeamEvent event) throws EventConsumerException{
         switch (event.getType()) {
+            case Roll_Robber:
+                if (freeRobber)
+                    throw new EventConsumerException("Already have free robber");
+                break;
             case Use_Robber:
                 if (!freeRobber)
                     throw new EventConsumerException("Robber not active");
@@ -98,6 +105,8 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
             case Finish_Turn:
                 if (state != TeamState.Done || round < 2)
                     throw new EventConsumerException("Setup not finished");
+                if (freeRobber)
+                    throw new EventConsumerException("Robber has not moved");
                 break;
         }
     }
@@ -108,6 +117,9 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
         try {
             events.push(event);
             switch (event.getType()){
+                case Roll_Robber:
+                    freeRobber = true;
+                    break;
                 case Use_Robber:
                     freeRobber = false;
                     break;

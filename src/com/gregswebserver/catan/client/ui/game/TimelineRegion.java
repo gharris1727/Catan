@@ -193,7 +193,8 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         private final GameHistory event;
 
         //Configuration dependencies
-        LocalizedGameHistoryPrinter printer;
+        private LocalizedGameHistoryPrinter printer;
+        private int spacing;
 
         //Sub-Regions
         private final TiledBackground background;
@@ -217,13 +218,14 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         @Override
         public void loadConfig(UIConfig config) {
             printer = new LocalizedGameHistoryPrinter(config.getLocale());
-            setMask(new RectangularMask(config.getLayout().getDimension("size")));
+            spacing = config.getLayout().getInt("spacing");
         }
 
         @Override
         protected void renderContents() {
-            assertRenderable();
             label.setText(printer.getLocalization(event));
+            Dimension labelSize = label.getGraphic().getMask().getSize();
+            setMask(new RectangularMask(new Dimension(labelSize.width + spacing * 2, labelSize.height + spacing * 2)));
             center(label);
         }
 

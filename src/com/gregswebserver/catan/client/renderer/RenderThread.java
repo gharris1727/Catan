@@ -78,6 +78,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                 //This may be super spammy.
                 logger.log("Unable to render " + base + " to " + canvas, LogLevel.DEBUG);
             }
+            root.waitUntil(33*TimeSlice.MILLION);
         }
         root.mark();
         /*

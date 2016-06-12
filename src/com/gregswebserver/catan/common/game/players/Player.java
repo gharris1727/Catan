@@ -162,6 +162,10 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
                 if (!active.contains((DevelopmentCard) event.getPayload(), 1))
                     throw new EventConsumerException("No card");
                 break;
+            case Cancel_Trade:
+                if (this.trade == null)
+                    throw new EventConsumerException("No trade to cancel");
+                break;
             case Offer_Trade:
             case Fill_Trade:
                 TemporaryTrade trade = (TemporaryTrade) event.getPayload();
@@ -218,7 +222,10 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
                     used.increment((DevelopmentCard) event.getPayload(), 1);
                     break;
                 case Offer_Trade:
-                    trade =(TemporaryTrade) event.getPayload();
+                    trade = (TemporaryTrade) event.getPayload();
+                    break;
+                case Cancel_Trade:
+                    trade = null;
                     break;
                 case Fill_Trade:
                     trade =(TemporaryTrade) event.getPayload();

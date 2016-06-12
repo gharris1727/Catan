@@ -199,7 +199,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
             cancel = new Button("CancelButton", 2, "cancel", "Cancel") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Propose_Trade, null);
+                    return new UserEvent(this, UserEventType.Cancel_Trade, null);
                 }
             };
             add(background).setClickable(this);

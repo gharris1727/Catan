@@ -17,7 +17,7 @@ public class LocalizedGameHistoryPrinter extends LocalizedPrinter<GameHistory> {
 
     public LocalizedGameHistoryPrinter(ConfigSource locale) {
         super(locale);
-        eventPrinter = new LocalizedEventPrinter(locale, "game.event");
+        eventPrinter = new LocalizedEventPrinter(locale.narrow("game.event"));
         triggerPrinter = new LocalizedGameTriggerEventPrinter(locale);
     }
 
@@ -26,11 +26,9 @@ public class LocalizedGameHistoryPrinter extends LocalizedPrinter<GameHistory> {
         StringBuilder output = new StringBuilder();
         output.append(eventPrinter.getLocalization(instance.getGameEvent()));
         output.append('\n');
-        output.append("Triggered Events:\n");
         for (GameTriggerEvent event : instance.getTriggeredEvents()) {
             String triggerLocalization = triggerPrinter.getLocalization(event);
             if (triggerLocalization != null) {
-                output.append('\t');
                 output.append(triggerLocalization);
                 output.append('\n');
             }

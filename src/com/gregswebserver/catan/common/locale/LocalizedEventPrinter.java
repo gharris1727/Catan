@@ -9,15 +9,12 @@ import com.gregswebserver.catan.common.event.TypedPayloadEvent;
  */
 public class LocalizedEventPrinter extends LocalizedPrinter<TypedPayloadEvent<?,?>> {
 
-    private final String key;
-
-    public LocalizedEventPrinter(ConfigSource locale, String key) {
+    public LocalizedEventPrinter(ConfigSource locale) {
         super(locale);
-        this.key = key;
     }
 
     @Override
     public String getLocalization(TypedPayloadEvent<?, ?> instance) {
-        return getLocalization(key + "." + instance.getType());
+        return getLocalization(instance.getType().toString());
     }
 }

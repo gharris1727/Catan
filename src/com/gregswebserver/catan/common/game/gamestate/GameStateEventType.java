@@ -9,9 +9,9 @@ import com.gregswebserver.catan.common.game.teams.TeamColor;
  */
 public enum GameStateEventType implements EventType {
 
-    Roll_Dice(null),
-    Draw_DevelopmentCard(null),
-    Advance_Turn(null),
+    Roll_Dice(DiceRoll.class),
+    Draw_DevelopmentCard(DevelopmentCard.class),
+    Advance_Turn(TeamColor.class),
     Active_Turn(TeamColor.class);
 
     private final Class payloadType;

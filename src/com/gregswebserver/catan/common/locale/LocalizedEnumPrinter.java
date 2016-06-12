@@ -8,15 +8,12 @@ import com.gregswebserver.catan.common.config.ConfigSource;
  */
 public class LocalizedEnumPrinter extends LocalizedPrinter<Enum> {
 
-    private final String key;
-
-    public LocalizedEnumPrinter(ConfigSource locale, String key) {
+    public LocalizedEnumPrinter(ConfigSource locale) {
         super(locale);
-        this.key = key;
     }
 
     @Override
     public String getLocalization(Enum instance) {
-        return getLocalization(key + "." + instance);
+        return getLocalization(instance.toString());
     }
 }

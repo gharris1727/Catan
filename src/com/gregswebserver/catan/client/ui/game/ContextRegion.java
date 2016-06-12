@@ -81,7 +81,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     @Override
     public void loadConfig(UIConfig config) {
         graphics = new GraphicSet(config.getLayout(), "icons", null);
-        gameEventPrinter = new LocalizedEventPrinter(config.getLocale(), "game.event");
+        gameEventPrinter = new LocalizedEventPrinter(config.getLocale().narrow("game.event"));
     }
 
     @Override

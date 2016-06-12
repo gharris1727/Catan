@@ -17,7 +17,7 @@ public class LocalizedTeamScorePrinter extends LocalizedPrinter<TeamScoreReport>
 
     public LocalizedTeamScorePrinter(ConfigSource locale) {
         super(locale);
-        teamColorPrinter = new LocalizedEnumPrinter(locale, "game.teamcolor");
+        teamColorPrinter = new LocalizedEnumPrinter(locale.narrow("game.teamcolor"));
         scoreReportPrinter = new LocalizedScoreReportPrinter(locale);
     }
 

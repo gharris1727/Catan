@@ -182,19 +182,19 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     //Needs to be their turn.
                     state(origin, GameStateEventType.Active_Turn, teamColor),
                     //Need to pass the turn to the next team
-                    state(origin, GameStateEventType.Advance_Turn, null),
-                    //Roll the dice to get the next income round.
-                    state(origin, GameStateEventType.Roll_Dice, null),
+                    state(origin, GameStateEventType.Advance_Turn, teamColor),
                     //Choose whether this is a starter turn or a real turn.
                     compound(LogicEventType.OR,
                         //If its a starter turn, signal we are ready to advance.
-                        team(teamColor, TeamEventType.Finish_Setup_Turn, null),
+                        team(teamColor, TeamEventType.Finish_Setup_Turn, teamColor),
                         //Otherwise it might be a regular turn.
                         compound(LogicEventType.AND,
                             //Advance the turn as regular
-                            team(teamColor, TeamEventType.Finish_Turn, null),
-                            //ive everyone their income
-                            getIncomeEvents(state.getDiceRoll())
+                            team(teamColor, TeamEventType.Finish_Turn, teamColor),
+                            //Give everyone their income
+                            diceRollEvents(),
+                            //Roll the dice to get the next income round.
+                            state(origin, GameStateEventType.Roll_Dice, state.getDiceRoll())
                         )
                     ),
                     //Mature all of the cards that a user bought this turn.
@@ -274,7 +274,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     //Needs to be their turn.
                     state(origin, GameStateEventType.Active_Turn, teamColor),
                     //Need to remove a card from the deck
-                    state(origin, GameStateEventType.Draw_DevelopmentCard, null),
+                    state(origin, GameStateEventType.Draw_DevelopmentCard, state.getDevelopmentCard()),
                     //Need to purchase a card
                     player(origin, PlayerEventType.Make_Purchase, Purchase.DevelopmentCard),
                     //Need to add the development card to their inventory
@@ -284,6 +284,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 );
             case Offer_Trade:
                 return player(origin, PlayerEventType.Offer_Trade, event.getPayload());
+            case Cancel_Trade:
+                return player(origin, PlayerEventType.Cancel_Trade, event.getPayload());
             case Make_Trade:
                 if (event.getPayload() instanceof TemporaryTrade) {
                     TemporaryTrade t = (TemporaryTrade) event.getPayload();
@@ -310,8 +312,10 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return new LogicEvent(this, LogicEventType.NOP, null);
     }
 
-    private LogicEvent getIncomeEvents(DiceRoll roll) {
-        List<Coordinate> spaces = board.getActiveTiles(roll);
+    private LogicEvent diceRollEvents() {
+        if (state.getDiceRoll() == DiceRoll.Seven)
+            return team(state.getNextTeam(), TeamEventType.Roll_Robber, null);
+        List<Coordinate> spaces = board.getActiveTiles(state.getDiceRoll());
         if (spaces == null || spaces.isEmpty())
             return new LogicEvent(this, LogicEventType.NOP, null);
         Map<TeamColor, EnumCounter<GameResource>> income = new EnumMap<>(TeamColor.class);

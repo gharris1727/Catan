@@ -221,6 +221,9 @@ public class Client extends CoreThread {
             case Propose_Trade:
                 gameManager.local(new GameEvent(username, GameEventType.Offer_Trade, event.getPayload()));
                 break;
+            case Cancel_Trade:
+                gameManager.local(new GameEvent(username, GameEventType.Cancel_Trade, null));
+                break;
             default:
                 throw new IllegalStateException();
         }

@@ -113,7 +113,9 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
         }
     }
 
-    public TeamColor getActiveTeam() {
-        return turns.get();
+    public TeamColor getNextTeam() {
+        TeamColor color = turns.next();
+        turns.prev();
+        return color;
     }
 }
