@@ -27,9 +27,11 @@ public class LocalizedTeamEventPrinter extends LocalizedPrinter<TeamEvent> {
             case Build_First_Outpost:
             case Build_Second_Outpost:
             case Build_Free_Road:
+            case Steal_Resources:
+            case Activate_RoadBuilding:
                 return teamPrinter.getLocalization(instance.getOrigin()) + " " +
                     typePrinter.getLocalization(instance.getType());
-            case Roll_Robber:
+            case Activate_Robber:
             case Finish_Setup_Turn:
             case Finish_Turn:
                 return null;

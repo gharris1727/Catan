@@ -13,7 +13,7 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
-import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.GameResource;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 
@@ -167,7 +167,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
     private class TradeControlPanel extends ConfigurableScreenRegion {
 
         //Instance information
-        private final EnumCounter<GameResource> diff;
+        private final EnumAccumulator<GameResource> diff;
 
         //Config dependencies
         private Point elementOffset;
@@ -181,18 +181,20 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
 
         private TradeControlPanel() {
             super("TradeControlPanel", 2, "panel");
-            diff = new EnumCounter<>(GameResource.class);
+            diff = new EnumAccumulator<>(GameResource.class);
             background = new EdgedTiledBackground();
             propose = new Button("ProposeButton", 1, "propose", "Propose") {
                 @Override
                 public UserEvent onMouseClick(MouseEvent event) {
-                    TemporaryTrade trade = new TemporaryTrade(username);
+                    EnumAccumulator<GameResource> request = new EnumAccumulator<>(GameResource.class);
+                    EnumAccumulator<GameResource> offer = new EnumAccumulator<>(GameResource.class);
                     for (GameResource resource : GameResource.values()) {
                         if (diff.get(resource) > 0)
-                            trade.request.increment(resource, diff.get(resource));
+                            request.increment(resource, diff.get(resource));
                         else
-                            trade.offer.increment(resource, -1*diff.get(resource));
+                            offer.increment(resource, -1*diff.get(resource));
                     }
+                    TemporaryTrade trade = new TemporaryTrade(username, offer, request);
                     return new UserEvent(this, UserEventType.Propose_Trade, trade);
                 }
             };
@@ -244,13 +246,13 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
         private class EditingResourceCounter extends ConfigurableScreenRegion {
 
             private final TextLabel count;
-            private final EnumCounter<GameResource> counter;
+            private final EnumAccumulator<GameResource> counter;
             private final GameResource gameResource;
             private final TiledBackground background;
             private final GraphicObject icon;
             private GraphicSet icons;
 
-            private EditingResourceCounter(EnumCounter<GameResource> counter, GameResource gameResource) {
+            private EditingResourceCounter(EnumAccumulator<GameResource> counter, GameResource gameResource) {
                 super("EditingResourceCounter", 3, "resource");
                 //Store instance information
                 this.counter = counter;

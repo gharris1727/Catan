@@ -6,7 +6,7 @@ import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScora
 import com.gregswebserver.catan.common.game.scoring.reporting.player.PlayerScoreReport;
 import com.gregswebserver.catan.common.game.scoring.reporting.player.SimplePlayerScore;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
-import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +18,11 @@ import java.util.Map;
 public class InventoryCounter implements PlayerScorable {
 
     private final Username username;
-    private final EnumCounter<DevelopmentCard> counts;
+    private final EnumAccumulator<DevelopmentCard> counts;
 
     public InventoryCounter(Username username) {
         this.username = username;
-        counts = new EnumCounter<>(DevelopmentCard.class);
+        counts = new EnumAccumulator<>(DevelopmentCard.class);
     }
 
     public void gainCard(DevelopmentCard card) {

@@ -8,10 +8,12 @@ import com.gregswebserver.catan.common.event.EventType;
  */
 public enum TeamEventType implements EventType {
 
-    Roll_Robber(null),
+    Activate_Robber(null),
     Use_Robber(null),
+    Steal_Resources(null),
     Build_First_Outpost(null),
     Build_Second_Outpost(null),
+    Activate_RoadBuilding(null),
     Build_Free_Road(null),
     Finish_Setup_Turn(null),
     Finish_Turn(null);

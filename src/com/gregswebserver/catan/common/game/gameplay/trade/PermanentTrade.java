@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
+import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.GameResource;
 
 /**
@@ -9,7 +10,7 @@ import com.gregswebserver.catan.common.game.util.GameResource;
 public class PermanentTrade extends Trade {
 
     public PermanentTrade(GameResource source, GameResource target, int count) {
-        request.increment(source, count);
-        offer.increment(target, 1);
+        super(new EnumAccumulator<>(GameResource.class, target),
+            new EnumAccumulator<>(GameResource.class, source, count));
     }
 }

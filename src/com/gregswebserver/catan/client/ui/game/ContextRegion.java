@@ -172,14 +172,16 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
             generateButton("PurchaseSettlement", 3, GameEventType.Build_Settlement, targetCoord);
         else if (town instanceof Settlement)
             generateButton("PurchaseCity", 4, GameEventType.Build_City, targetCoord);
+        generateButton("StealResources", 5, GameEventType.Steal_Resources, targetCoord);
     }
 
     private void renderTrade() {
-        generateButton("ConfirmTradeButton", 5, GameEventType.Make_Trade, targetTrade);
+        generateButton("ConfirmTradeButton", 6, GameEventType.Make_Trade, targetTrade);
     }
 
     private void renderDevelopmentCard() {
-        generateButton("BuyDevelopment", 6, GameEventType.Buy_Development, null);
+        generateButton("BuyDevelopment", 7, GameEventType.Buy_Development, null);
+        generateButton("UseRoadBuilding", 8, GameEventType.Play_RoadBuilding, null);
     }
 
     private void renderHistory() {
@@ -250,7 +252,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void generateButton(String name, int icon, GameEventType type, Object payload) {
-        if (username != null) {
+        if (username != null && manager.isLive()) {
             try {
                 GameEvent event = new GameEvent(username, type, payload);
                 manager.getLocalGame().test(event);

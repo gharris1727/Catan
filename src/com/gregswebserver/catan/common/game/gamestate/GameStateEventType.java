@@ -12,7 +12,8 @@ public enum GameStateEventType implements EventType {
     Roll_Dice(DiceRoll.class),
     Draw_DevelopmentCard(DevelopmentCard.class),
     Advance_Turn(TeamColor.class),
-    Active_Turn(TeamColor.class);
+    Active_Turn(TeamColor.class),
+    Advance_Theft(null);
 
     private final Class payloadType;
 

@@ -6,13 +6,12 @@ import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
-import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
+import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -24,24 +23,23 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
 
     private final Username name;
     private final TeamColor teamColor;
-    private final EnumCounter<GameResource> inventory;
-    private final EnumCounter<DevelopmentCard> bought;
-    private final EnumCounter<DevelopmentCard> active;
-    private final EnumCounter<DevelopmentCard> used;
-    private final EnumCounter<Purchase> purchases;
+    private final EnumAccumulator<GameResource> inventory;
+    private final EnumAccumulator<DevelopmentCard> bought;
+    private final EnumAccumulator<DevelopmentCard> active;
+    private final EnumAccumulator<DevelopmentCard> used;
     private final Stack<PlayerEvent> history;
-    private TemporaryTrade trade;
+    private final Stack<TemporaryTrade> trades;
 
     public Player(Username name, TeamColor teamColor) {
         this.name = name;
         this.teamColor = teamColor;
-        inventory = new EnumCounter<>(GameResource.class);
-        bought = new EnumCounter<>(DevelopmentCard.class);
-        active = new EnumCounter<>(DevelopmentCard.class);
-        used = new EnumCounter<>(DevelopmentCard.class);
-        purchases = new EnumCounter<>(Purchase.class);
+        inventory = new EnumAccumulator<>(GameResource.class);
+        bought = new EnumAccumulator<>(DevelopmentCard.class);
+        active = new EnumAccumulator<>(DevelopmentCard.class);
+        used = new EnumAccumulator<>(DevelopmentCard.class);
         history = new Stack<>();
-        trade = null;
+        trades = new Stack<>();
+        trades.push(null);
     }
 
     public Username getName() {
@@ -61,29 +59,18 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
     }
 
     public TemporaryTrade getTrade() {
-        return trade;
-    }
-
-    public int getVictoryPoints(GameRules rules) {
-        int victoryPoints = 0;
-        for (Map.Entry<DevelopmentCard, Integer> entry : used)
-            victoryPoints += rules.getDevelopmentCardPoints(entry.getKey()) * entry.getValue();
-        for (Map.Entry<DevelopmentCard, Integer> entry : active)
-            victoryPoints += rules.getDevelopmentCardPoints(entry.getKey()) * entry.getValue();
-        for (Map.Entry<DevelopmentCard, Integer> entry : bought)
-            victoryPoints += rules.getDevelopmentCardPoints(entry.getKey()) * entry.getValue();
-        return victoryPoints;
+        return trades.peek();
     }
 
     public boolean canMakeTrade(Trade t) {
         for (GameResource r : GameResource.values())
-            if (!inventory.contains(r, t.request.get(r)))
+            if (!inventory.contains(r, t.getRequest().get(r)))
                 return false;
         return true;
     }
 
     public PlayerEvent getMatureEvent() {
-        return new PlayerEvent(name, PlayerEventType.Mature_DevelopmentCards, new EnumCounter<>(bought));
+        return new PlayerEvent(name, PlayerEventType.Mature_DevelopmentCards, new EnumAccumulator<>(DevelopmentCard.class, bought));
     }
 
     @Override
@@ -94,16 +81,16 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
         try {
             switch (event.getType()) {
                 case Gain_Resources:
-                    EnumCounter<GameResource> income = (EnumCounter<GameResource>) event.getPayload();
+                    EnumCounter<GameResource> gain = (EnumCounter<GameResource>) event.getPayload();
                     for (GameResource r : GameResource.values()) {
-                        inventory.decrement(r, income.get(r));
+                        inventory.decrement(r, gain.get(r));
                     }
                     break;
-                case Make_Purchase:
-                    Purchase purchase = (Purchase) event.getPayload();
-                    for (GameResource r : GameResource.values())
-                        inventory.increment(r, purchase.get(r));
-                    purchases.decrement(purchase, 1);
+                case Lose_Resources:
+                    EnumCounter<GameResource> loss = (EnumCounter<GameResource>) event.getPayload();
+                    for (GameResource r : GameResource.values()) {
+                        inventory.increment(r, loss.get(r));
+                    }
                     break;
                 case Gain_DevelopmentCard:
                     bought.decrement((DevelopmentCard) event.getPayload(), 1);
@@ -120,21 +107,8 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
                     used.decrement((DevelopmentCard) event.getPayload(), 1);
                     break;
                 case Offer_Trade:
-                    trade = null;
-                    break;
-                case Fill_Trade:
-                    trade = (TemporaryTrade) event.getPayload();
-                    for (GameResource r : GameResource.values()) {
-                        inventory.decrement(r, trade.request.get(r));
-                        inventory.increment(r, trade.offer.get(r));
-                    }
-                    break;
-                case Make_Trade:
-                    Trade otherTrade = (Trade) event.getPayload();
-                    for (GameResource r : GameResource.values()) {
-                        inventory.decrement(r, otherTrade.offer.get(r));
-                        inventory.increment(r, otherTrade.request.get(r));
-                    }
+                case Cancel_Trade:
+                    trades.pop();
                     break;
             }
         } catch (Exception e) {
@@ -147,44 +121,45 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
         switch (event.getType()) {
             case Gain_Resources:
                 break;
-            case Make_Purchase:
-                for (GameResource r : GameResource.values())
-                    if (!inventory.contains(r, ((Purchase) event.getPayload()).get(r)))
+            case Lose_Resources:
+                EnumCounter<GameResource> loss = (EnumCounter<GameResource>) event.getPayload();
+                for (GameResource r : GameResource.values()) {
+                    if (!inventory.contains(r, loss.get(r)))
                         throw new EventConsumerException("Insufficient funds");
+                }
                 break;
             case Gain_DevelopmentCard:
                 break;
             case Mature_DevelopmentCards:
-                if (!bought.equals(event.getPayload()))
-                    throw new EventConsumerException("Inconsistent card count");
+                EnumCounter<DevelopmentCard> maturation = (EnumCounter<DevelopmentCard>) event.getPayload();
+                for (DevelopmentCard card : bought) {
+                    if (bought.get(card) != maturation.get(card))
+                        throw new EventConsumerException("Inconsistent card count");
+                }
                 break;
             case Use_DevelopmentCard:
                 if (!active.contains((DevelopmentCard) event.getPayload(), 1))
                     throw new EventConsumerException("No card");
                 break;
             case Cancel_Trade:
-                if (this.trade == null)
+                if (trades.peek() == null)
                     throw new EventConsumerException("No trade to cancel");
                 break;
             case Offer_Trade:
-            case Fill_Trade:
                 TemporaryTrade trade = (TemporaryTrade) event.getPayload();
-                if (trade == null && this.trade == null)
-                    throw new EventConsumerException("No trade to cancel");
-                else if (trade != null) {
-                    if (trade.equals(this.trade))
+                if (trade != null) {
+                    if (trade.equals(trades.peek()))
                         throw new EventConsumerException("Already proposed");
-                    if (trade.equals(new TemporaryTrade(name)))
-                        throw new EventConsumerException("Empty Trade");
+                    boolean trivial = true;
                     for (GameResource r : GameResource.values()) {
-                        if (!inventory.contains(r, trade.offer.get(r)))
+                        if (trade.getOffer().get(r) != 0 || trade.getRequest().get(r) != 0)
+                            trivial = false;
+                        if (!inventory.contains(r, trade.getOffer().get(r)))
                             throw new EventConsumerException("Insufficient funds");
                     }
+                    if (trivial)
+                        throw new EventConsumerException("Trivial trade");
                 }
-                break;
-            case Make_Trade:
-                if (!canMakeTrade((Trade) event.getPayload()))
-                    throw new EventConsumerException("Insufficent funds");
                 break;
         }
     }
@@ -196,16 +171,16 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
             history.push(event);
             switch (event.getType()) {
                 case Gain_Resources:
-                    EnumCounter<GameResource> income = (EnumCounter<GameResource>) event.getPayload();
-                    for (GameResource r : GameResource.values()) {
-                        inventory.increment(r, income.get(r));
+                    EnumCounter<GameResource> gain = (EnumCounter<GameResource>) event.getPayload();
+                    for (GameResource r : inventory) {
+                        inventory.increment(r, gain.get(r));
                     }
                     break;
-                case Make_Purchase:
-                    Purchase purchase = (Purchase) event.getPayload();
-                    for (GameResource r : GameResource.values())
-                        inventory.decrement(r, purchase.get(r));
-                    purchases.increment(purchase, 1);
+                case Lose_Resources:
+                    EnumCounter<GameResource> loss = (EnumCounter<GameResource>) event.getPayload();
+                    for (GameResource r : inventory) {
+                        inventory.decrement(r, loss.get(r));
+                    }
                     break;
                 case Gain_DevelopmentCard:
                     bought.increment((DevelopmentCard) event.getPayload(), 1);
@@ -222,25 +197,10 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
                     used.increment((DevelopmentCard) event.getPayload(), 1);
                     break;
                 case Offer_Trade:
-                    trade = (TemporaryTrade) event.getPayload();
+                    trades.push((TemporaryTrade) event.getPayload());
                     break;
                 case Cancel_Trade:
-                    trade = null;
-                    break;
-                case Fill_Trade:
-                    trade =(TemporaryTrade) event.getPayload();
-                    for (GameResource r : GameResource.values()) {
-                        inventory.increment(r, trade.request.get(r));
-                        inventory.decrement(r, trade.offer.get(r));
-                    }
-                    trade = null;
-                    break;
-                case Make_Trade:
-                    Trade otherTrade = (Trade) event.getPayload();
-                    for (GameResource r : GameResource.values()) {
-                        inventory.increment(r, otherTrade.offer.get(r));
-                        inventory.decrement(r, otherTrade.request.get(r));
-                    }
+                    trades.push(null);
                     break;
             }
         } catch (Exception e) {
@@ -260,9 +220,8 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
         if (!inventory.equals(player.inventory)) return false;
         if (!bought.equals(player.bought)) return false;
         if (!active.equals(player.active)) return false;
-        if (!purchases.equals(player.purchases)) return false;
         if (!history.equals(player.history)) return false;
-        return (trade == null ? (player.trade == null) : (trade.equals(player.trade)));
+        return (trades.equals(player.trades));
     }
 
     @Override
@@ -273,9 +232,8 @@ public class Player implements Serializable, ReversibleEventConsumer<PlayerEvent
                 ", inventory=" + inventory +
                 ", bought=" + bought +
                 ", active=" + active +
-                ", purchases=" + purchases +
                 ", history=" + history +
-                ", trade=" + trade +
+                ", trades=" + trades +
                 '}';
     }
 }

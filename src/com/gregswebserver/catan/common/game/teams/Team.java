@@ -19,16 +19,18 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
     private final Stack<TeamEvent> events;
 
     private int round;
+    private int freeRoads;
     private TeamState state;
-    private boolean freeRobber;
+    private RobberState freeRobber;
 
     public Team(TeamColor color) {
         this.color = color;
         players = new HashSet<>();
         events = new Stack<>();
         round = 0;
+        freeRoads = 1;
         state = TeamState.Outpost;
-        freeRobber = false;
+        freeRobber = RobberState.Inactive;
     }
 
     public TeamColor getColor() {
@@ -50,22 +52,32 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
         TeamEvent event = events.pop();
         try {
             switch (event.getType()) {
-                case Roll_Robber:
-                    freeRobber = false;
+                case Activate_Robber:
+                    freeRobber = RobberState.Inactive;
                     break;
                 case Use_Robber:
-                    freeRobber = true;
+                    freeRobber = RobberState.Active;
+                    break;
+                case Steal_Resources:
+                    freeRobber = RobberState.Stealing;
                     break;
                 case Build_First_Outpost:
                 case Build_Second_Outpost:
                     state = TeamState.Outpost;
                     break;
+                case Activate_RoadBuilding:
+                    freeRoads -= 2;
+                    break;
                 case Build_Free_Road:
-                    state = TeamState.Road;
+                    if (round <= 1)
+                        state = TeamState.Road;
+                    freeRoads++;
                     break;
                 case Finish_Setup_Turn:
-                    if (round == 1)
+                    if (round == 1) {
                         state = TeamState.Done;
+                        freeRoads--;
+                    }
                 case Finish_Turn:
                     round--;
                     break;
@@ -78,13 +90,17 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
     @Override
     public void test(TeamEvent event) throws EventConsumerException{
         switch (event.getType()) {
-            case Roll_Robber:
-                if (freeRobber)
+            case Activate_Robber:
+                if (freeRobber != RobberState.Inactive)
                     throw new EventConsumerException("Already have free robber");
                 break;
             case Use_Robber:
-                if (!freeRobber)
+                if (freeRobber != RobberState.Active)
                     throw new EventConsumerException("Robber not active");
+                break;
+            case Steal_Resources:
+                if (freeRobber != RobberState.Stealing)
+                    throw new EventConsumerException("Cannot steal");
                 break;
             case Build_First_Outpost:
                 if (state != TeamState.Outpost || round != 0)
@@ -94,8 +110,10 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                 if (state != TeamState.Outpost || round != 1)
                     throw new EventConsumerException("Second outpost not avaliable");
                 break;
+            case Activate_RoadBuilding:
+                break;
             case Build_Free_Road:
-                if (state != TeamState.Road || round >= 2)
+                if (freeRoads <= 0)
                     throw new EventConsumerException("Road not avaliable");
                 break;
             case Finish_Setup_Turn:
@@ -105,8 +123,10 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
             case Finish_Turn:
                 if (state != TeamState.Done || round < 2)
                     throw new EventConsumerException("Setup not finished");
-                if (freeRobber)
-                    throw new EventConsumerException("Robber has not moved");
+                if (freeRobber != RobberState.Inactive)
+                    throw new EventConsumerException("Robber still active");
+                if (freeRoads != 0)
+                    throw new EventConsumerException("Free roads still avaliable");
                 break;
         }
     }
@@ -117,22 +137,31 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
         try {
             events.push(event);
             switch (event.getType()){
-                case Roll_Robber:
-                    freeRobber = true;
+                case Activate_Robber:
+                    freeRobber = RobberState.Active;
                     break;
                 case Use_Robber:
-                    freeRobber = false;
+                    freeRobber = RobberState.Stealing;
+                    break;
+                case Steal_Resources:
+                    freeRobber = RobberState.Inactive;
                     break;
                 case Build_First_Outpost:
                 case Build_Second_Outpost:
                     state = TeamState.Road;
                     break;
+                case Activate_RoadBuilding:
+                    freeRoads += 2;
+                    break;
                 case Build_Free_Road:
                     state = TeamState.Done;
+                    freeRoads--;
                     break;
                 case Finish_Setup_Turn:
-                    if (round == 0)
+                    if (round == 0) {
                         state = TeamState.Outpost;
+                        freeRoads++;
+                    }
                 case Finish_Turn:
                     round++;
                     break;
@@ -144,5 +173,9 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
 
     private enum TeamState {
         Outpost, Road, Done
+    }
+
+    private enum RobberState {
+        Inactive, Active, Stealing
     }
 }

@@ -53,7 +53,7 @@ public class CardList extends ConfigurableScreenRegion {
         clear();
         icons.clear();
         if (resources != null) {
-            for (GameResource resource : GameResource.values()) {
+            for (GameResource resource : resources) {
                 for (int i = 0; i < resources.get(resource); i++) {
                     GameResourceIcon icon = new GameResourceIcon(icons.size(), resource);
                     icon.setConfig(getConfig());
@@ -63,7 +63,7 @@ public class CardList extends ConfigurableScreenRegion {
             }
         }
         if (development != null) {
-            for (DevelopmentCard card : DevelopmentCard.values()) {
+            for (DevelopmentCard card : development) {
                 for (int i = 0; i < development.get(card); i++) {
                     DevelopmentCardIcon icon = new DevelopmentCardIcon(icons.size(), card);
                     icon.setConfig(getConfig());

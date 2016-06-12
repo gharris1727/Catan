@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 /**
  * Created by greg on 2/27/16.
@@ -10,7 +12,8 @@ public class TemporaryTrade extends Trade {
 
     public final Username seller;
 
-    public TemporaryTrade(Username seller) {
+    public TemporaryTrade(Username seller, EnumCounter<GameResource> offer, EnumCounter<GameResource> request) {
+        super(offer, request);
         this.seller = seller;
     }
 

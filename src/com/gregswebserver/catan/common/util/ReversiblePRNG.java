@@ -29,6 +29,14 @@ public class ReversiblePRNG {
         this.seed = seed;
     }
 
+    public void next() {
+        seed++;
+    }
+
+    public void prev() {
+        seed--;
+    }
+
     private byte[] getBytes() {
         byte[] arr = new byte[8];
         for (int i = 0; i < 8; i++)
@@ -47,14 +55,18 @@ public class ReversiblePRNG {
         return out & 0x7fffffff;
     }
 
-    public int nextInt(int limit) {
-        seed++;
+    public int getInt(int limit) {
         return getInt() % limit;
     }
 
+    public int nextInt(int limit) {
+        next();
+        return getInt(limit);
+    }
+
     public int prevInt(int limit) {
-        int prev = getInt() % limit;
-        seed--;
+        int prev = getInt(limit);
+        prev();
         return prev;
     }
 
@@ -68,14 +80,18 @@ public class ReversiblePRNG {
         return out & 0x7fffffffffffffffL;
     }
 
-    public long nextLong(long limit) {
-        seed++;
+    public long getLong(long limit) {
         return getLong() % limit;
     }
 
+    public long nextLong(long limit) {
+        next();
+        return getLong(limit);
+    }
+
     public long prevLong(long limit) {
-        long prev = getLong() % limit;
-        seed--;
+        long prev = getLong(limit);
+        prev();
         return prev;
     }
 

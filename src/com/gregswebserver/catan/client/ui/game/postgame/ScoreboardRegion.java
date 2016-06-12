@@ -4,7 +4,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
-import com.gregswebserver.catan.common.locale.game.LocalizedTeamScorePrinter;
+import com.gregswebserver.catan.common.locale.game.scoring.LocalizedTeamScorePrinter;
 
 /**
  * Created by greg on 5/30/16.

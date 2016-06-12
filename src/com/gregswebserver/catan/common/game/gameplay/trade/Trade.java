@@ -1,5 +1,6 @@
 package com.gregswebserver.catan.common.game.gameplay.trade;
 
+import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
 
@@ -11,17 +12,17 @@ import java.io.Serializable;
  */
 public abstract class Trade implements Comparable<Trade>, Serializable{
 
-    public final EnumCounter<GameResource> offer;
-    public final EnumCounter<GameResource> request;
+    private final EnumCounter<GameResource> offer;
+    private final EnumCounter<GameResource> request;
 
-    public Trade() {
-        offer = new EnumCounter<>(GameResource.class);
-        request = new EnumCounter<>(GameResource.class);
+    public Trade(EnumCounter<GameResource> offer, EnumCounter<GameResource> request) {
+        this.offer = offer;
+        this.request = request;
     }
 
     protected Trade(Trade other) {
-        this.offer = new EnumCounter<>(other.offer);
-        this.request = new EnumCounter<>(other.request);
+        this.offer = new EnumAccumulator<>(GameResource.class, other.offer);
+        this.request = new EnumAccumulator<>(GameResource.class, other.request);
     }
 
     public boolean equals(Object o) {
@@ -57,5 +58,13 @@ public abstract class Trade implements Comparable<Trade>, Serializable{
             out += request.get(r) + "-" + offer.get(r) + "/";
         }
         return out + ")";
+    }
+
+    public EnumCounter<GameResource> getOffer() {
+        return offer;
+    }
+
+    public EnumCounter<GameResource> getRequest() {
+        return request;
     }
 }

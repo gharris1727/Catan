@@ -5,13 +5,11 @@ import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.locale.LocalizedEnumPrinter;
 import com.gregswebserver.catan.common.locale.LocalizedPrinter;
 
-import java.util.Map;
-
 /**
  * Created by greg on 6/11/16.
- * Printer to localize the EnumCounter class.
+ * Printer to localize the EnumAccumulator class.
  */
-public class LocalizedEnumCounterPrinter extends LocalizedPrinter<EnumCounter<?>> {
+public class LocalizedEnumCounterPrinter<T extends Enum<T>> extends LocalizedPrinter<EnumCounter<T>> {
 
     private final LocalizedEnumPrinter typePrinter;
 
@@ -21,14 +19,14 @@ public class LocalizedEnumCounterPrinter extends LocalizedPrinter<EnumCounter<?>
     }
 
     @Override
-    public String getLocalization(EnumCounter<?> instance) {
+    public String getLocalization(EnumCounter<T> instance) {
         StringBuilder out = new StringBuilder();
         String delimiter = ", ";
-        for (Map.Entry<?, Integer> entry : instance) {
-            if (entry.getValue() != 0) {
-                out.append(entry.getValue());
+        for (T e : instance) {
+            if (instance.get(e) != 0) {
+                out.append(instance.get(e));
                 out.append(" ");
-                out.append(typePrinter.getLocalization((Enum) entry.getKey()));
+                out.append(typePrinter.getLocalization(e));
                 out.append(delimiter);
             }
         }

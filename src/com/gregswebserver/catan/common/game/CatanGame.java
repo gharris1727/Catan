@@ -32,6 +32,7 @@ import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.game.teams.TeamEvent;
 import com.gregswebserver.catan.common.game.teams.TeamEventType;
 import com.gregswebserver.catan.common.game.teams.TeamPool;
+import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
@@ -52,7 +53,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     private final GameBoard board;
     private final PlayerPool players;
     private final TeamPool teams;
-    private final SharedState state;
+    private final RandomizerState state;
 
     //Score event listening
     private final ScoreState scoring;
@@ -71,7 +72,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         board = settings.boardGenerator.generate(settings.boardLayout, settings.seed);
         players = new PlayerPool(settings);
         teams = new TeamPool(settings);
-        state = new SharedState(settings);
+        state = new RandomizerState(settings);
         history = new Stack<>();
         history.push(new GameHistory(new GameEvent(null, GameEventType.Start, null), Collections.emptyList()));
         scoring = new ScoreState(board, players, teams);
@@ -224,7 +225,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     compound(LogicEventType.OR,
                         //If we make a regular settlement, the purchase and placement must be valid
                         compound(LogicEventType.AND,
-                            player(origin, PlayerEventType.Make_Purchase, Purchase.Settlement),
+                            player(origin, PlayerEventType.Lose_Resources, Purchase.Settlement),
                             board(teamColor, BoardEventType.Place_Settlement, event.getPayload())
                         ),
                         //If we make a first outpost, we need to check for outpost placement
@@ -247,7 +248,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     //Needs to be their turn.
                     state(origin, GameStateEventType.Active_Turn, teamColor),
                     //Need to be able to purchase the city
-                    player(origin, PlayerEventType.Make_Purchase, Purchase.City),
+                    player(origin, PlayerEventType.Lose_Resources, Purchase.City),
                     //Place the city on the board
                     board(teamColor, BoardEventType.Place_City, event.getPayload()),
                     //Need to notify the scorers.
@@ -261,7 +262,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     //Decide between the free or purchased road
                    compound(LogicEventType.OR,
                         team(teamColor, TeamEventType.Build_Free_Road, event.getPayload()),
-                        player(origin, PlayerEventType.Make_Purchase, Purchase.Road)
+                        player(origin, PlayerEventType.Lose_Resources, Purchase.Road)
                     ),
                     //Place the road on the board.
                     board(teamColor, BoardEventType.Place_Road, event.getPayload()),
@@ -276,7 +277,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     //Need to remove a card from the deck
                     state(origin, GameStateEventType.Draw_DevelopmentCard, state.getDevelopmentCard()),
                     //Need to purchase a card
-                    player(origin, PlayerEventType.Make_Purchase, Purchase.DevelopmentCard),
+                    player(origin, PlayerEventType.Lose_Resources, Purchase.DevelopmentCard),
                     //Need to add the development card to their inventory
                     player(origin, PlayerEventType.Gain_DevelopmentCard, state.getDevelopmentCard()),
                     //Need to notify the scorers.
@@ -286,7 +287,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 return player(origin, PlayerEventType.Offer_Trade, event.getPayload());
             case Cancel_Trade:
                 return player(origin, PlayerEventType.Cancel_Trade, event.getPayload());
-            case Make_Trade:
+            case Make_Trade: {
                 if (event.getPayload() instanceof TemporaryTrade) {
                     TemporaryTrade t = (TemporaryTrade) event.getPayload();
                     TeamColor otherTeam = players.getPlayer(t.seller).getTeamColor();
@@ -297,37 +298,75 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                             //Needs to be the other players turn
                             state(origin, GameStateEventType.Active_Turn, otherTeam)
                         ),
-                        player(origin, PlayerEventType.Make_Trade, t),
-                        player(t.seller, PlayerEventType.Fill_Trade, t)
+                        player(origin, PlayerEventType.Gain_Resources, t.getOffer()),
+                        player(origin, PlayerEventType.Lose_Resources, t.getRequest()),
+                        player(t.seller, PlayerEventType.Gain_Resources, t.getRequest()),
+                        player(t.seller, PlayerEventType.Lose_Resources, t.getOffer())
                     );
                 } else {
                     return compound(LogicEventType.AND,
                         //Needs to be their turn.
                         state(origin, GameStateEventType.Active_Turn, teamColor),
                         //Make the trade
-                        player(origin, PlayerEventType.Make_Trade, event.getPayload())
+                        player(origin, PlayerEventType.Gain_Resources, ((Trade)event.getPayload()).getOffer()),
+                        player(origin, PlayerEventType.Lose_Resources, ((Trade)event.getPayload()).getRequest())
                     );
                 }
+            }
+            case Discard_Resources:
+                return player(origin, PlayerEventType.Lose_Resources, event.getPayload());
+            case Steal_Resources:
+                return compound(LogicEventType.AND,
+                    team(teamColor, TeamEventType.Steal_Resources, null),
+                    getStolenResources(origin, (Coordinate) event.getPayload())
+                );
+            case Play_RoadBuilding:
+                return compound(LogicEventType.AND,
+                    team(teamColor, TeamEventType.Activate_RoadBuilding, null),
+                    player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.RoadBuilding)
+                );
+            case Play_YearOfPlenty:
+                return compound(LogicEventType.AND,
+                    player(origin, PlayerEventType.Gain_Resources, event.getPayload()),
+                    player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.YearOfPlenty)
+                );
+            case Play_Monopoly: {
+                GameResource resource = (GameResource) event.getPayload();
+                int total = 0;
+                List<LogicEvent> playerEvents = new ArrayList<>();
+                for (Username username : players) {
+                    Player p = players.getPlayer(username);
+                    int count = p.getInventory().get(resource);
+                    if (count > 0) {
+                        total += count;
+                        EnumCounter<GameResource> loss = new EnumAccumulator<>(GameResource.class, resource, count);
+                        playerEvents.add(player(username, PlayerEventType.Lose_Resources, loss));
+                    }
+                }
+                EnumCounter<GameResource> gain = new EnumAccumulator<>(GameResource.class, resource, total);
+                playerEvents.add(player(origin, PlayerEventType.Gain_Resources, gain));
+                return compound(LogicEventType.AND, playerEvents.toArray(new LogicEvent[playerEvents.size()]));
+            }
         }
         return new LogicEvent(this, LogicEventType.NOP, null);
     }
 
     private LogicEvent diceRollEvents() {
         if (state.getDiceRoll() == DiceRoll.Seven)
-            return team(state.getNextTeam(), TeamEventType.Roll_Robber, null);
+            return team(state.getNextTeam(), TeamEventType.Activate_Robber, null);
         List<Coordinate> spaces = board.getActiveTiles(state.getDiceRoll());
         if (spaces == null || spaces.isEmpty())
             return new LogicEvent(this, LogicEventType.NOP, null);
-        Map<TeamColor, EnumCounter<GameResource>> income = new EnumMap<>(TeamColor.class);
+        Map<TeamColor, EnumAccumulator<GameResource>> income = new EnumMap<>(TeamColor.class);
         for (Coordinate space : spaces) {
             GameResource resource = ((ResourceTile) board.getTile(space)).getResource();
             if (resource != null) {
                 for (Town town : board.getAdjacentTowns(space)) {
                     TeamColor teamColor = (town != null ? town.getTeam() : TeamColor.None);
                     if (teamColor != TeamColor.None) {
-                        EnumCounter<GameResource> teamIncome = income.get(teamColor);
+                        EnumAccumulator<GameResource> teamIncome = income.get(teamColor);
                         if (teamIncome == null)
-                            income.put(teamColor, teamIncome = new EnumCounter<>(GameResource.class));
+                            income.put(teamColor, teamIncome = new EnumAccumulator<>(GameResource.class));
                         if (town instanceof Settlement)
                             teamIncome.increment(resource, rules.getSettlementResources());
                         if (town instanceof City)
@@ -337,23 +376,58 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             }
         }
         ArrayList<LogicEvent> events = new ArrayList<>();
-        for (Map.Entry<TeamColor, EnumCounter<GameResource>> entry : income.entrySet())
+        for (Map.Entry<TeamColor, EnumAccumulator<GameResource>> entry : income.entrySet())
             for (Username name : teams.getTeam(entry.getKey()).getPlayers())
                 events.add(player(name, PlayerEventType.Gain_Resources, entry.getValue()));
         return new LogicEvent(this, LogicEventType.AND, events);
     }
 
-    private EnumCounter<GameResource> getTownIncome(Coordinate vertex) {
-        EnumCounter<GameResource> counter = new EnumCounter<>(GameResource.class);
+    private EnumAccumulator<GameResource> getTownIncome(Coordinate vertex) {
+        EnumAccumulator<GameResource> accumulator = new EnumAccumulator<>(GameResource.class);
         for (Coordinate space : CoordTransforms.getAdjacentSpacesFromVertex(vertex).values()) {
             if (board.getTile(space) instanceof ResourceTile) {
                 ResourceTile tile = (ResourceTile) board.getTile(space);
                 GameResource resource = tile.getResource();
                 if (resource != null)
-                    counter.increment(resource, 1);
+                    accumulator.increment(resource, 1);
             }
         }
-        return counter;
+        return accumulator;
+    }
+
+    private LogicEvent getStolenResources(Username origin, Coordinate vertex) {
+        TeamColor team = board.getTown(vertex).getTeam();
+        if (team == TeamColor.None)
+            return new LogicEvent(this, LogicEventType.NOP, null);
+        int total = 0;
+        for (Username username : teams.getTeam(team).getPlayers()) {
+            Player p = players.getPlayer(username);
+            EnumCounter<GameResource> inventory = p.getInventory();
+            for (GameResource r : GameResource.values())
+                total += inventory.get(r);
+        }
+        if (total == 0)
+            return new LogicEvent(this, LogicEventType.NOP, null);
+        int stolen = (total == 1) ? 0 : state.getTheftInt(total);
+        total = 0;
+        Username target = null;
+        EnumAccumulator<GameResource> amount = new EnumAccumulator<>(GameResource.class);
+        for (Username username : teams.getTeam(team).getPlayers()) {
+            Player p = players.getPlayer(username);
+            EnumCounter<GameResource> inventory = p.getInventory();
+            for (GameResource r : GameResource.values()) {
+                total += inventory.get(r);
+                if (total >= stolen && target == null && inventory.contains(r, 1)) {
+                    target = username;
+                    amount.increment(r, 1);
+                }
+            }
+        }
+        return compound(LogicEventType.AND,
+            player(target, PlayerEventType.Lose_Resources, amount),
+            player(origin, PlayerEventType.Gain_Resources, amount),
+            state(origin, GameStateEventType.Advance_Theft, null)
+        );
     }
 
     private void test(GameTriggerEvent event) throws EventConsumerException {

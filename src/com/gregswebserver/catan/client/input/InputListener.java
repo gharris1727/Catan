@@ -135,6 +135,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        update(e);
         sendEvent(selected.onMouseScroll(e));
     }
 

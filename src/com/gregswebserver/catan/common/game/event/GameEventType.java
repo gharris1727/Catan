@@ -4,6 +4,8 @@ import com.gregswebserver.catan.common.event.EventType;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
+import com.gregswebserver.catan.common.game.util.EnumCounter;
+import com.gregswebserver.catan.common.game.util.GameResource;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -22,7 +24,12 @@ public enum GameEventType implements EventType {
     Buy_Development(null),
     Offer_Trade(TemporaryTrade.class),
     Cancel_Trade(null),
-    Make_Trade(Trade.class);
+    Make_Trade(Trade.class),
+    Discard_Resources(EnumCounter.class),
+    Steal_Resources(Coordinate.class),
+    Play_RoadBuilding(null),
+    Play_YearOfPlenty(EnumCounter.class),
+    Play_Monopoly(GameResource.class);
 
     private final Class payloadType;
 

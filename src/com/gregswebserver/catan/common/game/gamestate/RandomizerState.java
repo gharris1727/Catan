@@ -4,6 +4,7 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.util.ReversiblePRNG;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -13,20 +14,22 @@ import java.util.Stack;
  * Created by greg on 5/25/16.
  * Management class to maintain the gamestate of a catan game
  */
-public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
+public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> {
 
     private final DiceState dice;
     private final DevelopmentDeckState cards;
     private final TeamTurnState turns;
+    private final ReversiblePRNG theft;
     private final Stack<GameStateEvent> history;
 
-    public SharedState(GameSettings settings) {
+    public RandomizerState(GameSettings settings) {
         dice = new DiceState(settings.seed);
         cards = new DevelopmentDeckState(settings.rules, settings.seed);
         Set<TeamColor> set = EnumSet.noneOf(TeamColor.class);
         for (TeamColor color : settings.playerTeams.values())
             set.add(color);
         turns = new TeamTurnState(settings.seed, set);
+        theft = new ReversiblePRNG(settings.seed);
         history = new Stack<>();
     }
 
@@ -47,6 +50,9 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
                     turns.prev();
                     break;
                 case Active_Turn:
+                    break;
+                case Advance_Theft:
+                    theft.prev();
                     break;
             }
         } catch (Exception e) {
@@ -75,6 +81,9 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
                 if (turns.get() != event.getPayload())
                     throw new EventConsumerException("Not your turn");
                 break;
+            case Advance_Theft:
+                //We always have another number to generate.
+                break;
         }
     }
 
@@ -94,6 +103,9 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
                     turns.next();
                     break;
                 case Active_Turn:
+                    break;
+                case Advance_Theft:
+                    theft.next();
                     break;
             }
         } catch (Exception e) {
@@ -117,5 +129,9 @@ public class SharedState implements ReversibleEventConsumer<GameStateEvent> {
         TeamColor color = turns.next();
         turns.prev();
         return color;
+    }
+
+    public int getTheftInt(int limit) {
+        return theft.getInt(limit);
     }
 }

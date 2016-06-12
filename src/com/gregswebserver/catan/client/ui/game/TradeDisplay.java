@@ -27,8 +27,8 @@ public abstract class TradeDisplay extends ConfigurableScreenRegion {
     protected TradeDisplay(String name, int priority, String configKey, Trade trade) {
         super(name, priority, configKey);
         background = new EdgedTiledBackground();
-        request = new CardList("RequestCardList", 1, "request", trade.request, null);
-        offer = new CardList("OfferCardList", 1, "offer", trade.offer, null);
+        request = new CardList("RequestCardList", 1, "request", trade.getRequest(), null);
+        offer = new CardList("OfferCardList", 1, "offer", trade.getOffer(), null);
         add(background).setClickable(this);
         add(request).setClickable(this);
         add(offer).setClickable(this);

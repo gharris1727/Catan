@@ -4,6 +4,7 @@ import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.input.UserEvent;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.ConnectionInfo;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.server.Server;
 
@@ -28,14 +29,29 @@ public class Test {
         }
         //Start some clients and trigger some events.
         Client greg = new Client(logger);
-        Client bob = new Client(logger);
+        Client michael = new Client(logger);
         //Create login information for the two clients
         ConnectionInfo gregLogin = new ConnectionInfo("localhost", "25000", "Greg");
         gregLogin.setPassword("password");
-        ConnectionInfo bobLogin = new ConnectionInfo("localhost", "25000", "Bob");
-        bobLogin.setPassword("pw");
+        ConnectionInfo michaelLogin = new ConnectionInfo("localhost", "25000", "Michael");
+        michaelLogin.setPassword("pw");
         //Add the events to the client event queues.
         greg.addEvent(new UserEvent(null, UserEventType.Net_Connect, gregLogin));
-        bob.addEvent(new UserEvent(null, UserEventType.Net_Connect, bobLogin));
+        michael.addEvent(new UserEvent(null, UserEventType.Net_Connect, michaelLogin));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+        greg.addEvent(new UserEvent(null, UserEventType.Lobby_Create, null));
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
+        michael.addEvent(new UserEvent(null, UserEventType.Lobby_Join, new Username("Greg")));
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
+        greg.addEvent(new UserEvent(null, UserEventType.Lobby_Start, null));
     }
 }
