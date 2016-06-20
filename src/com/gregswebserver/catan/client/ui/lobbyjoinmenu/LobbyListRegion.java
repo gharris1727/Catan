@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.resources.GraphicSet;
 import com.gregswebserver.catan.common.structure.lobby.Lobby;
@@ -76,9 +77,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     }
 
     @Override
-    public UserEvent onMouseScroll(MouseWheelEvent event) {
+    public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
         container.getScroll().scroll(0,event.getScrollAmount());
-        return null;
     }
 
     public void update() {
@@ -174,8 +174,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             }
 
             @Override
-            public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return container.onMouseScroll(event);
+            public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
+                container.onMouseScroll(listener, event);
             }
 
             private void clearArrows() {
@@ -206,14 +206,13 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 }
 
                 @Override
-                public UserEvent onMousePress(MouseEvent event) {
+                public void onMousePress(UserEventListener listener, MouseEvent event) {
                     index = 3;
                     update();
-                    return null;
                 }
 
                 @Override
-                public UserEvent onMouseRelease(MouseEvent event) {
+                public void onMouseRelease(UserEventListener listener, MouseEvent event) {
                     lobbyNameHeader.clearArrows();
                     gameTypeHeader.clearArrows();
                     currentClientsHeader.clearArrows();
@@ -221,7 +220,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                     index = 5;
                     sortOption = descend;
                     update();
-                    return null;
                 }
 
             }
@@ -249,14 +247,13 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 }
 
                 @Override
-                public UserEvent onMousePress(MouseEvent event) {
+                public void onMousePress(UserEventListener listener, MouseEvent event) {
                     index = 2;
                     update();
-                    return null;
                 }
 
                 @Override
-                public UserEvent onMouseRelease(MouseEvent event) {
+                public void onMouseRelease(UserEventListener listener, MouseEvent event) {
                     lobbyNameHeader.clearArrows();
                     gameTypeHeader.clearArrows();
                     currentClientsHeader.clearArrows();
@@ -265,7 +262,6 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                     sortOption = ascend;
                     update();
                     container.update();
-                    return null;
                 }
             }
         }
@@ -353,14 +349,13 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             }
 
             @Override
-            public UserEvent onMouseClick(MouseEvent event) {
+            public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 selected = this.lobby;
-                return null;
             }
 
             @Override
-            public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return LobbyList.this.onMouseScroll(event);
+            public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
+                LobbyList.this.onMouseScroll(listener, event);
             }
         }
     }
@@ -375,8 +370,9 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
             background = new EdgedTiledBackground();
             joinButton = new Button("JoinButton", 1, "join", "Join") {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return (selected == null) ? null : new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayer());
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                    if (selected != null)
+                        listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayer()));
                 }
             };
             //Add objects to the screen.
@@ -390,8 +386,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         }
 
         @Override
-        public UserEvent onMouseScroll(MouseWheelEvent event) {
-            return container.onMouseScroll(event);
+        public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
+            container.onMouseScroll(listener, event);
         }
     }
 }

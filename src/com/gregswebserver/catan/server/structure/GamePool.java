@@ -48,10 +48,11 @@ public class GamePool {
 
             @Override
             protected void onSuccess(GameControlEvent event) {
+                host.broadcastGameEvent((GameEvent) event.getPayload());
             }
             @Override
             protected void onFailure(EventConsumerException e) {
-                logger.log("Unable to execute game event!", e, LogLevel.ERROR);
+                logger.log("Server unable to execute event!", e, LogLevel.ERROR);
             }
 
             @Override

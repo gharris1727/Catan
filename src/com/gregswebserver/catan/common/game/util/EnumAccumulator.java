@@ -61,6 +61,25 @@ public class EnumAccumulator<T extends Enum<T>> implements Serializable, EnumCou
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EnumAccumulator<?> that = (EnumAccumulator<?>) o;
+
+        if (!tClass.equals(that.tClass)) return false;
+        return map.equals(that.map);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = tClass.hashCode();
+        result = 31 * result + map.hashCode();
+        return result;
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
             private int index = 0;

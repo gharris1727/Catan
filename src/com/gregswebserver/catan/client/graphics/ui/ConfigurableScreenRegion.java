@@ -34,6 +34,10 @@ public abstract class ConfigurableScreenRegion extends ScreenRegion implements C
         return config;
     }
 
+    public String getConfigKey() {
+        return configKey;
+    }
+
     @Override
     public boolean isRenderable() {
         return super.isRenderable() && config != null;

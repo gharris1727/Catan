@@ -3,6 +3,7 @@ package com.gregswebserver.catan.client.ui.disconnecting;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 
@@ -26,8 +27,8 @@ public class DisconnectingScreen extends ClientScreen {
         text = new TextLabel("DisconnectMessageLabel", 1, "message", disconnectMessage);
         button = new Button("DisconnectButton", 2, "return", "Return to connect menu.") {
             @Override
-            public UserEvent onMouseClick(MouseEvent event) {
-                return new UserEvent(this, UserEventType.Net_Clear, null);
+            public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                listener.onUserEvent(new UserEvent(this, UserEventType.Net_Clear, null));
             }
         };
         //Add the elements to the screen.

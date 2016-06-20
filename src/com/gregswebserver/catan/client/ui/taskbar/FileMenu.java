@@ -2,9 +2,9 @@ package com.gregswebserver.catan.client.ui.taskbar;
 
 import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
@@ -25,17 +25,12 @@ public class FileMenu extends TaskbarMenu {
     private class FileMenuPopup extends TaskbarPopup {
 
         private FileMenuPopup() {
-            super("FileMenuPopup", "popup");
+            super("FileMenuPopup");
             addListItem(new Button("QuitButton", 1, "quit", null) {
 
                 @Override
-                public UserEvent onMouseDrag(Point p) {
-                    return FileMenuPopup.this.onMouseDrag(p);
-                }
-
-                @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Shutdown, null);
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                    listener.onUserEvent(new UserEvent(this, UserEventType.Shutdown, null));
                 }
             });
         }

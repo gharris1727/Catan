@@ -3,6 +3,8 @@ package com.gregswebserver.catan.common.game.gamestate;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
+import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.util.ReversiblePRNG;
 
@@ -14,7 +16,7 @@ import java.util.Stack;
  * Created by greg on 5/25/16.
  * Management class to maintain the gamestate of a catan game
  */
-public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> {
+public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>, AssertEqualsTestable<RandomizerState> {
 
     private final DiceState dice;
     private final DevelopmentDeckState cards;
@@ -49,10 +51,10 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
                 case Advance_Turn:
                     turns.prev();
                     break;
-                case Active_Turn:
-                    break;
                 case Advance_Theft:
                     theft.prev();
+                    break;
+                case Active_Turn:
                     break;
             }
         } catch (Exception e) {
@@ -77,12 +79,12 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
                 if (!turns.hasNext())
                     throw new EventConsumerException("No next turn");
                 break;
+            case Advance_Theft:
+                //We always have another number to generate.
+                break;
             case Active_Turn:
                 if (turns.get() != event.getPayload())
                     throw new EventConsumerException("Not your turn");
-                break;
-            case Advance_Theft:
-                //We always have another number to generate.
                 break;
         }
     }
@@ -117,6 +119,12 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
         return dice.get();
     }
 
+    public DiceRoll getPreviousDiceRoll() {
+        DiceRoll roll = dice.prev();
+        dice.next();
+        return roll;
+    }
+
     public DevelopmentCard getDevelopmentCard() {
         try {
             return cards.get();
@@ -133,5 +141,19 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
 
     public int getTheftInt(int limit) {
         return theft.getInt(limit);
+    }
+
+    @Override
+    public void assertEquals(RandomizerState other) throws EqualityException {
+        if (!dice.equals(other.dice))
+            throw new EqualityException("RandomizerDice", dice, other.dice);
+        if (!cards.equals(other.cards))
+            throw new EqualityException("RandomizerCards", cards, other.cards);
+        if (!turns.equals(other.turns))
+            throw new EqualityException("RandomizerTurns", turns, other.turns);
+        if (!theft.equals(other.theft))
+            throw new EqualityException("RandomizerTheft", theft, other.theft);
+        if (!history.equals(other.history))
+            throw new EqualityException("RandomizerHistory", history, other.history);
     }
 }

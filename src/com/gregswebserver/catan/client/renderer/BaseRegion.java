@@ -42,6 +42,8 @@ public class BaseRegion extends ScreenRegion implements Configurable, Updatable 
         if (popup != null) {
             popup.setHost(this);
             popup.setInsets(popupInsets);
+            if (getConfig() != null)
+                popup.setConfig(config.narrow("popup"));
             center(popup); //TODO: provide a way to position popups relative to their source.
             popups.add(popup);
             forceRender();

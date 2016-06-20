@@ -1,9 +1,11 @@
-package com.gregswebserver.catan.common.game;
+package com.gregswebserver.catan.common.game.test;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameHistory;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
@@ -79,8 +81,10 @@ public class CatanGameTest {
             if (!expectSuccess)
                 fail();
         } catch (EventConsumerException ignored) {
-            if (expectSuccess)
+            if (expectSuccess) {
+                ignored.printStackTrace();
                 fail();
+            }
         }
     }
 
@@ -98,7 +102,7 @@ public class CatanGameTest {
     }
 
     @Test
-    public void testGameBeginning() {
+    public void testGameBeginning() throws EqualityException {
         CatanGame game = new CatanGame(twoPlayers);
         CatanGame game2 = new CatanGame(twoPlayers);
         game.assertEquals(game2);
@@ -147,7 +151,7 @@ public class CatanGameTest {
     }
 
     @Test
-    public void testWrongBeginning() {
+    public void testWrongBeginning() throws EqualityException {
         CatanGame game = new CatanGame(twoPlayers);
         CatanGame game2 = new CatanGame(twoPlayers);
         //GREG'S TURN
@@ -242,7 +246,7 @@ public class CatanGameTest {
     }
 
     @Test
-    public void testWrongTurns() {
+    public void testWrongTurns() throws EqualityException {
         CatanGame game = new CatanGame(twoPlayers);
         CatanGame game2 = new CatanGame(twoPlayers);
 
@@ -309,7 +313,7 @@ public class CatanGameTest {
     }
 
     @Test
-    public void testUndo() {
+    public void testUndo() throws EqualityException {
         CatanGame game = startTwoPlayerGame();
         CatanGame game2 = startTwoPlayerGame();
         //undo into the starting states.
@@ -334,16 +338,34 @@ public class CatanGameTest {
     }
 
     @Test
-    public void testLongGame() {
+    public void testRandomGame() throws EqualityException {
         int rounds = 100;
+        GameEventGenerator generator = new GameEventGenerator(0L, twoPlayers.playerTeams.keySet());
         CatanGame game = startTwoPlayerGame();
         CatanGame game2 = startTwoPlayerGame();
-        for (int i = 0; i < rounds; i++) {
-            assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
-            assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
-            assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
-            assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
-            game.assertEquals(game2);
+        for (int i = 0; i < rounds;) {
+            GameEvent event = generator.next();
+            try {
+                game.test(event);
+                //Undo Consistency
+                game.execute(event);
+                game.undo();
+                game.assertEquals(game2);
+                //Forward Consistency
+                game.execute(event);
+                game2.execute(event);
+                game.assertEquals(game2);
+                i++;
+            } catch (EventConsumerException e) {
+                try {
+                    game2.test(event);
+                    fail();
+                } catch (EventConsumerException ignored) {
+                }
+            }
+        }
+        for (GameHistory gameHistory : game.getHistory()) {
+            System.out.println(gameHistory.getGameEvent());
         }
     }
 

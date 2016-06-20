@@ -6,6 +6,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Resizable;
 import com.gregswebserver.catan.client.input.Clickable;
 import com.gregswebserver.catan.client.renderer.NotYetRenderableException;
+import com.gregswebserver.catan.client.renderer.RenderThread;
 import com.gregswebserver.catan.common.profiler.TimeSlice;
 
 import java.awt.*;
@@ -33,6 +34,13 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         super(name, priority);
         timeSlice = new TimeSlice(this.toString());
         clear();
+    }
+
+    @Override
+    public void setRenderer(RenderThread renderer) {
+        super.setRenderer(renderer);
+        for (ScreenObject object : this)
+            object.setRenderer(renderer);
     }
 
     public final void enableTransparency() {

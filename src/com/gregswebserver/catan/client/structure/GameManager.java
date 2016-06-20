@@ -2,9 +2,11 @@ package com.gregswebserver.catan.client.structure;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.common.IllegalStateException;
+import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.event.*;
+import com.gregswebserver.catan.common.game.players.Player;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
@@ -126,6 +128,25 @@ public class GameManager {
 
     public void remote(GameEvent event) {
         remote.addEvent(new GameControlEvent(this, GameControlEventType.Execute,event));
+    }
+
+    public boolean test(GameEvent gameEvent) {
+        if (isLive()) {
+            try {
+                local.getGame().test(gameEvent);
+                return true;
+            } catch (EventConsumerException ignored) {
+            }
+        }
+        return false;
+    }
+
+    public Username getLocalUsername() {
+        return host.getToken().username;
+    }
+
+    public Player getLocalPlayer() {
+        return local.getGame().getPlayers().getPlayer(getLocalUsername());
     }
 
     public CatanGame getLocalGame() {

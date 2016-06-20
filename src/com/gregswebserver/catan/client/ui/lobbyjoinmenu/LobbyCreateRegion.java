@@ -6,6 +6,7 @@ import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 
 import java.awt.event.MouseEvent;
@@ -24,8 +25,8 @@ public class LobbyCreateRegion extends ConfigurableScreenRegion {
         background = new EdgedTiledBackground();
         submitButton = new Button("CreateButton", 1, "submit", "Create new") {
             @Override
-            public UserEvent onMouseClick(MouseEvent event) {
-                return new UserEvent(this, UserEventType.Lobby_Create, null);
+            public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Create, null));
             }
         };
         add(background).setClickable(this);

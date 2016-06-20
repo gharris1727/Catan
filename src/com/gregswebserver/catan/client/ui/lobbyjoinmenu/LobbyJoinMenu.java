@@ -5,7 +5,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
-import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
@@ -86,35 +86,32 @@ public class LobbyJoinMenu extends ClientScreen {
             super("LobbyTabs", 0, "tabs");
             pregame = new Button("PregameButton", 0, "pregame", "Join") {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     LobbyJoinMenu.this.clear();
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(pregameLobbies);
                     LobbyJoinMenu.this.add(userList);
                     update();
-                    return null;
                 }
             };
             ingame = new Button("SpectateButton", 0, "ingame", "Spectate") {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     LobbyJoinMenu.this.clear();
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(ingameLobbies);
                     LobbyJoinMenu.this.add(userList);
                     update();
-                    return null;
                 }
             };
             create = new Button("CreateNew", 0, "create", "Create Game") {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     LobbyJoinMenu.this.clear();
                     LobbyJoinMenu.this.add(lobbyTabs);
                     LobbyJoinMenu.this.add(createLobby);
                     LobbyJoinMenu.this.add(userList);
                     update();
-                    return null;
                 }
             };
             add(pregame);

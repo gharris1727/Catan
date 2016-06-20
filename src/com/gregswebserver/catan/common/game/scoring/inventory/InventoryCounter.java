@@ -40,4 +40,31 @@ public class InventoryCounter implements PlayerScorable {
             points.put("game.scoring.inventory."+ card, counts.get(card) * rules.getDevelopmentCardPoints(card));
         return new SimplePlayerScore(username, points);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InventoryCounter that = (InventoryCounter) o;
+
+        if (!username.equals(that.username)) return false;
+        return counts.equals(that.counts);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = username.hashCode();
+        result = 31 * result + counts.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "InventoryCounter{" +
+            "username=" + username +
+            ", counts=" + counts +
+            '}';
+    }
 }

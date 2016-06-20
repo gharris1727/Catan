@@ -12,12 +12,15 @@ import com.gregswebserver.catan.common.game.util.EnumCounter;
 public enum PlayerEventType implements EventType {
 
     Gain_Resources(EnumCounter.class),
+    Discard_Resources(EnumCounter.class),
     Lose_Resources(EnumCounter.class),
     Gain_DevelopmentCard(DevelopmentCard.class),
     Mature_DevelopmentCards(EnumCounter.class),
     Use_DevelopmentCard(DevelopmentCard.class),
     Offer_Trade(TemporaryTrade.class),
-    Cancel_Trade(null);
+    Use_Trade(TemporaryTrade.class),
+    Cancel_Trade(null),
+    Finish_Discarding(null);
 
     private final Class payloadType;
 

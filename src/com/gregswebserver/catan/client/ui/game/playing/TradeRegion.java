@@ -2,24 +2,24 @@ package com.gregswebserver.catan.client.ui.game.playing;
 
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.Button;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
+import com.gregswebserver.catan.client.input.UserEventListener;
+import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
 import com.gregswebserver.catan.client.ui.game.TradeDisplay;
-import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.game.CatanGame;
+import com.gregswebserver.catan.common.game.event.GameEvent;
+import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.GameResource;
-import com.gregswebserver.catan.common.resources.GraphicSet;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Created by Greg on 1/6/2015.
@@ -28,8 +28,7 @@ import java.awt.event.MouseWheelEvent;
 public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
 
     //Required instance information
-    private final CatanGame game;
-    private final Username username;
+    private final GameManager manager;
 
     //Optional interaction modules
     private ContextRegion context;
@@ -41,11 +40,10 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
     private final TradeListContainer container;
     private final TradeControlPanel panel;
 
-    public TradeRegion(CatanGame game, Username username) {
+    public TradeRegion(GameManager manager) {
         super("TradeRegion", 1, "trade");
         //Save instance details
-        this.game = game;
-        this.username = username;
+        this.manager = manager;
         //Create sub-regions
         container = new TradeListContainer(new TradeList());
         panel = new TradeControlPanel();
@@ -102,21 +100,19 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
         @Override
         protected void renderContents() {
             clear();
-            for (Trade t : game.getTrades(username))
+            for (Trade t : manager.getLocalGame().getTrades(manager.getLocalUsername()))
                 add(new Element(t));
             super.renderContents();
         }
 
         @Override
-        public UserEvent onMouseScroll(MouseWheelEvent event) {
+        public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
             scroll(0, -4 * event.getUnitsToScroll());
-            return null;
         }
 
         @Override
-        public UserEvent onMouseDrag(Point p) {
+        public void onMouseDrag(UserEventListener listener, Point p) {
             scroll(0, p.y);
-            return null;
         }
 
         private class Element extends TradeDisplay {
@@ -129,20 +125,19 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
             }
 
             @Override
-            public UserEvent onMouseClick(MouseEvent event) {
+            public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 if (context != null)
                     context.targetTrade(t);
-                return null;
             }
 
             @Override
-            public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return TradeList.this.onMouseScroll(event);
+            public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
+                TradeList.this.onMouseScroll(listener, event);
             }
 
             @Override
-            public UserEvent onMouseDrag(Point p) {
-                return TradeList.this.onMouseDrag(p);
+            public void onMouseDrag(UserEventListener listener, Point p) {
+                TradeList.this.onMouseDrag(listener, p);
             }
         }
     }
@@ -176,16 +171,18 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
 
         //Sub-regions
         private final TiledBackground background;
+        private final Map<GameResource, EnumCounterEditRegion<GameResource>> counters;
         private final Button propose;
         private final Button cancel;
 
         private TradeControlPanel() {
             super("TradeControlPanel", 2, "panel");
             diff = new EnumAccumulator<>(GameResource.class);
+            counters = new EnumMap<>(GameResource.class);
             background = new EdgedTiledBackground();
             propose = new Button("ProposeButton", 1, "propose", "Propose") {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     EnumAccumulator<GameResource> request = new EnumAccumulator<>(GameResource.class);
                     EnumAccumulator<GameResource> offer = new EnumAccumulator<>(GameResource.class);
                     for (GameResource resource : GameResource.values()) {
@@ -194,16 +191,21 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
                         else
                             offer.increment(resource, -1*diff.get(resource));
                     }
-                    TemporaryTrade trade = new TemporaryTrade(username, offer, request);
-                    return new UserEvent(this, UserEventType.Propose_Trade, trade);
+                    TemporaryTrade trade = new TemporaryTrade(manager.getLocalUsername(), offer, request);
+                    manager.local(new GameEvent(manager.getLocalUsername(), GameEventType.Offer_Trade, trade));
                 }
             };
             cancel = new Button("CancelButton", 2, "cancel", "Cancel") {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.Cancel_Trade, null);
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                    manager.local(new GameEvent(manager.getLocalUsername(), GameEventType.Cancel_Trade, null));
                 }
             };
+            for (GameResource resource : diff) {
+                EnumCounterEditRegion<GameResource> request = new EnumCounterEditRegion<>("TradeEditor", 3, "resource", diff, resource);
+                counters.put(resource, request);
+                add(request);
+            }
             add(background).setClickable(this);
             add(propose);
             add(cancel);
@@ -224,87 +226,19 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
         @Override
         protected void renderContents() {
             assertRenderable();
-            clear();
             int index = 0;
-            for (GameResource gameResource : GameResource.values()) {
-                EditingResourceCounter request = new EditingResourceCounter(diff, gameResource);
-                add(request).setPosition(new Point(
+            for (GameResource resource : diff) {
+                counters.get(resource).setPosition(new Point(
                     elementOffset.x + index * elementSpacing.x,
                     elementOffset.y));
-                request.setConfig(getConfig());
                 index++;
             }
-            add(background);
-            add(propose);
             Point proposePosition = center(propose);
             proposePosition.setLocation(proposePosition.x - buttonSpacing,elementOffset.y + elementSpacing.y);
-            add(cancel);
             Point cancelPosition = center(cancel);
             cancelPosition.setLocation(cancelPosition.x + buttonSpacing, elementOffset.y + elementSpacing.y);
         }
 
-        private class EditingResourceCounter extends ConfigurableScreenRegion {
-
-            private final TextLabel count;
-            private final EnumAccumulator<GameResource> counter;
-            private final GameResource gameResource;
-            private final TiledBackground background;
-            private final GraphicObject icon;
-            private GraphicSet icons;
-
-            private EditingResourceCounter(EnumAccumulator<GameResource> counter, GameResource gameResource) {
-                super("EditingResourceCounter", 3, "resource");
-                //Store instance information
-                this.counter = counter;
-                this.gameResource = gameResource;
-                //Create sub-regions
-                enableTransparency();
-                background = new EdgedTiledBackground();
-                icon = new GraphicObject("ResourceCounterImage", 1, null);
-                count = new TextLabel("ResourceCounterCount", 2, "count", "0");
-                //Add everything to the screen.
-                add(background).setClickable(this);
-                add(icon).setClickable(this);
-                add(count).setClickable(this);
-            }
-
-            @Override
-            public UserEvent onMouseClick(MouseEvent event) {
-                switch (event.getButton()) {
-                    case MouseEvent.BUTTON1: //LEFT
-                        counter.increment(gameResource, 1);
-                        break;
-                    case MouseEvent.BUTTON2: //MIDDLE
-                        counter.clear(gameResource);
-                        break;
-                    case MouseEvent.BUTTON3: //RIGHT
-                        counter.decrement(gameResource, 1);
-                        break;
-                }
-                TradeControlPanel.this.forceRender();
-                return null;
-            }
-
-            @Override
-            public void loadConfig(UIConfig config) {
-                icons = new GraphicSet(config.getLayout(), "icons", null);
-            }
-
-            @Override
-            protected void resizeContents(RenderMask mask) {
-                background.setMask(mask);
-            }
-
-            @Override
-            protected void renderContents() {
-                setMask(icons.getMask());
-                assertRenderable();
-                icon.setGraphic(icons.getGraphic(gameResource.ordinal()));
-                int current=counter.get(gameResource);
-                count.setText("" + current);
-                count.setPosition(new Point(0, icons.getMask().getHeight() - count.getGraphic().getMask().getHeight()));
-            }
-        }
     }
 
 }

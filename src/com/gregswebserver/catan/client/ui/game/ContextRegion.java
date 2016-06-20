@@ -4,10 +4,10 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.structure.GameManager;
 import com.gregswebserver.catan.common.crypto.Username;
-import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.board.paths.Path;
 import com.gregswebserver.catan.common.game.board.tiles.BeachTile;
@@ -42,7 +42,6 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     private ContextTarget target;
 
     //Optional modules
-    private Username username; //Used when generating real game-changing events
     private GameManager manager; //Used to control the local game and create game-changing events.
 
     //Configuration dependencies
@@ -68,10 +67,6 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         add(background).setClickable(this);
         add(title).setClickable(this);
         add(detail).setClickable(this);
-    }
-
-    public void setUsername(Username username) {
-        this.username = username;
     }
 
     public void setGameManager(GameManager manager) {
@@ -194,8 +189,8 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         detail.setText(detailText);
         buttons.add(new ContextButton("HistoryJumpButton", 14, null) {
             @Override
-            public UserEvent onMouseClick(MouseEvent event) {
-                return new UserEvent(this, UserEventType.History_Jump, targetHistory);
+            public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                listener.onUserEvent(new UserEvent(this, UserEventType.History_Jump, targetHistory));
             }
         });
     }
@@ -204,8 +199,8 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         if (!manager.isLive()) {
             buttons.add(new ContextButton("JumpToLive", 15, null) {
                 @Override
-                public UserEvent onMouseClick(MouseEvent event) {
-                    return new UserEvent(this, UserEventType.History_Jump, -1);
+                public void onMouseClick(UserEventListener listener, MouseEvent event) {
+                    listener.onUserEvent(new UserEvent(this, UserEventType.History_Jump, -1));
                 }
             });
         }
@@ -252,13 +247,10 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void generateButton(String name, int icon, GameEventType type, Object payload) {
-        if (username != null && manager.isLive()) {
-            try {
-                GameEvent event = new GameEvent(username, type, payload);
-                manager.getLocalGame().test(event);
+        if (manager.isLive()) {
+            GameEvent event = new GameEvent(manager.getLocalUsername(), type, payload);
+            if (manager.test(event))
                 buttons.add(new ContextButton(name, icon, event));
-            } catch (EventConsumerException ignored) {
-            }
         }
     }
 
@@ -272,9 +264,8 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         }
 
         @Override
-        public UserEvent onMouseClick(MouseEvent event) {
+        public void onMouseClick(UserEventListener listener, MouseEvent event) {
             manager.local(this.event);
-            return null;
         }
     }
 

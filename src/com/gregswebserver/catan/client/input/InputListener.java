@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class InputListener implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private final Client client;
+    private final UserEventListener listener;
     private final HoverTimingThread queue;
     private final Clickable nullClickable;
     private final Clickable root;
@@ -28,6 +29,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     public InputListener(Client client, Clickable root) {
         this.client = client;
+        listener = new UserEventDelegator();
         this.queue = new HoverTimingThread(client.logger);
         queue.start();
         this.root = root;
@@ -45,25 +47,13 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         return queue;
     }
 
-    private void sendEvent(UserEvent event) {
-        if (event != null)
-            client.addEvent(event);
-    }
-
     private void update(MouseEvent e) {
         Clickable found = root.getClickable(e.getPoint());
         Clickable next = (found == null) ? nullClickable : found;
         if (hover != next) {
-            sendEvent(hover.onUnHover());
+            hover.onUnHover(listener);
             hover = next;
-            UserEvent event = hover.onHover();
-            if (event != null && event.getType() == UserEventType.Linger_Trigger) {
-                HoverEvent hoverEvent = new HoverEvent(hover, (Number) event.getPayload());
-                //client.logger.debug(this, "Waiting " + hoverEvent.getDelay(TimeUnit.MILLISECONDS) + "msecs");
-                queue.addEvent(hoverEvent);
-             } else {
-                sendEvent(event);
-            }
+            hover.onHover(listener);
             //client.logger.log("Hovered "+ hover, LogLevel.DEBUG);
         }
     }
@@ -71,44 +61,44 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     private void select(MouseEvent e) {
         update(e);
         if (selected != hover) {
-            sendEvent(selected.onDeselect());
+            selected.onDeselect(listener);
             selected = hover;
-            sendEvent(selected.onSelect());
+            selected.onSelect(listener);
             //client.logger.log("Selected "+ selected, LogLevel.DEBUG);
         }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        sendEvent(selected.onKeyTyped(e));
+        selected.onKeyTyped(listener, e);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        sendEvent(selected.onKeyPressed(e));
+        selected.onKeyPressed(listener, e);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        sendEvent(selected.onKeyReleased(e));
+        selected.onKeyReleased(listener, e);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         select(e);
-        sendEvent(selected.onMouseClick(e));
+        selected.onMouseClick(listener, e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         select(e);
-        sendEvent(selected.onMousePress(e));
+        selected.onMousePress(listener, e);
         dragStart = e.getPoint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        sendEvent(selected.onMouseRelease(e));
+        selected.onMouseRelease(listener, e);
     }
 
     @Override
@@ -125,7 +115,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         Point dragEnd = e.getPoint();
         dragEnd.translate(-dragStart.x, -dragStart.y);
         dragStart = e.getPoint();
-        sendEvent(selected.onMouseDrag(dragEnd));
+        selected.onMouseDrag(listener, dragEnd);
     }
 
     @Override
@@ -136,7 +126,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         update(e);
-        sendEvent(selected.onMouseScroll(e));
+        selected.onMouseScroll(listener, e);
     }
 
     public String toString() {
@@ -175,13 +165,27 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
         protected void execute() throws ThreadStop {
             HoverEvent event = getEvent(true);
             if (event.clickable == hover)
-                sendEvent(event.clickable.onLinger());
+                event.clickable.onLinger(listener);
             //logger.debug(this,"Lingered on " + event.clickable);
         }
 
         @Override
         public String toString() {
             return "HoverTimingThread";
+        }
+    }
+
+    private class UserEventDelegator implements UserEventListener {
+
+        @Override
+        public void onUserEvent(UserEvent event) {
+            if (event != null && event.getType() == UserEventType.Linger_Trigger) {
+                HoverEvent hoverEvent = new HoverEvent(hover, (Number) event.getPayload());
+                queue.addEvent(hoverEvent);
+            } else {
+                if (event != null)
+                    client.addEvent(event);
+            }
         }
     }
 }

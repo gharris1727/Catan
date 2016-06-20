@@ -71,6 +71,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
             root.addChild(events);
         } else { //No event to be processed this round.
             if (canvas != null && base.isRenderable()) {
+                base.setRenderer(this);
                 canvas.render(base.getGraphic());
                 root.addChild(base.getRenderTime());
                 root.addChild(canvas.getRenderTime());

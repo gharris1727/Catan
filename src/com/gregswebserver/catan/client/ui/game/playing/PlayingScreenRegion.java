@@ -10,7 +10,6 @@ import com.gregswebserver.catan.client.ui.ClientScreen;
 import com.gregswebserver.catan.client.ui.game.ContextRegion;
 import com.gregswebserver.catan.client.ui.game.MapRegion;
 import com.gregswebserver.catan.client.ui.game.TimelineRegion;
-import com.gregswebserver.catan.common.crypto.Username;
 
 import java.awt.*;
 
@@ -20,6 +19,7 @@ import java.awt.*;
  */
 public class PlayingScreenRegion extends ClientScreen implements Updatable {
 
+    private final GameManager manager;
     //Configuration dependencies
     private int sidebarWidth;
     private int inventoryHeight;
@@ -32,18 +32,19 @@ public class PlayingScreenRegion extends ClientScreen implements Updatable {
     private final TradeRegion trade;
     private final InventoryRegion inventory;
     private final TimelineRegion timeline;
+    private DiscardPopup discardPopup;
 
-    public PlayingScreenRegion(Username username, GameManager manager) {
+    public PlayingScreenRegion(GameManager manager) {
         super("PlayingScreen", "playing");
+        this.manager = manager;
         //Create sub-regions
         context = new ContextRegion();
         MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
         map = new ScrollingScreenContainer("MapScrollContainer", 0, mapRegion);
-        trade = new TradeRegion(manager.getLocalGame(), username);
-        inventory = new InventoryRegion(manager.getLocalGame().getPlayers().getPlayer(username));
+        trade = new TradeRegion(manager);
+        inventory = new InventoryRegion(manager.getLocalPlayer());
         timeline = new TimelineRegion(manager.getRemoteGame());
         //Link the context region into everything else
-        context.setUsername(username);
         context.setGameManager(manager);
         mapRegion.setContext(context);
         trade.setContext(context);
@@ -63,6 +64,10 @@ public class PlayingScreenRegion extends ClientScreen implements Updatable {
         inventory.update();
         trade.update();
         context.update();
+        if (manager.getLocalGame().mustDiscard(manager.getLocalUsername()) && discardPopup == null) {
+            discardPopup = new DiscardPopup(manager, this);
+            discardPopup.display();
+        }
     }
 
     @Override

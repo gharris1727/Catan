@@ -35,7 +35,6 @@ import com.gregswebserver.catan.common.event.ExternalEvent;
 import com.gregswebserver.catan.common.event.InternalEvent;
 import com.gregswebserver.catan.common.game.event.GameControlEvent;
 import com.gregswebserver.catan.common.game.event.GameEvent;
-import com.gregswebserver.catan.common.game.event.GameEventType;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.network.ClientConnection;
@@ -52,7 +51,6 @@ import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 import com.gregswebserver.catan.common.structure.lobby.MatchmakingPool;
 
 import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -143,17 +141,6 @@ public class Client extends CoreThread {
             case Shutdown:
                 addEvent(new ClientEvent(this, ClientEventType.Quit_All, null));
                 break;
-            case Composite_Event:
-                //noinspection unchecked
-                for (UserEvent child : (List<UserEvent>) event.getPayload())
-                    addEvent(child);
-                break;
-            case Display_Popup:
-                renderThread.addEvent(new RenderEvent(this, RenderEventType.Popup_Show, event.getPayload()));
-                break;
-            case Expire_Popup:
-                renderThread.addEvent(new RenderEvent(this, RenderEventType.Popup_Remove, event.getPayload()));
-                break;
             case Server_Remove:
                 serverPool.remove((ConnectionInfo) event.getPayload());
                 refreshScreen();
@@ -212,17 +199,8 @@ public class Client extends CoreThread {
                 outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, lobby.getGameSettings());
                 sendEvent(outgoing);
                 break;
-            case Make_Trade:
-                gameManager.local(new GameEvent(username, GameEventType.Make_Trade, event.getPayload()));
-                break;
             case History_Jump:
                 gameManager.jumpToEvent((Integer) event.getPayload());
-                break;
-            case Propose_Trade:
-                gameManager.local(new GameEvent(username, GameEventType.Offer_Trade, event.getPayload()));
-                break;
-            case Cancel_Trade:
-                gameManager.local(new GameEvent(username, GameEventType.Cancel_Trade, null));
                 break;
             default:
                 throw new IllegalStateException();
@@ -295,8 +273,8 @@ public class Client extends CoreThread {
                     break;
                 case Game_Sync:
                     gameManager = new GameManager(this, (GameProgress) event.getPayload());
-                    if (gameManager.getLocalGame().getPlayers().getPlayer(username) != null)
-                        changeScreen(new PlayingScreenRegion(username, gameManager));
+                    if (gameManager.getLocalPlayer() != null)
+                        changeScreen(new PlayingScreenRegion(gameManager));
                     else
                         changeScreen(new SpectateScreenRegion(gameManager));
                     break;

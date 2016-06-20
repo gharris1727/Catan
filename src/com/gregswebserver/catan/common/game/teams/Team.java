@@ -3,6 +3,8 @@ package com.gregswebserver.catan.common.game.teams;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
+import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,11 +14,11 @@ import java.util.Stack;
  * Created by greg on 5/24/16.
  * Instance of a team in a specific game, with all constituent players.
  */
-public class Team implements ReversibleEventConsumer<TeamEvent> {
+public class Team implements ReversibleEventConsumer<TeamEvent>, AssertEqualsTestable<Team> {
 
     private final TeamColor color;
     private final Set<Username> players;
-    private final Stack<TeamEvent> events;
+    private final Stack<TeamEvent> history;
 
     private int round;
     private int freeRoads;
@@ -26,7 +28,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
     public Team(TeamColor color) {
         this.color = color;
         players = new HashSet<>();
-        events = new Stack<>();
+        history = new Stack<>();
         round = 0;
         freeRoads = 1;
         state = TeamState.Outpost;
@@ -47,9 +49,9 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
 
     @Override
     public void undo() throws EventConsumerException {
-        if (events.isEmpty())
+        if (history.isEmpty())
             throw new EventConsumerException("No event");
-        TeamEvent event = events.pop();
+        TeamEvent event = history.pop();
         try {
             switch (event.getType()) {
                 case Activate_Robber:
@@ -117,8 +119,10 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     throw new EventConsumerException("Road not avaliable");
                 break;
             case Finish_Setup_Turn:
-                if (state != TeamState.Done || round >= 2)
+                if (state != TeamState.Done)
                     throw new EventConsumerException("Setup round not finished");
+                if (round >= 2)
+                    throw new EventConsumerException("Setup round finished already");
                 break;
             case Finish_Turn:
                 if (state != TeamState.Done || round < 2)
@@ -135,7 +139,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
     public void execute(TeamEvent event) throws EventConsumerException {
         test(event);
         try {
-            events.push(event);
+            history.push(event);
             switch (event.getType()){
                 case Activate_Robber:
                     freeRobber = RobberState.Active;
@@ -177,5 +181,26 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
 
     private enum RobberState {
         Inactive, Active, Stealing
+    }
+
+    @Override
+    public void assertEquals(Team other) throws EqualityException {
+        if (other == this)
+            return;
+
+        if (!color.equals(other.color))
+            throw new EqualityException("TeamColor", color, other.color);
+        if (!players.equals(other.players))
+            throw new EqualityException("TeamPlayers", players, other.players);
+        if (!history.equals(other.history))
+            throw new EqualityException("TeamHistory", history, other.history);
+        if (round != other.round)
+            throw new EqualityException("TeamRound", round, other.round);
+        if (freeRoads != other.freeRoads)
+            throw new EqualityException("TeamFreeRoads", freeRoads, other.freeRoads);
+        if (state != other.state)
+            throw new EqualityException("TeamState", state, other.state);
+        if (freeRobber != other.freeRobber)
+            throw new EqualityException("TeamFreeRobber", freeRobber, other.freeRobber);
     }
 }

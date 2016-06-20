@@ -2,8 +2,9 @@ package com.gregswebserver.catan.client.ui;
 
 import com.gregswebserver.catan.client.graphics.ui.ConfigurableScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
-import com.gregswebserver.catan.client.input.UserEvent;
-import com.gregswebserver.catan.client.input.UserEventType;
+import com.gregswebserver.catan.client.input.UserEventListener;
+import com.gregswebserver.catan.client.renderer.RenderEvent;
+import com.gregswebserver.catan.client.renderer.RenderEventType;
 
 import java.awt.*;
 
@@ -18,14 +19,15 @@ public abstract class PopupWindow extends ScrollingScreenRegion {
     protected PopupWindow(String name, String configKey, ConfigurableScreenRegion source) {
         super(name, 2, configKey);
         this.source = source;
+        setRenderer(source.getRenderer());
     }
 
-    public UserEvent display() {
-        return new UserEvent(source, UserEventType.Display_Popup, this);
+    public void display() {
+        getRenderer().addEvent(new RenderEvent(source, RenderEventType.Popup_Show, this));
     }
 
-    public UserEvent expire() {
-        return new UserEvent(source, UserEventType.Expire_Popup, this);
+    public void expire() {
+        getRenderer().addEvent(new RenderEvent(source, RenderEventType.Popup_Remove, this));
     }
 
     @Override
@@ -41,8 +43,7 @@ public abstract class PopupWindow extends ScrollingScreenRegion {
     }
 
     @Override
-    public UserEvent onMouseDrag(Point p) {
+    public void onMouseDrag(UserEventListener listener, Point p) {
         scroll(p.x, p.y);
-        return null;
     }
 }

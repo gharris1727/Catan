@@ -12,31 +12,31 @@ import java.awt.event.MouseWheelEvent;
  */
 public interface Clickable {
 
-    UserEvent onMouseClick(MouseEvent event);
+    void onMouseClick(UserEventListener listener, MouseEvent event);
 
-    UserEvent onMousePress(MouseEvent event);
+    void onMousePress(UserEventListener listener, MouseEvent event);
 
-    UserEvent onMouseRelease(MouseEvent event);
+    void onMouseRelease(UserEventListener listener, MouseEvent event);
 
-    UserEvent onKeyTyped(KeyEvent event);
+    void onKeyTyped(UserEventListener listener, KeyEvent event);
 
-    UserEvent onKeyPressed(KeyEvent event);
+    void onKeyPressed(UserEventListener listener, KeyEvent event);
 
-    UserEvent onKeyReleased(KeyEvent event);
+    void onKeyReleased(UserEventListener listener, KeyEvent event);
 
-    UserEvent onMouseScroll(MouseWheelEvent event);
+    void onMouseScroll(UserEventListener listener, MouseWheelEvent event);
 
-    UserEvent onMouseDrag(Point p);
+    void onMouseDrag(UserEventListener listener, Point p);
 
-    UserEvent onHover();
+    void onHover(UserEventListener listener);
 
-    UserEvent onUnHover();
+    void onUnHover(UserEventListener listener);
 
-    UserEvent onLinger();
+    void onLinger(UserEventListener listener);
 
-    UserEvent onSelect();
+    void onSelect(UserEventListener listener);
 
-    UserEvent onDeselect();
+    void onDeselect(UserEventListener listener);
 
     Clickable getClickable(Point p);
 }

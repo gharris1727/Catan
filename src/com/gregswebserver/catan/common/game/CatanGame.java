@@ -32,6 +32,8 @@ import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.game.teams.TeamEvent;
 import com.gregswebserver.catan.common.game.teams.TeamEventType;
 import com.gregswebserver.catan.common.game.teams.TeamPool;
+import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
@@ -43,7 +45,7 @@ import java.util.*;
  * Created by Greg on 8/8/2014.
  * Main class for a game of Catan that contains the game board, game state, and player information.
  */
-public class CatanGame implements ReversibleEventConsumer<GameEvent> {
+public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqualsTestable<CatanGame> {
 
     //Permanent data
     private final GameRules rules;
@@ -97,6 +99,12 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     public List<GameHistory> getHistory() {
         return history;
+    }
+
+    public boolean mustDiscard(Username username) {
+        return state.getDiceRoll() == DiceRoll.Seven
+            && players.getPlayer(username).getDiscardCount() > 0
+            && !players.hasDiscarded(username);
     }
 
     public List<Trade> getTrades(Username user) {
@@ -176,7 +184,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         TeamColor teamColor = players.getPlayer(origin).getTeamColor();
         switch (event.getType()) {
             case Start:
-                break;
+                return new LogicEvent(this, LogicEventType.NOT, new LogicEvent(this, LogicEventType.NOP, null));
             case Turn_Advance:
                 //Advancing the turn requires all of these events to fire.
                 return compound(LogicEventType.AND,
@@ -193,7 +201,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                             //Advance the turn as regular
                             team(teamColor, TeamEventType.Finish_Turn, teamColor),
                             //Give everyone their income
-                            diceRollEvents(),
+                            diceRollEvents(origin),
                             //Roll the dice to get the next income round.
                             state(origin, GameStateEventType.Roll_Dice, state.getDiceRoll())
                         )
@@ -301,9 +309,13 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                         player(origin, PlayerEventType.Gain_Resources, t.getOffer()),
                         player(origin, PlayerEventType.Lose_Resources, t.getRequest()),
                         player(t.seller, PlayerEventType.Gain_Resources, t.getRequest()),
-                        player(t.seller, PlayerEventType.Lose_Resources, t.getOffer())
+                        player(t.seller, PlayerEventType.Lose_Resources, t.getOffer()),
+                        player(t.seller, PlayerEventType.Use_Trade, t)
                     );
                 } else {
+                    //noinspection SuspiciousMethodCalls
+                    if (!bankTrades.contains(event.getPayload()))
+
                     return compound(LogicEventType.AND,
                         //Needs to be their turn.
                         state(origin, GameStateEventType.Active_Turn, teamColor),
@@ -314,7 +326,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 }
             }
             case Discard_Resources:
-                return player(origin, PlayerEventType.Lose_Resources, event.getPayload());
+                return player(origin, PlayerEventType.Discard_Resources, event.getPayload());
             case Steal_Resources:
                 return compound(LogicEventType.AND,
                     team(teamColor, TeamEventType.Steal_Resources, null),
@@ -345,20 +357,26 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 }
                 EnumCounter<GameResource> gain = new EnumAccumulator<>(GameResource.class, resource, total);
                 playerEvents.add(player(origin, PlayerEventType.Gain_Resources, gain));
+                playerEvents.add(player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Monopoly));
                 return compound(LogicEventType.AND, playerEvents.toArray(new LogicEvent[playerEvents.size()]));
             }
         }
         return new LogicEvent(this, LogicEventType.NOP, null);
     }
 
-    private LogicEvent diceRollEvents() {
+    private LogicEvent diceRollEvents(Username origin) {
+        //Create a list to collect all of the events that occur based on the dice roll.
+        ArrayList<LogicEvent> events = new ArrayList<>();
+        //If this roll is a seven, activate the free robber.
         if (state.getDiceRoll() == DiceRoll.Seven)
-            return team(state.getNextTeam(), TeamEventType.Activate_Robber, null);
-        List<Coordinate> spaces = board.getActiveTiles(state.getDiceRoll());
-        if (spaces == null || spaces.isEmpty())
-            return new LogicEvent(this, LogicEventType.NOP, null);
+            events.add(team(state.getNextTeam(), TeamEventType.Activate_Robber, null));
+        //If the last roll was a seven, make sure that everyone is done discarding.
+        if (state.getPreviousDiceRoll() == DiceRoll.Seven)
+            events.add(player(origin, PlayerEventType.Finish_Discarding, null));
+        //Temporary storage for tallying the income.
         Map<TeamColor, EnumAccumulator<GameResource>> income = new EnumMap<>(TeamColor.class);
-        for (Coordinate space : spaces) {
+        //Traverse the board and collect all of the income.
+        for (Coordinate space : board.getActiveTiles(state.getDiceRoll())) {
             GameResource resource = ((ResourceTile) board.getTile(space)).getResource();
             if (resource != null) {
                 for (Town town : board.getAdjacentTowns(space)) {
@@ -375,10 +393,11 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 }
             }
         }
-        ArrayList<LogicEvent> events = new ArrayList<>();
+        //Transform the team income to player income events.
         for (Map.Entry<TeamColor, EnumAccumulator<GameResource>> entry : income.entrySet())
             for (Username name : teams.getTeam(entry.getKey()).getPlayers())
                 events.add(player(name, PlayerEventType.Gain_Resources, entry.getValue()));
+        //Return all of the events ANDed together so they must all occur.
         return new LogicEvent(this, LogicEventType.AND, events);
     }
 
@@ -482,7 +501,14 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     @Override
     public void test(GameEvent event) throws EventConsumerException {
-        test(getLogicTree(event));
+        try {
+            test(getLogicTree(event));
+        } catch (Exception e) {
+            if (e instanceof EventConsumerException)
+                throw e;
+            else
+                throw new EventConsumerException("Error occurred while testing", event, e);
+        }
     }
 
     private void execute(GameTriggerEvent event) throws EventConsumerException {
@@ -603,25 +629,22 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     }
 
-    public void assertEquals(CatanGame o) {
-        //TODO: resolve the dependency on JUnit tests
-//        if (this == o) return;
-//
-//        if (!rules.equals(o.rules))
-//            throw new ComparisonException("GameRules", rules.toString(), o.rules.toString());
-//        if (!bankTrades.equals(o.bankTrades))
-//            throw new ComparisonException("BankTrades", bankTrades.toString(), o.bankTrades.toString());
-//        if (!board.equals(o.board))
-//            throw new ComparisonException("Board", board.toString(), o.board.toString());
-//        if (!players.equals(o.players))
-//            throw new ComparisonException("Players", players.toString(), o.players.toString());
-//        if (!teams.equals(o.teams))
-//            throw new ComparisonException("DiceRolls", teams.toString(), o.teams.toString());
-//        if (!state.equals(o.state))
-//            throw new ComparisonException("Cards", state.toString(), o.state.toString());
-//        if (!history.equals(o.history))
-//            throw new ComparisonException("EventStack", history.toString(), o.history.toString());
+    @Override
+    public void assertEquals(CatanGame other) throws EqualityException {
+        if (this == other) return;
 
+        rules.assertEquals(other.rules);
+        if (!bankTrades.equals(other.bankTrades))
+            throw new EqualityException("BankTrades", bankTrades, other.bankTrades);
+        board.assertEquals(other.board);
+        players.assertEquals(other.players);
+        teams.assertEquals(other.teams);
+        state.assertEquals(other.state);
+        scoring.assertEquals(other.scoring);
+        if (!listeners.equals(other.listeners))
+            throw new EqualityException("GameListeners", listeners, other.listeners);
+        if (!history.equals(other.history))
+            throw new EqualityException("GameHistory", history, other.history);
     }
 
     @Override

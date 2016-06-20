@@ -3,6 +3,7 @@ package com.gregswebserver.catan.client.ui.lobby;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.common.structure.lobby.LobbyConfig;
 
@@ -29,62 +30,62 @@ public class LobbySettings extends ConfigurableScreenRegion {
         background = new EdgedTiledBackground();
         name = new TextBox("LobbyNameBox", 1, "name", "Lobby Name", false) {
             @Override
-            public UserEvent onAccept() {
+            public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         this.getText(),
                         config.getLayoutName(),
                         config.getGeneratorName(),
                         config.getRulesetName(),
                         config.getMaxPlayers());
-                return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
         type = new TextBox("GameTypeBox", 1, "type", "Game Type", false) {
             @Override
-            public UserEvent onAccept() {
+            public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
                         this.getText(),
                         config.getGeneratorName(),
                         config.getRulesetName(),
                         config.getMaxPlayers());
-                return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
         generator = new TextBox("MapGeneratorBox", 1, "generator", "Generator", false) {
             @Override
-            public UserEvent onAccept() {
+            public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
                         config.getLayoutName(),
                         this.getText(),
                         config.getRulesetName(),
                         config.getMaxPlayers());
-                return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
         ruleset = new TextBox("RulsesetBox", 1, "ruleset", "RuleSet", false) {
             @Override
-            public UserEvent onAccept() {
+            public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
                         config.getLayoutName(),
                         config.getGeneratorName(),
                         this.getText(),
                         config.getMaxPlayers());
-                return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
         clients = new TextBox("ClientLimitBox", 1, "clients", "# Clients", false) {
             @Override
-            public UserEvent onAccept() {
+            public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
                         config.getLayoutName(),
                         config.getGeneratorName(),
                         config.getRulesetName(),
                         this.getInt());
-                return new UserEvent(this, UserEventType.Lobby_Edit, newConfig);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
         //Add everything to the screen.

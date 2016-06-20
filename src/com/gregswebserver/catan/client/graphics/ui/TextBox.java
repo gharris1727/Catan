@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 
 import java.awt.event.KeyEvent;
 
@@ -30,10 +30,10 @@ public abstract class TextBox extends DefaultConfigurableScreenRegion {
     }
 
     @Override
-    public UserEvent onKeyTyped(KeyEvent event) {
+    public void onKeyTyped(UserEventListener listener, KeyEvent event) {
         char typed = event.getKeyChar();
         if (typed == '\n')
-            return onAccept();
+            onAccept(listener);
         else if (typed == '\b') {
             int len = text.length() - 1;
             if (len < 0)
@@ -44,10 +44,9 @@ public abstract class TextBox extends DefaultConfigurableScreenRegion {
         }
         label.setText(text.toString());
         forceRender();
-        return null;
     }
 
-    protected abstract UserEvent onAccept();
+    protected abstract void onAccept(UserEventListener listener);
 
     @Override
     protected void resizeContents(RenderMask mask) {

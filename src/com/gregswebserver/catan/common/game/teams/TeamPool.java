@@ -3,6 +3,8 @@ package com.gregswebserver.catan.common.game.teams;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
+import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.util.EnumMap;
@@ -14,7 +16,7 @@ import java.util.Stack;
  * Created by greg on 5/25/16.
  * Collection of teams that can be interacted with through the event consumer interface.
  */
-public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<TeamColor> {
+public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<TeamColor>, AssertEqualsTestable<TeamPool> {
 
     private final Map<TeamColor, Team> teams;
     private final Stack<TeamEvent> history;
@@ -73,5 +75,20 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<Te
         } catch (Exception e) {
             throw new EventConsumerException(event, e);
         }
+    }
+
+    @Override
+    public void assertEquals(TeamPool other) throws EqualityException {
+        if (other == this)
+            return;
+
+        for (TeamColor tc : TeamColor.values()) {
+            if (teams.containsKey(tc))
+                teams.get(tc).assertEquals(other.teams.get(tc));
+            else if (other.teams.containsKey(tc))
+                throw new EqualityException("TeamPoolTeams", null, other.teams.get(tc));
+        }
+        if (!history.equals(other.history))
+            throw new EqualityException("TeamPoolHistory", history, other.history);
     }
 }

@@ -1,7 +1,8 @@
 package com.gregswebserver.catan.client.graphics.screen;
 
 import com.gregswebserver.catan.client.input.Clickable;
-import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
+import com.gregswebserver.catan.client.renderer.RenderThread;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -19,6 +20,7 @@ public abstract class ScreenObject implements Clickable, Graphical {
     private final int priority;
     private final int clickableColor;
     private Clickable redirect;
+    private RenderThread renderer;
 
     protected ScreenObject(String name, int priority) {
         this.position = new Point();
@@ -32,6 +34,14 @@ public abstract class ScreenObject implements Clickable, Graphical {
     public ScreenObject setClickable(Clickable redirect) {
         this.redirect = redirect;
         return this;
+    }
+
+    public RenderThread getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(RenderThread renderer) {
+        this.renderer = renderer;
     }
 
     //Get render position relative to the parent.
@@ -53,68 +63,68 @@ public abstract class ScreenObject implements Clickable, Graphical {
     }
 
     @Override
-    public UserEvent onMouseClick(MouseEvent event) {
-        return (redirect == null) ? null : redirect.onMouseClick(event);
+    public void onMouseClick(UserEventListener listener, MouseEvent event) {
+        if (redirect != null) redirect.onMouseClick(listener, event);
     }
 
     @Override
-    public UserEvent onMousePress(MouseEvent event) {
-        return (redirect == null) ? null : redirect.onMousePress(event);
+    public void onMousePress(UserEventListener listener, MouseEvent event) {
+        if (redirect != null) redirect.onMousePress(listener, event);
     }
 
     @Override
-    public UserEvent onMouseRelease(MouseEvent event) {
-        return (redirect == null) ? null : redirect.onMouseRelease(event);
+    public void onMouseRelease(UserEventListener listener, MouseEvent event) {
+        if (redirect != null) redirect.onMouseRelease(listener, event);
     }
 
     @Override
-    public UserEvent onKeyTyped(KeyEvent event) {
-        return (redirect == null) ? null : redirect.onKeyTyped(event);
+    public void onKeyTyped(UserEventListener listener, KeyEvent event) {
+        if (redirect != null) redirect.onKeyTyped(listener, event);
     }
 
     @Override
-    public UserEvent onKeyPressed(KeyEvent event) {
-        return (redirect == null) ? null : redirect.onKeyTyped(event);
+    public void onKeyPressed(UserEventListener listener, KeyEvent event) {
+        if (redirect != null) redirect.onKeyPressed(listener, event);
     }
 
     @Override
-    public UserEvent onKeyReleased(KeyEvent event) {
-        return (redirect == null) ? null : redirect.onKeyReleased(event);
+    public void onKeyReleased(UserEventListener listener, KeyEvent event) {
+        if (redirect != null) redirect.onKeyReleased(listener, event);
     }
 
     @Override
-    public UserEvent onMouseScroll(MouseWheelEvent event) {
-        return (redirect == null) ? null : redirect.onMouseScroll(event);
+    public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
+        if (redirect != null) redirect.onMouseScroll(listener, event);
     }
 
     @Override
-    public UserEvent onMouseDrag(Point p) {
-        return (redirect == null) ? null : redirect.onMouseDrag(p);
+    public void onMouseDrag(UserEventListener listener, Point p) {
+        if (redirect != null) redirect.onMouseDrag(listener, p);
     }
 
     @Override
-    public UserEvent onSelect() {
-        return (redirect == null) ? null : redirect.onSelect();
+    public void onSelect(UserEventListener listener) {
+        if (redirect != null) redirect.onSelect(listener);
     }
 
     @Override
-    public UserEvent onDeselect() {
-        return (redirect == null) ? null : redirect.onDeselect();
+    public void onDeselect(UserEventListener listener) {
+        if (redirect != null) redirect.onDeselect(listener);
     }
 
     @Override
-    public UserEvent onHover() {
-        return (redirect == null) ? null : redirect.onHover();
+    public void onHover(UserEventListener listener) {
+        if (redirect != null) redirect.onHover(listener);
     }
 
     @Override
-    public UserEvent onUnHover() {
-        return (redirect == null) ? null : redirect.onUnHover();
+    public void onUnHover(UserEventListener listener) {
+        if (redirect != null) redirect.onUnHover(listener);
     }
 
     @Override
-    public UserEvent onLinger() {
-        return (redirect == null) ? null : redirect.onLinger();
+    public void onLinger(UserEventListener listener) {
+        if (redirect != null) redirect.onLinger(listener);
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.gregswebserver.catan.client.ui.taskbar;
 import com.gregswebserver.catan.client.graphics.masks.RectangularMask;
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.ui.*;
-import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.ui.PopupWindow;
 
 import java.awt.*;
@@ -39,13 +39,12 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
     }
 
     @Override
-    public UserEvent onMouseClick(MouseEvent event) {
+    public void onMouseClick(UserEventListener listener, MouseEvent event) {
         if (popup == null) {
             popup = createPopup();
-            popup.setConfig(getConfig());
-            return popup.display();
+            popup.display();
         } else {
-            return popup.expire();
+            popup.expire();
         }
     }
 
@@ -60,8 +59,8 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
 
         private final List<DefaultConfigurableScreenRegion> items;
 
-        protected TaskbarPopup(String name, String configKey) {
-            super(name, configKey, TaskbarMenu.this);
+        protected TaskbarPopup(String name) {
+            super(name, TaskbarMenu.this.getConfigKey(), TaskbarMenu.this);
             items = new ArrayList<>();
         }
 
@@ -71,9 +70,9 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
         }
 
         @Override
-        public UserEvent expire() {
+        public void expire() {
             popup = null;
-            return super.expire();
+            super.expire();
         }
 
         @Override

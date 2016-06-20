@@ -11,69 +11,43 @@ import java.awt.event.MouseWheelEvent;
  */
 public abstract class ClickableAdapter implements Clickable {
     @Override
-    public UserEvent onMouseClick(MouseEvent event) {
-        return null;
-    }
+    public void onMouseClick(UserEventListener listener, MouseEvent event) { }
 
     @Override
-    public UserEvent onMousePress(MouseEvent e) {
-        return null;
-    }
+    public void onMousePress(UserEventListener listener, MouseEvent e) { }
 
     @Override
-    public UserEvent onMouseRelease(MouseEvent e) {
-        return null;
-    }
+    public void onMouseRelease(UserEventListener listener, MouseEvent e) { }
 
     @Override
-    public UserEvent onKeyTyped(KeyEvent event) {
-        return null;
-    }
+    public void onKeyTyped(UserEventListener listener, KeyEvent event) { }
 
     @Override
-    public UserEvent onKeyPressed(KeyEvent e) {
-        return null;
-    }
+    public void onKeyPressed(UserEventListener listener, KeyEvent e) { }
 
     @Override
-    public UserEvent onKeyReleased(KeyEvent e) {
-        return null;
-    }
+    public void onKeyReleased(UserEventListener listener, KeyEvent e) { }
 
     @Override
-    public UserEvent onMouseScroll(MouseWheelEvent event) {
-        return null;
-    }
+    public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) { }
 
     @Override
-    public UserEvent onMouseDrag(Point p) {
-        return null;
-    }
+    public void onMouseDrag(UserEventListener listener, Point p) { }
 
     @Override
-    public UserEvent onHover() {
-        return null;
-    }
+    public void onHover(UserEventListener listener) { }
 
     @Override
-    public UserEvent onUnHover() {
-        return null;
-    }
+    public void onUnHover(UserEventListener listener) { }
 
     @Override
-    public UserEvent onLinger() {
-        return null;
-    }
+    public void onLinger(UserEventListener listener) { }
 
     @Override
-    public UserEvent onSelect() {
-        return null;
-    }
+    public void onSelect(UserEventListener listener) { }
 
     @Override
-    public UserEvent onDeselect() {
-        return null;
-    }
+    public void onDeselect(UserEventListener listener) { }
 
     @Override
     public Clickable getClickable(Point p) {

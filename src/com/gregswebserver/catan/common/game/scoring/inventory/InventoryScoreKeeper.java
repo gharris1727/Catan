@@ -76,4 +76,28 @@ public class InventoryScoreKeeper implements ScoreKeeper {
             scores.add(counter.score(rules));
         return new SimpleScoreReport(scores);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InventoryScoreKeeper that = (InventoryScoreKeeper) o;
+
+        if (!counts.equals(that.counts)) return false;
+        return history.equals(that.history);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = counts.hashCode();
+        result = 31 * result + history.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "InventoryScoreKeeper" + counts;
+    }
 }

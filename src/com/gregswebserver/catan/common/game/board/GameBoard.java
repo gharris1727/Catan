@@ -18,6 +18,8 @@ import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
+import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.util.Direction;
 
 import java.awt.*;
@@ -28,7 +30,7 @@ import java.util.List;
  * Created by Greg on 8/10/2014.
  * Game Board handling all different functions with adding and moving pieces.
  */
-public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
+public class GameBoard implements ReversibleEventConsumer<BoardEvent>, AssertEqualsTestable<GameBoard> {
 
     private final Dimension size;
     private final HexagonalArray hexArray;
@@ -81,7 +83,10 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     public List<Coordinate> getActiveTiles(DiceRoll roll) {
-        return diceRolls.get(roll);
+        if (roll == DiceRoll.Seven)
+            return Collections.emptyList();
+        else
+            return diceRolls.get(roll);
     }
 
     public Set<TradingPostType> getTrades(TeamColor teamColor) {
@@ -310,6 +315,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
         if (!hexArray.equals(gameBoard.hexArray)) return false;
         if (!diceRolls.equals(gameBoard.diceRolls)) return false;
         if (!tradingPosts.equals(gameBoard.tradingPosts)) return false;
+        if (!history.equals(gameBoard.history)) return false;
         return robberLocations.equals(gameBoard.robberLocations);
     }
 
@@ -322,5 +328,24 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
                 ", tradingPosts=" + tradingPosts +
                 ", robberLocations=" + robberLocations +
                 '}';
+    }
+
+    @Override
+    public void assertEquals(GameBoard other) throws EqualityException {
+        if (this == other)
+            return;
+
+        if (!size.equals(other.size))
+            throw new EqualityException("GameBoardSize", size, other.size);
+        if (!hexArray.equals(other.hexArray))
+            throw new EqualityException("GameBoardHexArray", hexArray, other.hexArray);
+        if (!diceRolls.equals(other.diceRolls))
+            throw new EqualityException("GameBoardDiceRolls", diceRolls, other.diceRolls);
+        if (!tradingPosts.equals(other.tradingPosts))
+            throw new EqualityException("GameBoardTradingPosts", tradingPosts, other.tradingPosts);
+        if (!history.equals(other.history))
+            throw new EqualityException("GameBoardHistory", history, other.history);
+        if (!robberLocations.equals(other.robberLocations))
+            throw new EqualityException("GameBoardRobberLocations", robberLocations, other.robberLocations);
     }
 }

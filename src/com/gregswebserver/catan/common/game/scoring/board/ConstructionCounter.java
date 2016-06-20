@@ -61,4 +61,37 @@ public class ConstructionCounter implements PlayerScorable {
         points.put("game.scoring.construction.road", roads * rules.getPathPoints());
         return new SimplePlayerScore(username, points);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ConstructionCounter that = (ConstructionCounter) o;
+
+        if (settlements != that.settlements) return false;
+        if (cities != that.cities) return false;
+        if (roads != that.roads) return false;
+        return username.equals(that.username);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = username.hashCode();
+        result = 31 * result + settlements;
+        result = 31 * result + cities;
+        result = 31 * result + roads;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ConstructionCounter{" +
+            "username=" + username +
+            ", settlements=" + settlements +
+            ", cities=" + cities +
+            ", roads=" + roads +
+            '}';
+    }
 }

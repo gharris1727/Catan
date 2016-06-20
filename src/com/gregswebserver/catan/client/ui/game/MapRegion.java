@@ -10,7 +10,7 @@ import com.gregswebserver.catan.client.graphics.ui.EdgedTiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.ScrollingScreenRegion;
 import com.gregswebserver.catan.client.graphics.ui.TiledBackground;
 import com.gregswebserver.catan.client.graphics.ui.UIConfig;
-import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.config.ConfigSource;
 import com.gregswebserver.catan.common.game.board.GameBoard;
@@ -165,9 +165,8 @@ public class MapRegion extends ScrollingScreenRegion {
     }
 
     @Override
-    public UserEvent onMouseDrag(Point p) {
+    public void onMouseDrag(UserEventListener listener, Point p) {
         scroll(p.x, p.y);
-        return null;
     }
 
     private Dimension boardToScreen(Dimension size) {
@@ -209,8 +208,8 @@ public class MapRegion extends ScrollingScreenRegion {
         }
 
         @Override
-        public UserEvent onMouseDrag(Point p) {
-            return MapRegion.this.onMouseDrag(p);
+        public void onMouseDrag(UserEventListener listener, Point p) {
+            MapRegion.this.onMouseDrag(listener, p);
         }
 
         @Override
@@ -238,10 +237,9 @@ public class MapRegion extends ScrollingScreenRegion {
         }
 
         @Override
-        public UserEvent onMouseClick(MouseEvent event) {
+        public void onMouseClick(UserEventListener listener, MouseEvent event) {
             if (context != null)
                 context.targetPath(path.getPosition());
-            return null;
         }
     }
 
@@ -308,10 +306,9 @@ public class MapRegion extends ScrollingScreenRegion {
         }
 
         @Override
-        public UserEvent onMouseClick(MouseEvent event) {
+        public void onMouseClick(UserEventListener listener, MouseEvent event) {
             if (context != null)
                 context.targetTile(tile.getPosition());
-            return null;
         }
 
     }
@@ -340,10 +337,9 @@ public class MapRegion extends ScrollingScreenRegion {
         }
 
         @Override
-        public UserEvent onMouseClick(MouseEvent event) {
+        public void onMouseClick(UserEventListener listener, MouseEvent event) {
             if (context != null)
                 context.targetTown(town.getPosition());
-            return null;
         }
     }
 }

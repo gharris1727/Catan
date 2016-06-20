@@ -229,6 +229,10 @@ public class Server extends CoreThread {
     private void gameEvent(GameEvent event) {
         Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(event.getOrigin());
         gamePool.process(lobby.getGameID(), event);
+    }
+
+    public void broadcastGameEvent(GameEvent event) {
+        Lobby lobby = matchmakingPool.getLobbyList().userGetLobby(event.getOrigin());
         for (Username user : lobby.getConnectedPlayers())
             connectionPool.get(user).sendEvent(event);
     }

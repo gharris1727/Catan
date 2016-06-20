@@ -35,7 +35,7 @@ public abstract class Trade implements Comparable<Trade>, Serializable{
     }
 
     public int hashCode() {
-        return offer.hashCode() + request.hashCode();
+        return offer.hashCode() + 31 * request.hashCode();
     }
 
     @Override

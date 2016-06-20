@@ -17,6 +17,8 @@ import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScorable;
 import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamPool;
+import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,11 +29,10 @@ import java.util.Stack;
  * Created by greg on 5/27/16.
  * A collection of ScoreKeeper objects that
  */
-public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScorable {
+public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScorable, AssertEqualsTestable<ScoreState> {
 
     private final PlayerPool players;
     private final List<ScoreKeeper> listeners;
-
     private final Stack<List<ScoreKeeper>> history;
 
     public ScoreState(GameBoard board, PlayerPool players, TeamPool teams) {
@@ -101,5 +102,17 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
                 report = new SimpleScoreReport(report, scorable.score(rules));
         }
         return new SimpleTeamReport(players, report);
+    }
+
+    @Override
+    public void assertEquals(ScoreState other) throws EqualityException {
+        if (other == this)
+            return;
+
+        players.assertEquals(other.players);
+        if (!listeners.equals(other.listeners))
+            throw new EqualityException("ScoreListeners", listeners, other.listeners);
+        if (!history.equals(other.history))
+            throw new EqualityException("ScoreHistory", history, other.history);
     }
 }

@@ -5,6 +5,7 @@ import com.gregswebserver.catan.client.graphics.masks.RenderMask;
 import com.gregswebserver.catan.client.graphics.screen.GraphicObject;
 import com.gregswebserver.catan.client.graphics.ui.*;
 import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 import com.gregswebserver.catan.client.input.UserEventType;
 import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.common.game.CatanGame;
@@ -18,7 +19,6 @@ import com.gregswebserver.catan.common.resources.GraphicSet;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
 
     //Optional interactions
     private ContextRegion context;
-    private HistoryPopup popup;
+    private TimelinePopup popup;
 
     //Configuration dependencies
     private Map<TeamColor, GraphicSet> eventGraphics;
@@ -89,15 +89,13 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         }
 
         @Override
-        public UserEvent onMouseScroll(MouseWheelEvent event) {
+        public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
             scroll(-8 * event.getUnitsToScroll(), 0);
-            return null;
         }
 
         @Override
-        public UserEvent onMouseDrag(Point p) {
+        public void onMouseDrag(UserEventListener listener, Point p) {
             scroll(p.x, p.y);
-            return null;
         }
 
         @Override
@@ -105,7 +103,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
             eventSpacing = config.getLayout().getInt("spacing");
             eventBuffer = config.getLayout().getInt("buffer");
             eventHeight = config.getLayout().getInt("height");
-            delay = config.getLayout().getInt("info.delay");
+            delay = config.getLayout().getInt("delay");
             setInsets(new Insets(0, eventBuffer, 0, eventBuffer));
         }
 
@@ -141,53 +139,48 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
                 setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
             }
             @Override
-            public UserEvent onMouseScroll(MouseWheelEvent event) {
-                return EventList.this.onMouseScroll(event);
+            public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
+                EventList.this.onMouseScroll(listener, event);
             }
             @Override
-            public UserEvent onMouseDrag(Point p) {
-                return EventList.this.onMouseDrag(p);
+            public void onMouseDrag(UserEventListener listener, Point p) {
+                EventList.this.onMouseDrag(listener, p);
             }
             @Override
-            public UserEvent onMouseClick(MouseEvent event) {
+            public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 if (context != null)
                     context.targetHistory(index);
-                return null;
             }
             @Override
-            public UserEvent onHover() {
-                return new UserEvent(this, UserEventType.Linger_Trigger, delay);
+            public void onHover(UserEventListener listener) {
+                listener.onUserEvent(new UserEvent(this, UserEventType.Linger_Trigger, delay));
             }
 
             @Override
-            public UserEvent onUnHover() {
+            public void onUnHover(UserEventListener listener) {
                 synchronized(EventList.this) {
                     if (popup != null) {
-                        UserEvent out = popup.expire();
+                        popup.expire();
                         popup = null;
-                        return out;
-                    } else {
-                        return null;
                     }
                 }
             }
 
             @Override
-            public UserEvent onLinger() {
+            public void onLinger(UserEventListener listener) {
                 synchronized (EventList.this) {
-                    HistoryPopup old = popup;
-                    popup = new HistoryPopup(history.get(index));
-                    popup.setConfig(getConfig());
-                    if (old != null)
-                        return new UserEvent(this, UserEventType.Composite_Event, Arrays.asList(old.expire(), popup.display()));
-                    else
-                        return popup.display();
+                    TimelinePopup old = popup;
+                    popup = new TimelinePopup(history.get(index));
+                    if (old != null) {
+                        old.expire();
+                    }
+                    popup.display();
                 }
             }
         }
     }
 
-    private class HistoryPopup extends PopupWindow {
+    private class TimelinePopup extends PopupWindow {
 
         //Instance information
         private final GameHistory event;
@@ -200,8 +193,8 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         private final TiledBackground background;
         private final TextLabel label;
 
-        protected HistoryPopup(GameHistory event) {
-            super("HistoryPopup", "info", TimelineRegion.this);
+        protected TimelinePopup(GameHistory event) {
+            super("TimelinePopup", "history", TimelineRegion.this);
             this.event = event;
             background = new EdgedTiledBackground();
             label = new TextLabel("HistoryPopupLabel", 1, "label", "");

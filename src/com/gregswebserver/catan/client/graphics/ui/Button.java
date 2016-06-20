@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.client.graphics.ui;
 
 import com.gregswebserver.catan.client.graphics.masks.RenderMask;
-import com.gregswebserver.catan.client.input.UserEvent;
+import com.gregswebserver.catan.client.input.UserEventListener;
 
 import java.awt.event.MouseEvent;
 
@@ -28,7 +28,7 @@ public abstract class Button extends DefaultConfigurableScreenRegion {
     }
 
     @Override
-    public abstract UserEvent onMouseClick(MouseEvent event);
+    public abstract void onMouseClick(UserEventListener listener, MouseEvent event);
 
     @Override
     protected void renderContents() {
