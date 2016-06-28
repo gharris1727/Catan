@@ -26,7 +26,8 @@ public class InventoryScoreKeeper implements ScoreKeeper {
     public InventoryScoreKeeper(PlayerPool players) {
         counts = new HashMap<>();
         for (Username username : players)
-            counts.put(username, new InventoryCounter(username));
+            if (username != null)
+                counts.put(username, new InventoryCounter(username));
         history = new Stack<>();
     }
 

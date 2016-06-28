@@ -13,8 +13,6 @@ import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.*;
-import com.gregswebserver.catan.common.game.gameplay.trade.PermanentTrade;
-import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.game.gamestate.*;
@@ -49,7 +47,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
     //Permanent data
     private final GameRules rules;
-    private final Set<Trade> bankTrades;
 
     //Game state storage.
     private final GameBoard board;
@@ -66,11 +63,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
     public CatanGame(GameSettings settings) {
         rules = settings.rules;
-        bankTrades = new HashSet<>();
-        for (GameResource target : GameResource.values())
-            for (GameResource source : GameResource.values())
-                if (target != source)
-                    bankTrades.add(new PermanentTrade(source, target, 4));
         board = settings.boardGenerator.generate(settings.boardLayout, settings.seed);
         players = new PlayerPool(settings);
         teams = new TeamPool(settings);
@@ -111,18 +103,15 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         List<Trade> trades = new ArrayList<>();
         Player player = players.getPlayer(user);
         for (Username u : players) {
-            Trade trade = players.getPlayer(u).getTrade();
-            if (trade != null && player.canMakeTrade(trade))
-                trades.add(trade);
-        }
-        for (TradingPostType t1 : board.getTrades(player.getTeamColor())) {
-            for (Trade trade : t1.getTrades())
+            for (Trade trade : players.getPlayer(u).getTrades())
                 if (player.canMakeTrade(trade))
                     trades.add(trade);
         }
-        for (Trade trade : bankTrades)
-            if (player.canMakeTrade(trade))
-                trades.add(trade);
+        for (TradingPostType type : board.getTrades(player.getTeamColor())) {
+            for (Trade trade : type.getTrades())
+                if (player.canMakeTrade(trade))
+                    trades.add(trade);
+        }
         Collections.sort(trades);
         return trades;
     }
@@ -207,7 +196,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
                         )
                     ),
                     //Mature all of the cards that a user bought this turn.
-                    trigger(players.getPlayer(origin).getMatureEvent())
+                    player(origin, PlayerEventType.Mature_DevelopmentCards, players.getPlayer(origin).getBoughtCards())
                 );
             case Player_Move_Robber:
                 //Moving the robber requires checking if the move can be made, and the player is allowed to do it.
@@ -296,34 +285,21 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
             case Cancel_Trade:
                 return player(origin, PlayerEventType.Cancel_Trade, event.getPayload());
             case Make_Trade: {
-                if (event.getPayload() instanceof TemporaryTrade) {
-                    TemporaryTrade t = (TemporaryTrade) event.getPayload();
-                    TeamColor otherTeam = players.getPlayer(t.seller).getTeamColor();
-                    return compound(LogicEventType.AND,
-                        compound(LogicEventType.OR,
-                            //Needs to be our turn
-                            state(origin, GameStateEventType.Active_Turn, teamColor),
-                            //Needs to be the other players turn
-                            state(origin, GameStateEventType.Active_Turn, otherTeam)
-                        ),
-                        player(origin, PlayerEventType.Gain_Resources, t.getOffer()),
-                        player(origin, PlayerEventType.Lose_Resources, t.getRequest()),
-                        player(t.seller, PlayerEventType.Gain_Resources, t.getRequest()),
-                        player(t.seller, PlayerEventType.Lose_Resources, t.getOffer()),
-                        player(t.seller, PlayerEventType.Use_Trade, t)
-                    );
-                } else {
-                    //noinspection SuspiciousMethodCalls
-                    if (!bankTrades.contains(event.getPayload()))
-
-                    return compound(LogicEventType.AND,
-                        //Needs to be their turn.
+                Trade t = (Trade) event.getPayload();
+                TeamColor otherTeam = t.getSeller() == null ? null : players.getPlayer(t.getSeller()).getTeamColor();
+                return compound(LogicEventType.AND,
+                    compound(LogicEventType.OR,
+                        //Needs to be our turn
                         state(origin, GameStateEventType.Active_Turn, teamColor),
-                        //Make the trade
-                        player(origin, PlayerEventType.Gain_Resources, ((Trade)event.getPayload()).getOffer()),
-                        player(origin, PlayerEventType.Lose_Resources, ((Trade)event.getPayload()).getRequest())
-                    );
-                }
+                        //Needs to be the other players turn
+                        state(origin, GameStateEventType.Active_Turn, otherTeam)
+                    ),
+                    player(origin, PlayerEventType.Gain_Resources, t.getOffer()),
+                    player(origin, PlayerEventType.Lose_Resources, t.getRequest()),
+                    player(t.getSeller(), PlayerEventType.Gain_Resources, t.getRequest()),
+                    player(t.getSeller(), PlayerEventType.Lose_Resources, t.getOffer()),
+                    player(t.getSeller(), PlayerEventType.Use_Trade, t)
+                );
             }
             case Discard_Resources:
                 return player(origin, PlayerEventType.Discard_Resources, event.getPayload());
@@ -620,7 +596,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         CatanGame catanGame = (CatanGame) o;
 
         if (!rules.equals(catanGame.rules)) return false;
-        if (!bankTrades.equals(catanGame.bankTrades)) return false;
         if (!board.equals(catanGame.board)) return false;
         if (!players.equals(catanGame.players)) return false;
         if (!teams.equals(catanGame.teams)) return false;
@@ -634,8 +609,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         if (this == other) return;
 
         rules.assertEquals(other.rules);
-        if (!bankTrades.equals(other.bankTrades))
-            throw new EqualityException("BankTrades", bankTrades, other.bankTrades);
         board.assertEquals(other.board);
         players.assertEquals(other.players);
         teams.assertEquals(other.teams);

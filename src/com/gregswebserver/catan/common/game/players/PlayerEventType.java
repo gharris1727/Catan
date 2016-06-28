@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.event.EventType;
-import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
+import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 
@@ -17,8 +17,8 @@ public enum PlayerEventType implements EventType {
     Gain_DevelopmentCard(DevelopmentCard.class),
     Mature_DevelopmentCards(EnumCounter.class),
     Use_DevelopmentCard(DevelopmentCard.class),
-    Offer_Trade(TemporaryTrade.class),
-    Use_Trade(TemporaryTrade.class),
+    Offer_Trade(Trade.class),
+    Use_Trade(Trade.class),
     Cancel_Trade(null),
     Finish_Discarding(null);
 

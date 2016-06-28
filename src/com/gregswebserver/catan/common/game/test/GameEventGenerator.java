@@ -4,8 +4,6 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
-import com.gregswebserver.catan.common.game.gameplay.trade.PermanentTrade;
-import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
@@ -88,11 +86,11 @@ public class GameEventGenerator {
         if (random.nextInt(2) == 0)
             return generateTemporaryTrade(generateUsername());
         else
-            return new PermanentTrade(generateGameResource(), generateGameResource(), random.nextInt(5));
+            return new Trade(generateGameResource(), generateGameResource(), random.nextInt(5));
     }
 
-    private TemporaryTrade generateTemporaryTrade(Username origin) {
-        return new TemporaryTrade(origin, generateEnumCounter(), generateEnumCounter());
+    private Trade generateTemporaryTrade(Username origin) {
+        return new Trade(origin, generateEnumCounter(), generateEnumCounter());
     }
 
     private Coordinate generateCoordinate() {

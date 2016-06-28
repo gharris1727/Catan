@@ -25,7 +25,8 @@ public class ConstructionScoreKeeper implements ScoreKeeper {
     public ConstructionScoreKeeper(PlayerPool players) {
         counts = new HashMap<>();
         for (Username username : players)
-            counts.put(username, new ConstructionCounter(username));
+            if (username != null)
+                counts.put(username, new ConstructionCounter(username));
         history = new Stack<>();
     }
 

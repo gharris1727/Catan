@@ -7,6 +7,7 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.event.*;
 import com.gregswebserver.catan.common.game.players.Player;
+import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
@@ -56,10 +57,22 @@ public class GameManager {
                         host.refreshScreen();
                         break;
                 }
+                try {
+                    if (isLive())
+                        getLocalGame().assertEquals(getRemoteGame());
+                } catch (EqualityException eq) {
+                    host.logger.log(event + " Consistency error", eq, LogLevel.ERROR);
+                }
             }
             @Override
             protected void onFailure(EventConsumerException e) {
                 host.localFailure(e);
+                try {
+                    if (isLive())
+                        getLocalGame().assertEquals(getRemoteGame());
+                } catch (EqualityException eq) {
+                    host.logger.log(e + " Consistency error", eq, LogLevel.ERROR);
+                }
             }
 
             @Override
@@ -85,10 +98,22 @@ public class GameManager {
                         events.add((GameEvent) event.getPayload());
                         break;
                 }
+                try {
+                    if (isLive())
+                        getLocalGame().assertEquals(getRemoteGame());
+                } catch (EqualityException eq) {
+                    host.logger.log(event + " Consistency error", eq, LogLevel.ERROR);
+                }
             }
             @Override
             protected void onFailure(EventConsumerException e) {
-                host.logger.log(host + " Remote failure", e, LogLevel.WARN);
+                host.logger.log(host + " Remote failure", e, LogLevel.ERROR);
+                try {
+                    if (isLive())
+                        getLocalGame().assertEquals(getRemoteGame());
+                } catch (EqualityException eq) {
+                    host.logger.log(e + "Consistency error", eq, LogLevel.ERROR);
+                }
             }
 
             @Override

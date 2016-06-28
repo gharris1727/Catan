@@ -28,9 +28,9 @@ public enum TradingPostType {
         for (GameResource request : GameResource.values()) {
             if (r == null) {
                 for (GameResource offer : GameResource.values())
-                    trades.add(new PermanentTrade(offer, request, 3));
+                    trades.add(new Trade(offer, request, 3));
             } else {
-                trades.add(new PermanentTrade(r, request, 2));
+                trades.add(new Trade(r, request, 2));
             }
         }
     }

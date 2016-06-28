@@ -10,7 +10,6 @@ import com.gregswebserver.catan.client.ui.game.ContextRegion;
 import com.gregswebserver.catan.client.ui.game.TradeDisplay;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
-import com.gregswebserver.catan.common.game.gameplay.trade.TemporaryTrade;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.GameResource;
@@ -191,7 +190,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable{
                         else
                             offer.increment(resource, -1*diff.get(resource));
                     }
-                    TemporaryTrade trade = new TemporaryTrade(manager.getLocalUsername(), offer, request);
+                    Trade trade = new Trade(manager.getLocalUsername(), offer, request);
                     manager.local(new GameEvent(manager.getLocalUsername(), GameEventType.Offer_Trade, trade));
                 }
             };
