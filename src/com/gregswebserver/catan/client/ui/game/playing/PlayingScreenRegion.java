@@ -64,9 +64,13 @@ public class PlayingScreenRegion extends ClientScreen implements Updatable {
         inventory.update();
         trade.update();
         context.update();
-        if (manager.getLocalGame().mustDiscard(manager.getLocalUsername()) && discardPopup == null) {
-            discardPopup = new DiscardPopup(manager, this);
-            discardPopup.display();
+        if (manager.getLocalGame().mustDiscard(manager.getLocalUsername())) {
+            if (discardPopup != null) {
+                discardPopup = new DiscardPopup(manager, this);
+                discardPopup.display();
+            }
+        } else if (discardPopup != null) {
+            discardPopup.expire();
         }
     }
 

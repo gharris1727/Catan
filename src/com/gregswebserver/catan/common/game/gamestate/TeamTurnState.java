@@ -32,8 +32,9 @@ public class TeamTurnState implements ReversibleIterator<TeamColor> {
 
     @Override
     public TeamColor next() {
+        TeamColor next = get();
         turnNumber++;
-        return get();
+        return next;
     }
 
     @Override

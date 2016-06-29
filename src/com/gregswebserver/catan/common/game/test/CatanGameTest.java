@@ -362,6 +362,8 @@ public class CatanGameTest {
                     fail();
                 } catch (EventConsumerException ignored) {
                 }
+            } catch (EqualityException e) {
+                throw new RuntimeException("Consistency error on: " + event, e);
             }
         }
         for (GameHistory gameHistory : game.getHistory()) {

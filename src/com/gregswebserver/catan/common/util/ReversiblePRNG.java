@@ -60,39 +60,14 @@ public class ReversiblePRNG {
     }
 
     public int nextInt(int limit) {
+        int next = getInt(limit);
         next();
-        return getInt(limit);
+        return next;
     }
 
     public int prevInt(int limit) {
-        int prev = getInt(limit);
         prev();
-        return prev;
-    }
-
-    private long getLong() {
-        byte[] bytes = getBytes();
-        long out = 0L;
-        for (int i = 0; i < 8; i++) {
-            out = out << (i * 8);
-            out += bytes[i];
-        }
-        return out & 0x7fffffffffffffffL;
-    }
-
-    public long getLong(long limit) {
-        return getLong() % limit;
-    }
-
-    public long nextLong(long limit) {
-        next();
-        return getLong(limit);
-    }
-
-    public long prevLong(long limit) {
-        long prev = getLong(limit);
-        prev();
-        return prev;
+        return getInt(limit);
     }
 
     @Override

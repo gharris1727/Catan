@@ -9,10 +9,12 @@ import com.gregswebserver.catan.common.util.ReversiblePRNG;
  */
 public class DiceState implements ReversibleIterator<DiceRoll> {
 
-    private final ReversiblePRNG prng;
+    private final ReversiblePRNG dieOne;
+    private final ReversiblePRNG dieTwo;
 
     public DiceState(long seed) {
-        this.prng = new ReversiblePRNG(seed);
+        this.dieOne = new ReversiblePRNG(seed);
+        this.dieTwo = new ReversiblePRNG(seed << 32 | seed >>> 32);
     }
 
     @Override
@@ -27,25 +29,22 @@ public class DiceState implements ReversibleIterator<DiceRoll> {
 
     @Override
     public DiceRoll next() {
-        int dieOne = prng.nextInt(6) + 1;
-        int dieTwo = prng.nextInt(6) + 1;
-        return DiceRoll.get(dieOne + dieTwo);
+        DiceRoll next = get();
+        dieOne.next();
+        dieTwo.next();
+        return next;
     }
 
     @Override
     public DiceRoll prev() {
-        int dieTwo = prng.prevInt(6) + 1;
-        int dieOne = prng.prevInt(6) + 1;
-        return DiceRoll.get(dieOne + dieTwo);
+        dieOne.prev();
+        dieTwo.prev();
+        return get();
     }
 
     @Override
     public DiceRoll get() {
-        int dieOne = prng.nextInt(6) + 1;
-        int dieTwo = prng.nextInt(6) + 1;
-        prng.prevInt(6);
-        prng.prevInt(6);
-        return DiceRoll.get(dieOne + dieTwo);
+        return DiceRoll.get(dieOne.getInt(6) + dieTwo.getInt(6) + 2);
     }
 
     @Override
@@ -55,11 +54,11 @@ public class DiceState implements ReversibleIterator<DiceRoll> {
 
         DiceState that = (DiceState) o;
 
-        return prng.equals(that.prng);
+        return dieOne.equals(that.dieOne) && dieTwo.equals(that.dieTwo);
     }
 
     @Override
     public String toString() {
-        return "DiceState(" + prng + ")";
+        return "DiceState(" + dieOne + "," + dieTwo + ")";
     }
 }

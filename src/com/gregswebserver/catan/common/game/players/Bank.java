@@ -62,7 +62,7 @@ public class Bank implements Player {
 
     @Override
     public boolean canMakeTrade(Trade t) {
-        return false;
+        return trades.contains(t);
     }
 
     @Override
@@ -72,17 +72,42 @@ public class Bank implements Player {
 
     @Override
     public void undo() throws EventConsumerException {
-
+        //There is no state to keep track of
     }
 
     @Override
     public void test(PlayerEvent event) throws EventConsumerException {
-
+        switch (event.getType()) {
+            case Gain_Resources:
+                break;
+            case Discard_Resources:
+                break;
+            case Lose_Resources:
+                break;
+            case Gain_DevelopmentCard:
+                break;
+            case Mature_DevelopmentCards:
+                break;
+            case Use_DevelopmentCard:
+                break;
+            case Offer_Trade:
+                break;
+            case Use_Trade:
+                //noinspection SuspiciousMethodCalls
+                if (!trades.contains(event.getPayload()))
+                    throw new EventConsumerException("Invalid Bank Trade");
+                break;
+            case Cancel_Trade:
+                break;
+            case Finish_Discarding:
+                break;
+        }
     }
 
     @Override
     public void execute(PlayerEvent event) throws EventConsumerException {
-
+        test(event);
+        //There is no state to keep track of
     }
 
     @Override

@@ -21,8 +21,8 @@ public class ReversiblePRNGTest {
     @Before
     public void setParameters() {
         seed = System.nanoTime();
-        count = 1000;
-        max = Integer.MAX_VALUE;
+        count = 1000000;
+        max = 113;
     }
 
     @Test
@@ -50,30 +50,24 @@ public class ReversiblePRNGTest {
         ArrayList<Integer> generated = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             generated.add(prng.nextInt(max));
-            for (int j = i; j >= 0; j--) {
-                assertEquals((int) generated.get(j), prng.prevInt(max));
-            }
-            for (int j = 0; j <= i; j++) {
-                assertEquals((int) generated.get(j), prng.nextInt(max));
-            }
+            assertEquals((int) generated.get(i), prng.prevInt(max));
+            assertEquals((int) generated.get(i), prng.nextInt(max));
         }
     }
 
     @Test
     public void testDistribution() {
-        int runs = 1000000;
-        int buckets = 101;
-        int expected = runs / buckets;
-        int[] distribution = new int[buckets];
+        int expected = count / max;
+        int[] distribution = new int[max];
         ReversiblePRNG prng = new ReversiblePRNG();
-        for (int i = 0; i < runs; i++)
-            distribution[prng.nextInt(buckets)]++;
+        for (int i = 0; i < count; i++)
+            distribution[prng.nextInt(max)]++;
         float chisquare = 0.0f;
-        for (int i = 0; i < buckets; i++) {
+        for (int i = 0; i < max; i++) {
             double variance = (double) (distribution[i] - expected);
             chisquare += variance * variance / expected;
         }
-        System.out.println("X^2 with " + (buckets-1) + " degrees of freedom: " + chisquare);
+        System.out.println("X^2 with " + (max -1) + " degrees of freedom: " + chisquare);
     }
 
 }

@@ -176,6 +176,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
                 return new LogicEvent(this, LogicEventType.NOT, new LogicEvent(this, LogicEventType.NOP, null));
             case Turn_Advance:
                 //Advancing the turn requires all of these events to fire.
+                EnumCounter<DevelopmentCard> boughtCards = players.getPlayer(origin).getBoughtCards();
+                boughtCards = new EnumAccumulator<>(DevelopmentCard.class, boughtCards);
                 return compound(LogicEventType.AND,
                     //Needs to be their turn.
                     state(origin, GameStateEventType.Active_Turn, teamColor),
@@ -196,7 +198,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
                         )
                     ),
                     //Mature all of the cards that a user bought this turn.
-                    player(origin, PlayerEventType.Mature_DevelopmentCards, players.getPlayer(origin).getBoughtCards())
+                    player(origin, PlayerEventType.Mature_DevelopmentCards, boughtCards)
                 );
             case Player_Move_Robber:
                 //Moving the robber requires checking if the move can be made, and the player is allowed to do it.
