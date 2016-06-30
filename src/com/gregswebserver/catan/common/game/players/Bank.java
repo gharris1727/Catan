@@ -5,9 +5,9 @@ import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.util.Collections;
 import java.util.Set;

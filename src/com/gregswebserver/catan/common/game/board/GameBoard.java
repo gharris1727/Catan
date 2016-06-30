@@ -18,9 +18,9 @@ import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.util.Direction;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.awt.*;
 import java.util.*;

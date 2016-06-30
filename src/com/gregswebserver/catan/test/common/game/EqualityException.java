@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.test;
+package com.gregswebserver.catan.test.common.game;
 
 import com.gregswebserver.catan.common.log.Logger;
 

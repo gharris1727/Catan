@@ -2,8 +2,8 @@ package com.gregswebserver.catan.common.game.scoring.rules;
 
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.scoring.achievement.AchievementCard;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 /**
  * Created by greg on 5/27/16.

@@ -3,14 +3,11 @@ package com.gregswebserver.catan.common.game.teams;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
-import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by greg on 5/25/16.
@@ -23,11 +20,12 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<Te
 
     public TeamPool(GameSettings settings) {
         teams = new EnumMap<>(TeamColor.class);
-        for (Map.Entry<Username, TeamColor> entry : settings.playerTeams.entrySet()) {
-            TeamColor color = entry.getValue();
-            if (!teams.containsKey(color))
-                teams.put(color, new Team(color));
-            teams.get(color).add(entry.getKey());
+        Map<TeamColor, Set<Username>> teamUsers = settings.playerTeams.getTeamUsers();
+        for (TeamColor color : settings.playerTeams.getTeams()) {
+            Team team = new Team(color);
+            teams.put(color, team);
+            for (Username username : teamUsers.get(color))
+                team.add(username);
         }
         history = new Stack<>();
     }

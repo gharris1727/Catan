@@ -30,12 +30,12 @@ import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.game.teams.TeamEvent;
 import com.gregswebserver.catan.common.game.teams.TeamEventType;
 import com.gregswebserver.catan.common.game.teams.TeamPool;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.game.util.EnumAccumulator;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.util.*;
 

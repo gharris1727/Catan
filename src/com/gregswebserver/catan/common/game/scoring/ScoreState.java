@@ -17,8 +17,8 @@ import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScorable;
 import com.gregswebserver.catan.common.game.scoring.reporting.team.TeamScoreReport;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
 import com.gregswebserver.catan.common.game.teams.TeamPool;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.util.ArrayList;
 import java.util.Arrays;

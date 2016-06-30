@@ -1,7 +1,7 @@
 package com.gregswebserver.catan.common.game.util;
 
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 /**
  * Created by greg on 6/11/16.

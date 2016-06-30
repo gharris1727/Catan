@@ -1,4 +1,4 @@
-package com.gregswebserver.catan;
+package com.gregswebserver.catan.test;
 
 import com.gregswebserver.catan.client.Client;
 import com.gregswebserver.catan.client.input.UserEvent;

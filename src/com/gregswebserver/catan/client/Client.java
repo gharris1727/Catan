@@ -58,7 +58,7 @@ import java.net.UnknownHostException;
  * Everything is handled by a main event queue, which them distributes the events to where they need to go.
  * Client events are intercepted and acted upon.
  */
-public class Client extends CoreThread {
+public class Client extends CoreThread implements GameManagerListener {
 
     private static final PropertiesFileInfo configFile;
     private static final PropertiesFileInfo serverFile;
@@ -207,10 +207,12 @@ public class Client extends CoreThread {
         }
     }
 
+    @Override
     public void localSuccess(GameControlEvent event) {
         sendEvent((ExternalEvent) event.getPayload());
     }
 
+    @Override
     public void localFailure(EventConsumerException e) {
         logger.log(this + " Local failure", e, LogLevel.WARN);
     }
@@ -272,7 +274,7 @@ public class Client extends CoreThread {
                 case Game_Leave:
                     break;
                 case Game_Sync:
-                    gameManager = new GameManager(this, (GameProgress) event.getPayload());
+                    gameManager = new GameManager(this, logger, token.username, (GameProgress) event.getPayload());
                     if (gameManager.getLocalPlayer() != null)
                         changeScreen(new PlayingScreenRegion(gameManager));
                     else
@@ -319,6 +321,7 @@ public class Client extends CoreThread {
         }
     }
 
+    @Override
     public void refreshScreen() {
         renderThread.addEvent(new RenderEvent(this, RenderEventType.Screen_Refresh, null));
     }

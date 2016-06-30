@@ -5,9 +5,9 @@ import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
 import com.gregswebserver.catan.common.game.util.EnumCounter;
 import com.gregswebserver.catan.common.game.util.GameResource;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
 
 import java.io.Serializable;
 import java.util.Set;

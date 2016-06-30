@@ -3,10 +3,10 @@ package com.gregswebserver.catan.common.game.gamestate;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.common.util.ReversiblePRNG;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -28,7 +28,7 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>,
         dice = new DiceState(settings.seed);
         cards = new DevelopmentDeckState(settings.rules, settings.seed);
         Set<TeamColor> set = EnumSet.noneOf(TeamColor.class);
-        for (TeamColor color : settings.playerTeams.values())
+        for (TeamColor color : settings.playerTeams.getTeams())
             set.add(color);
         turns = new TeamTurnState(settings.seed, set);
         theft = new ReversiblePRNG(settings.seed);

@@ -4,9 +4,9 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.game.test.AssertEqualsTestable;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
 
     public PlayerPool(GameSettings settings) {
         players = new HashMap<>();
-        for (Map.Entry<Username, TeamColor> entry : settings.playerTeams.entrySet())
+        for (Map.Entry<Username, TeamColor> entry : settings.playerTeams.getPlayerTeams().entrySet())
             players.put(entry.getKey(), new HumanPlayer(entry.getKey(), entry.getValue()));
         players.put(null, new Bank());
         discards = new Stack<>();

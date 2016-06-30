@@ -1,5 +1,6 @@
-package com.gregswebserver.catan.common.util;
+package com.gregswebserver.catan.test.common.util;
 
+import com.gregswebserver.catan.common.util.ReversiblePRNG;
 import org.junit.Before;
 import org.junit.Test;
 

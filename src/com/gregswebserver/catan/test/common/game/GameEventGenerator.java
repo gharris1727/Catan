@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.test;
+package com.gregswebserver.catan.test.common.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
@@ -51,7 +51,7 @@ public class GameEventGenerator {
                 payload = generateCoordinate();
                 break;
             case Offer_Trade:
-                payload = generateTemporaryTrade(origin);
+                payload = generateTrade(origin);
                 break;
             case Make_Trade:
                 payload = generateTrade();
@@ -83,17 +83,15 @@ public class GameEventGenerator {
     }
 
     private Trade generateTrade() {
-        if (random.nextInt(2) == 0)
-            return generateTemporaryTrade(generateUsername());
-        else
-            return new Trade(generateGameResource(), generateGameResource(), random.nextInt(5));
+       return generateTrade(generateUsername());
     }
-
-    private Trade generateTemporaryTrade(Username origin) {
-        return new Trade(origin, generateEnumCounter(), generateEnumCounter());
+    private Trade generateTrade(Username username) {
+        return new Trade(username,
+            new EnumAccumulator<>(GameResource.class,generateGameResource(), random.nextInt(5)),
+            new EnumAccumulator<>(GameResource.class,generateGameResource(), random.nextInt(5)));
     }
 
     private Coordinate generateCoordinate() {
-        return new Coordinate(random.nextInt(100), random.nextInt(100));
+        return new Coordinate(random.nextInt(50), random.nextInt(10));
     }
 }

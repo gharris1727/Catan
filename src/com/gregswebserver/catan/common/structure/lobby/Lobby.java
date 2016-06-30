@@ -1,6 +1,8 @@
 package com.gregswebserver.catan.common.structure.lobby;
 
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.game.gameplay.allocator.PreferenceTeamAllocator;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocator;
 import com.gregswebserver.catan.common.game.gameplay.generator.BoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.better.BetterGenerator;
 import com.gregswebserver.catan.common.game.gameplay.generator.copy.CopyGenerator;
@@ -15,7 +17,10 @@ import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +79,6 @@ public class Lobby implements Serializable {
 
         //We need to construct the parts of a GameSettings object.
         BoardLayout boardLayout;
-        Map<Username, TeamColor> players = new HashMap<>();
         try {
             BoardLayoutInfo info = null;
             //TODO: put the regex stuff somewhere so that we can use it to validate when saving the game.
@@ -112,33 +116,12 @@ public class Lobby implements Serializable {
         else
             boardGenerator = RandomBoardGenerator.instance;
 
-        //Keep track which teams people have selected so that they are not randomly allocated later.
-        Set<TeamColor> teamsToAllocate = TeamColor.getTeamSet();
-        //Create all of the players that have made an explicit teamColor choice.
-        for (Map.Entry<Username, LobbyUser> user : users.entrySet()) {
-            TeamColor teamColor = user.getValue().getTeamColor();
-            if (teamColor != TeamColor.None) {
-                Username username = user.getKey();
-                teamsToAllocate.remove(teamColor);
-                players.put(username, teamColor);
-            }
-        }
-        //Create all of the players that didn't explicitly select a teamColor, allocating them one manually.
-        Iterator<TeamColor> teamAllocator = teamsToAllocate.iterator();
-        for (Map.Entry<Username, LobbyUser> user : users.entrySet()) {
-            TeamColor teamColor = user.getValue().getTeamColor();
-            if (teamColor == TeamColor.None) {
-                //If we exhausted all the teams, then refresh the list and keep going.
-                if (!teamAllocator.hasNext()) {
-                    teamsToAllocate = TeamColor.getTeamSet();
-                    teamAllocator = teamsToAllocate.iterator();
-                }
-                teamColor = teamAllocator.next();
-                Username username = user.getKey();
-                teamAllocator.remove();
-                players.put(username, teamColor);
-            }
-        }
+        Map<Username, TeamColor> preferences = new HashMap<>();
+        //Save all of the players that have made an explicit teamColor choice.
+        for (Map.Entry<Username, LobbyUser> user : users.entrySet())
+            preferences.put(user.getKey(), user.getValue().getTeamColor());
+
+        TeamAllocator players = new PreferenceTeamAllocator(preferences);
 
         return new GameSettings(System.nanoTime(), boardLayout, boardGenerator, rules, players);
     }

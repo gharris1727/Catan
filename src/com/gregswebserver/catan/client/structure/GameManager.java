@@ -1,16 +1,17 @@
 package com.gregswebserver.catan.client.structure;
 
-import com.gregswebserver.catan.client.Client;
+import com.gregswebserver.catan.client.GameManagerListener;
 import com.gregswebserver.catan.common.IllegalStateException;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.event.*;
 import com.gregswebserver.catan.common.game.players.Player;
-import com.gregswebserver.catan.common.game.test.EqualityException;
 import com.gregswebserver.catan.common.log.LogLevel;
+import com.gregswebserver.catan.common.log.Logger;
 import com.gregswebserver.catan.common.structure.game.GameProgress;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.test.common.game.EqualityException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +24,18 @@ public class GameManager {
 
     //TODO: explore lag-hiding and local/remote consistency verification.
 
-    private final Client host;
+    private final GameManagerListener host;
+    private final Username username;
     private final GameThread local;
     private final GameThread remote;
     private final List<GameEvent> events;
     private int localhistoryIndex;
 
-    public GameManager(Client host, GameProgress progress) {
+    public GameManager(GameManagerListener host, Logger logger, Username username, GameProgress progress) {
         this.host = host;
+        this.username = username;
         GameSettings settings = progress.getSettings();
-        local = new GameThread(host.logger, settings){
+        local = new GameThread(logger, settings){
             @Override
             public String toString() {
                 return host + " GameManagerLocalThread";
@@ -61,7 +64,7 @@ public class GameManager {
                     if (isLive())
                         getLocalGame().assertEquals(getRemoteGame());
                 } catch (EqualityException eq) {
-                    host.logger.log(event + " Consistency error", eq, LogLevel.ERROR);
+                    logger.log(event + " Consistency error", eq, LogLevel.ERROR);
                 }
             }
             @Override
@@ -71,7 +74,7 @@ public class GameManager {
                     if (isLive())
                         getLocalGame().assertEquals(getRemoteGame());
                 } catch (EqualityException eq) {
-                    host.logger.log(e + " Consistency error", eq, LogLevel.ERROR);
+                    logger.log(e + " Consistency error", eq, LogLevel.ERROR);
                 }
             }
 
@@ -79,7 +82,7 @@ public class GameManager {
             protected void onFinish(GameEvent event) {
             }
         };
-        remote = new GameThread(host.logger, settings) {
+        remote = new GameThread(logger, settings) {
             @Override
             public String toString() {
                 return host + " GameManagerRemoteThread";
@@ -102,17 +105,17 @@ public class GameManager {
                     if (isLive())
                         getLocalGame().assertEquals(getRemoteGame());
                 } catch (EqualityException eq) {
-                    host.logger.log(event + " Consistency error", eq, LogLevel.ERROR);
+                    logger.log(event + " Consistency error", eq, LogLevel.ERROR);
                 }
             }
             @Override
             protected void onFailure(EventConsumerException e) {
-                host.logger.log(host + " Remote failure", e, LogLevel.ERROR);
+                logger.log(host + " Remote failure", e, LogLevel.ERROR);
                 try {
                     if (isLive())
                         getLocalGame().assertEquals(getRemoteGame());
                 } catch (EqualityException eq) {
-                    host.logger.log(e + "Consistency error", eq, LogLevel.ERROR);
+                    logger.log(e + "Consistency error", eq, LogLevel.ERROR);
                 }
             }
 
@@ -152,7 +155,7 @@ public class GameManager {
     }
 
     public void remote(GameEvent event) {
-        remote.addEvent(new GameControlEvent(this, GameControlEventType.Execute,event));
+        remote.addEvent(new GameControlEvent(this, GameControlEventType.Execute, event));
     }
 
     public boolean test(GameEvent gameEvent) {
@@ -167,7 +170,7 @@ public class GameManager {
     }
 
     public Username getLocalUsername() {
-        return host.getToken().username;
+        return username;
     }
 
     public Player getLocalPlayer() {

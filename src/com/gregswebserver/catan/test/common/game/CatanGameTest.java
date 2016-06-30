@@ -1,4 +1,4 @@
-package com.gregswebserver.catan.common.game.test;
+package com.gregswebserver.catan.test.common.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
@@ -6,10 +6,11 @@ import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameHistory;
+import com.gregswebserver.catan.common.game.gameplay.allocator.RandomTeamAllocator;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocator;
 import com.gregswebserver.catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import com.gregswebserver.catan.common.game.gameplay.layout.BoardLayout;
 import com.gregswebserver.catan.common.game.scoring.rules.GameRules;
-import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
 import com.gregswebserver.catan.common.resources.GameRulesInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
@@ -17,8 +18,8 @@ import com.gregswebserver.catan.common.structure.game.GameSettings;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static com.gregswebserver.catan.common.game.event.GameEventType.*;
 import static org.junit.Assert.fail;
@@ -40,9 +41,7 @@ public class CatanGameTest {
     public void setupTwoPlayers() {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
-        Map<Username, TeamColor> players = new HashMap<>();
-        players.put(greg, TeamColor.White);
-        players.put(bob, TeamColor.Red);
+        TeamAllocator players = new RandomTeamAllocator(new HashSet<>(Arrays.asList(greg, bob)));
         twoPlayers = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
@@ -50,11 +49,7 @@ public class CatanGameTest {
     public void setupFourPlayers() {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
-        Map<Username, TeamColor> players = new HashMap<>();
-        players.put(greg, TeamColor.White);
-        players.put(bob, TeamColor.Red);
-        players.put(jeff, TeamColor.Orange);
-        players.put(steve, TeamColor.Blue);
+        TeamAllocator players = new RandomTeamAllocator(new HashSet<>(Arrays.asList(greg, bob, jeff, steve)));
         fourPlayers = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
@@ -340,7 +335,7 @@ public class CatanGameTest {
     @Test
     public void testRandomGame() throws EqualityException {
         int rounds = 100;
-        GameEventGenerator generator = new GameEventGenerator(0L, twoPlayers.playerTeams.keySet());
+        GameEventGenerator generator = new GameEventGenerator(0L, twoPlayers.playerTeams.getUsers());
         CatanGame game = startTwoPlayerGame();
         CatanGame game2 = startTwoPlayerGame();
         for (int i = 0; i < rounds;) {
