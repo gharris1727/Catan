@@ -8,6 +8,7 @@ import com.gregswebserver.catan.common.log.Logger;
  */
 public class EqualityException extends Exception {
 
+    @SuppressWarnings({"StringEquality", "ConstantConditions"})
     public static String buildMessage(String message, Object a, Object b) {
         StringBuilder out = new StringBuilder();
         out.append(Logger.ANSI_WHITE);

@@ -15,7 +15,6 @@ import com.gregswebserver.catan.common.resources.BoardLayoutInfo;
 import com.gregswebserver.catan.common.resources.GameRulesInfo;
 import com.gregswebserver.catan.common.resources.ResourceLoader;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -35,21 +34,19 @@ public class CatanGameTest {
     private final Username bob = new Username("Bob");
     private final Username jeff = new Username("Jeff");
     private final Username steve = new Username("Steve");
-    private Set<Username> twoUsers = new HashSet<>(Arrays.asList(greg, bob));
-    private Set<Username> fourUsers = new HashSet<>(Arrays.asList(greg, bob, jeff, steve));
-    private GameSettings twoPlayerGame;
-    private GameSettings fourPlayerGame;
+    private final Set<Username> twoUsers = new HashSet<>(Arrays.asList(greg, bob));
+    private final Set<Username> fourUsers = new HashSet<>(Arrays.asList(greg, bob, jeff, steve));
+    private final GameSettings twoPlayerGame;
+    private final GameSettings fourPlayerGame;
 
-    @Before
-    public void setupTwoPlayers() {
+    {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
         TeamAllocator players = new RandomTeamAllocator(twoUsers);
         twoPlayerGame = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
-    @Before
-    public void setupFourPlayers() {
+    {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
         TeamAllocator players = new RandomTeamAllocator(fourUsers);

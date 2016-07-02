@@ -178,13 +178,13 @@ public class ServerConnectMenu extends ClientScreen {
             newButton = new Button("NewButton", 1, "new", "New") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    detail(listener, null);
+                    detail(null);
                 }
             };
             editButton = new Button("EditButton", 1, "edit", "Edit") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    if (selected != null) detail(listener, selected);
+                    if (selected != null) detail(selected);
                 }
             };
             connectButton = new Button("ConenctButton", 1, "connect", "Connect") {
@@ -207,7 +207,7 @@ public class ServerConnectMenu extends ClientScreen {
             add(passwordBox);
         }
 
-        private void detail(UserEventListener listener, ConnectionInfo selected) {
+        private void detail(ConnectionInfo selected) {
             if (editPopup == null) {
                 editPopup = new ServerDetailPopup(selected);
                 editPopup.setConfig(getConfig());

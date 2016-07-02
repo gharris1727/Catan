@@ -12,8 +12,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class DiceStateTest {
 
-    long seed = 1232135L;
-    int runs = 100000;
+    private final long seed = 1232135L;
+    private final int runs = 100000;
 
     @Test
     public void test() {

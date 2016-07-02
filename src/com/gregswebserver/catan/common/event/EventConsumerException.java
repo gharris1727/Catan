@@ -6,7 +6,7 @@ package com.gregswebserver.catan.common.event;
  */
 public class EventConsumerException extends Exception {
 
-    public EventConsumerException(String message, GenericEvent event, Throwable t) {
+    private EventConsumerException(String message, GenericEvent event, Throwable t) {
         super(event == null ? message : message + ": " + event, t);
     }
 

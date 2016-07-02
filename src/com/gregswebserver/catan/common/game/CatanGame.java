@@ -49,7 +49,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
     //Permanent data
     private final GameRules rules;
-    private TeamAllocation teamAllocation;
+    private final TeamAllocation teamAllocation;
 
     //Game state storage.
     private final GameBoard board;
