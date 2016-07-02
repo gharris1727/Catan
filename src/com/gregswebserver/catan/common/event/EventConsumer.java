@@ -11,7 +11,7 @@ package com.gregswebserver.catan.common.event;
  */
 public interface EventConsumer<T extends GenericEvent> {
 
-    void test(T event) throws EventConsumerException;
+    EventConsumerProblem test(T event);
 
     void execute(T event) throws EventConsumerException;
 

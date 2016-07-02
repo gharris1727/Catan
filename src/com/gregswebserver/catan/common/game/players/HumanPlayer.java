@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
@@ -139,7 +140,7 @@ public class HumanPlayer implements Player {
     }
 
     @Override
-    public void test(PlayerEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(PlayerEvent event) {
         switch (event.getType()) {
             case Gain_Resources:
                 break;
@@ -149,13 +150,13 @@ public class HumanPlayer implements Player {
                 for (GameResource r : discard)
                     count += discard.get(r);
                 if (count != getDiscardCount())
-                    throw new EventConsumerException("Incorrect number of cards discarded.");
+                    return new EventConsumerProblem("Incorrect number of cards discarded.");
                 //Intentionally flow into the next case.
             case Lose_Resources:
                 EnumCounter<GameResource> loss = (EnumCounter<GameResource>) event.getPayload();
                 for (GameResource r : GameResource.values()) {
                     if (!inventory.contains(r, loss.get(r)))
-                        throw new EventConsumerException("Insufficient funds");
+                        return new EventConsumerProblem("Insufficient funds");
                 }
                 break;
             case Gain_DevelopmentCard:
@@ -164,47 +165,50 @@ public class HumanPlayer implements Player {
                 EnumCounter<DevelopmentCard> maturation = (EnumCounter<DevelopmentCard>) event.getPayload();
                 for (DevelopmentCard card : bought) {
                     if (bought.get(card) != maturation.get(card))
-                        throw new EventConsumerException("Inconsistent card count");
+                        return new EventConsumerProblem("Inconsistent card count");
                 }
                 break;
             case Use_DevelopmentCard:
                 if (!active.contains((DevelopmentCard) event.getPayload(), 1))
-                    throw new EventConsumerException("No card");
+                    return new EventConsumerProblem("No card");
                 break;
             case Use_Trade:
                 if (trades.peek() == null)
-                    throw new EventConsumerException("No trade to use.");
+                    return new EventConsumerProblem("No trade to use.");
                 if (!trades.peek().equals(event.getPayload()))
-                    throw new EventConsumerException("Trade not offered by player.");
+                    return new EventConsumerProblem("Trade not offered by player.");
                 break;
             case Cancel_Trade:
                 if (trades.peek() == null)
-                    throw new EventConsumerException("No trade to cancel");
+                    return new EventConsumerProblem("No trade to cancel");
                 break;
             case Offer_Trade:
                 Trade trade = (Trade) event.getPayload();
                 if (trade != null) {
                     if (trade.equals(trades.peek()))
-                        throw new EventConsumerException("Already proposed");
+                        return new EventConsumerProblem("Already proposed");
                     boolean trivial = true;
                     for (GameResource r : GameResource.values()) {
                         if (trade.getOffer().get(r) != 0 || trade.getRequest().get(r) != 0)
                             trivial = false;
                         if (!inventory.contains(r, trade.getOffer().get(r)))
-                            throw new EventConsumerException("Insufficient funds");
+                            return new EventConsumerProblem("Insufficient funds");
                     }
                     if (trivial)
-                        throw new EventConsumerException("Trivial trade");
+                        return new EventConsumerProblem("Trivial trade");
                 }
                 break;
             case Finish_Discarding:
                 break;
         }
+        return null;
     }
 
     @Override
     public void execute(PlayerEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             switch (event.getType()) {

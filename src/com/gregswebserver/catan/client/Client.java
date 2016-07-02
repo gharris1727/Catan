@@ -281,7 +281,7 @@ public class Client extends CoreThread implements GameManagerListener {
                         changeScreen(new SpectateScreenRegion(gameManager));
                     break;
                 case Game_Finish:
-                    if (gameManager != null && gameManager.getLocalGame().getPlayers().getPlayer(event.getOrigin()) != null)
+                    if (gameManager != null && gameManager.getLocalPlayer() != null)
                         changeScreen(new PostGameScreenRegion(gameManager));
                     break;
                 default:

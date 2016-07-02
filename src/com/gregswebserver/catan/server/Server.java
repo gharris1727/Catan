@@ -199,7 +199,7 @@ public class Server extends CoreThread {
                 case Game_Start:
                     GameSettings settings = (GameSettings) event.getPayload();
                     lobby.setGameID(gamePool.start(settings));
-                    for (Username username : settings.playerTeams.getUsers())
+                    for (Username username : gamePool.getGamePlayers(lobby.getGameID()).getUsers())
                         addEvent(new LobbyEvent(username, LobbyEventType.Game_Join, null));
                     break;
                 case Game_Join:

@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
@@ -76,7 +77,7 @@ public class Bank implements Player {
     }
 
     @Override
-    public void test(PlayerEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(PlayerEvent event) {
         switch (event.getType()) {
             case Gain_Resources:
                 break;
@@ -95,19 +96,21 @@ public class Bank implements Player {
             case Use_Trade:
                 //noinspection SuspiciousMethodCalls
                 if (!trades.contains(event.getPayload()))
-                    throw new EventConsumerException("Invalid Bank Trade");
+                    return new EventConsumerProblem("Invalid Bank Trade");
                 break;
             case Cancel_Trade:
                 break;
             case Finish_Discarding:
                 break;
         }
+        return null;
     }
 
     @Override
     public void execute(PlayerEvent event) throws EventConsumerException {
-        test(event);
-        //There is no state to keep track of
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
     }
 
     @Override

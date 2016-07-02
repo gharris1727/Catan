@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.scoring.achievement;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.game.gamestate.DevelopmentCard;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.scoring.ScoreEvent;
@@ -45,22 +46,25 @@ public class LargestArmyScoreKeeper implements ScoreKeeper {
     }
 
     @Override
-    public void test(ScoreEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(ScoreEvent event) {
         if (event == null)
-            throw new EventConsumerException("No event");
+            return new EventConsumerProblem("No event");
         switch (event.getType()) {
             case Play_Development:
                 if (event.getPayload() != DevelopmentCard.Knight)
-                    throw new EventConsumerException("Uninterested");
+                    return new EventConsumerProblem("Uninterested");
                 break;
             default:
-                throw new EventConsumerException("Uninterested");
+                return new EventConsumerProblem("Uninterested");
         }
+        return null;
     }
 
     @Override
     public void execute(ScoreEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             Username username = event.getOrigin();

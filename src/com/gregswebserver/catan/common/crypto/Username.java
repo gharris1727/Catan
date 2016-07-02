@@ -6,7 +6,7 @@ import com.gregswebserver.catan.common.event.EventPayload;
  * Created by Greg on 8/12/2014.
  * A username, used for logging the client in. Used to connect to a server and to route ExternalEvents.
  */
-public final class Username extends EventPayload {
+public final class Username extends EventPayload implements Comparable<Username> {
 
     public final String username;
 
@@ -29,5 +29,10 @@ public final class Username extends EventPayload {
 
     public int hashCode() {
         return username.hashCode();
+    }
+
+    @Override
+    public int compareTo(Username username) {
+        return this.username.compareTo(username.username);
     }
 }

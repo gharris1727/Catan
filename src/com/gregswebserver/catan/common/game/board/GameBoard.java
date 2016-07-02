@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.board;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
@@ -18,7 +19,6 @@ import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.util.Direction;
 import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
 import com.gregswebserver.catan.test.common.game.EqualityException;
 
@@ -102,33 +102,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent>, AssertEqu
         return trades;
     }
 
-    public BoardObject refresh(BoardObject object) {
-        if (object instanceof Tile)
-            return hexArray.getTile(object.getPosition());
-        else if (object instanceof Path)
-            return hexArray.getPath(object.getPosition());
-        else if (object instanceof Town)
-            return hexArray.getTown(object.getPosition());
-        return object;
-    }
-
-    public Set<Tile> getAdjacentTiles(Coordinate vertex) {
-        Set<Tile> tiles = new HashSet<>();
-        for (Coordinate a : CoordTransforms.getAdjacentSpacesFromVertex(vertex).values())
-            tiles.add(hexArray.getTile(a));
-        return tiles;
-    }
-
-    public Set<Town> getAdjacentTowns(Coordinate space) {
-        Set<Town> towns = new HashSet<>();
-        for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromSpace(space).values()) {
-            Town town = hexArray.getTown(vertex);
-            if (town != null)
-                towns.add(town);
-        }
-        return towns;
-    }
-
     @Override
     public void undo() throws EventConsumerException {
         if (history.isEmpty())
@@ -143,13 +116,13 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent>, AssertEqu
                     break;
                 case Place_Outpost:
                 case Place_Settlement:
-                    destroyTown((Coordinate) event.getPayload());
+                    hexArray.setTown((Coordinate) event.getPayload(), new EmptyTown());
                     break;
                 case Place_City:
-                    placeSettlement(event.getOrigin(), (Coordinate) event.getPayload());
+                    hexArray.setTown((Coordinate) event.getPayload(), new Settlement(event.getOrigin()));
                     break;
                 case Place_Road:
-                    destroyRoad((Coordinate) event.getPayload());
+                    hexArray.setPath((Coordinate) event.getPayload(), new EmptyPath());
                     break;
             }
         } catch (Exception e) {
@@ -158,61 +131,108 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent>, AssertEqu
     }
 
     @Override
-    public void test(BoardEvent event) throws EventConsumerException{
+    public EventConsumerProblem test(BoardEvent event) {
+        Coordinate c = (Coordinate) event.getPayload();
+        //If the user didnt specify a coordinate
+        if (c == null)
+            return new EventConsumerProblem("Location not specified");
         switch (event.getType()) {
             case Place_Robber:
-                if (!canPlaceRobber((Coordinate) event.getPayload()))
-                    throw new EventConsumerException("Cannot place robber");
-                break;
-            case Place_Outpost:
-                if (!canPlaceOutpost((Coordinate) event.getPayload()))
-                    throw new EventConsumerException("Cannot place outpost");
+                //If the coordinate doesn't refer to a resource tile
+                if (!(hexArray.getTile(c) instanceof ResourceTile))
+                    return new EventConsumerProblem("Location invalid");
+                //If the location was already robbed.
+                if (c == robberLocations.peek())
+                    return new EventConsumerProblem("Location already occupied");
                 break;
             case Place_Settlement:
-                if (!canPlaceSettlement(event.getOrigin(), (Coordinate) event.getPayload()))
-                    throw new EventConsumerException("Cannot place settlement");
+                //Flag to track whether there is a valid path nearby to build off of
+                boolean foundRoad = false;
+                for (Coordinate a : CoordTransforms.getAdjacentEdgesFromVertex(c).values()) {
+                    Path p = hexArray.getPath(a);
+                    foundRoad = foundRoad || (p instanceof Road && p.getTeam() == event.getOrigin());
+                }
+                //If there was no nearby roads
+                if (!foundRoad)
+                    return new EventConsumerProblem("No adjoining road");
+                //Intentionally flow into the next case.
+            case Place_Outpost:
+                //If the town is not ready for settling
+                if (!(hexArray.getTown(c) instanceof EmptyTown))
+                    return new EventConsumerProblem("Location invalid");
+                //Look over all adjacent town locations for a nearby town.
+                for (Coordinate town : CoordTransforms.getAdjacentVerticesFromVertex(c).values()) {
+                    Town t = hexArray.getTown(town);
+                    //If there was a settled town nearby.
+                    if (t instanceof Settlement || t instanceof City)
+                        return new EventConsumerProblem("Location too close to other town");
+                }
                 break;
             case Place_City:
-                if (!canPlaceCity(event.getOrigin(), (Coordinate) event.getPayload()))
-                    throw new EventConsumerException("Cannot place city");
-                break;
+                Town e = hexArray.getTown(c);
+                //If the town is not one of our settlements
+                if (!(e instanceof Settlement) || e.getTeam() != event.getOrigin())
+                    return new EventConsumerProblem("Invalid location");
+                return null;
             case Place_Road:
-                if (!canBuildRoad(event.getOrigin(), (Coordinate) event.getPayload()))
-                    throw new EventConsumerException("Cannot place road");
-                break;
+                TeamColor teamColor = event.getOrigin();
+                //If the path is not ready for paving
+                if (!(hexArray.getPath(c) instanceof EmptyPath))
+                    return new EventConsumerProblem("Invalid location");
+                //Go over all adjacent towns
+                for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromEdge(c).values()) {
+                    Town t  = hexArray.getTown(vertex);
+                    //If there is a friendly town there, great!
+                    if (t != null && t.getTeam() == teamColor)
+                        return null;
+                    //If it is an unsettled town, check for incoming roads.
+                    if (t instanceof EmptyTown) {
+                        for (Coordinate edge : CoordTransforms.getAdjacentEdgesFromVertex(vertex).values()) {
+                            Path p = hexArray.getPath(edge);
+                            //If there is a friendly road, great!
+                            if (p instanceof Road && p.getTeam() == teamColor)
+                                return null;
+                        }
+                    }
+                }
+                //Otherwise we couldnt find any friendly people nearby.
+                return new EventConsumerProblem("Location too far from civilization");
         }
+        return null;
     }
 
     @Override
     public void execute(BoardEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
+        TeamColor origin = event.getOrigin();
+        Coordinate c = (Coordinate) event.getPayload();
         try {
             history.push(event);
             switch (event.getType()) {
                 case Place_Robber:
                     Coordinate robberFrom = robberLocations.isEmpty() ? null : robberLocations.peek();
-                    Coordinate robberTo = (Coordinate) event.getPayload();
-                    robberLocations.push(robberTo);
-                    moveRobber(robberFrom, robberTo);
+                    robberLocations.push(c);
+                    moveRobber(robberFrom, c);
                     break;
                 case Place_Outpost:
                 case Place_Settlement:
-                    placeSettlement(event.getOrigin(), (Coordinate) event.getPayload());
+                    //Create the new settlement
+                    hexArray.setTown(c, new Settlement(origin));
                     break;
                 case Place_City:
-                    placeCity(event.getOrigin(), (Coordinate) event.getPayload());
+                    //A city is just an upgrade, should not break any existing roads.
+                    hexArray.setTown(c, new City(origin));
                     break;
                 case Place_Road:
-                    placeRoad(event.getOrigin(), (Coordinate) event.getPayload());
+                    //Create the new road object, and put it in the array.
+                    hexArray.setPath(c, new Road(origin));
                     break;
             }
         } catch (Exception e) {
             throw new EventConsumerException(event, e);
         }
-    }
-
-    private boolean canPlaceRobber(Coordinate c) {
-        return c != robberLocations.peek() && hexArray.getTile(c) instanceof ResourceTile;
     }
 
     private void moveRobber(Coordinate from, Coordinate to) {
@@ -220,88 +240,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent>, AssertEqu
             ((ResourceTile) hexArray.spaces.get(from)).removeRobber();
         if (to != null)
             ((ResourceTile) hexArray.spaces.get(to)).placeRobber();
-    }
-
-    private boolean canPlaceOutpost(Coordinate coord) {
-        Town e = hexArray.getTown(coord);
-        if (!(e instanceof EmptyTown))
-            return false;
-        Map<Direction, Coordinate> adjacent = CoordTransforms.getAdjacentVerticesFromVertex(coord);
-        for (Coordinate a : adjacent.values()) {
-            Town t = hexArray.getTown(a);
-            if (t instanceof Settlement || t instanceof City)
-                return false;
-        }
-        return true;
-    }
-
-    private boolean canPlaceSettlement(TeamColor teamColor, Coordinate coord) {
-        if (!canPlaceOutpost(coord))
-            return false;
-        Map<Direction, Coordinate> adjacent = CoordTransforms.getAdjacentEdgesFromVertex(coord);
-        for (Coordinate a : adjacent.values()) {
-            Path p = hexArray.getPath(a);
-            if (p instanceof Road && p.getTeam() == teamColor)
-                return true;
-        }
-        return false;
-    }
-
-    private void placeSettlement(TeamColor teamColor, Coordinate coord) {
-        //Create the new settlement
-        hexArray.setTown(coord, new Settlement(teamColor));
-    }
-
-    private boolean canPlaceCity(TeamColor teamColor, Coordinate coord) {
-        Town e = hexArray.getTown(coord);
-        if (!(e instanceof Settlement) || e.getTeam() != teamColor)
-            return false;
-        Map<Direction, Coordinate> adjacent = CoordTransforms.getAdjacentVerticesFromVertex(coord);
-        for (Coordinate a : adjacent.values()) {
-            Town t = hexArray.getTown(a);
-            if (t instanceof Settlement || t instanceof City)
-                return false;
-        }
-        return true;
-    }
-
-    private void placeCity(TeamColor teamColor, Coordinate coord) {
-        //A city is just an upgrade, should not break any existing roads.
-        hexArray.setTown(coord, new City(teamColor));
-    }
-
-    private void destroyTown(Coordinate coord) {
-        //Create a new empty town to go in place of the existing one.
-        hexArray.setTown(coord, new EmptyTown());
-    }
-
-    private boolean canBuildRoad(TeamColor teamColor, Coordinate coord) {
-        Path e = hexArray.getPath(coord);
-        if (!(e instanceof EmptyPath))
-            return false;
-        for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromEdge(coord).values()) {
-            Town t  = hexArray.getTown(vertex);
-            if (t != null && t.getTeam() == teamColor)
-                return true;
-            if (t == null || t instanceof EmptyTown) {
-                for (Coordinate edge : CoordTransforms.getAdjacentEdgesFromVertex(vertex).values()) {
-                    Path p = hexArray.getPath(edge);
-                    if (p instanceof Road && p.getTeam() == teamColor)
-                        return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void placeRoad(TeamColor teamColor, Coordinate coord) {
-        //Create the new road object, and put it in the array.
-        hexArray.setPath(coord, new Road(teamColor));
-    }
-
-    private void destroyRoad(Coordinate coord) {
-        //Erase the path from the hexarray.
-        hexArray.setPath(coord, new EmptyPath());
     }
 
     @Override

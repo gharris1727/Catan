@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.board.BoardEvent;
 import com.gregswebserver.catan.common.game.board.BoardEventType;
@@ -13,6 +14,7 @@ import com.gregswebserver.catan.common.game.board.towns.City;
 import com.gregswebserver.catan.common.game.board.towns.Settlement;
 import com.gregswebserver.catan.common.game.board.towns.Town;
 import com.gregswebserver.catan.common.game.event.*;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocation;
 import com.gregswebserver.catan.common.game.gameplay.trade.Trade;
 import com.gregswebserver.catan.common.game.gameplay.trade.TradingPostType;
 import com.gregswebserver.catan.common.game.gamestate.*;
@@ -47,6 +49,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
     //Permanent data
     private final GameRules rules;
+    private TeamAllocation teamAllocation;
 
     //Game state storage.
     private final GameBoard board;
@@ -63,9 +66,10 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
     public CatanGame(GameSettings settings) {
         rules = settings.rules;
+        teamAllocation = settings.playerTeams.allocate(settings.seed);
         board = settings.boardGenerator.generate(settings.boardLayout, settings.seed);
-        players = new PlayerPool(settings);
-        teams = new TeamPool(settings);
+        players = new PlayerPool(teamAllocation);
+        teams = new TeamPool(teamAllocation);
         state = new RandomizerState(settings);
         history = new Stack<>();
         history.push(new GameHistory(new GameEvent(null, GameEventType.Start, null), Collections.emptyList()));
@@ -85,8 +89,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         return board;
     }
 
-    public PlayerPool getPlayers() {
-        return players;
+    public Player getPlayer(Username username) {
+        return players.getPlayer(username);
     }
 
     public List<GameHistory> getHistory() {
@@ -357,7 +361,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         for (Coordinate space : board.getActiveTiles(state.getDiceRoll())) {
             GameResource resource = ((ResourceTile) board.getTile(space)).getResource();
             if (resource != null) {
-                for (Town town : board.getAdjacentTowns(space)) {
+                for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromSpace(space).values()) {
+                    Town town = board.getTown(vertex);
                     TeamColor teamColor = (town != null ? town.getTeam() : TeamColor.None);
                     if (teamColor != TeamColor.None) {
                         EnumAccumulator<GameResource> teamIncome = income.get(teamColor);
@@ -427,65 +432,59 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         );
     }
 
-    private void test(GameTriggerEvent event) throws EventConsumerException {
+    private EventConsumerProblem test(GameTriggerEvent event) {
         if (event instanceof PlayerEvent)
-            players.test((PlayerEvent) event);
+            return players.test((PlayerEvent) event);
         else if (event instanceof BoardEvent)
-            board.test((BoardEvent) event);
+            return board.test((BoardEvent) event);
         else if (event instanceof TeamEvent)
-            teams.test((TeamEvent) event);
+            return teams.test((TeamEvent) event);
         else if (event instanceof GameStateEvent)
-            state.test((GameStateEvent) event);
+            return state.test((GameStateEvent) event);
         else if (event instanceof ScoreEvent)
-            scoring.test((ScoreEvent) event);
+            return scoring.test((ScoreEvent) event);
         else
-            throw new EventConsumerException("Unknown event type!");
+            return new EventConsumerProblem("Unknown event type!");
     }
 
     @SuppressWarnings("unchecked")
-    private void test(LogicEvent event) throws EventConsumerException {
+    private EventConsumerProblem test(LogicEvent event) {
         Object payload = event.getPayload();
+        EventConsumerProblem problem = null;
         switch (event.getType()) {
             case AND:
                 for (LogicEvent child : (List<LogicEvent>) payload)
-                    test(child);
+                    problem = problem != null ? problem : test(child);
                 break;
             case OR:
-                EventConsumerException fail = new EventConsumerException("No successful case", event);
-                for (LogicEvent child : (List<LogicEvent>) payload)
-                    try {
-                        test(child);
-                        return;
-                    } catch (EventConsumerException e) {
-                        fail.addSuppressed(e);
-                    }
-                throw fail;
-            case NOT:
-                boolean success = true;
-                try {
-                    test((LogicEvent) payload);
-                } catch (EventConsumerException ignored) {
-                    success = false;
+                problem = new EventConsumerProblem("No successful case in" + event);
+                for (LogicEvent child : (List<LogicEvent>) payload) {
+                    EventConsumerProblem childProblem = test(child);
+                    if (problem != null && childProblem != null)
+                        problem.addCause(childProblem);
+                    else
+                        problem = null;
                 }
-                if (success)
-                    throw new EventConsumerException("Event successful", (LogicEvent) payload);
+                break;
+            case NOT:
+                if (test((LogicEvent) payload) == null)
+                    problem = new EventConsumerProblem(payload + " was successful");
+                break;
             case NOP:
                 break;
             case Trigger:
-                test((GameTriggerEvent) payload);
+                problem = test((GameTriggerEvent) payload);
                 break;
         }
+        return problem;
     }
 
     @Override
-    public void test(GameEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(GameEvent event) {
         try {
-            test(getLogicTree(event));
+            return test(getLogicTree(event));
         } catch (Exception e) {
-            if (e instanceof EventConsumerException)
-                throw e;
-            else
-                throw new EventConsumerException("Error occurred while testing", event, e);
+            return new EventConsumerProblem(e.getMessage());
         }
     }
 
@@ -503,15 +502,10 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         else
             throw new EventConsumerException("Unknown event type!");
         for (GameListener listener : listeners) {
-            boolean valid = true;
-            try {
-                listener.test(event);
-            } catch (Exception e) {
-                valid = false;
-                if (e instanceof EventConsumerException)
-                    listener.reportTestError((EventConsumerException) e);
-            }
-            if (valid) {
+            EventConsumerProblem problem = listener.test(event);
+            if (problem != null) {
+                listener.reportTestProblem(problem);
+            } else {
                 try {
                     listener.execute(event);
                 } catch (Exception e) {
@@ -556,7 +550,9 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
     @Override
     public void execute(GameEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             LogicEvent logic = getLogicTree(event);
             List<GameTriggerEvent> actions = new ArrayList<>();
@@ -625,5 +621,9 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
     @Override
     public String toString() {
         return "CatanGame";
+    }
+
+    public TeamAllocation getTeams() {
+        return teamAllocation;
     }
 }

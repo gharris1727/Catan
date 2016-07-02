@@ -2,9 +2,10 @@ package com.gregswebserver.catan.common.game.players;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocation;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
-import com.gregswebserver.catan.common.structure.game.GameSettings;
 import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
 import com.gregswebserver.catan.test.common.game.EqualityException;
 
@@ -20,9 +21,9 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
     private final Stack<Set<Username>> discards;
     private final Stack<PlayerEvent> history;
 
-    public PlayerPool(GameSettings settings) {
+    public PlayerPool(TeamAllocation teamAllocation) {
         players = new HashMap<>();
-        for (Map.Entry<Username, TeamColor> entry : settings.playerTeams.getPlayerTeams().entrySet())
+        for (Map.Entry<Username, TeamColor> entry : teamAllocation.getPlayerTeams().entrySet())
             players.put(entry.getKey(), new HumanPlayer(entry.getKey(), entry.getValue()));
         players.put(null, new Bank());
         discards = new Stack<>();
@@ -79,28 +80,31 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
     }
 
     @Override
-    public void test(PlayerEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(PlayerEvent event) {
         if (event == null)
-            throw new EventConsumerException("No event");
+            return new EventConsumerProblem("No event");
         if (event.getType() == PlayerEventType.Finish_Discarding) {
             for (Username username : this) {
                 Player p = players.get(username);
                 if (p.getDiscardCount() > 0 && !discards.peek().contains(username))
-                    throw new EventConsumerException(username + " has not finished discarding");
+                    return new EventConsumerProblem(username + " has not finished discarding");
             }
+            return null;
         } else {
             Player player = getPlayer(event.getOrigin());
             if (player == null)
-                throw new EventConsumerException("No player");
+                return new EventConsumerProblem("No player");
             if (event.getType() == PlayerEventType.Discard_Resources && discards.peek().contains(event.getOrigin()))
-                throw new EventConsumerException("Player already discarded");
-            player.test(event);
+                return new EventConsumerProblem("Player already discarded");
+            return player.test(event);
         }
     }
 
     @Override
     public void execute(PlayerEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             if (event.getType() == PlayerEventType.Finish_Discarding) {

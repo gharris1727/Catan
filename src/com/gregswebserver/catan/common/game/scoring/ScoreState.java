@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.scoring;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
@@ -61,28 +62,21 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
     }
 
     @Override
-    public void test(ScoreEvent event) throws EventConsumerException {
-        if (event == null)
-            throw new EventConsumerException("No event");
-        //Events are always successfully applied to this listener, but not necessarily other listeners.
+    public EventConsumerProblem test(ScoreEvent event) {
+        //non-null events are always successfully applied to this listener, but not necessarily its child listeners.
+        return event == null ? new EventConsumerProblem("No event") : null;
     }
 
     @Override
     public void execute(ScoreEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             ArrayList<ScoreKeeper> affected = new ArrayList<>();
             history.push(affected);
             for (ScoreKeeper listener : listeners) {
-                boolean successful = true;
-                try {
-                    //Check to see if this event can be applied to this listener.
-                    listener.test(event);
-                } catch (Exception e) {
-                    //If there is an exception, it was not successful.
-                    successful = false;
-                }
-                if (successful) {
+                if (listener.test(event) == null) {
                     //If it was successful, we should apply, and track that it was applied.
                     listener.execute(event);
                     affected.add(listener);

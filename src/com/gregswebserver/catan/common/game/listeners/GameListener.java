@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.listeners;
 
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.game.event.GameTriggerEvent;
 
 /**
@@ -12,5 +13,6 @@ public interface GameListener extends EventConsumer<GameTriggerEvent> {
 
     void reportExecuteError(EventConsumerException event);
 
-    void reportTestError(EventConsumerException e);
+    void reportTestProblem(EventConsumerProblem e);
+
 }

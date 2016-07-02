@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import static com.gregswebserver.catan.common.game.event.GameEventType.*;
 import static org.junit.Assert.fail;
@@ -34,39 +35,41 @@ public class CatanGameTest {
     private final Username bob = new Username("Bob");
     private final Username jeff = new Username("Jeff");
     private final Username steve = new Username("Steve");
-    private GameSettings twoPlayers;
-    private GameSettings fourPlayers;
+    private Set<Username> twoUsers = new HashSet<>(Arrays.asList(greg, bob));
+    private Set<Username> fourUsers = new HashSet<>(Arrays.asList(greg, bob, jeff, steve));
+    private GameSettings twoPlayerGame;
+    private GameSettings fourPlayerGame;
 
     @Before
     public void setupTwoPlayers() {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
-        TeamAllocator players = new RandomTeamAllocator(new HashSet<>(Arrays.asList(greg, bob)));
-        twoPlayers = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
+        TeamAllocator players = new RandomTeamAllocator(twoUsers);
+        twoPlayerGame = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
     @Before
     public void setupFourPlayers() {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
-        TeamAllocator players = new RandomTeamAllocator(new HashSet<>(Arrays.asList(greg, bob, jeff, steve)));
-        fourPlayers = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
+        TeamAllocator players = new RandomTeamAllocator(fourUsers);
+        fourPlayerGame = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
     private CatanGame startTwoPlayerGame() {
-        CatanGame game = new CatanGame(twoPlayers);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18, 6)), true);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
-        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
+        CatanGame game = new CatanGame(twoPlayerGame);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(18, 6)), true);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
         assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
         assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), true);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(20,6)), true);
+        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), true);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
         return game;
     }
 
@@ -93,217 +96,217 @@ public class CatanGameTest {
 
     @Test
     public void testCreateNewGame() {
-        new CatanGame(twoPlayers);
+        new CatanGame(twoPlayerGame);
     }
 
     @Test
     public void testGameBeginning() throws EqualityException {
-        CatanGame game = new CatanGame(twoPlayers);
-        CatanGame game2 = new CatanGame(twoPlayers);
+        CatanGame game = new CatanGame(twoPlayerGame);
+        CatanGame game2 = new CatanGame(twoPlayerGame);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), true);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
         game.assertEquals(game2);
         assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
         assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
         game.assertEquals(game2);
         assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), true);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(20,6)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(20,6)), true);
+        game.assertEquals(game2);
         assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), true);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,7)), true);
+        game.assertEquals(game2);
         assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
         assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
         game.assertEquals(game2);
     }
 
     @Test
     public void testWrongBeginning() throws EqualityException {
-        CatanGame game = new CatanGame(twoPlayers);
-        CatanGame game2 = new CatanGame(twoPlayers);
+        CatanGame game = new CatanGame(twoPlayerGame);
+        CatanGame game2 = new CatanGame(twoPlayerGame);
         //GREG'S TURN
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), false);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), true);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), false);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), false);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), false);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
         game.assertEquals(game2);
         //BOB'S TURN
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
-        game.assertEquals(game2);
-        //BOB'S TURN 2
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
-        game.assertEquals(game2);
-        //GREG'S TURN 2
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), false);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,5)), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), false);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), false);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), false);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,5)), false);
         game.assertEquals(game2);
         assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
+        game.assertEquals(game2);
+        //BOB'S TURN 2
+        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(20,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(20,6)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(20,6)), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(20,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
+        game.assertEquals(game2);
+        //GREG'S TURN 2
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,7)), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
         game.assertEquals(game2);
     }
 
     @Test
     public void testWrongTurns() throws EqualityException {
-        CatanGame game = new CatanGame(twoPlayers);
-        CatanGame game2 = new CatanGame(twoPlayers);
+        CatanGame game = new CatanGame(twoPlayerGame);
+        CatanGame game2 = new CatanGame(twoPlayerGame);
 
         //GREG'S TURN
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), true);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(26,6)), true);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), false);
-        game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
-        game.assertEquals(game2);
-        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
-        game.assertEquals(game2);
-
-        //BOB'S TURN
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), false);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), false);
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,5)), true);
+        assertExecute(game, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), true);
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), false);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), false);
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,5)), true);
+        assertExecute(game, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(26,6)), true);
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(18,6)), false);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), false);
         game.assertEquals(game2);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
         assertExecute(game, new GameEvent(bob, Turn_Advance, null), true);
         assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
         game.assertEquals(game2);
+
+        //BOB'S TURN
         assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,5)), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,5)), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(18,6)), false);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), false);
+        game.assertEquals(game2);
+        assertExecute(game, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
+        game.assertEquals(game2);
+        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), false);
         game.assertEquals(game2);
     }
 
@@ -318,16 +321,16 @@ public class CatanGameTest {
         assertUndo(game2);
         assertUndo(game2);
         assertUndo(game2);
-        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(14,6)), true);
-        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(20,6)), true);
-        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
-        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(16,7)), true);
-        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Settlement, new Coordinate(14,6)), true);
+        assertExecute(game2, new GameEvent(greg, Build_Road, new Coordinate(20,6)), true);
         assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(bob, Build_Settlement, new Coordinate(16,7)), true);
+        assertExecute(game2, new GameEvent(bob, Build_Road, new Coordinate(23,7)), true);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
         game.assertEquals(game2);
         //Turn advance then undo
         assertUndo(game2);
-        assertExecute(game2, new GameEvent(greg, Turn_Advance, null), true);
+        assertExecute(game2, new GameEvent(bob, Turn_Advance, null), true);
         game.assertEquals(game2);
         //TODO: test more undo actions.
     }
@@ -335,13 +338,14 @@ public class CatanGameTest {
     @Test
     public void testRandomGame() throws EqualityException {
         int rounds = 100;
-        GameEventGenerator generator = new GameEventGenerator(0L, twoPlayers.playerTeams.getUsers());
+        GameEventGenerator generator = new GameEventGenerator(0L, twoUsers);
         CatanGame game = startTwoPlayerGame();
         CatanGame game2 = startTwoPlayerGame();
         for (int i = 0; i < rounds;) {
             GameEvent event = generator.next();
+            if (game.test(event) != null)
+                continue;
             try {
-                game.test(event);
                 //Undo Consistency
                 game.execute(event);
                 game.undo();
@@ -352,11 +356,7 @@ public class CatanGameTest {
                 game.assertEquals(game2);
                 i++;
             } catch (EventConsumerException e) {
-                try {
-                    game2.test(event);
-                    fail();
-                } catch (EventConsumerException ignored) {
-                }
+                fail();
             } catch (EqualityException e) {
                 throw new RuntimeException("Consistency error on: " + event, e);
             }

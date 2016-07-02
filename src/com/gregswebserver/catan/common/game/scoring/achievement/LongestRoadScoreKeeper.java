@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.scoring.achievement;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.game.board.GameBoard;
 import com.gregswebserver.catan.common.game.board.hexarray.CoordTransforms;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
@@ -100,21 +101,24 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
     }
 
     @Override
-    public void test(ScoreEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(ScoreEvent event) {
         if (event == null)
-            throw new EventConsumerException("No event");
+            return new EventConsumerProblem("No event");
         switch (event.getType()){
             case Build_Settlement:
             case Build_Road:
                 break;
             default:
-                throw new EventConsumerException("Uninterested");
+                return new EventConsumerProblem("Uninterested");
         }
+        return null;
     }
 
     @Override
     public void execute(ScoreEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             switch (event.getType()){

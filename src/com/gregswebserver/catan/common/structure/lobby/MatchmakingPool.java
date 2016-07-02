@@ -3,6 +3,7 @@ package com.gregswebserver.catan.common.structure.lobby;
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumer;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.EventPayload;
 import com.gregswebserver.catan.common.structure.UserInfo;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
@@ -22,32 +23,32 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
     }
 
     @Override
-    public void test(LobbyEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(LobbyEvent event) {
         Username origin = event.getOrigin();
         boolean exists = clients.hasUser(origin);
         boolean inLobby = exists && lobbies.userInLobby(origin);
         switch (event.getType()) {
             case User_Connect:
                 if (exists)
-                    throw new EventConsumerException("User exists");
+                    return new EventConsumerProblem("User exists");
                 break;
             case User_Disconnect:
                 if (!exists)
-                    throw new EventConsumerException("User does not exist");
+                    return new EventConsumerProblem("User does not exist");
                 break;
             case Lobby_Create:
                 if (!exists)
-                    throw new EventConsumerException("User does not exist");
+                    return new EventConsumerProblem("User does not exist");
                 if (inLobby)
-                    throw new EventConsumerException("User is already in a lobby");
+                    return new EventConsumerProblem("User is already in a lobby");
                 break;
             case Lobby_Join:
                 if (!exists)
-                    throw new EventConsumerException("User does not exist");
+                    return new EventConsumerProblem("User does not exist");
                 if (inLobby)
-                    throw new EventConsumerException("User is already in a lobby");
+                    return new EventConsumerProblem("User is already in a lobby");
                 if (!lobbies.userInLobby((Username) event.getPayload()))
-                    throw new EventConsumerException("Other user is not in a lobby");
+                    return new EventConsumerProblem("Other user is not in a lobby");
                 break;
             case Lobby_Change_Config:
             case Lobby_Leave:
@@ -57,14 +58,17 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
             case Game_Sync:
             case Game_Finish:
                 if (!inLobby)
-                    throw new EventConsumerException("User is not in a lobby");
+                    return new EventConsumerProblem("User is not in a lobby");
                 break;
         }
+        return null;
     }
 
     @Override
     public void execute(LobbyEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             Username origin = event.getOrigin();
             switch (event.getType()) {

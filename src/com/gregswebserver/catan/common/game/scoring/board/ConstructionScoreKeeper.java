@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.scoring.board;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.game.players.PlayerPool;
 import com.gregswebserver.catan.common.game.scoring.ScoreEvent;
 import com.gregswebserver.catan.common.game.scoring.ScoreKeeper;
@@ -56,24 +57,27 @@ public class ConstructionScoreKeeper implements ScoreKeeper {
     }
 
     @Override
-    public void test(ScoreEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(ScoreEvent event) {
         if (event == null)
-            throw new EventConsumerException("No event");
+            return new EventConsumerProblem("No event");
         if (!counts.containsKey(event.getOrigin()))
-            throw new EventConsumerException("No player");
+            return new EventConsumerProblem("No player");
         switch (event.getType()) {
             case Build_Settlement:
             case Build_City:
             case Build_Road:
                 break;
             default:
-                throw new EventConsumerException("Uninteresting");
+                return new EventConsumerProblem("Uninteresting");
         }
+        return null;
     }
 
     @Override
     public void execute(ScoreEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             ConstructionCounter counter = counts.get(event.getOrigin());

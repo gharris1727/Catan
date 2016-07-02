@@ -11,10 +11,14 @@ import java.util.*;
  */
 public class RandomTeamAllocator implements TeamAllocator {
 
-    private final Map<Username, TeamColor> users;
-    private final Map<TeamColor, Set<Username>> teams;
+    private final Set<Username> usernames;
 
     public RandomTeamAllocator(Set<Username> usernames) {
+        this.usernames = usernames;
+    }
+
+    @Override
+    public TeamAllocation allocate(long seed) {
         //Create inner storage for the maps.
         Map<Username, TeamColor> users = new HashMap<>();
         Map<TeamColor, Set<Username>> teams = new EnumMap<>(TeamColor.class);
@@ -22,7 +26,11 @@ public class RandomTeamAllocator implements TeamAllocator {
         //Start allocating teams.
         Iterator<TeamColor> teamAllocator = TeamColor.getTeamSet().iterator();
 
-        for (Username user : usernames) {
+        List<Username> randomizedUsernames = new ArrayList<>(usernames);
+        Collections.sort(randomizedUsernames);
+        Collections.shuffle(randomizedUsernames, new Random(seed));
+
+        for (Username user : randomizedUsernames) {
             //If we exhausted all the teams, then refresh the list and keep going.
             if (!teamAllocator.hasNext())
                 teamAllocator = TeamColor.getTeamSet().iterator();
@@ -39,33 +47,6 @@ public class RandomTeamAllocator implements TeamAllocator {
             teams.get(teamColor).add(user);
         }
 
-        //Make all of the interior collections immutable.
-        for (TeamColor color : teams.keySet()) {
-            teams.put(color, Collections.unmodifiableSet(teams.get(color)));
-        }
-
-        //Make the maps immutable.
-        this.users = Collections.unmodifiableMap(users);
-        this.teams = Collections.unmodifiableMap(teams);
-    }
-
-    @Override
-    public Set<Username> getUsers() {
-        return users.keySet();
-    }
-
-    @Override
-    public Set<TeamColor> getTeams() {
-        return teams.keySet();
-    }
-
-    @Override
-    public Map<Username, TeamColor> getPlayerTeams() {
-        return users;
-    }
-
-    @Override
-    public Map<TeamColor, Set<Username>> getTeamUsers() {
-        return teams;
+        return new TeamAllocation(users, teams);
     }
 }

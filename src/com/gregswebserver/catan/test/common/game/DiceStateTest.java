@@ -1,5 +1,7 @@
-package com.gregswebserver.catan.common.game.gamestate;
+package com.gregswebserver.catan.test.common.game;
 
+import com.gregswebserver.catan.common.game.gamestate.DiceRoll;
+import com.gregswebserver.catan.common.game.gamestate.DiceState;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class DiceStateTest {
 
     long seed = 1232135L;
-    int runs = 1000000;
+    int runs = 100000;
 
     @Test
     public void test() {

@@ -12,10 +12,14 @@ import java.util.*;
  */
 public class PreferenceTeamAllocator implements TeamAllocator {
 
-    private final Map<Username, TeamColor> users;
-    private final Map<TeamColor, Set<Username>> teams;
+    private final Map<Username, TeamColor> preferences;
 
     public PreferenceTeamAllocator(Map<Username, TeamColor> preferences) {
+        this.preferences = preferences;
+    }
+
+    @Override
+    public TeamAllocation allocate(long seed) {
         //Create local inner storage for maps.
         Map<Username, TeamColor> users = new HashMap<>();
         Map<TeamColor, Set<Username>> teams = new EnumMap<>(TeamColor.class);
@@ -55,33 +59,7 @@ public class PreferenceTeamAllocator implements TeamAllocator {
             teams.get(teamColor).add(user);
         }
 
-        //Make all of the interior collections immutable.
-        for (TeamColor color : teams.keySet()) {
-            teams.put(color, Collections.unmodifiableSet(teams.get(color)));
-        }
-
-        //Make the maps immutable.
-        this.users = Collections.unmodifiableMap(users);
-        this.teams = Collections.unmodifiableMap(teams);
+        return new TeamAllocation(users, teams);
     }
 
-    @Override
-    public Set<Username> getUsers() {
-        return users.keySet();
-    }
-
-    @Override
-    public Set<TeamColor> getTeams() {
-        return teams.keySet();
-    }
-
-    @Override
-    public Map<Username, TeamColor> getPlayerTeams() {
-        return users;
-    }
-
-    @Override
-    public Map<TeamColor, Set<Username>> getTeamUsers() {
-        return teams;
-    }
 }

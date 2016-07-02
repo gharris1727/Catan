@@ -2,8 +2,9 @@ package com.gregswebserver.catan.common.game.teams;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
-import com.gregswebserver.catan.common.structure.game.GameSettings;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocation;
 import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
 import com.gregswebserver.catan.test.common.game.EqualityException;
 
@@ -18,10 +19,10 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<Te
     private final Map<TeamColor, Team> teams;
     private final Stack<TeamEvent> history;
 
-    public TeamPool(GameSettings settings) {
+    public TeamPool(TeamAllocation teamAllocation) {
         teams = new EnumMap<>(TeamColor.class);
-        Map<TeamColor, Set<Username>> teamUsers = settings.playerTeams.getTeamUsers();
-        for (TeamColor color : settings.playerTeams.getTeams()) {
+        Map<TeamColor, Set<Username>> teamUsers = teamAllocation.getTeamUsers();
+        for (TeamColor color : teamAllocation.getTeams()) {
             Team team = new Team(color);
             teams.put(color, team);
             for (Username username : teamUsers.get(color))
@@ -55,18 +56,20 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<Te
     }
 
     @Override
-    public void test(TeamEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(TeamEvent event) {
         if (event == null)
-            throw new EventConsumerException("No event");
+            return new EventConsumerProblem("No event");
         Team team = getTeam(event.getOrigin());
         if (team == null)
-            throw new EventConsumerException("No team");
-        team.test(event);
+            return new EventConsumerProblem("No team");
+        return team.test(event);
     }
 
     @Override
     public void execute(TeamEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             getTeam(event.getOrigin()).execute(event);

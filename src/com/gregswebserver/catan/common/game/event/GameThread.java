@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.event;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.QueuedInputThread;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
@@ -50,7 +51,9 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
                 gameEvent = (GameEvent) event.getPayload();
             switch (event.getType()){
                 case Test:
-                    game.test(gameEvent);
+                    EventConsumerProblem problem = game.test(gameEvent);
+                    if (problem != null)
+                        throw new EventConsumerException(problem);
                     break;
                 case Execute:
                     game.execute(gameEvent);

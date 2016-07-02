@@ -159,14 +159,7 @@ public class GameManager {
     }
 
     public boolean test(GameEvent gameEvent) {
-        if (isLive()) {
-            try {
-                local.getGame().test(gameEvent);
-                return true;
-            } catch (EventConsumerException ignored) {
-            }
-        }
-        return false;
+        return isLive() && local.getGame().test(gameEvent) == null;
     }
 
     public Username getLocalUsername() {
@@ -174,7 +167,7 @@ public class GameManager {
     }
 
     public Player getLocalPlayer() {
-        return local.getGame().getPlayers().getPlayer(getLocalUsername());
+        return local.getGame().getPlayer(getLocalUsername());
     }
 
     public CatanGame getLocalGame() {

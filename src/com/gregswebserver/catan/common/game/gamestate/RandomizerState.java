@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.common.game.gamestate;
 
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.structure.game.GameSettings;
@@ -8,8 +9,6 @@ import com.gregswebserver.catan.common.util.ReversiblePRNG;
 import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
 import com.gregswebserver.catan.test.common.game.EqualityException;
 
-import java.util.EnumSet;
-import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -27,10 +26,7 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>,
     public RandomizerState(GameSettings settings) {
         dice = new DiceState(settings.seed);
         cards = new DevelopmentDeckState(settings.rules, settings.seed);
-        Set<TeamColor> set = EnumSet.noneOf(TeamColor.class);
-        for (TeamColor color : settings.playerTeams.getTeams())
-            set.add(color);
-        turns = new TeamTurnState(settings.seed, set);
+        turns = new TeamTurnState(settings.seed, settings.playerTeams.allocate(settings.seed).getTeams());
         theft = new ReversiblePRNG(settings.seed);
         history = new Stack<>();
     }
@@ -63,35 +59,38 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>,
     }
 
     @Override
-    public void test(GameStateEvent event) throws EventConsumerException {
+    public EventConsumerProblem test(GameStateEvent event) {
         if (event == null)
-            throw new EventConsumerException("No event");
+            return new EventConsumerProblem("No event");
         switch (event.getType()) {
             case Roll_Dice:
                 if (!dice.hasNext())
-                    throw new EventConsumerException("No next roll");
+                    return new EventConsumerProblem("No next roll");
                 break;
             case Draw_DevelopmentCard:
                 if (!cards.hasNext())
-                    throw new EventConsumerException("No next card");
+                    return new EventConsumerProblem("No next card");
                 break;
             case Advance_Turn:
                 if (!turns.hasNext())
-                    throw new EventConsumerException("No next turn");
+                    return new EventConsumerProblem("No next turn");
                 break;
             case Advance_Theft:
                 //We always have another number to generate.
                 break;
             case Active_Turn:
                 if (turns.get() != event.getPayload())
-                    throw new EventConsumerException("Not your turn");
+                    return new EventConsumerProblem("Not your turn");
                 break;
         }
+        return null;
     }
 
     @Override
     public void execute(GameStateEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             switch (event.getType()) {

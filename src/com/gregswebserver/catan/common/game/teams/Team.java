@@ -2,6 +2,7 @@ package com.gregswebserver.catan.common.game.teams;
 
 import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.event.EventConsumerException;
+import com.gregswebserver.catan.common.event.EventConsumerProblem;
 import com.gregswebserver.catan.common.event.ReversibleEventConsumer;
 import com.gregswebserver.catan.test.common.game.AssertEqualsTestable;
 import com.gregswebserver.catan.test.common.game.EqualityException;
@@ -90,54 +91,57 @@ public class Team implements ReversibleEventConsumer<TeamEvent>, AssertEqualsTes
     }
 
     @Override
-    public void test(TeamEvent event) throws EventConsumerException{
+    public EventConsumerProblem test(TeamEvent event) {
         switch (event.getType()) {
             case Activate_Robber:
                 if (freeRobber != RobberState.Inactive)
-                    throw new EventConsumerException("Already have free robber");
+                    return new EventConsumerProblem("Already have free robber");
                 break;
             case Use_Robber:
                 if (freeRobber != RobberState.Active)
-                    throw new EventConsumerException("Robber not active");
+                    return new EventConsumerProblem("Robber not active");
                 break;
             case Steal_Resources:
                 if (freeRobber != RobberState.Stealing)
-                    throw new EventConsumerException("Cannot steal");
+                    return new EventConsumerProblem("Cannot steal");
                 break;
             case Build_First_Outpost:
                 if (state != TeamState.Outpost || round != 0)
-                    throw new EventConsumerException("First outpost not avaliable");
+                    return new EventConsumerProblem("First outpost not avaliable");
                 break;
             case Build_Second_Outpost:
                 if (state != TeamState.Outpost || round != 1)
-                    throw new EventConsumerException("Second outpost not avaliable");
+                    return new EventConsumerProblem("Second outpost not avaliable");
                 break;
             case Activate_RoadBuilding:
                 break;
             case Build_Free_Road:
                 if (freeRoads <= 0)
-                    throw new EventConsumerException("Road not avaliable");
+                    return new EventConsumerProblem("Road not avaliable");
                 break;
             case Finish_Setup_Turn:
                 if (state != TeamState.Done)
-                    throw new EventConsumerException("Setup round not finished");
+                    return new EventConsumerProblem("Setup round not finished");
                 if (round >= 2)
-                    throw new EventConsumerException("Setup round finished already");
+                    return new EventConsumerProblem("Setup round finished already");
                 break;
             case Finish_Turn:
                 if (state != TeamState.Done || round < 2)
-                    throw new EventConsumerException("Setup not finished");
+                    return new EventConsumerProblem("Setup not finished");
                 if (freeRobber != RobberState.Inactive)
-                    throw new EventConsumerException("Robber still active");
+                    return new EventConsumerProblem("Robber still active");
                 if (freeRoads != 0)
-                    throw new EventConsumerException("Free roads still avaliable");
+                    return new EventConsumerProblem("Free roads still avaliable");
                 break;
         }
+        return null;
     }
 
     @Override
     public void execute(TeamEvent event) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null)
+            throw new EventConsumerException(problem);
         try {
             history.push(event);
             switch (event.getType()){

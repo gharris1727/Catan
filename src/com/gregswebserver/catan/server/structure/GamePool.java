@@ -5,6 +5,7 @@ import com.gregswebserver.catan.common.game.event.GameControlEvent;
 import com.gregswebserver.catan.common.game.event.GameControlEventType;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameThread;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocation;
 import com.gregswebserver.catan.common.log.LogLevel;
 import com.gregswebserver.catan.common.structure.event.LobbyEvent;
 import com.gregswebserver.catan.common.structure.event.LobbyEventType;
@@ -70,6 +71,10 @@ public class GamePool {
 
     public GameProgress getGameProgress(int gameID) {
         return games.get(gameID).getProgress();
+    }
+
+    public TeamAllocation getGamePlayers(int gameID) {
+        return games.get(gameID).getGame().getTeams();
     }
 
     public void join() {

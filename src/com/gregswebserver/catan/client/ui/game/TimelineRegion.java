@@ -11,7 +11,7 @@ import com.gregswebserver.catan.client.ui.PopupWindow;
 import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameHistory;
-import com.gregswebserver.catan.common.game.players.PlayerPool;
+import com.gregswebserver.catan.common.game.gameplay.allocator.TeamAllocation;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 import com.gregswebserver.catan.common.locale.game.LocalizedGameHistoryPrinter;
 import com.gregswebserver.catan.common.resources.GraphicSet;
@@ -31,7 +31,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
 
     //Required instance details
     private final List<GameHistory> history;
-    private final PlayerPool players;
+    private final TeamAllocation teams;
 
     //Optional interactions
     private ContextRegion context;
@@ -48,7 +48,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         super("Timeline", 1, "timeline");
         //Store instance information
         history = game.getHistory();
-        players = game.getPlayers();
+        teams = game.getTeams();
         //Create sub-regions
         background = new TiledBackground();
         timeline = new ScrollingScreenContainer("TimelineScrollContainer", 1, new EventList());
@@ -135,7 +135,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
                 super("Event " + index, 0);
                 this.index = index;
                 GameEvent event = history.get(index).getGameEvent();
-                TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : players.getPlayer(event.getOrigin()).getTeamColor();
+                TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : teams.getPlayerTeams().get(event.getOrigin());
                 setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
             }
             @Override
