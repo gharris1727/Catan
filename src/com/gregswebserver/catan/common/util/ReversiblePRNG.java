@@ -21,10 +21,6 @@ public class ReversiblePRNG {
         }
     }
 
-    public ReversiblePRNG() {
-        this(System.nanoTime());
-    }
-
     public ReversiblePRNG(long seed) {
         this.seed = seed;
     }

@@ -35,16 +35,8 @@ public class RandomTeamAllocator implements TeamAllocator {
             if (!teamAllocator.hasNext())
                 teamAllocator = TeamColor.getTeamSet().iterator();
 
-            //Get the next team to allocate
-            TeamColor teamColor = teamAllocator.next();
-
-            //If we dont already have a list of users, create it.
-            if (!teams.containsKey(teamColor))
-                teams.put(teamColor, new HashSet<>());
-
-            //Store this user's team allocation.
-            users.put(user, teamColor);
-            teams.get(teamColor).add(user);
+            //Allocate this player to their team.
+            TeamAllocation.allocatePlayer(users, teams, user, teamAllocator.next());
         }
 
         return new TeamAllocation(users, teams);

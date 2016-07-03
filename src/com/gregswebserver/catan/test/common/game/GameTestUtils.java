@@ -13,8 +13,8 @@ import java.util.Set;
  */
 public class GameTestUtils {
 
-    public static Set<Username> generatePlayerUsernames(int count) {
-        Random random = new Random();
+    public static Set<Username> generatePlayerUsernames(long seed, int count) {
+        Random random = new Random(seed);
         Set<Username> users = new HashSet<>();
         int length;
         StringBuilder builder = new StringBuilder();

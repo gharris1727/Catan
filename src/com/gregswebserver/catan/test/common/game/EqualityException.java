@@ -8,7 +8,6 @@ import com.gregswebserver.catan.common.log.Logger;
  */
 public class EqualityException extends Exception {
 
-    @SuppressWarnings({"StringEquality", "ConstantConditions"})
     public static String buildMessage(String message, Object a, Object b) {
         StringBuilder out = new StringBuilder();
         out.append(Logger.ANSI_WHITE);
@@ -18,18 +17,37 @@ public class EqualityException extends Exception {
         String sA = a == null ? "null" : a.toString();
         String sB = b == null ? "null" : b.toString();
 
-        if (sA.equals(sB)) {
-            //Just print out the whole string as there were no changes.
-            out.append(Logger.ANSI_WHITE);
-            out.append(sA);
-        } else if (sA.length() == 0) {
+       if (sA.length() == 0) {
             out.append(Logger.ANSI_GREEN);
-            out.append(sB);
-        } else if (sB.length() == 0) {
-            out.append(Logger.ANSI_RED);
-            out.append(sA);
-        } else {
-            int[][] array = new int[sB.length()+1][sA.length()+1];
+           out.append(sB);
+       } else if (sB.length() == 0) {
+           out.append(Logger.ANSI_RED);
+           out.append(sA);
+       } else if (sA.equals(sB)) {
+           //Just print out the whole string as there were no changes.
+           out.append(Logger.ANSI_WHITE);
+           out.append(sA);
+       } else {
+           int firstDiff;
+           int length = Math.min(sA.length(), sB.length());
+           out.append(Logger.ANSI_WHITE);
+           for (firstDiff = 0; firstDiff < length; firstDiff++)
+               if (sA.charAt(firstDiff) != sB.charAt(firstDiff))
+                   break;
+               else
+                   out.append(sA.charAt(firstDiff));
+           printDiff(out, sA.substring(firstDiff), sB.substring(firstDiff));
+       }
+        out.append(Logger.ANSI_WHITE);
+        out.append(".");
+        out.append(Logger.ANSI_RESET);
+        return out.toString();
+    }
+
+    @SuppressWarnings({"StringEquality", "ConstantConditions"})
+    private static void printDiff(StringBuilder out, String sA, String sB) {
+        try {
+            int[][] array = new int[sB.length() + 1][sA.length() + 1];
             //Put together the first row.
             for (int j = 0; j <= sA.length(); j++) {
                 //Pure deletions from sA -> sB
@@ -88,11 +106,12 @@ public class EqualityException extends Exception {
                         break;
                 }
             }
+        } catch (OutOfMemoryError ignored) {
+            out.append(Logger.ANSI_RED);
+            out.append(sA);
+            out.append(Logger.ANSI_GREEN);
+            out.append(sB);
         }
-        out.append(Logger.ANSI_WHITE);
-        out.append(".");
-        out.append(Logger.ANSI_RESET);
-        return out.toString();
     }
     
     public EqualityException(String message, Object a, Object b) {

@@ -66,14 +66,21 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>,
             case Roll_Dice:
                 if (!dice.hasNext())
                     return new EventConsumerProblem("No next roll");
+                DiceRoll diceRoll = dice.get();
+                if (diceRoll != event.getPayload())
+                    return new EventConsumerProblem("Inconsistent DiceRoll");
                 break;
             case Draw_DevelopmentCard:
                 if (!cards.hasNext())
                     return new EventConsumerProblem("No next card");
+                if (cards.get() != event.getPayload())
+                    return new EventConsumerProblem("Inconsistent DevelopmentCard");
                 break;
             case Advance_Turn:
                 if (!turns.hasNext())
                     return new EventConsumerProblem("No next turn");
+                if (turns.get() != event.getPayload())
+                    return new EventConsumerProblem("Inconsistent TeamColor");
                 break;
             case Advance_Theft:
                 //We always have another number to generate.
@@ -119,9 +126,8 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>,
     }
 
     public DiceRoll getPreviousDiceRoll() {
-        DiceRoll roll = dice.prev();
-        dice.next();
-        return roll;
+        dice.prev();
+        return dice.next();
     }
 
     public DevelopmentCard getDevelopmentCard() {
@@ -133,9 +139,10 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent>,
     }
 
     public TeamColor getNextTeam() {
-        TeamColor color = turns.next();
+        turns.next();
+        TeamColor next = turns.get();
         turns.prev();
-        return color;
+        return next;
     }
 
     public int getTheftInt(int limit) {

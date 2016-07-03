@@ -3,6 +3,8 @@ package com.gregswebserver.catan.common.game.gamestate;
 import com.gregswebserver.catan.common.util.ReversibleIterator;
 import com.gregswebserver.catan.common.util.ReversiblePRNG;
 
+import java.util.Random;
+
 /**
  * Created by greg on 2/21/16.
  * A randomizer to create fair die rolls.
@@ -14,7 +16,7 @@ public class DiceState implements ReversibleIterator<DiceRoll> {
 
     public DiceState(long seed) {
         this.dieOne = new ReversiblePRNG(seed);
-        this.dieTwo = new ReversiblePRNG(seed << 32 | seed >>> 32);
+        this.dieTwo = new ReversiblePRNG(new Random(seed).nextLong());
     }
 
     @Override

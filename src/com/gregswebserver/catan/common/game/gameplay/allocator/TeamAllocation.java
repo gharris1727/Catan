@@ -4,6 +4,7 @@ import com.gregswebserver.catan.common.crypto.Username;
 import com.gregswebserver.catan.common.game.teams.TeamColor;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,6 +27,17 @@ public class TeamAllocation {
         this.users = Collections.unmodifiableMap(users);
         this.teams = Collections.unmodifiableMap(teams);
     }
+
+    public static void allocatePlayer(Map<Username, TeamColor> users, Map<TeamColor, Set<Username>> teams, Username username, TeamColor teamColor) {
+        //If we dont already have a list of users, create it.
+        if (!teams.containsKey(teamColor))
+            teams.put(teamColor, new HashSet<>());
+
+        //Set this user's preference.
+        users.put(username, teamColor);
+        teams.get(teamColor).add(username);
+    }
+
 
     public Set<Username> getUsers() {
         return users.keySet();

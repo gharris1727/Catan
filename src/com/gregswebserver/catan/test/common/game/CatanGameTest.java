@@ -43,14 +43,14 @@ public class CatanGameTest {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
         TeamAllocator players = new RandomTeamAllocator(twoUsers);
-        twoPlayerGame = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
+        twoPlayerGame = new GameSettings(System.nanoTime(), baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
     {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
         TeamAllocator players = new RandomTeamAllocator(fourUsers);
-        fourPlayerGame = new GameSettings(0L, baseLayout, RandomBoardGenerator.instance, baseRules, players);
+        fourPlayerGame = new GameSettings(System.nanoTime(), baseLayout, RandomBoardGenerator.instance, baseRules, players);
     }
 
     private CatanGame startTwoPlayerGame() {
@@ -335,8 +335,8 @@ public class CatanGameTest {
     @Test
     public void testRandomGame() throws EqualityException {
         int rounds = 100;
-        GameEventGenerator generator = new GameEventGenerator(0L, twoUsers);
         CatanGame game = startTwoPlayerGame();
+        GameEventGenerator generator = new GameEventGenerator(twoPlayerGame.seed, game);
         CatanGame game2 = startTwoPlayerGame();
         for (int i = 0; i < rounds;) {
             GameEvent event = generator.next();

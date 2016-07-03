@@ -196,7 +196,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
                             //Advance the turn as regular
                             team(teamColor, TeamEventType.Finish_Turn, teamColor),
                             //Give everyone their income
-                            diceRollEvents(origin),
+                            diceRollEvents(origin, state.getDiceRoll()),
                             //Roll the dice to get the next income round.
                             state(origin, GameStateEventType.Roll_Dice, state.getDiceRoll())
                         )
@@ -346,11 +346,11 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         return new LogicEvent(this, LogicEventType.NOP, null);
     }
 
-    private LogicEvent diceRollEvents(Username origin) {
+    private LogicEvent diceRollEvents(Username origin, DiceRoll diceRoll) {
         //Create a list to collect all of the events that occur based on the dice roll.
         ArrayList<LogicEvent> events = new ArrayList<>();
         //If this roll is a seven, activate the free robber.
-        if (state.getDiceRoll() == DiceRoll.Seven)
+        if (diceRoll == DiceRoll.Seven)
             events.add(team(state.getNextTeam(), TeamEventType.Activate_Robber, null));
         //If the last roll was a seven, make sure that everyone is done discarding.
         if (state.getPreviousDiceRoll() == DiceRoll.Seven)
@@ -358,7 +358,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
         //Temporary storage for tallying the income.
         Map<TeamColor, EnumAccumulator<GameResource>> income = new EnumMap<>(TeamColor.class);
         //Traverse the board and collect all of the income.
-        for (Coordinate space : board.getActiveTiles(state.getDiceRoll())) {
+        for (Coordinate space : board.getActiveTiles(diceRoll)) {
             GameResource resource = ((ResourceTile) board.getTile(space)).getResource();
             if (resource != null) {
                 for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromSpace(space).values()) {
@@ -457,7 +457,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
                     problem = problem != null ? problem : test(child);
                 break;
             case OR:
-                problem = new EventConsumerProblem("No successful case in" + event);
+                problem = new EventConsumerProblem("No successful case");
                 for (LogicEvent child : (List<LogicEvent>) payload) {
                     EventConsumerProblem childProblem = test(child);
                     if (problem != null && childProblem != null)
@@ -526,17 +526,13 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
                     execute(child, actions);
                 break;
             case OR:
-                EventConsumerException inconsistent = new EventConsumerException("Inconsistent", event);
                 for (LogicEvent child : (List<LogicEvent>) payload) {
-                    try {
-                        test(child);
+                    if (test(child) == null) {
                         execute(child, actions);
                         return;
-                    } catch (EventConsumerException e) {
-                        inconsistent.addSuppressed(e);
                     }
                 }
-                throw inconsistent;
+                throw new EventConsumerException("Inconsistent OR", event);
             case NOT:
                 break;
             case NOP:
@@ -593,11 +589,11 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
 
         CatanGame catanGame = (CatanGame) o;
 
+        if (!state.equals(catanGame.state)) return false;
         if (!rules.equals(catanGame.rules)) return false;
         if (!board.equals(catanGame.board)) return false;
         if (!players.equals(catanGame.players)) return false;
         if (!teams.equals(catanGame.teams)) return false;
-        if (!state.equals(catanGame.state)) return false;
         return history.equals(catanGame.history);
 
     }
@@ -606,16 +602,16 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent>, AssertEqua
     public void assertEquals(CatanGame other) throws EqualityException {
         if (this == other) return;
 
+        if (!history.equals(other.history))
+            throw new EqualityException("GameHistory", history, other.history);
+        state.assertEquals(other.state);
         rules.assertEquals(other.rules);
         board.assertEquals(other.board);
         players.assertEquals(other.players);
         teams.assertEquals(other.teams);
-        state.assertEquals(other.state);
         scoring.assertEquals(other.scoring);
         if (!listeners.equals(other.listeners))
             throw new EqualityException("GameListeners", listeners, other.listeners);
-        if (!history.equals(other.history))
-            throw new EqualityException("GameHistory", history, other.history);
     }
 
     @Override

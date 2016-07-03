@@ -16,18 +16,26 @@ public class DiceStateTest {
     private final int runs = 100000;
 
     @Test
-    public void test() {
+    public void testStateCreation() {
+        new DiceState(seed);
+    }
+
+    @Test
+    public void testUndo() {
         DiceState a = new DiceState(seed);
-        DiceState b = new DiceState(seed);
         for (int i = 0; i < runs; i++) {
             DiceRoll roll = a.get();
-            assertEquals(roll, b.get());
             assertEquals(roll, a.next());
-            assertEquals(roll, b.next());
             assertEquals(roll, a.prev());
-            assertEquals(roll, b.prev());
             a.next();
-            b.next();
         }
+    }
+
+    @Test
+    public void testDeterminism() {
+        DiceState a = new DiceState(seed);
+        DiceState b = new DiceState(seed);
+        for (int i = 0; i < runs; i++)
+            assertEquals(a.next(), b.next());
     }
 }

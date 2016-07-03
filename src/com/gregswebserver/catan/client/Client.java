@@ -217,6 +217,15 @@ public class Client extends CoreThread implements GameManagerListener {
         logger.log(this + " Local failure", e, LogLevel.WARN);
     }
 
+    @Override
+    public void remoteSuccess(GameControlEvent event) {
+    }
+
+    @Override
+    public void remoteFailure(EventConsumerException e) {
+        logger.log(this + " Remote failure", e, LogLevel.ERROR);
+    }
+
     private void gameEvent(GameEvent event) {
         if (gameManager != null)
             gameManager.remote(event);

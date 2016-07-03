@@ -79,6 +79,7 @@ public class Lobby implements Serializable {
 
         //We need to construct the parts of a GameSettings object.
         BoardLayout boardLayout;
+        long seed = System.nanoTime();
         try {
             BoardLayoutInfo info = null;
             //TODO: put the regex stuff somewhere so that we can use it to validate when saving the game.
@@ -92,7 +93,7 @@ public class Lobby implements Serializable {
             else if (dynamicNumericSeed.find()) // Number specifies a manual seed.
                 info = new BoardLayoutInfo(Long.parseLong(config.getLayoutName()));
             else if ("".equals(config.getLayoutName())) // Empty string triggers random seed.
-                info = new BoardLayoutInfo(System.nanoTime());
+                info = new BoardLayoutInfo(seed);
             boardLayout = ResourceLoader.getBoardLayout(info);
         } catch (ResourceLoadException e) {
             e.printStackTrace();
@@ -123,7 +124,7 @@ public class Lobby implements Serializable {
 
         TeamAllocator players = new PreferenceTeamAllocator(preferences);
 
-        return new GameSettings(System.nanoTime(), boardLayout, boardGenerator, rules, players);
+        return new GameSettings(seed, boardLayout, boardGenerator, rules, players);
     }
 
     public void setGameID(int gameID) {

@@ -60,7 +60,7 @@ public class ReversiblePRNGTest {
     public void testDistribution() {
         int expected = count / max;
         int[] distribution = new int[max];
-        ReversiblePRNG prng = new ReversiblePRNG();
+        ReversiblePRNG prng = new ReversiblePRNG(seed);
         for (int i = 0; i < count; i++)
             distribution[prng.nextInt(max)]++;
         float chisquare = 0.0f;

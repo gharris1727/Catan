@@ -49,18 +49,20 @@ public abstract class GameThread extends QueuedInputThread<GameControlEvent> {
             GameEvent gameEvent = null;
             if (event.getPayload() instanceof GameEvent)
                 gameEvent = (GameEvent) event.getPayload();
-            switch (event.getType()){
-                case Test:
-                    EventConsumerProblem problem = game.test(gameEvent);
-                    if (problem != null)
-                        throw new EventConsumerException(problem);
-                    break;
-                case Execute:
-                    game.execute(gameEvent);
-                    break;
-                case Undo:
-                    game.undo();
-                    break;
+            synchronized(game) {
+                switch (event.getType()) {
+                    case Test:
+                        EventConsumerProblem problem = game.test(gameEvent);
+                        if (problem != null)
+                            throw new EventConsumerException(event + " " + problem.getMessage());
+                        break;
+                    case Execute:
+                        game.execute(gameEvent);
+                        break;
+                    case Undo:
+                        game.undo();
+                        break;
+                }
             }
             onSuccess(event);
             if (game.getWinner() != TeamColor.None)

@@ -49,7 +49,7 @@ public class ConstructionScoreKeeper implements ScoreKeeper {
                     counter.undoBuildRoad();
                     break;
                 default:
-                    throw new EventConsumerException("Inconsistent");
+                    throw new EventConsumerException("Inconsistent ScoreEvent Undo");
             }
         } catch (Exception e) {
             throw new EventConsumerException(event, e);
@@ -92,7 +92,7 @@ public class ConstructionScoreKeeper implements ScoreKeeper {
                     counter.buildRoad();
                     break;
                 default:
-                    throw new EventConsumerException("Inconsistent");
+                    throw new EventConsumerException("Inconsistent ScoreEvent Exec");
             }
         } catch (Exception e) {
             throw new EventConsumerException(event, e);

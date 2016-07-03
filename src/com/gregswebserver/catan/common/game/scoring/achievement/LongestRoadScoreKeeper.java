@@ -93,7 +93,7 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
                     updateEdge((Coordinate) event.getPayload());
                     break;
                 default:
-                    throw new EventConsumerException("Inconsistent");
+                    throw new EventConsumerException("Inconsistent ScoreEvent Undo");
             }
         } catch (Exception e) {
             throw new EventConsumerException(event, e);
@@ -129,7 +129,7 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
                     discoverRoadSystem((Coordinate) event.getPayload());
                     break;
                 default:
-                    throw new EventConsumerException("Inconsistent");
+                    throw new EventConsumerException("Inconsistent ScoreEvent Exec");
             }
         } catch (Exception e) {
             throw new EventConsumerException(event, e);

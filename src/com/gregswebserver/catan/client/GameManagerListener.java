@@ -13,5 +13,9 @@ public interface GameManagerListener {
 
     void localFailure(EventConsumerException e);
 
+    void remoteSuccess(GameControlEvent event);
+
+    void remoteFailure(EventConsumerException e);
+
     void refreshScreen();
 }

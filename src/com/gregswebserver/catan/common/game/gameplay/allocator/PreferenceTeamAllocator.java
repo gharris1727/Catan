@@ -25,7 +25,7 @@ public class PreferenceTeamAllocator implements TeamAllocator {
         Map<TeamColor, Set<Username>> teams = new EnumMap<>(TeamColor.class);
 
         //Keep track of the users and teams that have not been allocated.
-        Set<Username> usersToAllocate = new HashSet<>(preferences.keySet());
+        List<Username> usersToAllocate = new ArrayList<>();
         Set<TeamColor> teamsToAllocate = TeamColor.getTeamSet();
 
         //Go over all of the user preferences and assign them.
@@ -36,27 +36,26 @@ public class PreferenceTeamAllocator implements TeamAllocator {
                 //If they didnt specify a preference, then add them to be addressed later.
                 usersToAllocate.add(preference.getKey());
             } else {
-                //If they had a preference, assign them that color.
+                //Remove this team from first-round re-allocation.
                 teamsToAllocate.remove(teamColor);
-                users.put(preference.getKey(), teamColor);
+                //Assign this player their preferred color.
+                TeamAllocation.allocatePlayer(users, teams, preference.getKey(), preference.getValue());
             }
         }
 
         //Start by assigning teams that missed the first allocation.
         Iterator<TeamColor> teamAllocator = teamsToAllocate.iterator();
 
+        Collections.sort(usersToAllocate);
+        Collections.shuffle(usersToAllocate, new Random(seed));
+
         //Go over all unallocated users
         for (Username user : usersToAllocate) {
-            //Get the next team to allocate
-            TeamColor teamColor = teamAllocator.next();
-
-            //If we dont already have a list of users, create it.
-            if (!teams.containsKey(teamColor))
-                teams.put(teamColor, new HashSet<>());
-
-            //Set this user's preference.
-            users.put(user, teamAllocator.next());
-            teams.get(teamColor).add(user);
+            //If we exhausted all the teams, then refresh the list and keep going.
+            if (!teamAllocator.hasNext())
+                teamAllocator = TeamColor.getTeamSet().iterator();
+            //Assign this player their color.
+            TeamAllocation.allocatePlayer(users, teams, user, teamAllocator.next());
         }
 
         return new TeamAllocation(users, teams);

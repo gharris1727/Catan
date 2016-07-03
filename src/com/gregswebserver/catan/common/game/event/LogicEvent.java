@@ -3,7 +3,7 @@ package com.gregswebserver.catan.common.game.event;
 import com.gregswebserver.catan.common.event.InternalEvent;
 import com.gregswebserver.catan.common.game.CatanGame;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -18,42 +18,30 @@ public class LogicEvent extends InternalEvent<CatanGame, LogicEventType> {
 
     @Override
     public String toString() {
-        ArrayList<String> output = new ArrayList<>();
-        print(output, 0);
-        StringBuilder out = new StringBuilder();
-        for (String line : output) {
-            out.append('\n');
-            out.append(line);
-        }
-        return out.toString();
-    }
-
-    @SuppressWarnings("unchecked")
-    private void print(List<String> output, int depth) {
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i <= depth; i++)
-            line.append('\t');
         switch (getType()) {
             case AND:
             case OR:
-                line.append(getType().toString());
-                output.add(line.toString());
-                for (LogicEvent child : (List<LogicEvent>) getPayload())
-                    child.print(output, depth + 1);
-                break;
+                @SuppressWarnings("unchecked")
+                Iterator<LogicEvent> payload = ((List<LogicEvent>) getPayload()).iterator();
+                if (payload.hasNext()) {
+                    StringBuilder builder = new StringBuilder("(");
+                    builder.append(payload.next().toString());
+                    while (payload.hasNext()) {
+                        builder.append(getType());
+                        builder.append(payload.next());
+                    }
+                    builder.append(")");
+                    return builder.toString();
+                }
+                return "";
             case NOT:
-                line.append(getType().toString());
-                output.add(line.toString());
-                print(output, depth + 1);
-                break;
+                return "!(" + getPayload() + ")";
             case NOP:
-                line.append(getType().toString());
-                output.add(line.toString());
-                break;
+                return "true";
             case Trigger:
-                line.append(getPayload().toString());
-                output.add(line.toString());
-                break;
+                return ((GameTriggerEvent) getPayload()).getType().toString();
+            default:
+                throw new IllegalStateException();
         }
     }
 }

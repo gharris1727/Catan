@@ -1,6 +1,7 @@
 package com.gregswebserver.catan.test.common.game;
 
 import com.gregswebserver.catan.common.crypto.Username;
+import com.gregswebserver.catan.common.game.CatanGame;
 import com.gregswebserver.catan.common.game.board.hexarray.Coordinate;
 import com.gregswebserver.catan.common.game.event.GameEvent;
 import com.gregswebserver.catan.common.game.event.GameEventType;
@@ -19,22 +20,26 @@ import java.util.Set;
 public class GameEventGenerator {
 
     private final Random random;
-    private final int nEvents;
     private final Username[] players;
-    private final int nPlayers;
-    private final int nResources;
+    private final Coordinate[] spaces;
+    private final Coordinate[] vertices;
+    private final Coordinate[] edges;
 
-    public GameEventGenerator(long seed, Set<Username> players) {
+    public GameEventGenerator(long seed, CatanGame game) {
         random = new Random(seed);
-        nEvents = GameEventType.values().length;
-        this.players = players.toArray(new Username[players.size()]);
-        nPlayers = this.players.length;
-        nResources = GameResource.values().length;
+        Set<Username> users = game.getTeams().getUsers();
+        players = users.toArray(new Username[users.size()]);
+        Set<Coordinate> spaceCoordinates = game.getBoard().getTileMap().keySet();
+        spaces = spaceCoordinates.toArray(new Coordinate[spaceCoordinates.size()]);
+        Set<Coordinate> vertexCoordinates = game.getBoard().getTownMap().keySet();
+        vertices = vertexCoordinates.toArray(new Coordinate[vertexCoordinates.size()]);
+        Set<Coordinate> edgeCoordinates = game.getBoard().getPathMap().keySet();
+        edges = edgeCoordinates.toArray(new Coordinate[edgeCoordinates.size()]);
     }
 
     public GameEvent next() {
-        GameEventType type = GameEventType.values()[random.nextInt(nEvents)];
-        Username origin = generateUsername();
+        GameEventType type = GameEventType.values()[random.nextInt(GameEventType.values().length)];
+        Username origin = choose(players);
         Object payload = null;
         switch (type) {
             case Start:
@@ -44,11 +49,15 @@ public class GameEventGenerator {
             case Play_RoadBuilding:
                 break;
             case Player_Move_Robber:
+                payload = choose(spaces);
+                break;
             case Build_Settlement:
             case Build_City:
-            case Build_Road:
             case Steal_Resources:
-                payload = generateCoordinate();
+                payload = choose(vertices);
+                break;
+            case Build_Road:
+                payload = choose(edges);
                 break;
             case Offer_Trade:
                 payload = generateTrade(origin);
@@ -67,12 +76,12 @@ public class GameEventGenerator {
         return new GameEvent(origin, type, payload);
     }
 
-    private GameResource generateGameResource() {
-        return GameResource.values()[random.nextInt(nResources)];
+    private <T> T choose(T[] arr) {
+        return arr[random.nextInt(arr.length)];
     }
 
-    private Username generateUsername() {
-        return players[random.nextInt(nPlayers)];
+    private GameResource generateGameResource() {
+        return choose(GameResource.values());
     }
 
     private EnumCounter<GameResource> generateEnumCounter() {
@@ -83,15 +92,13 @@ public class GameEventGenerator {
     }
 
     private Trade generateTrade() {
-       return generateTrade(generateUsername());
+        return generateTrade(choose(players));
     }
+
     private Trade generateTrade(Username username) {
         return new Trade(username,
             new EnumAccumulator<>(GameResource.class,generateGameResource(), random.nextInt(5)),
             new EnumAccumulator<>(GameResource.class,generateGameResource(), random.nextInt(5)));
     }
 
-    private Coordinate generateCoordinate() {
-        return new Coordinate(random.nextInt(50), random.nextInt(10));
-    }
 }
