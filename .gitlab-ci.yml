@@ -1,0 +1,19 @@
+build:
+  script:
+    - cd catan
+    - ./gradlew build
+
+reports:
+  script:
+    - cd catan
+    - ./gradlew test jacocoTestReport
+  artifacts:
+    paths:
+    - build/reports
+
+distribute:
+  script:
+    - cd catan
+    - ./gradlew buildZip buildTar
+  artifacts:
+    - build/distributions

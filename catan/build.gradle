@@ -1,0 +1,43 @@
+group 'com.gregswebserver'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: "jacoco"
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+mainClassName = "catan.Main"
+
+test.doFirst {
+    useJUnit {
+        excludeCategories 'catan.junit.ManualTests'
+    }
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
+    }
+}
+
+
+task copyLicense(type: Copy) {
+    def distDir = new File("$buildDir/dist")
+    from '../'
+    into distDir
+    include('*.md')
+}
+
+applicationDistribution.from(copyLicense)
