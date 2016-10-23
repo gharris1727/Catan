@@ -516,7 +516,10 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     @SuppressWarnings("unchecked")
     private void execute(LogicEvent event, List<GameTriggerEvent> actions) throws EventConsumerException {
-        test(event);
+        EventConsumerProblem problem = test(event);
+        if (problem != null) {
+            throw new EventConsumerException(problem);
+        }
         Object payload = event.getPayload();
         switch (event.getType()) {
             case AND:
