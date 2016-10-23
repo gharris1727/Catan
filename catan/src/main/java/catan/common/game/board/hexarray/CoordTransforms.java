@@ -2,8 +2,10 @@ package catan.common.game.board.hexarray;
 
 import catan.common.util.Direction;
 
-import java.util.EnumMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by greg on 4/15/16.
@@ -11,7 +13,10 @@ import java.util.Map;
  */
 public class CoordTransforms {
 
-    // additions[<x or y>][<direction>] = translation
+    private static final List<Direction> spaceToSpaceDirections = Arrays.asList(
+            Direction.up, Direction.down, Direction.upleft,
+            Direction.downleft, Direction.upright, Direction.downright
+        );
     private static final int[][][] spaceToSpace = { //ADDITIONS
             { //EVEN
                     {0, 0, 0, 0, 0, -1, -1, 1, 1}, //X
@@ -19,6 +24,11 @@ public class CoordTransforms {
             { //ODD
                     {0, 0, 0, 0, 0, -1, -1, 1, 1,}, //X
                     {0, -1, 1, 0, 0, 0, 1, 0, 1}}}; //Y
+    private static final List<List<Direction>> edgeToEdgeDirections = Arrays.asList(
+        Arrays.asList(Direction.up, Direction.down, Direction.left, Direction.right),
+        Arrays.asList(Direction.up, Direction.down, Direction.left, Direction.right),
+        Arrays.asList(Direction.upleft, Direction.downleft, Direction.upright, Direction.downright)
+    );
     private static final int[][][] edgeToEdge = { //ADDITIONS
             { //ZERO
                     {0, 1, 1, -1, 2, 0, 0, 0, 0}, //X
@@ -38,6 +48,10 @@ public class CoordTransforms {
             { //FIVE
                     {0, 0, 0, 0, 0, -2, -1, 1, 2}, //X
                     {0, 0, 0, 0, 0, 0, 0, 0, 0}}}; //Y
+    private static final List<List<Direction>> vertexToVertexDirections = Arrays.asList(
+        Arrays.asList(Direction.left, Direction.upright, Direction.downright),
+        Arrays.asList(Direction.right, Direction.upleft, Direction.downleft)
+    );
     private static final int[][][] vertexToVertex = { //ADDITIONS
             { //ZERO
                     {0, 0, 0, -1, 0, 0, 0, 1, 1}, //X
@@ -51,10 +65,9 @@ public class CoordTransforms {
             { //THREE
                     {0, 0, 0, 0, 1, -1, -1, 0, 0}, //X
                     {0, 0, 0, 0, 0, 0, 1, 0, 0}}}; //Y
-    // additions[<even or odd>][<x or y>][<direction>] = translation
-    private static final Direction[] spaceToEdgeDirections = new Direction[]{
+    private static final List<Direction> spaceToEdgeDirections = Arrays.asList(
             Direction.up, Direction.down, Direction.upleft,
-            Direction.upright, Direction.downleft, Direction.downright};
+            Direction.upright, Direction.downleft, Direction.downright);
     private static final int[][][] spaceToEdge = { //ADDITIONS
             { //EVEN
                     {0, 2, 2, 0, 0, 0, 1, 3, 4}, //X
@@ -62,9 +75,9 @@ public class CoordTransforms {
             { //ODD
                     {0, 2, 2, 0, 0, 1, 0, 4, 3}, //X
                     {0, 0, 1, 0, 0, 0, 1, 0, 1}}}; //Y
-    private static final Direction[] spaceToVertexDirections = new Direction[]{
+    private static final List<Direction> spaceToVertexDirections = Arrays.asList(
             Direction.left, Direction.right, Direction.upleft,
-            Direction.upright, Direction.downleft, Direction.downright};
+            Direction.upright, Direction.downleft, Direction.downright);
     private static final int[][][] spaceToVertex = { //ADDITIONS
             { //EVEN
                     {0, 0, 0, 0, 3, 1, 1, 2, 2}, //X
@@ -72,13 +85,13 @@ public class CoordTransforms {
             { //ODD
                     {0, 0, 0, 0, 3, 1, 1, 2, 2}, //X
                     {0, 0, 0, 1, 1, 0, 1, 0, 1}}}; //Y
-    private static final Direction[][] edgeToSpaceDirections = new Direction[][]{
-            {Direction.upleft, Direction.downright},
-            {Direction.downleft, Direction.upright},
-            {Direction.up, Direction.down},
-            {Direction.downleft, Direction.upright},
-            {Direction.upleft, Direction.downright},
-            {Direction.up, Direction.down}};
+    private static final List<List<Direction>> edgeToSpaceDirections = Arrays.asList(
+            Arrays.asList(Direction.upleft, Direction.downright),
+            Arrays.asList(Direction.downleft, Direction.upright),
+            Arrays.asList(Direction.up, Direction.down),
+            Arrays.asList(Direction.downleft, Direction.upright),
+            Arrays.asList(Direction.upleft, Direction.downright),
+            Arrays.asList(Direction.up, Direction.down));
     private static final int[][][] edgeToSpace = { //SUBTRACTIONS
             { //ZERO
                     {0, 0, 0, 0, 0, 3, 0, 0, 0}, //X
@@ -98,13 +111,13 @@ public class CoordTransforms {
             { //FIVE
                     {0, 2, 2, 0, 0, 0, 0, 0, 0}, //X
                     {0, 1, 0, 0, 0, 0, 0, 0, 0}}}; //Y
-    private static final Direction[][] edgeToVertexDirections = new Direction[][]{
-            {Direction.upright, Direction.downleft},
-            {Direction.downright, Direction.upleft},
-            {Direction.left, Direction.right},
-            {Direction.downright, Direction.upleft},
-            {Direction.upright, Direction.downleft},
-            {Direction.left, Direction.right}};
+    private static final List<List<Direction>> edgeToVertexDirections = Arrays.asList(
+            Arrays.asList(Direction.upright, Direction.downleft),
+            Arrays.asList(Direction.downright, Direction.upleft),
+            Arrays.asList(Direction.left, Direction.right),
+            Arrays.asList(Direction.downright, Direction.upleft),
+            Arrays.asList(Direction.upright, Direction.downleft),
+            Arrays.asList(Direction.left, Direction.right));
     private static final int[][][] edgeToVertex = { //ADDITIONS
             { //ZERO
                     {0, 0, 0, 0, 0, 0, 0, 1, 0}, //X
@@ -124,9 +137,9 @@ public class CoordTransforms {
             { //FIVE
                     {0, 0, 0, 1, 2, 0, 0, 0, 0}, //X
                     {0, 0, 0, 0, 0, 0, 0, 0, 0}}}; //Y
-    private static final Direction[][] vertexToSpaceDirections = new Direction[][]{
-            {Direction.upleft, Direction.downleft, Direction.right},
-            {Direction.upright, Direction.downright, Direction.left}};
+    private static final List<List<Direction>> vertexToSpaceDirections = Arrays.asList(
+            Arrays.asList(Direction.upleft, Direction.downleft, Direction.right),
+            Arrays.asList(Direction.upright, Direction.downright, Direction.left));
     private static final int[][][] vertexToSpace = { //SUBTRACTIONS
             { //ZERO
                     {0, 0, 0, 0, 0, 2, 2, 0, 0}, //X
@@ -140,9 +153,9 @@ public class CoordTransforms {
             { //THREE
                     {0, 0, 0, 2, 0, 0, 0, 1, 1}, //X
                     {0, 0, 0, 0, 0, 0, 0, 1, 0}}}; //Y
-    private static final Direction[][] vertexToEdgeCoordinates = new Direction[][]{
-            {Direction.upright, Direction.downright, Direction.left},
-            {Direction.upleft, Direction.downleft, Direction.right}};
+    private static final List<List<Direction>> vertexToEdgeDirections = Arrays.asList(
+            Arrays.asList(Direction.upright, Direction.downright, Direction.left),
+            Arrays.asList(Direction.upleft, Direction.downleft, Direction.right));
     private static final int[][][] vertexToEdge = { //ADDITIONS
             { //ZERO
                     {0, 0, 0, -1, 0, 0, 0, 0, 1}, //X
@@ -187,152 +200,93 @@ public class CoordTransforms {
         return new Coordinate(outX, outY);
     }
 
-    private static void checkDirection(Direction d, Direction[] validDirections) throws IllegalDirectionException {
-        //Usable for any of the conversions, just more tedious to use.
-        for (Direction valid : validDirections)
-            if (valid.equals(d)) return;
-        throw new IllegalDirectionException(d);
+    public static Coordinate getSpaceCoordinateFromSpace(Coordinate space, Direction d) {
+        return spaceToSpaceDirections.contains(d) ?
+            convert(space, d, spaceToSpace[space.x % spaceToSpace.length]) : null;
     }
 
-    private static void checkDirection(Direction d, int[][] array) throws IllegalDirectionException {
-        //If both indexes are zero, then that indicates that no motion is made.
-        //only usable for the 1:1 ratio conversions (space-space, edge-edge, vertex-vertex)
-        if (array[0][d.ordinal()] == 0 && array[1][d.ordinal()] == 0)
-            throw new IllegalDirectionException(d);
+    public static Coordinate getEdgeCoordinateFromEdge(Coordinate edge, Direction d) {
+        return edgeToEdgeDirections.get(edge.x % edgeToEdgeDirections.size()).contains(d) ?
+            convert(edge, d, edgeToEdge[edge.x % edgeToEdge.length]) : null;
     }
 
-    public static Coordinate getSpaceCoordinateFromSpace(Coordinate space, Direction d) throws IllegalDirectionException {
-        checkDirection(d, spaceToSpace[space.x % 2]);
-        return convert(space, d, spaceToSpace[space.x % 2]);
+    public static Coordinate getVertexCoordinateFromVertex(Coordinate vertex, Direction d) {
+        return vertexToVertexDirections.get(vertex.x % vertexToVertexDirections.size()).contains(d) ?
+            convert(vertex, d, vertexToVertex[vertex.x % vertexToVertex.length]) : null;
     }
 
-    public static Coordinate getEdgeCoordinateFromEdge(Coordinate edge, Direction d) throws IllegalDirectionException {
-        checkDirection(d, edgeToEdge[edge.x % 6]);
-        return convert(edge, d, edgeToEdge[edge.x % 6]);
+    public static Coordinate getEdgeCoordinateFromSpace(Coordinate space, Direction d) {
+        return spaceToEdgeDirections.contains(d) ?
+            convertUp(space, d, 3, spaceToEdge[space.x % spaceToEdge.length]) : null;
     }
 
-    public static Coordinate getVertexCoordinateFromVertex(Coordinate vertex, Direction d) throws IllegalDirectionException {
-        checkDirection(d, vertexToVertex[vertex.x % 4]);
-        return convert(vertex, d, vertexToVertex[vertex.x % 4]);
+    public static Coordinate getVertexCoordinateFromSpace(Coordinate space, Direction d) {
+        return spaceToVertexDirections.contains(d) ?
+            convertUp(space, d, 2, spaceToVertex[space.x % spaceToVertex.length]) : null;
     }
 
-    public static Coordinate getEdgeCoordinateFromSpace(Coordinate space, Direction d) throws IllegalDirectionException {
-        checkDirection(d, spaceToEdgeDirections);
-        return convertUp(space, d, 3, spaceToEdge[space.x % 2]);
+    public static Coordinate getSpaceCoordinateFromEdge(Coordinate edge, Direction d) {
+        return edgeToSpaceDirections.get(edge.x % edgeToSpaceDirections.size()).contains(d) ?
+            convertDown(edge, d, 3, edgeToSpace[edge.x % edgeToSpace.length]) : null;
     }
 
-    public static Coordinate getVertexCoordinateFromSpace(Coordinate space, Direction d) throws IllegalDirectionException {
-        checkDirection(d, spaceToVertexDirections);
-        return convertUp(space, d, 2, spaceToVertex[space.x % 2]);
+    public static Coordinate getVertexCoordinateFromEdge(Coordinate edge, Direction d) {
+        return edgeToVertexDirections.get(edge.x % edgeToVertexDirections.size()).contains(d) ?
+            convertAcross(edge, d, 3, 2, edgeToVertex[edge.x % edgeToVertex.length]) : null;
     }
 
-    public static Coordinate getSpaceCoordinateFromEdge(Coordinate edge, Direction d) throws IllegalDirectionException {
-        checkDirection(d, edgeToSpaceDirections[edge.x % 6]);
-        return convertDown(edge, d, 3, edgeToSpace[edge.x % 6]);
+    public static Coordinate getSpaceCoordinateFromVertex(Coordinate vertex, Direction d) {
+        return vertexToSpaceDirections.get(vertex.x % vertexToSpaceDirections.size()).contains(d) ?
+            convertDown(vertex, d, 2, vertexToSpace[vertex.x % vertexToSpace.length]) : null;
     }
 
-    public static Coordinate getVertexCoordinateFromEdge(Coordinate edge, Direction d) throws IllegalDirectionException {
-        checkDirection(d, edgeToVertexDirections[edge.x % 6]);
-        return convertAcross(edge, d, 3, 2, edgeToVertex[edge.x % 6]);
-    }
-
-    public static Coordinate getSpaceCoordinateFromVertex(Coordinate vertex, Direction d) throws IllegalDirectionException {
-        checkDirection(d, vertexToSpaceDirections[vertex.x % 2]);
-        return convertDown(vertex, d, 2, vertexToSpace[vertex.x % 4]);
-    }
-
-    public static Coordinate getEdgeCoordinateFromVertex(Coordinate vertex, Direction d) throws IllegalDirectionException {
-        checkDirection(d, vertexToEdgeCoordinates[vertex.x % 2]);
-        return convertAcross(vertex, d, 2, 3, vertexToEdge[vertex.x % 4]);
+    public static Coordinate getEdgeCoordinateFromVertex(Coordinate vertex, Direction d) {
+        return vertexToEdgeDirections.get(vertex.x % vertexToEdgeDirections.size()).contains(d) ?
+            convertAcross(vertex, d, 2, 3, vertexToEdge[vertex.x % vertexToEdge.length]) : null;
     }
 
     public static Map<Direction, Coordinate> getAdjacentSpacesFromSpace(Coordinate space) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getSpaceCoordinateFromSpace(space, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return spaceToSpaceDirections.stream()
+            .collect(Collectors.toMap(d->d, d-> getSpaceCoordinateFromSpace(space, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentEdgesFromEdge(Coordinate edge) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getEdgeCoordinateFromEdge(edge, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return edgeToEdgeDirections.get(edge.x % edgeToEdgeDirections.size()).stream()
+            .collect(Collectors.toMap(d->d, d-> getEdgeCoordinateFromEdge(edge, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentVerticesFromVertex(Coordinate vertex) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getVertexCoordinateFromVertex(vertex, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return vertexToVertexDirections.get(vertex.x % vertexToVertexDirections.size()).stream()
+            .collect(Collectors.toMap(d->d, d-> getVertexCoordinateFromVertex(vertex, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentEdgesFromSpace(Coordinate space) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getEdgeCoordinateFromSpace(space, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return spaceToEdgeDirections.stream()
+            .collect(Collectors.toMap(d->d, d-> getEdgeCoordinateFromSpace(space, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentVerticesFromSpace(Coordinate space) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getVertexCoordinateFromSpace(space, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return spaceToVertexDirections.stream()
+            .collect(Collectors.toMap(d->d, d-> getVertexCoordinateFromSpace(space, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentSpacesFromEdge(Coordinate edge) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getSpaceCoordinateFromEdge(edge, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return edgeToSpaceDirections.get(edge.x % edgeToSpaceDirections.size()).stream()
+            .collect(Collectors.toMap(d->d, d-> getSpaceCoordinateFromEdge(edge, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentVerticesFromEdge(Coordinate edge) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getVertexCoordinateFromEdge(edge, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return edgeToVertexDirections.get(edge.x % edgeToVertexDirections.size()).stream()
+            .collect(Collectors.toMap(d->d, d-> getVertexCoordinateFromEdge(edge, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentSpacesFromVertex(Coordinate vertex) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getSpaceCoordinateFromVertex(vertex, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return vertexToSpaceDirections.get(vertex.x % vertexToSpaceDirections.size()).stream()
+            .collect(Collectors.toMap(d->d, d-> getSpaceCoordinateFromVertex(vertex, d)));
     }
 
     public static Map<Direction, Coordinate> getAdjacentEdgesFromVertex(Coordinate vertex) {
-        Map<Direction, Coordinate> out = new EnumMap<>(Direction.class);
-        for (Direction d : Direction.values()) {
-            try {
-                out.put(d, getEdgeCoordinateFromVertex(vertex, d));
-            } catch (IllegalDirectionException ignored) { }
-        }
-        return out;
+        return vertexToEdgeDirections.get(vertex.x % vertexToEdgeDirections.size()).stream()
+            .collect(Collectors.toMap(d->d, d-> getEdgeCoordinateFromVertex(vertex, d)));
     }
 }

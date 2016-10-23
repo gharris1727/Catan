@@ -1,16 +1,17 @@
 package catan.common.game.board.hexarray;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Greg on 8/9/2014.
- * Management class for a 2d-hexArray
+ * Implementation of a two-dimensional array of elements, indexed by x/y int coordinates and Coordinate objects.
  */
-public class TwoDimensionalArray<T> implements Iterable<T> {
+public class TwoDimensionalArray<T> {
 
     private final int sizeX, sizeY;
     private final Object[] data;
-    private int size;
 
     public TwoDimensionalArray(int x, int y) {
         sizeX = x;
@@ -41,7 +42,6 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
         rangeCheck(x, y);
         T obj = get(x, y);
         set(x, y, null);
-        if (obj != null) size--;
         return obj;
     }
 
@@ -49,24 +49,12 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
         return remove(c.x, c.y);
     }
 
-    public Map<Coordinate, T> toMap() {
-        Map<Coordinate, T> coordinates = new HashMap<>();
+    public Set<Coordinate> coordinates() {
+        Set<Coordinate> coordinates = new HashSet<>();
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
                 T obj = get(x, y);
                 if (obj != null) {
-                    coordinates.put(new Coordinate(x, y), obj);
-                }
-            }
-        }
-        return coordinates;
-    }
-
-    public HashSet<Coordinate> getEmptyCoordinates() {
-        HashSet<Coordinate> coordinates = new HashSet<>();
-        for (int y = 0; y < sizeY; y++) {
-            for (int x = 0; x < sizeX; x++) {
-                if (get(x, y) == null) {
                     coordinates.add(new Coordinate(x, y));
                 }
             }
@@ -74,77 +62,10 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
         return coordinates;
     }
 
-    public HashSet<Coordinate> getAllCoordinates() {
-        HashSet<Coordinate> coordinates = new HashSet<>();
-        for (int y = 0; y < sizeY; y++) {
-            for (int x = 0; x < sizeX; x++) {
-                coordinates.add(new Coordinate(x, y));
-            }
-        }
-        return coordinates;
-    }
-
-    public void rangeCheck(int x, int y) {
+    private void rangeCheck(int x, int y) {
         if (x < 0 || x >= sizeX || y < 0 || y >= sizeY) {
-            throw new IndexOutOfBoundsException(indexMessage(x, y, sizeX, sizeY));
+            throw new IndexOutOfBoundsException("X: " + x + "/" + sizeX + " Y: " + y + "/" + sizeY);
         }
-    }
-
-    public void rangeCheck(Coordinate c) {
-        rangeCheck(c.x, c.y);
-    }
-
-    private String indexMessage(int x, int y, int limitX, int limitY) {
-        return "X: " + x + "/" + limitX + " Y: " + y + "/" + limitY;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-
-            private int currentX = 0;
-            private int currentY = 0;
-
-            @Override
-            public boolean hasNext() {
-                try {
-                    while (get(currentX, currentY) == null) { //Either returns null or throws an exception.
-                        increment();
-                        rangeCheck(currentX, currentY);
-                    }
-                    return true;
-                } catch (IndexOutOfBoundsException e) {
-                    return false;
-                }
-            }
-
-            @Override
-            public T next() {
-                if (hasNext()) {
-                    T obj = get(currentX, currentY);
-                    increment();
-                    return obj;
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-
-            @Override
-            public void remove() {
-            }
-
-            private void increment() {
-                currentX++;
-                if (currentX >= sizeX) {
-                    currentX = 0;
-                    currentY++;
-                }
-            }
-        };
-    }
-
-    public int size() {
-        return size;
     }
 
     @Override
@@ -156,17 +77,12 @@ public class TwoDimensionalArray<T> implements Iterable<T> {
 
         if (sizeX != that.sizeX) return false;
         if (sizeY != that.sizeY) return false;
-        if (size != that.size) return false;
         return Arrays.equals(data, that.data);
 
     }
 
     @Override
     public String toString() {
-        return "TwoDimensionalArray{" +
-                "sizeX=" + sizeX +
-                ", sizeY=" + sizeY +
-                ", size=" + size +
-                '}';
+        return "TwoDimensionalArray(" + sizeX + ',' + sizeY + ')';
     }
 }

@@ -12,7 +12,6 @@ import catan.common.game.gamestate.DiceRoll;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created by greg on 1/24/16.
@@ -29,8 +28,8 @@ public class CopyGenerator implements BoardGenerator {
     public GameBoard generate(BoardLayout layout, long seed) {
         Dimension size = layout.getSize();
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
-        Map<DiceRoll, List<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
-        List<Coordinate> tradingPosts = new ArrayList<>();
+        Map<DiceRoll, Set<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
+        Set<Coordinate> tradingPosts = new HashSet<>();
         Iterator<Coordinate> tiles = layout.getTiles();
         Iterator<Coordinate> ports = layout.getPorts();
         Iterator<Terrain> terrain = layout.getTerrain();

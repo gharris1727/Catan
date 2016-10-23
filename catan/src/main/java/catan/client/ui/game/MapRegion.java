@@ -155,12 +155,14 @@ public class MapRegion extends ScrollingScreenRegion {
     @Override
     protected void renderContents() {
         clear();
-        for (Tile tile : board.getTileMap().values())
-            add(new TileObject(tile)).setPosition(tileToScreen(tile.getPosition()));
-        for (Path path : board.getPathMap().values())
-            add(new PathObject(path)).setPosition(edgeToScreen(path.getPosition()));
-        for (Town town : board.getTownMap().values())
-            add(new TownObject(town)).setPosition(vertexToScreen(town.getPosition()));
+        synchronized (board) {
+            for (Coordinate space : board.getSpaceCoordinates())
+                add(new TileObject(board.getTile(space))).setPosition(tileToScreen(space));
+            for (Coordinate edge : board.getEdgeCoordinates())
+                add(new PathObject(board.getPath(edge))).setPosition(edgeToScreen(edge));
+            for (Coordinate vertex : board.getVertexCoordinates())
+                add(new TownObject(board.getTown(vertex))).setPosition(vertexToScreen(vertex));
+        }
         add(background);
     }
 

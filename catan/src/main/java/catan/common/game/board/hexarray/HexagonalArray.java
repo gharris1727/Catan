@@ -4,15 +4,17 @@ import catan.common.game.board.paths.Path;
 import catan.common.game.board.tiles.Tile;
 import catan.common.game.board.towns.Town;
 
+import java.util.Set;
+
 /**
  * Created by Greg on 8/8/2014.
  * Map system for storing board data.
  */
 public class HexagonalArray {
 
-    public final TwoDimensionalArray<Tile> spaces;
-    public final TwoDimensionalArray<Path> edges;
-    public final TwoDimensionalArray<Town> vertices;
+    private final TwoDimensionalArray<Tile> spaces;
+    private final TwoDimensionalArray<Path> edges;
+    private final TwoDimensionalArray<Town> vertices;
 
     public HexagonalArray(int x, int y) {
         spaces = new TwoDimensionalArray<>(x, y); // Number of spaces in a hex map is x * y
@@ -20,23 +22,32 @@ public class HexagonalArray {
         vertices = new TwoDimensionalArray<>(2 * (x + 1), y + 1); // number of vertices in a hex map is less than 2(x+1) * y+1
     }
 
+    public Set<Coordinate> getSpaceCoordinates() {
+        return spaces.coordinates();
+    }
+
+    public Set<Coordinate> getEdgeCoordinates() {
+        return edges.coordinates();
+    }
+
+    public Set<Coordinate> getVertexCoordinates() {
+        return vertices.coordinates();
+    }
+
     public void setTile(Coordinate space, Tile tile) {
         if (tile == null) return;
-        tile.setHexArray(this);
         tile.setPosition(space);
         spaces.set(space, tile);
     }
 
     public void setPath(Coordinate edge, Path path) {
         if (path == null) return;
-        path.setHexArray(this);
         path.setPosition(edge);
         edges.set(edge, path);
     }
 
     public void setTown(Coordinate vertex, Town town) {
         if (town == null) return;
-        town.setHexArray(this);
         town.setPosition(vertex);
         vertices.set(vertex, town);
     }

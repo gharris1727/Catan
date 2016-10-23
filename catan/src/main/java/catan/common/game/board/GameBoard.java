@@ -22,7 +22,6 @@ import catan.common.game.teams.TeamColor;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -32,16 +31,16 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
 
     final Dimension size;
     final HexagonalArray hexArray;
-    final Map<DiceRoll, List<Coordinate>> diceRolls;
-    final List<Coordinate> tradingPosts;
+    final Map<DiceRoll, Set<Coordinate>> diceRolls;
+    final Set<Coordinate> tradingPosts;
     final Stack<BoardEvent> history;
     final Stack<Coordinate> robberLocations;
 
     public GameBoard(
             Dimension size,
             HexagonalArray hexArray,
-            Map<DiceRoll, List<Coordinate>> diceRolls,
-            List<Coordinate> tradingPosts,
+            Map<DiceRoll, Set<Coordinate>> diceRolls,
+            Set<Coordinate> tradingPosts,
             Coordinate initialRobberPosition) {
         this.size = size;
         this.hexArray = hexArray;
@@ -56,38 +55,37 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
         return size;
     }
 
-    public Path getPath(Coordinate c) {
+    public synchronized Path getPath(Coordinate c) {
         return hexArray.getPath(c);
     }
 
-    public Tile getTile(Coordinate c) {
+    public synchronized Tile getTile(Coordinate c) {
         return hexArray.getTile(c);
     }
 
-    public Town getTown(Coordinate c) {
+    public synchronized Town getTown(Coordinate c) {
         return hexArray.getTown(c);
     }
 
-    public Map<Coordinate, Tile> getTileMap() {
-        return hexArray.spaces.toMap();
+    public synchronized Set<Coordinate> getSpaceCoordinates() {
+        return hexArray.getSpaceCoordinates();
     }
 
-    public Map<Coordinate, Path> getPathMap() {
-        return hexArray.edges.toMap();
+    public synchronized Set<Coordinate> getEdgeCoordinates() {
+        return hexArray.getEdgeCoordinates();
     }
 
-    public Map<Coordinate, Town> getTownMap() {
-        return hexArray.vertices.toMap();
+    public synchronized Set<Coordinate> getVertexCoordinates() {
+        return hexArray.getVertexCoordinates();
     }
 
-    public List<Coordinate> getActiveTiles(DiceRoll roll) {
-        if (roll == DiceRoll.Seven)
-            return Collections.emptyList();
-        else
-            return diceRolls.get(roll);
+    public Set<Coordinate> getActiveTiles(DiceRoll roll) {
+        return Collections.unmodifiableSet(
+            roll == DiceRoll.Seven ? Collections.emptySet() : diceRolls.get(roll)
+        );
     }
 
-    public Set<TradingPostType> getTrades(TeamColor teamColor) {
+    public synchronized Set<TradingPostType> getTrades(TeamColor teamColor) {
         Set<TradingPostType> trades = EnumSet.noneOf(TradingPostType.class);
         for (Coordinate tradeSpace : tradingPosts) {
             TradeTile tradeTile = (TradeTile) hexArray.getTile(tradeSpace);
@@ -101,7 +99,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public void undo() throws EventConsumerException {
+    public synchronized void undo() throws EventConsumerException {
         if (history.isEmpty())
             throw new EventConsumerException("No event");
         BoardEvent event = history.pop();
@@ -129,7 +127,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public EventConsumerProblem test(BoardEvent event) {
+    public synchronized EventConsumerProblem test(BoardEvent event) {
         Coordinate c = (Coordinate) event.getPayload();
         //If the user didnt specify a coordinate
         if (c == null)
@@ -200,7 +198,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public void execute(BoardEvent event) throws EventConsumerException {
+    public synchronized void execute(BoardEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
             throw new EventConsumerException(problem);
@@ -235,13 +233,13 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
 
     private void moveRobber(Coordinate from, Coordinate to) {
         if (from != null)
-            ((ResourceTile) hexArray.spaces.get(from)).removeRobber();
+            ((ResourceTile) hexArray.getTile(from)).removeRobber();
         if (to != null)
-            ((ResourceTile) hexArray.spaces.get(to)).placeRobber();
+            ((ResourceTile) hexArray.getTile(to)).placeRobber();
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 

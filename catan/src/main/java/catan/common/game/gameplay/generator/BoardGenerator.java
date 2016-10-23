@@ -14,7 +14,10 @@ import catan.common.game.gamestate.DiceRoll;
 import catan.common.util.Direction;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -24,18 +27,18 @@ public interface BoardGenerator extends Serializable {
 
     GameBoard generate(BoardLayout layout, long seed);
 
-    default void setResourceTile(HexagonalArray hexArray, Map<DiceRoll, List<Coordinate>> diceRolls, Coordinate c, ResourceTile tile) {
+    default void setResourceTile(HexagonalArray hexArray, Map<DiceRoll, Set<Coordinate>> diceRolls, Coordinate c, ResourceTile tile) {
         DiceRoll diceRoll = tile.getDiceRoll();
         hexArray.setTile(c, tile);
-        List<Coordinate> coordinates = diceRolls.get(diceRoll);
+        Set<Coordinate> coordinates = diceRolls.get(diceRoll);
         if (coordinates == null)
-            diceRolls.put(diceRoll, coordinates = new ArrayList<>());
+            diceRolls.put(diceRoll, coordinates = new HashSet<>());
         coordinates.add(c);
     }
 
     //This generator call assumes that only resource tiles have been generated.
     default void generateBeachTiles(HexagonalArray hexArray) {
-        Set<Coordinate> landTiles = hexArray.spaces.toMap().keySet();
+        Set<Coordinate> landTiles = hexArray.getSpaceCoordinates();
 
         Set<Coordinate> beachTiles = new HashSet<>();
         for (Coordinate c1 : landTiles)
@@ -54,7 +57,7 @@ public interface BoardGenerator extends Serializable {
     }
 
     //This generator call assumes beaches have already been generated.
-    default void setTradingPost(HexagonalArray hexArray, List<Coordinate> tradingPosts, Coordinate c, TradingPostType tradeType) {
+    default void setTradingPost(HexagonalArray hexArray, Set<Coordinate> tradingPosts, Coordinate c, TradingPostType tradeType) {
         BeachTile beach = (BeachTile) hexArray.getTile(c);
         hexArray.setTile(c, new TradeTile(beach.getDirection(), beach.getSides(), tradeType));
         tradingPosts.add(c);

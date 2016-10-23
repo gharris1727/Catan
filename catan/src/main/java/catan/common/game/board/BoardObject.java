@@ -1,7 +1,6 @@
 package catan.common.game.board;
 
 import catan.common.game.board.hexarray.Coordinate;
-import catan.common.game.board.hexarray.HexagonalArray;
 
 /**
  * Created by Greg on 8/19/2014.
@@ -9,7 +8,6 @@ import catan.common.game.board.hexarray.HexagonalArray;
  */
 public abstract class BoardObject {
 
-    private HexagonalArray hexArray;
     private Coordinate position;
 
     public Coordinate getPosition() {
@@ -18,14 +16,6 @@ public abstract class BoardObject {
 
     public void setPosition(Coordinate position) {
         this.position = position;
-    }
-
-    public HexagonalArray getHexArray() {
-        return hexArray;
-    }
-
-    public void setHexArray(HexagonalArray hexArray) {
-        this.hexArray = hexArray;
     }
 
     public abstract String toString();
