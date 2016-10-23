@@ -1,10 +1,8 @@
 package catan.client.ui.game.playing;
 
 import catan.client.graphics.masks.RenderMask;
-import catan.client.graphics.ui.ConfigurableScreenRegion;
-import catan.client.graphics.ui.EdgedTiledBackground;
-import catan.client.graphics.ui.TiledBackground;
-import catan.client.graphics.ui.UIConfig;
+import catan.client.graphics.ui.Button;
+import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
@@ -36,7 +34,7 @@ public class DiscardPopup extends PopupWindow {
     //Sub-regions
     private final TiledBackground background;
     private final Map<GameResource, EnumCounterEditRegion<GameResource>> counters;
-    private final catan.client.graphics.ui.Button accept;
+    private final Button accept;
 
     public DiscardPopup(GameManager manager, ConfigurableScreenRegion source) {
         super("DiscardPopup", "discard", source);
@@ -48,7 +46,7 @@ public class DiscardPopup extends PopupWindow {
             counters.put(resource, counter);
             add(counter);
         }
-        accept = new catan.client.graphics.ui.Button("AcceptButton", 2, "accept", "Accept") {
+        accept = new Button("AcceptButton", 2, "accept", "Accept") {
             @Override
             public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 EnumAccumulator<GameResource> copy = new EnumAccumulator<>(GameResource.class, amount);

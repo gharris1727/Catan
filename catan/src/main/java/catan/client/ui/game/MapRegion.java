@@ -11,6 +11,7 @@ import catan.client.graphics.ui.ScrollingScreenRegion;
 import catan.client.graphics.ui.TiledBackground;
 import catan.client.graphics.ui.UIConfig;
 import catan.client.input.UserEventListener;
+import catan.client.structure.GameManager;
 import catan.common.IllegalStateException;
 import catan.common.config.ConfigSource;
 import catan.common.game.board.GameBoard;
@@ -45,7 +46,7 @@ import java.util.Map;
 public class MapRegion extends ScrollingScreenRegion {
 
     //Required instance information.
-    private final GameBoard board;
+    private final GameManager manager;
 
     //Optional interaction: context menus for contextual information.
     private ContextRegion context;
@@ -68,10 +69,10 @@ public class MapRegion extends ScrollingScreenRegion {
     //Sub-regions
     private final TiledBackground background;
 
-    public MapRegion(GameBoard board) {
+    public MapRegion(GameManager manager) {
         super("MapRegion", 0, "map");
         //Store the instance information.
-        this.board = board;
+        this.manager = manager;
         //Create the sub-regions
         background = new EdgedTiledBackground();
         //Add everything to the screen.
@@ -139,8 +140,11 @@ public class MapRegion extends ScrollingScreenRegion {
         TeamColorSwaps teamColorSwaps = new TeamColorSwaps(config.getTeamColors());
         for (TeamColor teamColor : TeamColor.values())
             buildings.put(teamColor, new GraphicSet(buildingSource, buildingMasks, teamColorSwaps.getSwaps(teamColor)));
-        RectangularMask mask = new RectangularMask(boardToScreen(board.getSize()));
 
+        RectangularMask mask;
+        synchronized (manager) {
+            mask = new RectangularMask(boardToScreen(manager.getLocalGame().getBoard().getSize()));
+        }
         Dimension borderBuffer = layout.getDimension("borderbuffer");
         setInsets(new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width));
         setMask(mask);
@@ -155,7 +159,8 @@ public class MapRegion extends ScrollingScreenRegion {
     @Override
     protected void renderContents() {
         clear();
-        synchronized (board) {
+        synchronized (manager) {
+            GameBoard board = manager.getLocalGame().getBoard();
             for (Coordinate space : board.getSpaceCoordinates())
                 add(new TileObject(board.getTile(space))).setPosition(tileToScreen(space));
             for (Coordinate edge : board.getEdgeCoordinates())

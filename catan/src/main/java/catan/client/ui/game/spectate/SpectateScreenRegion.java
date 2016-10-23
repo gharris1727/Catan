@@ -1,5 +1,6 @@
 package catan.client.ui.game.spectate;
 
+import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.ScrollingScreenContainer;
@@ -18,6 +19,7 @@ import java.awt.*;
  */
 public class SpectateScreenRegion extends ClientScreen {
 
+    private final GameManager manager;
     //Configuration dependencies
     private int sidebarWidth;
     private int contextHeight;
@@ -30,12 +32,12 @@ public class SpectateScreenRegion extends ClientScreen {
 
     public SpectateScreenRegion(GameManager manager) {
         super("SpectatorScreen", "spectate");
+        this.manager = manager;
         //Load relevant details
-        context = new ContextRegion();
-        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
+        context = new ContextRegion(manager);
+        MapRegion mapRegion = new MapRegion(manager);
         map = new ScrollingScreenContainer("MapScroll", 0, mapRegion);
-        timeline = new TimelineRegion(manager.getRemoteGame());
-        context.setGameManager(manager);
+        timeline = new TimelineRegion(manager);
         mapRegion.setContext(context);
         timeline.setContext(context);
         //Add everything to the screen
@@ -46,9 +48,11 @@ public class SpectateScreenRegion extends ClientScreen {
 
     @Override
     public void update() {
-        map.update();
-        timeline.update();
-        context.update();
+        synchronized (manager) {
+            map.update();
+            timeline.update();
+            context.update();
+        }
     }
 
     @Override
@@ -75,4 +79,12 @@ public class SpectateScreenRegion extends ClientScreen {
 
         map.center();
     }
+
+    @Override
+    public Graphic getGraphic() {
+        synchronized (manager) {
+            return super.getGraphic();
+        }
+    }
+
 }

@@ -36,13 +36,11 @@ import java.util.List;
 public class ContextRegion extends ConfigurableScreenRegion implements Updatable {
 
     //Instance information
+    private final GameManager manager; //Used to control the local game and create game-changing events.
     private Coordinate targetCoord;
     private Trade targetTrade;
     private int targetHistory;
     private ContextTarget target;
-
-    //Optional modules
-    private GameManager manager; //Used to control the local game and create game-changing events.
 
     //Configuration dependencies
     private GraphicSet graphics;
@@ -54,9 +52,10 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     private final TextLabel detail;
     private final List<ContextButton> buttons;
 
-    public ContextRegion() {
+    public ContextRegion(GameManager manager) {
         super("ContextRegion", 2, "context");
         //Initialize instance information
+        this.manager = manager;
         target = ContextTarget.None;
         //Create sub-regions
         background = new EdgedTiledBackground();
@@ -67,10 +66,6 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         add(background).setClickable(this);
         add(title).setClickable(this);
         add(detail).setClickable(this);
-    }
-
-    public void setGameManager(GameManager manager) {
-        this.manager = manager;
     }
 
     @Override
@@ -132,7 +127,10 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void renderTile() {
-        Tile targetTile = manager.getLocalGame().getBoard().getTile(targetCoord);
+        Tile targetTile;
+        synchronized (manager) {
+            targetTile = manager.getLocalGame().getBoard().getTile(targetCoord);
+        }
         if (targetTile instanceof ResourceTile) {
             ResourceTile tile = (ResourceTile) targetTile;
             title.setText("Tile: " + tile.getTerrain());
@@ -153,14 +151,20 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void renderPath() {
-        Path path = manager.getLocalGame().getBoard().getPath(targetCoord);
+        Path path;
+        synchronized (manager) {
+            path = manager.getLocalGame().getBoard().getPath(targetCoord);
+        }
         title.setText("Path: " + path);
         detail.setText("Owned by: " + path.getTeam());
         generateButton("PurchaseRoad", 2, GameEventType.Build_Road, targetCoord);
     }
 
     private void renderTown() {
-        Town town = manager.getLocalGame().getBoard().getTown(targetCoord);
+        Town town;
+        synchronized (manager) {
+            town = manager.getLocalGame().getBoard().getTown(targetCoord);
+        }
         title.setText("Town: " + town);
         detail.setText("Owned by: " + town.getTeam());
         if (town instanceof EmptyTown)
@@ -180,7 +184,10 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void renderHistory() {
-        GameHistory event = manager.getRemoteGame().getHistory().get(targetHistory);
+        GameHistory event;
+        synchronized (manager) {
+            event = manager.getRemoteGame().getHistory().get(targetHistory);
+        }
         Username origin = event.getGameEvent().getOrigin();
         title.setText("Event: " + gameEventPrinter.getLocalization(event.getGameEvent()));
         String detailText = "";

@@ -3,6 +3,7 @@ package catan.client.ui.game.playing;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.*;
+import catan.client.structure.GameManager;
 import catan.client.ui.game.CardList;
 import catan.common.game.players.Player;
 
@@ -23,12 +24,13 @@ public class InventoryRegion extends ConfigurableScreenRegion implements Updatab
     private final TextLabel username;
     private final CardList cards;
 
-    public InventoryRegion(Player player) {
-        super(player.getName() + "\'sInventory", 2, "inventory");
+    public InventoryRegion(GameManager manager) {
+        super("Inventory", 2, "inventory");
+        Player player = manager.getLocalPlayer();
         //Create sub-regions
         background = new EdgedTiledBackground();
         username = new TextLabel("Username", 1, "username", player.getName().username + " " + player.getTeamColor());
-        cards = new CardList("CardList", 2, "cards", player.getInventory(), player.getDevelopmentCards());
+        cards = new CardList("CardList", 2, "cards", manager, player.getInventory(), player.getDevelopmentCards());
         //Add everything to the screen.
         add(background).setClickable(this);
         add(username).setClickable(this);

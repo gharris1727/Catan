@@ -6,6 +6,7 @@ import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.EdgedTiledBackground;
 import catan.client.graphics.ui.TiledBackground;
 import catan.client.graphics.ui.UIConfig;
+import catan.client.structure.GameManager;
 import catan.common.game.gameplay.trade.Trade;
 
 import java.awt.*;
@@ -24,11 +25,11 @@ public abstract class TradeDisplay extends ConfigurableScreenRegion {
     private final CardList request;
     private final CardList offer;
 
-    protected TradeDisplay(String name, int priority, String configKey, Trade trade) {
+    protected TradeDisplay(String name, int priority, String configKey, GameManager manager, Trade trade) {
         super(name, priority, configKey);
         background = new EdgedTiledBackground();
-        request = new CardList("RequestCardList", 1, "request", trade.getRequest(), null);
-        offer = new CardList("OfferCardList", 1, "offer", trade.getOffer(), null);
+        request = new CardList("RequestCardList", 1, "request", manager, trade.getRequest(), null);
+        offer = new CardList("OfferCardList", 1, "offer", manager, trade.getOffer(), null);
         add(background).setClickable(this);
         add(request).setClickable(this);
         add(offer).setClickable(this);

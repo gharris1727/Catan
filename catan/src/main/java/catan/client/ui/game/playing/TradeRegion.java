@@ -100,8 +100,10 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
         @Override
         protected void renderContents() {
             clear();
-            for (Trade t : manager.getLocalGame().getTrades(manager.getLocalUsername()))
-                add(new Element(t));
+            synchronized (manager) {
+                for (Trade t : manager.getLocalGame().getTrades(manager.getLocalUsername()))
+                    add(new Element(t));
+            }
             super.renderContents();
         }
 
@@ -120,7 +122,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
             private final Trade t;
 
             private Element(Trade t) {
-                super("TradeListElement", 0, "element", t);
+                super("TradeListElement", 0, "element", manager, t);
                 this.t = t;
             }
 

@@ -1,5 +1,6 @@
 package catan.client.ui.game.postgame;
 
+import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.ScrollingScreenContainer;
@@ -18,6 +19,7 @@ import java.awt.*;
  * Allows the players to explore the map, and view the scores that various players recieved.
  */
 public class PostGameScreenRegion extends ClientScreen {
+    private final GameManager manager;
 
     //Configuration dependencies
     private int sidebarWidth;
@@ -32,12 +34,12 @@ public class PostGameScreenRegion extends ClientScreen {
 
     public PostGameScreenRegion(GameManager manager) {
         super("PostgameScreen", "postgame");
-        context = new ContextRegion();
-        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoard());
+        this.manager = manager;
+        context = new ContextRegion(manager);
+        MapRegion mapRegion = new MapRegion(manager);
         map = new ScrollingScreenContainer("MapScroll", 0, mapRegion);
-        scoreboard = new ScoreboardRegion(manager.getLocalGame());
-        timeline = new TimelineRegion(manager.getRemoteGame());
-        context.setGameManager(manager);
+        scoreboard = new ScoreboardRegion(manager);
+        timeline = new TimelineRegion(manager);
         mapRegion.setContext(context);
         timeline.setContext(context);
         add(context);
@@ -48,10 +50,12 @@ public class PostGameScreenRegion extends ClientScreen {
 
     @Override
     public void update() {
-        map.update();
-        timeline.update();
-        scoreboard.update();
-        context.update();
+        synchronized (manager) {
+            map.update();
+            timeline.update();
+            scoreboard.update();
+            context.update();
+        }
     }
 
     @Override
@@ -79,4 +83,12 @@ public class PostGameScreenRegion extends ClientScreen {
 
         map.center();
     }
+
+    @Override
+    public Graphic getGraphic() {
+        synchronized (manager) {
+            return super.getGraphic();
+        }
+    }
+
 }
