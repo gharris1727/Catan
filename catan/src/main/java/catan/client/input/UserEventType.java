@@ -3,6 +3,7 @@ package catan.client.input;
 import catan.client.structure.ConnectionInfo;
 import catan.common.crypto.Username;
 import catan.common.event.EventType;
+import catan.common.game.event.GameEvent;
 import catan.common.structure.lobby.LobbyConfig;
 
 /**
@@ -23,6 +24,7 @@ public enum UserEventType implements EventType {
     Lobby_Quit(null), //Quit from the active lobby.
     Lobby_Edit(LobbyConfig.class), //Edit the current lobby's settings.
     Lobby_Start(null), //Start the game from the lobby.
+    Game_Event(GameEvent.class), //Trigger a new game event to be sent to the server.
     History_Jump(Integer.class), //Jump to that historical event.
     Linger_Trigger(Number.class); //Trigger a delay to call the onLinger method.
 

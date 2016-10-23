@@ -3,7 +3,9 @@ package catan.client.ui.game.playing;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.*;
+import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
+import catan.client.input.UserEventType;
 import catan.client.structure.GameManager;
 import catan.client.ui.game.ContextRegion;
 import catan.client.ui.game.TradeDisplay;
@@ -190,13 +192,15 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
                             offer.increment(resource, -1*diff.get(resource));
                     }
                     Trade trade = new Trade(manager.getLocalUsername(), offer, request);
-                    manager.local(new GameEvent(manager.getLocalUsername(), GameEventType.Offer_Trade, trade));
+                    GameEvent gameEvent = new GameEvent(manager.getLocalUsername(), GameEventType.Offer_Trade, trade);
+                    listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
                 }
             };
             cancel = new catan.client.graphics.ui.Button("CancelButton", 2, "cancel", "Cancel") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    manager.local(new GameEvent(manager.getLocalUsername(), GameEventType.Cancel_Trade, null));
+                    GameEvent gameEvent = new GameEvent(manager.getLocalUsername(), GameEventType.Cancel_Trade, null);
+                    listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
                 }
             };
             for (GameResource resource : diff) {

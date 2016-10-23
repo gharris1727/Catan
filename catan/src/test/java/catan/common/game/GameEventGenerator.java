@@ -30,11 +30,11 @@ public class GameEventGenerator {
         this.game = game;
         Set<Username> users = game.getTeams().getUsers();
         usernames = users.toArray(new Username[users.size()]);
-        Set<Coordinate> spaceCoordinates = game.getBoard().getTileMap().keySet();
+        Set<Coordinate> spaceCoordinates = game.getBoard().getSpaceCoordinates();
         spaces = spaceCoordinates.toArray(new Coordinate[spaceCoordinates.size()]);
-        Set<Coordinate> vertexCoordinates = game.getBoard().getTownMap().keySet();
+        Set<Coordinate> vertexCoordinates = game.getBoard().getVertexCoordinates();
         vertices = vertexCoordinates.toArray(new Coordinate[vertexCoordinates.size()]);
-        Set<Coordinate> edgeCoordinates = game.getBoard().getPathMap().keySet();
+        Set<Coordinate> edgeCoordinates = game.getBoard().getEdgeCoordinates();
         edges = edgeCoordinates.toArray(new Coordinate[edgeCoordinates.size()]);
     }
 

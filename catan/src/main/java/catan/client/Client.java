@@ -33,7 +33,6 @@ import catan.common.crypto.Username;
 import catan.common.event.EventConsumerException;
 import catan.common.event.ExternalEvent;
 import catan.common.event.InternalEvent;
-import catan.common.game.event.GameControlEvent;
 import catan.common.game.event.GameEvent;
 import catan.common.log.LogLevel;
 import catan.common.log.Logger;
@@ -58,7 +57,7 @@ import java.net.UnknownHostException;
  * Everything is handled by a main event queue, which them distributes the events to where they need to go.
  * Client events are intercepted and acted upon.
  */
-public class Client extends CoreThread implements GameManagerListener {
+public class Client extends CoreThread {
 
     private static final PropertiesFileInfo configFile;
     private static final PropertiesFileInfo serverFile;
@@ -199,44 +198,36 @@ public class Client extends CoreThread implements GameManagerListener {
                 outgoing = new LobbyEvent(username, LobbyEventType.Game_Start, lobby.getGameSettings());
                 sendEvent(outgoing);
                 break;
+            case Game_Event:
+                GameEvent gameEvent = (GameEvent) event.getPayload();
+                if (gameManager.test(gameEvent)) {
+                    sendEvent(gameEvent);
+                } else {
+                    //Report the error to the user.
+                }
+                break;
             case History_Jump:
-                gameManager.jumpToEvent((Integer) event.getPayload());
+                try {
+                    gameManager.jumpToEvent((Integer) event.getPayload());
+                } catch (EventConsumerException e) {
+                    logger.log("Error while jumping in history.", e, LogLevel.WARN);
+                }
+                break;
+            case Linger_Trigger:
                 break;
             default:
                 throw new IllegalStateException();
         }
     }
 
-    @Override
-    public void localSuccess(GameControlEvent event) {
-        switch (event.getType()) {
-            case Test:
-                sendEvent((ExternalEvent) event.getPayload());
-                break;
-            case Execute:
-            case Undo:
-                refreshScreen();
-                break;
-        }
-    }
-
-    @Override
-    public void localFailure(EventConsumerException e) {
-        logger.log(this + " Local failure", e, LogLevel.WARN);
-    }
-
-    @Override
-    public void remoteSuccess(GameControlEvent event) {
-    }
-
-    @Override
-    public void remoteFailure(EventConsumerException e) {
-        logger.log(this + " Remote failure", e, LogLevel.ERROR);
-    }
-
     private void gameEvent(GameEvent event) {
         if (gameManager != null)
-            gameManager.remote(event);
+            try {
+                gameManager.remote(event);
+                refreshScreen();
+            } catch (EventConsumerException e) {
+                logger.log("Error while executing event from server.", e, LogLevel.WARN);
+            }
     }
 
     // Control events sent by the server to affect the local client.
@@ -291,7 +282,7 @@ public class Client extends CoreThread implements GameManagerListener {
                 case Game_Leave:
                     break;
                 case Game_Sync:
-                    gameManager = new GameManager(this, logger, token.username, (GameProgress) event.getPayload());
+                    gameManager = new GameManager(token.username, (GameProgress) event.getPayload());
                     if (gameManager.getLocalPlayer() != null)
                         changeScreen(new PlayingScreenRegion(gameManager));
                     else
@@ -381,8 +372,6 @@ public class Client extends CoreThread implements GameManagerListener {
             renderThread.join();
 //        if (chatThread.isRunning())
 //            chatThread.join();
-        if (gameManager != null)
-            gameManager.join();
         if (listener.getThread().isRunning())
             listener.getThread().join();
         serverPool.save();

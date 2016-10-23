@@ -5,7 +5,9 @@ import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.EdgedTiledBackground;
 import catan.client.graphics.ui.TiledBackground;
 import catan.client.graphics.ui.UIConfig;
+import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
+import catan.client.input.UserEventType;
 import catan.client.structure.GameManager;
 import catan.client.ui.PopupWindow;
 import catan.common.game.event.GameEvent;
@@ -51,7 +53,7 @@ public class DiscardPopup extends PopupWindow {
             public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 EnumAccumulator<GameResource> copy = new EnumAccumulator<>(GameResource.class, amount);
                 GameEvent gameEvent = new GameEvent(manager.getLocalUsername(), GameEventType.Discard_Resources, copy);
-                manager.local(gameEvent);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
             }
         };
         add(background).setClickable(this);

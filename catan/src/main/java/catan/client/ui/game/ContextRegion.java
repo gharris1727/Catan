@@ -247,11 +247,9 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void generateButton(String name, int icon, GameEventType type, Object payload) {
-        if (manager.isLive()) {
-            GameEvent event = new GameEvent(manager.getLocalUsername(), type, payload);
-            if (manager.test(event))
-                buttons.add(new ContextButton(name, icon, event));
-        }
+        GameEvent event = new GameEvent(manager.getLocalUsername(), type, payload);
+        if (manager.test(event))
+            buttons.add(new ContextButton(name, icon, event));
     }
 
     private class ContextButton extends GraphicObject {
@@ -265,7 +263,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
 
         @Override
         public void onMouseClick(UserEventListener listener, MouseEvent event) {
-            manager.local(this.event);
+            listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, this.event));
         }
     }
 
