@@ -11,7 +11,7 @@ public abstract class ResourceCache<X extends ResourceCacheKey, Y> {
     private HashMap<X, Y> cache;
     private int stored;
 
-    public Y get(X x) throws ResourceLoadException {
+    public synchronized Y get(X x) throws ResourceLoadException {
         if (!cache.containsKey(x)) {
             Y y = load(x);
             store(x, y);
@@ -19,7 +19,7 @@ public abstract class ResourceCache<X extends ResourceCacheKey, Y> {
         return cache.get(x);
     }
 
-    public void save(X x) throws ResourceLoadException {
+    public synchronized void save(X x) throws ResourceLoadException {
         throw new UnsupportedOperationException("Unable to save this resource");
     }
 
