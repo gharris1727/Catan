@@ -15,11 +15,11 @@ public class TeamAllocationEqualityTester implements EqualityTester<TeamAllocati
     }
 
     @Override
-    public void assertEquals(TeamAllocation a, TeamAllocation b) {
-        if (a == b)
+    public void assertEquals(TeamAllocation expected, TeamAllocation actual) {
+        if (expected == actual)
             return;
 
-        Assert.assertEquals(a.getPlayerTeams(), b.getPlayerTeams());
-        Assert.assertEquals(a.getTeamUsers(), b.getTeamUsers());
+        Assert.assertEquals(expected.getPlayerTeams(), actual.getPlayerTeams());
+        Assert.assertEquals(expected.getTeamUsers(), actual.getTeamUsers());
     }
 }

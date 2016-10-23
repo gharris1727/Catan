@@ -69,7 +69,7 @@ public class GameTestUtils {
         }
     }
 
-    public static void assertGameEquals(CatanGame a, CatanGame b) {
-        CatanGameEqualityTester.INSTANCE.assertEquals(a, b);
+    public static void assertGameEquals(CatanGame expected, CatanGame actual) {
+        CatanGameEqualityTester.INSTANCE.assertEquals(expected, actual);
     }
 }

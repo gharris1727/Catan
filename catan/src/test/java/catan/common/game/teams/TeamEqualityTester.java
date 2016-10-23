@@ -15,16 +15,16 @@ public class TeamEqualityTester implements EqualityTester<Team> {
     }
 
     @Override
-    public void assertEquals(Team a, Team b) {
-        if (a == b)
+    public void assertEquals(Team expected, Team actual) {
+        if (expected == actual)
             return;
 
-        Assert.assertEquals(a.color, b.color);
-        Assert.assertEquals(a.players, b.players);
-        Assert.assertEquals(a.history, b.history);
-        Assert.assertEquals(a.round, b.round);
-        Assert.assertEquals(a.freeRoads, b.freeRoads);
-        Assert.assertEquals(a.state, b.state);
-        Assert.assertEquals(a.freeRobber, b.freeRobber);
+        Assert.assertEquals(expected.color, actual.color);
+        Assert.assertEquals(expected.players, actual.players);
+        Assert.assertEquals(expected.history, actual.history);
+        Assert.assertEquals(expected.round, actual.round);
+        Assert.assertEquals(expected.freeRoads, actual.freeRoads);
+        Assert.assertEquals(expected.state, actual.state);
+        Assert.assertEquals(expected.freeRobber, actual.freeRobber);
     }
 }

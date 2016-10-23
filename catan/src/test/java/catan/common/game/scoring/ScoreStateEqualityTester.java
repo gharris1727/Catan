@@ -16,12 +16,12 @@ public class ScoreStateEqualityTester implements EqualityTester<ScoreState> {
     }
 
     @Override
-    public void assertEquals(ScoreState a, ScoreState b) {
-        if (a == b)
+    public void assertEquals(ScoreState expected, ScoreState actual) {
+        if (expected == actual)
             return;
 
-        PlayerPoolEqualityTester.INSTANCE.assertEquals(a.players, b.players);
-        Assert.assertEquals(a.listeners, b.listeners);
-        Assert.assertEquals(a.history, b.history);
+        PlayerPoolEqualityTester.INSTANCE.assertEquals(expected.players, actual.players);
+        Assert.assertEquals(expected.listeners, actual.listeners);
+        Assert.assertEquals(expected.history, actual.history);
     }
 }

@@ -18,30 +18,30 @@ public final class GameRulesEqualityTester implements EqualityTester<GameRules> 
     }
 
     @Override
-    public void assertEquals(GameRules a, GameRules b) {
-        if (a == b)
+    public void assertEquals(GameRules expected, GameRules actual) {
+        if (expected == actual)
             return;
-        Assert.assertEquals(a.getSettlementResources(), b.getSettlementResources());
-        Assert.assertEquals(a.getCityResources(), b.getCityResources());
-        Assert.assertEquals(a.getPathPoints(), b.getPathPoints());
-        Assert.assertEquals(a.getSettlementPoints(), b.getSettlementPoints());
-        Assert.assertEquals(a.getCityPoints(), b.getCityPoints());
+        Assert.assertEquals(expected.getSettlementResources(), actual.getSettlementResources());
+        Assert.assertEquals(expected.getCityResources(), actual.getCityResources());
+        Assert.assertEquals(expected.getPathPoints(), actual.getPathPoints());
+        Assert.assertEquals(expected.getSettlementPoints(), actual.getSettlementPoints());
+        Assert.assertEquals(expected.getCityPoints(), actual.getCityPoints());
 
         for (AchievementCard ac : AchievementCard.values()) {
-            Assert.assertEquals(a.getAchievementPoints(ac), b.getAchievementPoints(ac));
-            Assert.assertEquals(a.getAchievementMinimum(ac), b.getAchievementMinimum(ac));
+            Assert.assertEquals(expected.getAchievementPoints(ac), actual.getAchievementPoints(ac));
+            Assert.assertEquals(expected.getAchievementMinimum(ac), actual.getAchievementMinimum(ac));
         }
 
         for (DevelopmentCard dc : DevelopmentCard.values()) {
-            Assert.assertEquals(a.getDevelopmentCardPoints(dc), b.getDevelopmentCardPoints(dc));
-            Assert.assertEquals(a.getDevelopmentCardCount(dc), b.getDevelopmentCardCount(dc));
+            Assert.assertEquals(expected.getDevelopmentCardPoints(dc), actual.getDevelopmentCardPoints(dc));
+            Assert.assertEquals(expected.getDevelopmentCardCount(dc), actual.getDevelopmentCardCount(dc));
         }
 
-        Assert.assertEquals(a.getMinimumPoints(), b.getMinimumPoints());
-        Assert.assertEquals(a.getLeadPoints(), b.getLeadPoints());
-        Assert.assertEquals(a.getMaxCards(), b.getMaxCards());
-        Assert.assertEquals(a.getMaxPaths(), b.getMaxPaths());
-        Assert.assertEquals(a.getMaxSettlements(), b.getMaxSettlements());
-        Assert.assertEquals(a.getMaxCities(), b.getMaxCities());
+        Assert.assertEquals(expected.getMinimumPoints(), actual.getMinimumPoints());
+        Assert.assertEquals(expected.getLeadPoints(), actual.getLeadPoints());
+        Assert.assertEquals(expected.getMaxCards(), actual.getMaxCards());
+        Assert.assertEquals(expected.getMaxPaths(), actual.getMaxPaths());
+        Assert.assertEquals(expected.getMaxSettlements(), actual.getMaxSettlements());
+        Assert.assertEquals(expected.getMaxCities(), actual.getMaxCities());
     }
 }

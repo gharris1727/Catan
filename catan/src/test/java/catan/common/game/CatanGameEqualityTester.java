@@ -21,19 +21,19 @@ public class CatanGameEqualityTester implements EqualityTester<CatanGame> {
     }
 
     @Override
-    public void assertEquals(CatanGame a, CatanGame b) {
-        if (a == b)
+    public void assertEquals(CatanGame expected, CatanGame actual) {
+        if (expected == actual)
             return;
 
-        Assert.assertEquals(a.history, b.history);
-        RandomizerStateEqualityTester.INSTANCE.assertEquals(a.state, b.state);
-        GameRulesEqualityTester.INSTANCE.assertEquals(a.rules, b.rules);
-        TeamAllocationEqualityTester.INSTANCE.assertEquals(a.teamAllocation, b.teamAllocation);
-        GameBoardEqualityTester.INSTANCE.assertEquals(a.board, b.board);
-        PlayerPoolEqualityTester.INSTANCE.assertEquals(a.players, b.players);
-        TeamPoolEqualityTester.INSTANCE.assertEquals(a.teams, b.teams);
-        ScoreStateEqualityTester.INSTANCE.assertEquals(a.scoring, b.scoring);
-        Assert.assertEquals(a.listeners, b.listeners);
+        Assert.assertEquals(expected.history, actual.history);
+        RandomizerStateEqualityTester.INSTANCE.assertEquals(expected.state, actual.state);
+        GameRulesEqualityTester.INSTANCE.assertEquals(expected.rules, actual.rules);
+        TeamAllocationEqualityTester.INSTANCE.assertEquals(expected.teamAllocation, actual.teamAllocation);
+        GameBoardEqualityTester.INSTANCE.assertEquals(expected.board, actual.board);
+        PlayerPoolEqualityTester.INSTANCE.assertEquals(expected.players, actual.players);
+        TeamPoolEqualityTester.INSTANCE.assertEquals(expected.teams, actual.teams);
+        ScoreStateEqualityTester.INSTANCE.assertEquals(expected.scoring, actual.scoring);
+        Assert.assertEquals(expected.listeners, actual.listeners);
 
     }
 }

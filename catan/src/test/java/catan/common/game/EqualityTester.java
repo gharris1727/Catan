@@ -6,6 +6,6 @@ package catan.common.game;
  */
 public interface EqualityTester<T> {
 
-    void assertEquals(T a, T b);
+    void assertEquals(T expected, T actual);
 
 }

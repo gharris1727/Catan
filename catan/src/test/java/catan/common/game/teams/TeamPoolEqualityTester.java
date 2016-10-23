@@ -15,16 +15,16 @@ public class TeamPoolEqualityTester implements EqualityTester<TeamPool> {
     }
 
     @Override
-    public void assertEquals(TeamPool a, TeamPool b) {
-        if (a == b)
+    public void assertEquals(TeamPool expected, TeamPool actual) {
+        if (expected == actual)
             return;
 
         for (TeamColor tc : TeamColor.values()) {
-            if (a.teams.containsKey(tc))
-                TeamEqualityTester.INSTANCE.assertEquals(a.teams.get(tc), b.teams.get(tc));
-            else if (b.teams.containsKey(tc))
-                Assert.assertEquals(null, b.teams.get(tc));
+            if (expected.teams.containsKey(tc))
+                TeamEqualityTester.INSTANCE.assertEquals(expected.teams.get(tc), actual.teams.get(tc));
+            else if (actual.teams.containsKey(tc))
+                Assert.assertEquals(null, actual.teams.get(tc));
         }
-        Assert.assertEquals(a.history, b.history);
+        Assert.assertEquals(expected.history, actual.history);
     }
 }

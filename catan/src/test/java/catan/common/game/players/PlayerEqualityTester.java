@@ -21,16 +21,16 @@ public class PlayerEqualityTester implements EqualityTester<Player> {
     }
 
     @Override
-    public void assertEquals(Player a, Player b) {
-        if (a == b)
+    public void assertEquals(Player expected, Player actual) {
+        if (expected == actual)
             return;
 
-        Assert.assertEquals(a.getClass(), b.getClass());
-        Assert.assertEquals(a.getName(), b.getName());
-        Assert.assertEquals(a.getTeamColor(), b.getTeamColor());
-        inventoryEqualityTester.assertEquals(a.getInventory(), b.getInventory());
-        cardsEqualityTester.assertEquals(a.getBoughtCards(), b.getBoughtCards());
-        cardsEqualityTester.assertEquals(a.getDevelopmentCards(), b.getDevelopmentCards());
-        Assert.assertEquals(a.getTrades(), b.getTrades());
+        Assert.assertEquals(expected.getClass(), actual.getClass());
+        Assert.assertEquals(expected.getName(), actual.getName());
+        Assert.assertEquals(expected.getTeamColor(), actual.getTeamColor());
+        inventoryEqualityTester.assertEquals(expected.getInventory(), actual.getInventory());
+        cardsEqualityTester.assertEquals(expected.getBoughtCards(), actual.getBoughtCards());
+        cardsEqualityTester.assertEquals(expected.getDevelopmentCards(), actual.getDevelopmentCards());
+        Assert.assertEquals(expected.getTrades(), actual.getTrades());
     }
 }

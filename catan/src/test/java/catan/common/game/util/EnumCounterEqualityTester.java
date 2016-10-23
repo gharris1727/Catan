@@ -13,11 +13,11 @@ public class EnumCounterEqualityTester<T extends Enum<T>> implements EqualityTes
     }
 
     @Override
-    public void assertEquals(EnumCounter<T> a, EnumCounter<T> b) {
-        if (a == b)
+    public void assertEquals(EnumCounter<T> expected, EnumCounter<T> actual) {
+        if (expected == actual)
             return;
 
-        for (T e : a)
-            Assert.assertEquals(a.get(e),b.get(e));
+        for (T e : expected)
+            Assert.assertEquals(expected.get(e), actual.get(e));
     }
 }

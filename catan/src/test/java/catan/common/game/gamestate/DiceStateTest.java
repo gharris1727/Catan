@@ -28,6 +28,7 @@ public class DiceStateTest {
             DiceRoll roll = a.get();
             assertEquals(roll, a.next());
             assertEquals(roll, a.prev());
+            assertEquals(roll, a.get());
             a.next();
         }
     }

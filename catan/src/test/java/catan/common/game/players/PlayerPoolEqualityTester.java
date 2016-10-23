@@ -16,13 +16,13 @@ public class PlayerPoolEqualityTester implements EqualityTester<PlayerPool> {
     }
 
     @Override
-    public void assertEquals(PlayerPool a, PlayerPool b) {
-        if (a == b)
+    public void assertEquals(PlayerPool expected, PlayerPool actual) {
+        if (expected == actual)
             return;
 
-        for (Username u : a)
-            PlayerEqualityTester.INSTANCE.assertEquals(a.players.get(u), b.players.get(u));
-        Assert.assertEquals(a.discards, b.discards);
-        Assert.assertEquals(a.history, b.history);
+        for (Username u : expected)
+            PlayerEqualityTester.INSTANCE.assertEquals(expected.players.get(u), actual.players.get(u));
+        Assert.assertEquals(expected.discards, actual.discards);
+        Assert.assertEquals(expected.history, actual.history);
     }
 }

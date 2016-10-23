@@ -12,12 +12,12 @@ public class RandomizerStateEqualityTester implements EqualityTester<RandomizerS
     public static final RandomizerStateEqualityTester INSTANCE = new RandomizerStateEqualityTester();
 
     @Override
-    public void assertEquals(RandomizerState a, RandomizerState b) {
-        Assert.assertEquals(a.dice, b.dice);
-        Assert.assertEquals(a.cards, b.cards);
-        Assert.assertEquals(a.turns, b.turns);
-        Assert.assertEquals(a.theft, b.theft);
-        Assert.assertEquals(a.history, b.history);
+    public void assertEquals(RandomizerState expected, RandomizerState actual) {
+        Assert.assertEquals(expected.dice, actual.dice);
+        Assert.assertEquals(expected.cards, actual.cards);
+        Assert.assertEquals(expected.turns, actual.turns);
+        Assert.assertEquals(expected.theft, actual.theft);
+        Assert.assertEquals(expected.history, actual.history);
     }
 
 }

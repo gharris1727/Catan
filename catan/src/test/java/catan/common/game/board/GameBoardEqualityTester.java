@@ -15,15 +15,15 @@ public class GameBoardEqualityTester implements EqualityTester<GameBoard> {
     }
 
     @Override
-    public void assertEquals(GameBoard a, GameBoard b) {
-        if (a == b)
+    public void assertEquals(GameBoard expected, GameBoard actual) {
+        if (expected == actual)
             return;
 
-        Assert.assertEquals(a.size, b.size);
-        Assert.assertEquals(a.hexArray, b.hexArray);
-        Assert.assertEquals(a.diceRolls, b.diceRolls);
-        Assert.assertEquals(a.tradingPosts, b.tradingPosts);
-        Assert.assertEquals(a.history, b.history);
-        Assert.assertEquals(a.robberLocations, b.robberLocations);
+        Assert.assertEquals(expected.size, actual.size);
+        Assert.assertEquals(expected.hexArray, actual.hexArray);
+        Assert.assertEquals(expected.diceRolls, actual.diceRolls);
+        Assert.assertEquals(expected.tradingPosts, actual.tradingPosts);
+        Assert.assertEquals(expected.history, actual.history);
+        Assert.assertEquals(expected.robberLocations, actual.robberLocations);
     }
 }
