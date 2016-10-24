@@ -1,6 +1,5 @@
 package catan.common;
 
-import catan.common.crypto.AuthToken;
 import catan.common.event.ExternalEvent;
 import catan.common.event.GenericEvent;
 import catan.common.event.InternalEvent;
@@ -15,8 +14,6 @@ import catan.common.network.NetEvent;
  * Handles dispatching events by looking at their types.
  */
 public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
-
-    protected AuthToken token;
 
     protected CoreThread(Logger logger) {
         super(logger);
@@ -44,7 +41,4 @@ public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
 
     protected abstract void netEvent(NetEvent event);
 
-    public AuthToken getToken() {
-        return token;
-    }
 }

@@ -1,10 +1,10 @@
 package catan.common.launcher;
 
-import catan.client.Client;
+import catan.client.ClientImpl;
 import catan.common.CoreWindow;
 import catan.common.log.LogLevel;
 import catan.common.log.Logger;
-import catan.server.Server;
+import catan.server.ServerImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,11 +56,11 @@ public class GraphicalLauncher extends CoreWindow {
 
 
     private void startClient() {
-        new Client(logger);
+        new ClientImpl(logger);
     }
 
     private void startServer() {
-        new Server(logger, 25000);
+        new ServerImpl(logger, 25000);
     }
 
     @Override

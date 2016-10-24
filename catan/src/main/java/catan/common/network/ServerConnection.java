@@ -1,5 +1,6 @@
 package catan.common.network;
 
+import catan.common.log.Logger;
 import catan.server.Server;
 
 import java.io.ObjectInputStream;
@@ -18,8 +19,8 @@ public class ServerConnection extends NetConnection {
 
     private final int connectionID;
 
-    public ServerConnection(Server server, Socket socket) {
-        super(server);
+    public ServerConnection(Server server, Logger logger, Socket socket) {
+        super(server, logger);
         synchronized (nextIDLock) {
             this.connectionID = nextID++;
         }

@@ -1,6 +1,7 @@
 package catan;
 
 import catan.client.Client;
+import catan.client.ClientImpl;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventType;
 import catan.client.structure.ConnectionInfo;
@@ -8,6 +9,7 @@ import catan.common.crypto.Username;
 import catan.common.log.Logger;
 import catan.junit.ManualTests;
 import catan.server.Server;
+import catan.server.ServerImpl;
 import org.junit.experimental.categories.Category;
 
 /**
@@ -23,7 +25,7 @@ public class PlayTest {
         Logger logger = new Logger();
         logger.useStdOut();
         //Start a server for testing.
-        Server server = new Server(logger, 25000);
+        Server server = new ServerImpl(logger, 25000);
         //Make sure the server is listening before proceeding, as the creation of a server is asynchronous.
         try {
             while (!server.isListening())
@@ -32,8 +34,8 @@ public class PlayTest {
             e.printStackTrace();
         }
         //Start some clients and trigger some events.
-        Client greg = new Client(logger);
-        Client michael = new Client(logger);
+        Client greg = new ClientImpl(logger);
+        Client michael = new ClientImpl(logger);
         //Create login information for the two clients
         ConnectionInfo gregLogin = new ConnectionInfo("localhost", "25000", "Greg");
         gregLogin.setPassword("password");

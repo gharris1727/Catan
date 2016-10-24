@@ -8,6 +8,7 @@ import catan.common.game.event.GameHistory;
 import catan.common.game.gameplay.allocator.TeamAllocation;
 import catan.common.game.teams.TeamColor;
 import catan.common.log.LogLevel;
+import catan.common.log.Logger;
 import catan.common.structure.event.LobbyEvent;
 import catan.common.structure.event.LobbyEventType;
 import catan.common.structure.game.GameProgress;
@@ -25,11 +26,13 @@ import java.util.List;
 public class GamePool {
 
     private final Server host;
+    private final Logger logger;
     private final HashMap<Integer, GameThread> games;
     private int nextGameID;
 
-    public GamePool(Server host) {
+    public GamePool(Server host, Logger logger) {
         this.host = host;
+        this.logger = logger;
         this.games = new HashMap<>();
         this.nextGameID = 0;
     }
@@ -79,7 +82,7 @@ public class GamePool {
         private final CatanGame game;
 
         private GameThread(GameSettings settings) {
-            super(host.logger);
+            super(GamePool.this.logger);
             gameId = getNextGameID();
             this.settings = settings;
             this.game = new CatanGame(settings);

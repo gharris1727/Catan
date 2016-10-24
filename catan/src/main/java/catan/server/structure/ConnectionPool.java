@@ -1,10 +1,8 @@
 package catan.server.structure;
 
 import catan.common.crypto.Username;
-import catan.common.network.NetEvent;
 import catan.common.network.NetEventType;
 import catan.common.network.ServerConnection;
-import catan.server.Server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,13 +13,11 @@ import java.util.Map;
  */
 public class ConnectionPool {
 
-    private final Server server;
     private final Map<Integer, ServerConnection> connections;
     private final Map<Username, Integer> usernameConnectionIDs;
     private final Map<Integer, Username> connectionUsers;
 
-    public ConnectionPool(Server server) {
-        this.server = server;
+    public ConnectionPool() {
         connections = new HashMap<>();
         usernameConnectionIDs = new HashMap<>();
         connectionUsers = new HashMap<>();
@@ -52,7 +48,7 @@ public class ConnectionPool {
         Integer id = usernameConnectionIDs.remove(username);
         connectionUsers.remove(id);
         if (id != null && connections.containsKey(id))
-            connections.get(id).sendEvent(new NetEvent(server.getToken(), NetEventType.Disconnect, reason));
+            connections.get(id).sendEvent(NetEventType.Disconnect, reason);
     }
 
     public void disconnect(int connectionID) {

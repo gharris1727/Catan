@@ -27,10 +27,10 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     private Clickable hover;
     private Point dragStart;
 
-    public InputListener(Client client, Clickable root) {
+    public InputListener(Client client, Logger logger, Clickable root) {
         this.client = client;
         listener = new UserEventDelegator();
-        this.queue = new HoverTimingThread(client.logger);
+        this.queue = new HoverTimingThread(logger);
         queue.start();
         this.root = root;
         this.nullClickable = new ClickableAdapter() {

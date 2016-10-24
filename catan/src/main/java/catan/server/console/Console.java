@@ -1,7 +1,7 @@
 package catan.server.console;
 
 import catan.common.log.LogLevel;
-import catan.server.Server;
+import catan.common.log.Logger;
 
 /**
  * Created by greg on 4/27/16.
@@ -9,14 +9,14 @@ import catan.server.Server;
  */
 public class Console {
 
-    private final Server server;
+    private final Logger logger;
 
-    public Console(Server server) {
-        this.server = server;
+    public Console(Logger logger) {
+        this.logger = logger;
     }
 
     public void process(String command) {
-        server.logger.log("User command: " + command, LogLevel.DEBUG);
+        logger.log("User command: " + command, LogLevel.DEBUG);
         //TODO: process user input and generate an event to send to the server.
     }
 }

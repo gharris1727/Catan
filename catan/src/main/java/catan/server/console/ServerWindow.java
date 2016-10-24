@@ -3,6 +3,7 @@ package catan.server.console;
 import catan.common.CoreWindow;
 import catan.common.log.LogEvent;
 import catan.common.log.LogListener;
+import catan.common.log.Logger;
 import catan.server.Server;
 import catan.server.ServerEvent;
 import catan.server.ServerEventType;
@@ -19,22 +20,24 @@ import java.awt.event.KeyListener;
 public class ServerWindow extends CoreWindow {
 
     private final Server server;
+    private final Logger logger;
     private final GraphicalConsole graphicalConsole;
 
-    public ServerWindow(Server server, Console console) {
-        super("Settlers of Catan - Server", new Dimension(800, 600), true, server.logger);
+    public ServerWindow(Server server, Logger logger, Console console) {
+        super("Settlers of Catan - Server", new Dimension(800, 600), true, logger);
         this.server = server;
+        this.logger = logger;
         setLayout(new BorderLayout());
         graphicalConsole = new GraphicalConsole(console);
         getContentPane().add(graphicalConsole);
-        server.logger.addListener(graphicalConsole);
+        logger.addListener(graphicalConsole);
         display();
         setVisible(true);
     }
 
     @Override
     protected void onClose() {
-        server.logger.removeListener(graphicalConsole);
+        logger.removeListener(graphicalConsole);
         server.addEvent(new ServerEvent(server, ServerEventType.Quit_All, null));
     }
 

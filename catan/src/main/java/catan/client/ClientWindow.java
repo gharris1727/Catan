@@ -5,6 +5,7 @@ import catan.client.input.InputListener;
 import catan.client.renderer.RenderEvent;
 import catan.client.renderer.RenderEventType;
 import catan.common.CoreWindow;
+import catan.common.log.Logger;
 
 import java.awt.*;
 
@@ -21,8 +22,8 @@ public class ClientWindow extends CoreWindow {
     //Field to prevent the onResize function from spamming setMask requests when there is one still processing.
     private boolean resizing = false;
 
-    public ClientWindow(Client client, InputListener listener) {
-        super("Settlers of Catan - Client", new Dimension(800, 600), true, client.logger);
+    public ClientWindow(Client client, Logger logger, InputListener listener) {
+        super("Settlers of Catan - Client", new Dimension(800, 600), true, logger);
         this.client = client;
         this.listener = listener;
         display();

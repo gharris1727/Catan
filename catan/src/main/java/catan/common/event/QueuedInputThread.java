@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Calls the execute() function repeatedly, but does not necessarily have to block for events.
  * execute() will continue looping until stop() is called and running is set to false.
  */
-public abstract class QueuedInputThread<T> {
+public abstract class QueuedInputThread<T> implements EventProcessor<T> {
 
     public final Logger logger;
     private final BlockingQueue<T> queue;
@@ -66,6 +66,7 @@ public abstract class QueuedInputThread<T> {
     }
 
     //Adds an object to the processing queue.
+    @Override
     public void addEvent(T event) {
         try {
             queue.put(event);

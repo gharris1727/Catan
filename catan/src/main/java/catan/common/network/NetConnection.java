@@ -1,7 +1,8 @@
 package catan.common.network;
 
-import catan.common.CoreThread;
-import catan.common.event.ExternalEvent;
+import catan.common.crypto.AuthToken;
+import catan.common.event.EventProcessor;
+import catan.common.event.GenericEvent;
 import catan.common.log.LogLevel;
 import catan.common.log.Logger;
 
@@ -18,7 +19,7 @@ import java.net.SocketException;
 public abstract class NetConnection implements Runnable {
 
     protected final Logger logger;
-    protected final CoreThread host;
+    protected final EventProcessor<GenericEvent> host;
     protected NetID local;
     protected NetID remote;
 
@@ -29,10 +30,11 @@ public abstract class NetConnection implements Runnable {
     protected ObjectInputStream in;
     protected ObjectOutputStream out;
     protected boolean open;
+    protected AuthToken token;
 
-    protected NetConnection(CoreThread host) {
+    protected NetConnection(EventProcessor<GenericEvent> host, Logger logger) {
         this.host = host;
-        this.logger = host.logger;
+        this.logger = logger;
         //Thread to establish a connection, uses this class' own run() method from Runnable.
         connect = new Thread(this);
         //Thread to accept incoming objects and sendEvent them to the process implementation.
@@ -71,17 +73,17 @@ public abstract class NetConnection implements Runnable {
         };
     }
 
-    public void sendEvent(NetEvent event) {
+    public void sendEvent(NetEventType type, Object payload) {
         try {
-            out.writeObject(event);
+            out.writeObject(new NetEvent(token, type, payload));
             out.flush();
         } catch (Exception e) {
             onError("Send", e);
         }
     }
 
-    public void sendEvent(ExternalEvent event) {
-        sendEvent(new NetEvent(host.getToken(), NetEventType.External_Event, event));
+    public void setToken(AuthToken token) {
+        this.token = token;
     }
 
     protected void process(NetEvent event) {
@@ -105,13 +107,13 @@ public abstract class NetConnection implements Runnable {
 
     protected void onError(String message, Exception e) {
         open = false;
-        process(new NetEvent(host.getToken(), NetEventType.Link_Error, message + " error: " + e.getMessage()));
+        process(new NetEvent(token, NetEventType.Link_Error, message + " error: " + e.getMessage()));
         logger.log(message + " error", e, LogLevel.ERROR);
     }
 
     private void onClose(Exception e) {
         open = false;
-        process(new NetEvent(host.getToken(), NetEventType.Disconnect, "Unexpected disconnect: " + e));
+        process(new NetEvent(token, NetEventType.Disconnect, "Unexpected disconnect: " + e));
     }
 
     @Override
