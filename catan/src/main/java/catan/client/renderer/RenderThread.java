@@ -32,8 +32,8 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
 
     @Override
     protected void execute() throws ThreadStop {
-        //Process the event queue, blocking for every event. Only re-renders what needs to be re-rendered.
-        RenderEvent event = getEvent(false);
+        //Block when waiting for a new canvas.
+        RenderEvent event = getEvent(canvas != null);
         root.reset();
         if (event != null) {
             events.reset();
