@@ -1,12 +1,13 @@
 package catan.common.game.util;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 /**
  * Created by greg on 6/26/16.
  * An EnumCounter that serves as a wrapper for another instance to prevent modification.
  */
-public class UnmodifiableEnumCounter<T extends Enum<T>> implements EnumCounter<T> {
+public class UnmodifiableEnumCounter<T extends Enum<T>> implements Serializable, EnumCounter<T> {
 
     private final EnumCounter<T> other;
 
