@@ -289,7 +289,7 @@ public class ClientImpl extends CoreThread implements Client {
                         changeScreen(new SpectateScreenRegion(gameManager));
                     break;
                 case Game_Finish:
-                    if (gameManager != null && gameManager.getLocalPlayer() != null)
+                    if (gameManager != null && gameManager.getLocalGame().getPlayer(event.getOrigin()) != null)
                         changeScreen(new PostGameScreenRegion(gameManager));
                     break;
                 default:
