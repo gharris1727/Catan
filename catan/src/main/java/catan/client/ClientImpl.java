@@ -202,9 +202,8 @@ public class ClientImpl extends CoreThread implements Client {
                 GameEvent gameEvent = (GameEvent) event.getPayload();
                 if (gameManager.test(gameEvent)) {
                     sendEvent(gameEvent);
-                } else {
-                    //Report the error to the user.
                 }
+                //TODO: Report the error to the user when the test fails.
                 break;
             case History_Jump:
                 try {

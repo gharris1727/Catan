@@ -19,7 +19,6 @@ import java.awt.*;
  */
 public class PostGameScreenRegion extends ClientScreen {
 
-    private final GameManager manager;
     //Configuration dependencies
     private int sidebarWidth;
     private int contextHeight;
@@ -33,7 +32,6 @@ public class PostGameScreenRegion extends ClientScreen {
 
     public PostGameScreenRegion(GameManager manager) {
         super("PostgameScreen", "postgame");
-        this.manager = manager;
         context = new ContextRegion(manager);
         MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoardObserver());
         map = new ScrollingScreenContainer("MapScroll", 0, mapRegion);

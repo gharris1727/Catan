@@ -18,7 +18,6 @@ import java.awt.*;
  */
 public class SpectateScreenRegion extends ClientScreen {
 
-    private final GameManager manager;
     //Configuration dependencies
     private int sidebarWidth;
     private int contextHeight;
@@ -31,7 +30,6 @@ public class SpectateScreenRegion extends ClientScreen {
 
     public SpectateScreenRegion(GameManager manager) {
         super("SpectatorScreen", "spectate");
-        this.manager = manager;
         //Load relevant details
         context = new ContextRegion(manager);
         MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoardObserver());
