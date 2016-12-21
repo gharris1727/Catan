@@ -3,7 +3,6 @@ package catan.common.game;
 import catan.common.crypto.Username;
 import catan.common.event.EventConsumerException;
 import catan.common.game.event.GameEvent;
-import catan.common.game.event.GameHistory;
 import catan.common.structure.game.GameSettings;
 import catan.junit.FuzzTests;
 import org.junit.Assert;
@@ -48,8 +47,6 @@ public class CatanGameFuzzTest {
                 Assert.fail();
             }
         }
-        for (GameHistory gameHistory : game.getHistory()) {
-            System.out.println(gameHistory.getGameEvent());
-        }
+        game.getObserver().readHistory(gameHistory -> System.out.println(gameHistory.getGameEvent()));
     }
 }

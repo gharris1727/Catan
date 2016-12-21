@@ -6,7 +6,7 @@ import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.EdgedTiledBackground;
 import catan.client.graphics.ui.TiledBackground;
 import catan.client.graphics.ui.UIConfig;
-import catan.client.structure.GameManager;
+import catan.common.game.PlayerObserver;
 import catan.common.game.gamestate.DevelopmentCard;
 import catan.common.game.util.EnumCounter;
 import catan.common.game.util.GameResource;
@@ -22,7 +22,7 @@ import java.util.List;
 public class CardList extends ConfigurableScreenRegion {
 
     //Instance information
-    private final GameManager manager;
+    private final PlayerObserver player;
     private final EnumCounter<GameResource> resources;
     private final EnumCounter<DevelopmentCard> development;
     private final List<CardIcon> icons;
@@ -31,9 +31,17 @@ public class CardList extends ConfigurableScreenRegion {
     private GraphicSet resourceIcons;
     private GraphicSet developmentIcons;
 
-    public CardList(String name, int priority, String configKey, GameManager manager, EnumCounter<GameResource> resources, EnumCounter<DevelopmentCard> development) {
+    public CardList(String name, int priority, String configKey, EnumCounter<GameResource> resources, EnumCounter<DevelopmentCard> development) {
+        this(name, priority, configKey, null, resources, development);
+    }
+
+    public CardList(String name, int priority, String configKey, PlayerObserver player) {
+        this(name, priority, configKey, player, null, null);
+    }
+
+    private CardList(String name, int priority, String configKey, PlayerObserver player, EnumCounter<GameResource> resources, EnumCounter<DevelopmentCard> development) {
         super(name, priority, configKey);
-        this.manager = manager;
+        this.player = player;
         this.resources = resources;
         this.development = development;
         icons = new ArrayList<>();
@@ -55,27 +63,15 @@ public class CardList extends ConfigurableScreenRegion {
         assertRenderable();
         clear();
         icons.clear();
-        synchronized (manager) {
-            if (resources != null) {
-                for (GameResource resource : resources) {
-                    for (int i = 0; i < resources.get(resource); i++) {
-                        GameResourceIcon icon = new GameResourceIcon(icons.size(), resource);
-                        icon.setConfig(getConfig());
-                        icons.add(icon);
-                        add(icon);
-                    }
-                }
-            }
-            if (development != null) {
-                for (DevelopmentCard card : development) {
-                    for (int i = 0; i < development.get(card); i++) {
-                        DevelopmentCardIcon icon = new DevelopmentCardIcon(icons.size(), card);
-                        icon.setConfig(getConfig());
-                        icons.add(icon);
-                        add(icon);
-                    }
-                }
-            }
+        if (resources != null) {
+            resources.forEach(this::addResourceIcon);
+        }
+        if (development != null) {
+            development.forEach(this::addDevelopmentIcon);
+        }
+        if (player != null) {
+            player.eachResource(this::addResourceIcon);
+            player.eachDevelopment(this::addDevelopmentIcon);
         }
         if (icons.size() == 1) {
             center(icons.get(0));
@@ -88,6 +84,20 @@ public class CardList extends ConfigurableScreenRegion {
                 x += step;
             }
         }
+    }
+
+    private void addResourceIcon(GameResource resource) {
+        GameResourceIcon icon = new GameResourceIcon(icons.size(), resource);
+        icon.setConfig(getConfig());
+        icons.add(icon);
+        add(icon);
+    }
+
+    private void addDevelopmentIcon(DevelopmentCard development) {
+        DevelopmentCardIcon icon = new DevelopmentCardIcon(icons.size(), development);
+        icon.setConfig(getConfig());
+        icons.add(icon);
+        add(icon);
     }
 
     private abstract class CardIcon extends ConfigurableScreenRegion {

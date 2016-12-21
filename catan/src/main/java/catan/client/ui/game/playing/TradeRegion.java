@@ -6,9 +6,9 @@ import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
-import catan.client.structure.GameManager;
 import catan.client.ui.game.ContextRegion;
 import catan.client.ui.game.TradeDisplay;
+import catan.common.game.PlayerObserver;
 import catan.common.game.event.GameEvent;
 import catan.common.game.event.GameEventType;
 import catan.common.game.gameplay.trade.Trade;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
 
     //Required instance information
-    private final GameManager manager;
+    private final PlayerObserver observer;
 
     //Optional interaction modules
     private ContextRegion context;
@@ -40,10 +40,10 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
     private final TradeListContainer container;
     private final TradeControlPanel panel;
 
-    public TradeRegion(GameManager manager) {
+    public TradeRegion(PlayerObserver observer) {
         super("TradeRegion", 1, "trade");
         //Save instance details
-        this.manager = manager;
+        this.observer = observer;
         //Create sub-regions
         container = new TradeListContainer(new TradeList());
         panel = new TradeControlPanel();
@@ -100,10 +100,8 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
         @Override
         protected void renderContents() {
             clear();
-            synchronized (manager) {
-                for (Trade t : manager.getLocalGame().getTrades(manager.getLocalUsername()))
-                    add(new Element(t));
-            }
+            for (Trade t : observer.getTrades())
+                add(new Element(t));
             super.renderContents();
         }
 
@@ -122,7 +120,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
             private final Trade t;
 
             private Element(Trade t) {
-                super("TradeListElement", 0, "element", manager, t);
+                super("TradeListElement", 0, "element", t);
                 this.t = t;
             }
 
@@ -193,15 +191,15 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
                         else
                             offer.increment(resource, -1*diff.get(resource));
                     }
-                    Trade trade = new Trade(manager.getLocalUsername(), offer, request);
-                    GameEvent gameEvent = new GameEvent(manager.getLocalUsername(), GameEventType.Offer_Trade, trade);
+                    Trade trade = new Trade(observer.getUsername(), offer, request);
+                    GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Offer_Trade, trade);
                     listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
                 }
             };
             cancel = new catan.client.graphics.ui.Button("CancelButton", 2, "cancel", "Cancel") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    GameEvent gameEvent = new GameEvent(manager.getLocalUsername(), GameEventType.Cancel_Trade, null);
+                    GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Cancel_Trade, null);
                     listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
                 }
             };

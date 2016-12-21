@@ -8,6 +8,7 @@ import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
 import catan.client.structure.GameManager;
 import catan.common.crypto.Username;
+import catan.common.game.BoardObserver;
 import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.board.paths.Path;
 import catan.common.game.board.tiles.BeachTile;
@@ -40,6 +41,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     private Coordinate targetCoord;
     private Trade targetTrade;
     private int targetHistory;
+    private GameHistory targetHistoryEvent;
     private ContextTarget target;
 
     //Configuration dependencies
@@ -51,11 +53,13 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     private final TextLabel title;
     private final TextLabel detail;
     private final List<ContextButton> buttons;
+    private final BoardObserver board;
 
     public ContextRegion(GameManager manager) {
         super("ContextRegion", 2, "context");
         //Initialize instance information
         this.manager = manager;
+        board = manager.getLocalGame().getBoardObserver();
         target = ContextTarget.None;
         //Create sub-regions
         background = new EdgedTiledBackground();
@@ -127,10 +131,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void renderTile() {
-        Tile targetTile;
-        synchronized (manager) {
-            targetTile = manager.getLocalGame().getBoard().getTile(targetCoord);
-        }
+        Tile targetTile = board.getTile(targetCoord);
         if (targetTile instanceof ResourceTile) {
             ResourceTile tile = (ResourceTile) targetTile;
             title.setText("Tile: " + tile.getTerrain());
@@ -151,20 +152,14 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void renderPath() {
-        Path path;
-        synchronized (manager) {
-            path = manager.getLocalGame().getBoard().getPath(targetCoord);
-        }
+        Path path = board.getPath(targetCoord);
         title.setText("Path: " + path);
         detail.setText("Owned by: " + path.getTeam());
         generateButton("PurchaseRoad", 2, GameEventType.Build_Road, targetCoord);
     }
 
     private void renderTown() {
-        Town town;
-        synchronized (manager) {
-            town = manager.getLocalGame().getBoard().getTown(targetCoord);
-        }
+        Town town = board.getTown(targetCoord);
         title.setText("Town: " + town);
         detail.setText("Owned by: " + town.getTeam());
         if (town instanceof EmptyTown)
@@ -184,12 +179,8 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     }
 
     private void renderHistory() {
-        GameHistory event;
-        synchronized (manager) {
-            event = manager.getRemoteGame().getHistory().get(targetHistory);
-        }
-        Username origin = event.getGameEvent().getOrigin();
-        title.setText("Event: " + gameEventPrinter.getLocalization(event.getGameEvent()));
+        Username origin = targetHistoryEvent.getGameEvent().getOrigin();
+        title.setText("Event: " + gameEventPrinter.getLocalization(targetHistoryEvent.getGameEvent()));
         String detailText = "";
         if (origin != null)
             detailText = origin.toString();
@@ -242,8 +233,9 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         forceRender();
     }
 
-    public void targetHistory(int index) {
+    public void targetHistory(int index, GameHistory event) {
         targetHistory = index;
+        targetHistoryEvent = event;
         target = ContextTarget.History;
         forceRender();
     }

@@ -3,9 +3,9 @@ package catan.client.structure;
 import catan.common.crypto.Username;
 import catan.common.event.EventConsumerException;
 import catan.common.game.CatanGame;
+import catan.common.game.GameObserver;
 import catan.common.game.event.GameEvent;
 import catan.common.game.event.GameEventType;
-import catan.common.game.players.Player;
 import catan.common.structure.game.GameProgress;
 import catan.common.structure.game.GameSettings;
 
@@ -21,6 +21,7 @@ public class GameManager {
     //TODO: explore lag-hiding and local/remote consistency verification.
 
     private final Username username;
+    private final boolean localPlaying;
     private final CatanGame local;
     private final CatanGame remote;
     private final List<GameEvent> events;
@@ -30,6 +31,7 @@ public class GameManager {
         this.username = username;
         GameSettings settings = progress.getSettings();
         local = new CatanGame(settings);
+        localPlaying = local.getObserver().getPlayerObserver(username) != null;
         remote = new CatanGame(settings);
         events = new ArrayList<>();
         events.add(new GameEvent(null, GameEventType.Start, null));
@@ -77,16 +79,16 @@ public class GameManager {
         return username;
     }
 
-    public Player getLocalPlayer() {
-        return local.getPlayer(username);
+    public GameObserver getLocalGame() {
+        return local.getObserver();
     }
 
-    public CatanGame getLocalGame() {
-        return local;
+    public GameObserver getRemoteGame() {
+        return remote.getObserver();
     }
 
-    public CatanGame getRemoteGame() {
-        return remote;
+    public boolean isLocalPlaying() {
+        return localPlaying;
     }
 
     @Override

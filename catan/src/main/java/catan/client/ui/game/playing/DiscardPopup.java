@@ -6,8 +6,8 @@ import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
-import catan.client.structure.GameManager;
 import catan.client.ui.PopupWindow;
+import catan.common.crypto.Username;
 import catan.common.game.event.GameEvent;
 import catan.common.game.event.GameEventType;
 import catan.common.game.util.EnumAccumulator;
@@ -36,7 +36,7 @@ public class DiscardPopup extends PopupWindow {
     private final Map<GameResource, EnumCounterEditRegion<GameResource>> counters;
     private final Button accept;
 
-    public DiscardPopup(GameManager manager, ConfigurableScreenRegion source) {
+    public DiscardPopup(Username username, ConfigurableScreenRegion source) {
         super("DiscardPopup", "discard", source);
         amount = new EnumAccumulator<>(GameResource.class);
         background = new EdgedTiledBackground();
@@ -50,7 +50,7 @@ public class DiscardPopup extends PopupWindow {
             @Override
             public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 EnumAccumulator<GameResource> copy = new EnumAccumulator<>(GameResource.class, amount);
-                GameEvent gameEvent = new GameEvent(manager.getLocalUsername(), GameEventType.Discard_Resources, copy);
+                GameEvent gameEvent = new GameEvent(username, GameEventType.Discard_Resources, copy);
                 listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
             }
         };

@@ -1,5 +1,8 @@
 package catan.common.game.event;
 
+import catan.common.game.teams.TeamColor;
+
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,15 +12,21 @@ import java.util.List;
 public class GameHistory {
 
     private final GameEvent gameEvent;
+    private final TeamColor team;
     private final List<GameTriggerEvent> triggeredEvents;
 
-    public GameHistory(GameEvent gameEvent, List<GameTriggerEvent> triggeredEvents) {
+    public GameHistory(GameEvent gameEvent, TeamColor team, List<GameTriggerEvent> triggeredEvents) {
         this.gameEvent = gameEvent;
-        this.triggeredEvents = triggeredEvents;
+        this.team = team;
+        this.triggeredEvents = Collections.unmodifiableList(triggeredEvents);
     }
 
     public GameEvent getGameEvent() {
         return gameEvent;
+    }
+
+    public TeamColor getTeam() {
+        return team;
     }
 
     public List<GameTriggerEvent> getTriggeredEvents() {

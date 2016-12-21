@@ -1,6 +1,5 @@
 package catan.client.ui.game.spectate;
 
-import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.ScrollingScreenContainer;
@@ -35,7 +34,7 @@ public class SpectateScreenRegion extends ClientScreen {
         this.manager = manager;
         //Load relevant details
         context = new ContextRegion(manager);
-        MapRegion mapRegion = new MapRegion(manager);
+        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoardObserver());
         map = new ScrollingScreenContainer("MapScroll", 0, mapRegion);
         timeline = new TimelineRegion(manager);
         mapRegion.setContext(context);
@@ -48,11 +47,9 @@ public class SpectateScreenRegion extends ClientScreen {
 
     @Override
     public void update() {
-        synchronized (manager) {
-            map.update();
-            timeline.update();
-            context.update();
-        }
+        map.update();
+        timeline.update();
+        context.update();
     }
 
     @Override
@@ -78,13 +75,6 @@ public class SpectateScreenRegion extends ClientScreen {
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
 
         map.center();
-    }
-
-    @Override
-    public Graphic getGraphic() {
-        synchronized (manager) {
-            return super.getGraphic();
-        }
     }
 
 }

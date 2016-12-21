@@ -28,13 +28,13 @@ public class GameEventGenerator {
     public GameEventGenerator(long seed, CatanGame game) {
         random = new Random(seed);
         this.game = game;
-        Set<Username> users = game.getTeams().getUsers();
+        Set<Username> users = game.teamAllocation.getUsers();
         usernames = users.toArray(new Username[users.size()]);
-        Set<Coordinate> spaceCoordinates = game.getBoard().getSpaceCoordinates();
+        Set<Coordinate> spaceCoordinates = game.board.getSpaceCoordinates();
         spaces = spaceCoordinates.toArray(new Coordinate[spaceCoordinates.size()]);
-        Set<Coordinate> vertexCoordinates = game.getBoard().getVertexCoordinates();
+        Set<Coordinate> vertexCoordinates = game.board.getVertexCoordinates();
         vertices = vertexCoordinates.toArray(new Coordinate[vertexCoordinates.size()]);
-        Set<Coordinate> edgeCoordinates = game.getBoard().getEdgeCoordinates();
+        Set<Coordinate> edgeCoordinates = game.board.getEdgeCoordinates();
         edges = edgeCoordinates.toArray(new Coordinate[edgeCoordinates.size()]);
     }
 
@@ -68,7 +68,7 @@ public class GameEventGenerator {
                 break;
             case Discard_Resources:
             case Play_YearOfPlenty:
-                payload = generatePlayerDiscards(game.getPlayer(origin).getInventory());
+                payload = generatePlayerDiscards(game.players.getPlayer(origin).getInventory());
                 break;
             case Play_Monopoly:
                 payload = generateGameResource();

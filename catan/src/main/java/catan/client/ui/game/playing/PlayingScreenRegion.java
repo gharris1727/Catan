@@ -1,6 +1,5 @@
 package catan.client.ui.game.playing;
 
-import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.ScrollingScreenContainer;
@@ -40,10 +39,10 @@ public class PlayingScreenRegion extends ClientScreen implements Updatable {
         this.manager = manager;
         //Create sub-regions
         context = new ContextRegion(manager);
-        MapRegion mapRegion = new MapRegion(manager);
+        MapRegion mapRegion = new MapRegion(manager.getLocalGame().getBoardObserver());
         map = new ScrollingScreenContainer("MapScrollContainer", 0, mapRegion);
-        trade = new TradeRegion(manager);
-        inventory = new InventoryRegion(manager);
+        trade = new TradeRegion(manager.getLocalGame().getPlayerObserver(manager.getLocalUsername()));
+        inventory = new InventoryRegion(manager.getLocalGame().getPlayerObserver(manager.getLocalUsername()));
         timeline = new TimelineRegion(manager);
         //Link the context region into everything else
         mapRegion.setContext(context);
@@ -59,20 +58,19 @@ public class PlayingScreenRegion extends ClientScreen implements Updatable {
 
     @Override
     public void update() {
-        synchronized (manager) {
-            map.update();
-            timeline.update();
-            inventory.update();
-            trade.update();
-            context.update();
-            if (manager.getLocalGame().mustDiscard(manager.getLocalUsername())) {
-                if (discardPopup != null) {
-                    discardPopup = new DiscardPopup(manager, this);
-                    discardPopup.display();
-                }
-            } else if (discardPopup != null) {
-                discardPopup.expire();
+        map.update();
+        timeline.update();
+        inventory.update();
+        trade.update();
+        context.update();
+
+        if (manager.getLocalGame().mustDiscard(manager.getLocalUsername())) {
+            if (discardPopup == null) {
+                discardPopup = new DiscardPopup(manager.getLocalUsername(), this);
+                discardPopup.display();
             }
+        } else if (discardPopup != null) {
+            discardPopup.expire();
         }
     }
 
@@ -104,12 +102,5 @@ public class PlayingScreenRegion extends ClientScreen implements Updatable {
         context.setMask(new RectangularMask(new Dimension(sidebarWidth, contextHeight)));
         timeline.setMask(new RectangularMask(new Dimension(timelineWidth, timelineHeight)));
         map.center();
-    }
-
-    @Override
-    public Graphic getGraphic() {
-        synchronized (manager) {
-            return super.getGraphic();
-        }
     }
 }

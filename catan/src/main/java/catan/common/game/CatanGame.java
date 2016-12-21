@@ -16,17 +16,12 @@ import catan.common.game.board.towns.Town;
 import catan.common.game.event.*;
 import catan.common.game.gameplay.allocator.TeamAllocation;
 import catan.common.game.gameplay.trade.Trade;
-import catan.common.game.gameplay.trade.TradingPostType;
 import catan.common.game.gamestate.*;
 import catan.common.game.listeners.GameListener;
 import catan.common.game.players.*;
 import catan.common.game.scoring.ScoreEvent;
 import catan.common.game.scoring.ScoreEventType;
 import catan.common.game.scoring.ScoreState;
-import catan.common.game.scoring.reporting.ScoreException;
-import catan.common.game.scoring.reporting.scores.ScoreReport;
-import catan.common.game.scoring.reporting.team.NullTeamScore;
-import catan.common.game.scoring.reporting.team.TeamScoreReport;
 import catan.common.game.scoring.rules.GameRules;
 import catan.common.game.teams.TeamColor;
 import catan.common.game.teams.TeamEvent;
@@ -62,6 +57,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     //Historical event data
     final Stack<GameHistory> history;
 
+    final GameObserver observer;
+
     public CatanGame(GameSettings settings) {
         rules = settings.rules;
         teamAllocation = settings.playerTeams.allocate(settings.seed);
@@ -70,9 +67,14 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         teams = new TeamPool(teamAllocation);
         state = new RandomizerState(settings);
         history = new Stack<>();
-        history.push(new GameHistory(new GameEvent(null, GameEventType.Start, null), Collections.emptyList()));
+        history.push(new GameHistory(new GameEvent(null, GameEventType.Start, null), TeamColor.None, Collections.emptyList()));
         scoring = new ScoreState(board, players, teams);
         listeners = new ArrayList<>();
+        observer = new GameObserver(this);
+    }
+
+    public GameObserver getObserver() {
+        return observer;
     }
 
     public void addListener(GameListener listener) {
@@ -81,65 +83,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     public void removeListener(GameListener listener) {
         listeners.remove(listener);
-    }
-
-    public GameBoard getBoard() {
-        return board;
-    }
-
-    public Player getPlayer(Username username) {
-        return players.getPlayer(username);
-    }
-
-    public List<GameHistory> getHistory() {
-        return history;
-    }
-
-    public boolean mustDiscard(Username username) {
-        return state.getDiceRoll() == DiceRoll.Seven
-            && players.getPlayer(username).getDiscardCount() > 0
-            && !players.hasDiscarded(username);
-    }
-
-    public List<Trade> getTrades(Username user) {
-        List<Trade> trades = new ArrayList<>();
-        Player player = players.getPlayer(user);
-        for (Username u : players) {
-            for (Trade trade : players.getPlayer(u).getTrades())
-                if (player.canMakeTrade(trade))
-                    trades.add(trade);
-        }
-        for (TradingPostType type : board.getTrades(player.getTeamColor())) {
-            for (Trade trade : type.getTrades())
-                if (player.canMakeTrade(trade))
-                    trades.add(trade);
-        }
-        Collections.sort(trades);
-        return trades;
-    }
-
-    public TeamScoreReport getScore() {
-        try {
-            return scoring.score(rules);
-        } catch (ScoreException e) {
-            return NullTeamScore.INSTANCE;
-        }
-    }
-
-    public TeamColor getWinner() {
-        TeamColor winner = TeamColor.None;
-        int points = 0;
-        TeamScoreReport teamScoreReport = getScore();
-        for (TeamColor color : teamScoreReport) {
-            ScoreReport report = teamScoreReport.getScoreReport(color);
-            if (points < report.getPoints()) {
-                points = report.getPoints();
-                winner = color;
-            }
-        }
-        if (points < rules.getMinimumPoints())
-            return TeamColor.None;
-        return winner;
     }
 
     private LogicEvent trigger(GameTriggerEvent event) {
@@ -553,8 +496,9 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         try {
             LogicEvent logic = getLogicTree(event);
             List<GameTriggerEvent> actions = new ArrayList<>();
+            TeamColor team = teamAllocation.getPlayerTeams().get(event.getOrigin());
             execute(logic, actions);
-            history.push(new GameHistory(event, actions));
+            history.push(new GameHistory(event, team, actions));
         } catch (Exception e) {
             throw new EventConsumerException(event, e);
         }
@@ -584,7 +528,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -602,9 +546,5 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     @Override
     public String toString() {
         return "CatanGame";
-    }
-
-    public TeamAllocation getTeams() {
-        return teamAllocation;
     }
 }

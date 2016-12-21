@@ -11,10 +11,9 @@ import catan.client.graphics.ui.ScrollingScreenRegion;
 import catan.client.graphics.ui.TiledBackground;
 import catan.client.graphics.ui.UIConfig;
 import catan.client.input.UserEventListener;
-import catan.client.structure.GameManager;
 import catan.common.IllegalStateException;
 import catan.common.config.ConfigSource;
-import catan.common.game.board.GameBoard;
+import catan.common.game.BoardObserver;
 import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.board.paths.Path;
 import catan.common.game.board.tiles.BeachTile;
@@ -46,7 +45,7 @@ import java.util.Map;
 public class MapRegion extends ScrollingScreenRegion {
 
     //Required instance information.
-    private final GameManager manager;
+    private final BoardObserver board;
 
     //Optional interaction: context menus for contextual information.
     private ContextRegion context;
@@ -69,10 +68,10 @@ public class MapRegion extends ScrollingScreenRegion {
     //Sub-regions
     private final TiledBackground background;
 
-    public MapRegion(GameManager manager) {
+    public MapRegion(BoardObserver board) {
         super("MapRegion", 0, "map");
         //Store the instance information.
-        this.manager = manager;
+        this.board = board;
         //Create the sub-regions
         background = new EdgedTiledBackground();
         //Add everything to the screen.
@@ -142,9 +141,7 @@ public class MapRegion extends ScrollingScreenRegion {
             buildings.put(teamColor, new GraphicSet(buildingSource, buildingMasks, teamColorSwaps.getSwaps(teamColor)));
 
         RectangularMask mask;
-        synchronized (manager) {
-            mask = new RectangularMask(boardToScreen(manager.getLocalGame().getBoard().getSize()));
-        }
+            mask = new RectangularMask(boardToScreen(board.getSize()));
         Dimension borderBuffer = layout.getDimension("borderbuffer");
         setInsets(new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width));
         setMask(mask);
@@ -159,15 +156,9 @@ public class MapRegion extends ScrollingScreenRegion {
     @Override
     protected void renderContents() {
         clear();
-        synchronized (manager) {
-            GameBoard board = manager.getLocalGame().getBoard();
-            for (Coordinate space : board.getSpaceCoordinates())
-                add(new TileObject(board.getTile(space))).setPosition(tileToScreen(space));
-            for (Coordinate edge : board.getEdgeCoordinates())
-                add(new PathObject(board.getPath(edge))).setPosition(edgeToScreen(edge));
-            for (Coordinate vertex : board.getVertexCoordinates())
-                add(new TownObject(board.getTown(vertex))).setPosition(vertexToScreen(vertex));
-        }
+        board.eachTile(tile -> add(new TileObject(tile)).setPosition(tileToScreen(tile.getPosition())));
+        board.eachPath(path -> add(new PathObject(path)).setPosition(pathToScreen(path.getPosition())));
+        board.eachTown(town -> add(new TownObject(town)).setPosition(townToScreen(town.getPosition())));
         add(background);
     }
 
@@ -190,7 +181,7 @@ public class MapRegion extends ScrollingScreenRegion {
         return new Point(outX, outY);
     }
 
-    private Point edgeToScreen(Coordinate c) {
+    private Point pathToScreen(Coordinate c) {
         int outX = (c.x / 6) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += pathPositions[c.x % 6].x;
@@ -198,7 +189,7 @@ public class MapRegion extends ScrollingScreenRegion {
         return new Point(outX, outY);
     }
 
-    private Point vertexToScreen(Coordinate c) {
+    private Point townToScreen(Coordinate c) {
         int outX = (c.x / 4) * unitSize.width;
         int outY = (c.y) * unitSize.height;
         outX += townOffset.x;

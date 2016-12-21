@@ -45,8 +45,8 @@ public class ReversiblePRNG {
         byte[] bytes = getBytes();
         int out = 0;
         for (int i = 0; i < 4; i++) {
-            out = out << (i * 8);
-            out += bytes[i];
+            out = out << 8;
+            out |= bytes[i];
         }
         return out & 0x7fffffff;
     }

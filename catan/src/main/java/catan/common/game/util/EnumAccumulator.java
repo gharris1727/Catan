@@ -3,6 +3,7 @@ package catan.common.game.util;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * Created by greg on 2/27/16.
@@ -45,6 +46,16 @@ public class EnumAccumulator<T extends Enum<T>> implements Serializable, EnumCou
     @Override
     public int get(T e) {
         return map.get(e);
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> consumer) {
+        for (T e : tClass.getEnumConstants()) {
+            int limit = get(e);
+            for (int i = 0; i < limit; i++) {
+                consumer.accept(e);
+            }
+        }
     }
 
     public void increment(T e, int c) {

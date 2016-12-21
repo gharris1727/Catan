@@ -9,17 +9,16 @@ import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
 import catan.client.structure.GameManager;
 import catan.client.ui.PopupWindow;
-import catan.common.game.event.GameEvent;
 import catan.common.game.event.GameHistory;
 import catan.common.game.teams.TeamColor;
 import catan.common.locale.game.LocalizedGameHistoryPrinter;
 import catan.common.resources.GraphicSet;
+import catan.common.util.MutableInteger;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -106,19 +105,18 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         @Override
         protected void renderContents() {
             clear();
-            int width = 0;
-            synchronized (manager) {
-                List<GameHistory> history = manager.getRemoteGame().getHistory();
-                for (int i = 0; i < history.size(); i++) {
-                    add(new EventListElement(i)).setPosition(new Point(width, 0));
-                    width += eventSpacing;
+            final MutableInteger width = new MutableInteger();
+            final MutableInteger count = new MutableInteger();
+            manager.getRemoteGame().readHistory(history -> {
+                    add(new EventListElement(count.get(), history)).setPosition(new Point(width.get(), 0));
+                    width.inc(eventSpacing);
                 }
-                width += eventBuffer;
-                setMask(new RectangularMask(new Dimension(width, eventHeight)));
-                //Scroll the bar over as new events come in.
-                scroll(-eventSpacing * (history.size() - lastCount), 0);
-                lastCount = history.size();
-            }
+            );
+            width.inc(eventBuffer);
+            setMask(new RectangularMask(new Dimension(width.get(), eventHeight)));
+            //Scroll the bar over as new events come in.
+            scroll(-eventSpacing * (count.get() - lastCount), 0);
+            lastCount = count.get();
         }
 
         @Override
@@ -129,15 +127,13 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         private class EventListElement extends GraphicObject {
 
             private final int index;
+            private final GameHistory event;
 
-            private EventListElement(int index) {
+            private EventListElement(int index, GameHistory event) {
                 super("Event " + index, 0);
                 this.index = index;
-                synchronized (manager) {
-                    GameEvent event = manager.getRemoteGame().getHistory().get(index).getGameEvent();
-                    TeamColor teamColor = event.getOrigin() == null ? TeamColor.None : manager.getRemoteGame().getTeams().getPlayerTeams().get(event.getOrigin());
-                    setGraphic(eventGraphics.get(teamColor).getGraphic(event.getType()));
-                }
+                this.event = event;
+                setGraphic(eventGraphics.get(event.getTeam()).getGraphic(event.getGameEvent().getType()));
             }
             @Override
             public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) {
@@ -150,7 +146,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
             @Override
             public void onMouseClick(UserEventListener listener, MouseEvent event) {
                 if (context != null)
-                    context.targetHistory(index);
+                    context.targetHistory(index, this.event);
             }
             @Override
             public void onHover(UserEventListener listener) {
@@ -170,13 +166,10 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
             @Override
             public void onLinger(UserEventListener listener) {
                 synchronized (EventList.this) {
-                    TimelinePopup old = popup;
-                    synchronized (manager) {
-                        popup = new TimelinePopup(manager.getRemoteGame().getHistory().get(index));
+                    if (popup != null) {
+                        popup.expire();
                     }
-                    if (old != null) {
-                        old.expire();
-                    }
+                    popup = new TimelinePopup(event);
                     popup.display();
                 }
             }

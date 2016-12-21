@@ -22,6 +22,7 @@ import catan.common.game.teams.TeamColor;
 
 import java.awt.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -55,28 +56,46 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
         return size;
     }
 
-    public synchronized Path getPath(Coordinate c) {
+    public Path getPath(Coordinate c) {
         return hexArray.getPath(c);
     }
 
-    public synchronized Tile getTile(Coordinate c) {
+    public Tile getTile(Coordinate c) {
         return hexArray.getTile(c);
     }
 
-    public synchronized Town getTown(Coordinate c) {
+    public Town getTown(Coordinate c) {
         return hexArray.getTown(c);
     }
 
-    public synchronized Set<Coordinate> getSpaceCoordinates() {
+    public Set<Coordinate> getSpaceCoordinates() {
         return hexArray.getSpaceCoordinates();
     }
 
-    public synchronized Set<Coordinate> getEdgeCoordinates() {
+    public Set<Coordinate> getEdgeCoordinates() {
         return hexArray.getEdgeCoordinates();
     }
 
-    public synchronized Set<Coordinate> getVertexCoordinates() {
+    public Set<Coordinate> getVertexCoordinates() {
         return hexArray.getVertexCoordinates();
+    }
+
+    public void eachTile(Consumer<Tile> action) {
+        for (Coordinate space : getSpaceCoordinates()) {
+            action.accept(getTile(space));
+        }
+    }
+
+    public void eachPath(Consumer<Path> action) {
+        for (Coordinate edge : getEdgeCoordinates()) {
+            action.accept(getPath(edge));
+        }
+    }
+
+    public void eachTown(Consumer<Town> action) {
+        for (Coordinate vertex : getVertexCoordinates()) {
+            action.accept(getTown(vertex));
+        }
     }
 
     public Set<Coordinate> getActiveTiles(DiceRoll roll) {
@@ -85,7 +104,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
         );
     }
 
-    public synchronized Set<TradingPostType> getTrades(TeamColor teamColor) {
+    public Set<TradingPostType> getTrades(TeamColor teamColor) {
         Set<TradingPostType> trades = EnumSet.noneOf(TradingPostType.class);
         for (Coordinate tradeSpace : tradingPosts) {
             TradeTile tradeTile = (TradeTile) hexArray.getTile(tradeSpace);
@@ -99,7 +118,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public synchronized void undo() throws EventConsumerException {
+    public void undo() throws EventConsumerException {
         if (history.isEmpty())
             throw new EventConsumerException("No event");
         BoardEvent event = history.pop();
@@ -127,7 +146,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public synchronized EventConsumerProblem test(BoardEvent event) {
+    public EventConsumerProblem test(BoardEvent event) {
         Coordinate c = (Coordinate) event.getPayload();
         //If the user didnt specify a coordinate
         if (c == null)
@@ -198,7 +217,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public synchronized void execute(BoardEvent event) throws EventConsumerException {
+    public void execute(BoardEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
             throw new EventConsumerException(problem);
@@ -239,7 +258,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     }
 
     @Override
-    public synchronized boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 

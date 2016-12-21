@@ -283,13 +283,13 @@ public class ClientImpl extends CoreThread implements Client {
                     break;
                 case Game_Sync:
                     gameManager = new GameManager(username, (GameProgress) event.getPayload());
-                    if (gameManager.getLocalPlayer() != null)
+                    if (gameManager.isLocalPlaying())
                         changeScreen(new PlayingScreenRegion(gameManager));
                     else
                         changeScreen(new SpectateScreenRegion(gameManager));
                     break;
                 case Game_Finish:
-                    if (gameManager != null && gameManager.getLocalGame().getPlayer(event.getOrigin()) != null)
+                    if (gameManager != null && gameManager.getLocalGame().isFinished())
                         changeScreen(new PostGameScreenRegion(gameManager));
                     break;
                 default:

@@ -201,7 +201,7 @@ public class ServerImpl extends CoreThread implements Server {
                 case Game_Start:
                     GameSettings settings = (GameSettings) event.getPayload();
                     lobby.setGameID(gamePool.start(settings));
-                    for (Username username : gamePool.getGamePlayers(lobby.getGameID()).getUsers())
+                    for (Username username : lobby.getPlayers())
                         addEvent(new LobbyEvent(username, LobbyEventType.Game_Join, null));
                     break;
                 case Game_Join:

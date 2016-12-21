@@ -4,8 +4,6 @@ import catan.common.event.EventConsumerException;
 import catan.common.event.QueuedInputThread;
 import catan.common.game.CatanGame;
 import catan.common.game.event.GameEvent;
-import catan.common.game.event.GameHistory;
-import catan.common.game.gameplay.allocator.TeamAllocation;
 import catan.common.game.teams.TeamColor;
 import catan.common.log.LogLevel;
 import catan.common.log.Logger;
@@ -59,10 +57,6 @@ public class GamePool {
         return games.get(gameID).getProgress();
     }
 
-    public synchronized TeamAllocation getGamePlayers(int gameID) {
-        return games.get(gameID).getGame().getTeams();
-    }
-
     public synchronized void join() {
         for (GameThread thread : games.values()) {
             if (thread.isRunning())
@@ -94,9 +88,8 @@ public class GamePool {
         }
 
         private GameProgress getProgress() {
-            List<GameEvent> events = new ArrayList<>(game.getHistory().size());
-            for (GameHistory h : game.getHistory())
-                events.add(h.getGameEvent());
+            List<GameEvent> events = new ArrayList<>();
+            game.getObserver().readHistory(history -> events.add(history.getGameEvent()));
             return new GameProgress(settings, events);
         }
 
@@ -109,7 +102,7 @@ public class GamePool {
                 try {
                     game.execute(event);
                     host.broadcastGameEvent(event);
-                    if (game.getWinner() != TeamColor.None)
+                    if (game.getObserver().getWinner() != TeamColor.None)
                         host.addEvent(new LobbyEvent(event.getOrigin(), LobbyEventType.Game_Finish, null));
                 } catch (EventConsumerException e) {
                     logger.log("Server unable to execute event!", e, LogLevel.ERROR);

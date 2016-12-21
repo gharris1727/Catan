@@ -2,6 +2,7 @@ package catan.common.game.util;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * Created by greg on 6/26/16.
@@ -18,6 +19,11 @@ public class UnmodifiableEnumCounter<T extends Enum<T>> implements Serializable,
     @Override
     public int get(T e) {
         return other.get(e);
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> consumer) {
+        other.forEach(consumer);
     }
 
     @Override

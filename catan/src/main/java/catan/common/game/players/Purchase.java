@@ -5,6 +5,7 @@ import catan.common.game.util.EnumCounter;
 import catan.common.game.util.GameResource;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -41,5 +42,10 @@ public enum Purchase implements EnumCounter<GameResource> {
                 return GameResource.values()[index++];
             }
         };
+    }
+
+    @Override
+    public void forEach(Consumer<? super GameResource> consumer) {
+        cost.forEach(consumer);
     }
 }

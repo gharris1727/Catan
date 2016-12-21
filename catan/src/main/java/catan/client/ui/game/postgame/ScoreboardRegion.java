@@ -2,7 +2,7 @@ package catan.client.ui.game.postgame;
 
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.*;
-import catan.client.structure.GameManager;
+import catan.common.game.GameObserver;
 import catan.common.game.scoring.reporting.team.TeamScoreReport;
 import catan.common.locale.game.scoring.LocalizedTeamScorePrinter;
 
@@ -13,7 +13,7 @@ import catan.common.locale.game.scoring.LocalizedTeamScorePrinter;
 public class ScoreboardRegion extends ConfigurableScreenRegion implements Updatable {
 
     //Required instance information
-    private final GameManager manager;
+    private final GameObserver localGame;
 
     //Configuration dependencies
     private LocalizedTeamScorePrinter teamScorePrinter;
@@ -24,9 +24,9 @@ public class ScoreboardRegion extends ConfigurableScreenRegion implements Updata
 
     //TODO: replace this lazy printing string method to a fancy UI.
 
-    public ScoreboardRegion(GameManager manager) {
+    public ScoreboardRegion(GameObserver localGame) {
         super("ScoreboardRegion", 1, "scoreboard");
-        this.manager = manager;
+        this.localGame = localGame;
         background = new EdgedTiledBackground();
         text = new TextLabel("ScoreboardText", 1, "all", null);
         add(background).setClickable(this);
@@ -35,10 +35,7 @@ public class ScoreboardRegion extends ConfigurableScreenRegion implements Updata
 
     @Override
     protected void renderContents() {
-        TeamScoreReport report;
-        synchronized (manager) {
-            report = manager.getLocalGame().getScore();
-        }
+        TeamScoreReport report = localGame.getScore();
         String localization = teamScorePrinter.getLocalization(report);
         text.setText(localization);
         center(text);
