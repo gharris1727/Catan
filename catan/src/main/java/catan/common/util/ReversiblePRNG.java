@@ -11,18 +11,15 @@ import java.security.NoSuchAlgorithmException;
 public class ReversiblePRNG {
 
     private long seed;
-    private static MessageDigest hash;
-
-    static {
-        try {
-            hash = MessageDigest.getInstance("SHA");
-        } catch (NoSuchAlgorithmException e) {
-            hash = null;
-        }
-    }
+    private final MessageDigest hash;
 
     public ReversiblePRNG(long seed) {
         this.seed = seed;
+        try {
+            hash = MessageDigest.getInstance("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            throw new Error(e);
+        }
     }
 
     public void next() {
