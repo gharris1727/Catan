@@ -2,6 +2,7 @@ package catan.common.game;
 
 import catan.common.crypto.Username;
 import catan.common.event.EventConsumerException;
+import catan.common.event.EventConsumerProblem;
 import catan.common.game.event.GameEvent;
 import catan.common.game.gameplay.allocator.RandomTeamAllocator;
 import catan.common.game.gameplay.allocator.TeamAllocator;
@@ -49,6 +50,12 @@ public class GameTestUtils {
     }
 
     public static void assertExecute(CatanGame game, GameEvent event, boolean expectSuccess) {
+        EventConsumerProblem problem = game.test(event);
+        if (problem == null && !expectSuccess) {
+            Assert.fail("Expected test to fail for " + event);
+        } else if (problem != null && expectSuccess) {
+            Assert.fail("Expected test to succeed for " + event + " but problem occurred: " + problem);
+        }
         try {
             game.execute(event);
             if (!expectSuccess)

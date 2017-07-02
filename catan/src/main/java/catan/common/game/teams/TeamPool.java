@@ -67,7 +67,7 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<Te
     public void execute(TeamEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             history.push(event);
             getTeam(event.getOrigin()).execute(event);

@@ -102,7 +102,7 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
     public void execute(PlayerEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             history.push(event);
             if (event.getType() == PlayerEventType.Finish_Discarding) {

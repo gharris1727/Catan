@@ -270,12 +270,14 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                 int total = 0;
                 List<LogicEvent> playerEvents = new ArrayList<>();
                 for (Username username : players) {
-                    Player p = players.getPlayer(username);
-                    int count = p.getInventory().get(resource);
-                    if (count > 0) {
-                        total += count;
-                        EnumCounter<GameResource> loss = new EnumAccumulator<>(GameResource.class, resource, count);
-                        playerEvents.add(player(username, PlayerEventType.Lose_Resources, loss));
+                    if (username != null) {
+                        Player p = players.getPlayer(username);
+                        int count = p.getInventory().get(resource);
+                        if (count > 0) {
+                            total += count;
+                            EnumCounter<GameResource> loss = new EnumAccumulator<>(GameResource.class, resource, count);
+                            playerEvents.add(player(username, PlayerEventType.Lose_Resources, loss));
+                        }
                     }
                 }
                 EnumCounter<GameResource> gain = new EnumAccumulator<>(GameResource.class, resource, total);
@@ -373,7 +375,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         );
     }
 
-    private EventConsumerProblem test(GameTriggerEvent event) {
+    private EventConsumerProblem testTrigger(GameTriggerEvent event) {
         if (event instanceof PlayerEvent)
             return players.test((PlayerEvent) event);
         else if (event instanceof BoardEvent)
@@ -388,48 +390,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             return new EventConsumerProblem("Unknown event type!");
     }
 
-    @SuppressWarnings("unchecked")
-    private EventConsumerProblem test(LogicEvent event) {
-        Object payload = event.getPayload();
-        EventConsumerProblem problem = null;
-        switch (event.getType()) {
-            case AND:
-                for (LogicEvent child : (List<LogicEvent>) payload)
-                    problem = problem != null ? problem : test(child);
-                break;
-            case OR:
-                problem = new EventConsumerProblem("No successful case");
-                for (LogicEvent child : (List<LogicEvent>) payload) {
-                    EventConsumerProblem childProblem = test(child);
-                    if (problem != null && childProblem != null)
-                        problem.addCause(childProblem);
-                    else
-                        problem = null;
-                }
-                break;
-            case NOT:
-                if (test((LogicEvent) payload) == null)
-                    problem = new EventConsumerProblem(payload + " was successful");
-                break;
-            case NOP:
-                break;
-            case Trigger:
-                problem = test((GameTriggerEvent) payload);
-                break;
-        }
-        return problem;
-    }
-
-    @Override
-    public synchronized EventConsumerProblem test(GameEvent event) {
-        try {
-            return test(getLogicTree(event));
-        } catch (Exception e) {
-            return new EventConsumerProblem(e.getMessage());
-        }
-    }
-
-    private void execute(GameTriggerEvent event) throws EventConsumerException {
+    private void executeTrigger(GameTriggerEvent event) throws EventConsumerException {
         if (event instanceof PlayerEvent)
             players.execute((PlayerEvent) event);
         else if (event instanceof BoardEvent)
@@ -457,54 +418,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void execute(LogicEvent event, List<GameTriggerEvent> actions) throws EventConsumerException {
-        EventConsumerProblem problem = test(event);
-        if (problem != null) {
-            throw new EventConsumerException(problem);
-        }
-        Object payload = event.getPayload();
-        switch (event.getType()) {
-            case AND:
-                for (LogicEvent child : (List<LogicEvent>) payload)
-                    execute(child, actions);
-                break;
-            case OR:
-                for (LogicEvent child : (List<LogicEvent>) payload) {
-                    if (test(child) == null) {
-                        execute(child, actions);
-                        return;
-                    }
-                }
-                throw new EventConsumerException("Inconsistent OR", event);
-            case NOT:
-                break;
-            case NOP:
-                break;
-            case Trigger:
-                execute((GameTriggerEvent) payload);
-                actions.add((GameTriggerEvent) payload);
-                break;
-        }
-    }
-
-    @Override
-    public synchronized void execute(GameEvent event) throws EventConsumerException {
-        EventConsumerProblem problem = test(event);
-        if (problem != null)
-            throw new EventConsumerException(problem);
-        try {
-            LogicEvent logic = getLogicTree(event);
-            List<GameTriggerEvent> actions = new ArrayList<>();
-            TeamColor team = teamAllocation.getPlayerTeams().get(event.getOrigin());
-            execute(logic, actions);
-            history.push(new GameHistory(event, team, actions));
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
-        }
-    }
-
-    private void undo(GameTriggerEvent event) throws EventConsumerException {
+    private void undoTrigger(GameTriggerEvent event) throws EventConsumerException {
         if (event instanceof PlayerEvent)
             players.undo();
         else if (event instanceof BoardEvent)
@@ -519,12 +433,100 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             throw new EventConsumerException("Unknown event type!");
     }
 
+    private void revertHistory(Stack<GameTriggerEvent> past, int nEvents) throws EventConsumerException {
+        while (past.size() != nEvents) {
+            undoTrigger(past.pop());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private EventConsumerProblem executeLogic(LogicEvent event, Stack<GameTriggerEvent> past) throws EventConsumerException {
+        Object payload = event.getPayload();
+        int nEventsBefore = past.size();
+        EventConsumerProblem problem = null;
+        switch (event.getType()) {
+            case AND:
+                for (LogicEvent child : (List<LogicEvent>) payload) {
+                    problem = executeLogic(child, past);
+                    if (problem != null) {
+                        break;
+                    }
+                }
+                break;
+            case OR:
+                problem = new EventConsumerProblem("No successful case");
+                for (LogicEvent child : (List<LogicEvent>) payload) {
+                    EventConsumerProblem childProblem = executeLogic(child, past);
+                    if (childProblem != null) {
+                        problem.addCause(childProblem);
+                    } else {
+                        problem = null;
+                        break;
+                    }
+                }
+                break;
+            case NOT:
+                if (executeLogic((LogicEvent) payload, past) == null) {
+                    problem = new EventConsumerProblem(payload + " was successful");
+                }
+                break;
+            case NOP:
+                break;
+            case Trigger:
+                GameTriggerEvent trigger = (GameTriggerEvent) payload;
+                problem = testTrigger(trigger);
+                if (problem == null) {
+                    try {
+                        executeTrigger(trigger);
+                        past.push(trigger);
+                    } catch (EventConsumerException e) {
+                        problem = new EventConsumerProblem(e);
+                    }
+                }
+                break;
+        }
+        if (problem != null) {
+            revertHistory(past, nEventsBefore);
+        }
+        return problem;
+    }
+
+    @Override
+    public synchronized EventConsumerProblem test(GameEvent event) {
+        try {
+            Stack<GameTriggerEvent> past = new Stack<>();
+            EventConsumerProblem problem = executeLogic(getLogicTree(event), past);
+            revertHistory(past, 0);
+            return problem;
+        } catch (EventConsumerException e) {
+            return new EventConsumerProblem(e);
+        }
+    }
+
+    @Override
+    public synchronized void execute(GameEvent event) throws EventConsumerException {
+        try {
+            Stack<GameTriggerEvent> actions = new Stack<>();
+            EventConsumerProblem problem = executeLogic(getLogicTree(event), actions);
+            if (problem != null) {
+                throw new EventConsumerException(event, problem);
+            }
+            TeamColor team = teamAllocation.getPlayerTeams().get(event.getOrigin());
+            history.push(new GameHistory(event, team, actions));
+        } catch (EventConsumerException e) {
+            throw new EventConsumerException(event, e);
+        }
+    }
+
     @Override
     public synchronized void undo() throws EventConsumerException {
         if (history.isEmpty())
             throw new EventConsumerException("No event");
-        for (GameTriggerEvent event : history.pop().getTriggeredEvents())
-            undo(event);
+        List<GameTriggerEvent> triggered = history.pop().getTriggeredEvents();
+        ListIterator<GameTriggerEvent> iterator = triggered.listIterator(triggered.size());
+        while (iterator.hasPrevious()) {
+            undoTrigger(iterator.previous());
+        }
     }
 
     @Override

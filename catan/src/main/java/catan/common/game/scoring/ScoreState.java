@@ -69,7 +69,7 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
     public void execute(ScoreEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             ArrayList<ScoreKeeper> affected = new ArrayList<>();
             history.push(affected);

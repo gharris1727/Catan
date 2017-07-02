@@ -207,7 +207,7 @@ public class HumanPlayer implements Player {
     public void execute(PlayerEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             history.push(event);
             switch (event.getType()) {

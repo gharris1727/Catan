@@ -66,7 +66,7 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
                     return new EventConsumerProblem("No next roll");
                 DiceRoll diceRoll = dice.get();
                 if (diceRoll != event.getPayload())
-                    return new EventConsumerProblem("Inconsistent DiceRoll");
+                    return new EventConsumerProblem("Inconsistent DiceRoll, expected " + event.getPayload() + " but rolled " + diceRoll);
                 break;
             case Draw_DevelopmentCard:
                 if (!cards.hasNext())
@@ -95,7 +95,7 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
     public void execute(GameStateEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             history.push(event);
             switch (event.getType()) {

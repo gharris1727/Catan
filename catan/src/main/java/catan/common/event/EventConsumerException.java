@@ -10,8 +10,8 @@ public class EventConsumerException extends Exception {
         super(event == null ? message : message + ": " + event, t);
     }
 
-    public EventConsumerException(EventConsumerProblem problem) {
-        this(problem.getMessage(), null, null);
+    public EventConsumerException(GenericEvent event, EventConsumerProblem problem) {
+        this(problem.getMessage(), event, null);
     }
 
     public EventConsumerException(String message) {

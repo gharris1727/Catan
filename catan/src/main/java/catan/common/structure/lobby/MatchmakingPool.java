@@ -68,7 +68,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
     public void execute(LobbyEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             Username origin = event.getOrigin();
             switch (event.getType()) {

@@ -29,7 +29,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
         players = new HashSet<>();
         history = new Stack<>();
         round = 0;
-        freeRoads = 1;
+        freeRoads = 0;
         state = TeamState.Outpost;
         freeRobber = RobberState.Inactive;
     }
@@ -70,14 +70,15 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     freeRoads -= 2;
                     break;
                 case Build_Free_Road:
-                    if (round <= 1)
+                    if (round <= 1) {
                         state = TeamState.Road;
-                    freeRoads++;
+                    } else {
+                        freeRoads++;
+                    }
                     break;
                 case Finish_Setup_Turn:
                     if (round == 1) {
                         state = TeamState.Done;
-                        freeRoads--;
                     }
                 case Finish_Turn:
                     round--;
@@ -114,7 +115,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
             case Activate_RoadBuilding:
                 break;
             case Build_Free_Road:
-                if (freeRoads <= 0)
+                if (state != TeamState.Road && freeRoads <= 0)
                     return new EventConsumerProblem("Road not avaliable");
                 break;
             case Finish_Setup_Turn:
@@ -139,7 +140,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
     public void execute(TeamEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         try {
             history.push(event);
             switch (event.getType()){
@@ -160,13 +161,15 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     freeRoads += 2;
                     break;
                 case Build_Free_Road:
-                    state = TeamState.Done;
-                    freeRoads--;
+                    if (state == TeamState.Road) {
+                        state = TeamState.Done;
+                    } else {
+                        freeRoads--;
+                    }
                     break;
                 case Finish_Setup_Turn:
                     if (round == 0) {
                         state = TeamState.Outpost;
-                        freeRoads++;
                     }
                 case Finish_Turn:
                     round++;

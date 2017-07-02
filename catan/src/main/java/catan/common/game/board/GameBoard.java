@@ -220,7 +220,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     public void execute(BoardEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
         if (problem != null)
-            throw new EventConsumerException(problem);
+            throw new EventConsumerException(event, problem);
         TeamColor origin = event.getOrigin();
         Coordinate c = (Coordinate) event.getPayload();
         try {
