@@ -209,7 +209,6 @@ public class ServerConnectMenu extends ClientScreen {
         private void detail(ConnectionInfo selected) {
             if (editPopup == null) {
                 editPopup = new ServerDetailPopup(selected);
-                editPopup.setConfig(getConfig());
                 editPopup.display();
             }
         }
