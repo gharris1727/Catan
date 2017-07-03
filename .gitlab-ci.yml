@@ -1,19 +1,32 @@
-build:
-  script:
-    - cd catan
-    - ./gradlew build
+image: java:8-jdk
 
-reports:
+cache:
+  paths:
+    - catan/gradle/wrapper
+
+stages:
+  - build
+  - test
+  - distribute
+
+before_script:
+  - cd catan
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+build:
+  stage: build
   script:
-    - cd catan
+    - ./gradlew assemble
+
+test:
+  stage: test
+  script:
     - ./gradlew test jacocoTestReport
-  artifacts:
-    paths:
-    - build/reports
 
 distribute:
+  stage: distribute
   script:
-    - cd catan
-    - ./gradlew buildZip buildTar
+    - ./gradlew assembleDist
   artifacts:
-    - build/distributions
+    paths:
+      - build/distributions/*

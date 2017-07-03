@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile 'junit:junit:4.12'
 }
 
 mainClassName = "catan.Main"
@@ -26,15 +26,15 @@ test.doFirst {
 jacocoTestReport {
     group = "Reporting"
     reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/reports/coverage"
+        xml.enabled = false
+        csv.enabled = false
+        html.destination file("${buildDir}/reports/coverage")
     }
 }
 
 
 task copyLicense(type: Copy) {
-    def distDir = new File("$buildDir/dist")
+    def distDir = file("${buildDir}/dist")
     from '../'
     into distDir
     include('*.md')
