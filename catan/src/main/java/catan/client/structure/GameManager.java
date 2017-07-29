@@ -34,7 +34,7 @@ public class GameManager {
         localPlaying = local.getObserver().getPlayerObserver(username) != null;
         remote = new CatanGame(settings);
         events = new ArrayList<>();
-        events.add(new GameEvent(null, GameEventType.Start, null));
+        events.add(new GameEvent(null, GameEventType.Start, settings));
         localhistoryIndex = 0;
         List<GameEvent> history = progress.getHistory();
         for (int i = 1; i < history.size(); i++) {

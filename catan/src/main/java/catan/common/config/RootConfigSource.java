@@ -1,9 +1,7 @@
 package catan.common.config;
 
-import catan.common.game.board.hexarray.Coordinate;
-
-import java.awt.*;
-import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by greg on 3/26/16.
@@ -17,59 +15,6 @@ public abstract class RootConfigSource implements ConfigSource {
         if (found == null)
             throw new ConfigurationException("Unable to read value from config file key " + key);
         return found;
-    }
-
-    @Override
-    public int getInt(String key) {
-        try {
-            String value = get(key);
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            throw new ConfigurationException("Unable to read integer from config file key " + key, e);
-        }
-    }
-
-    @Override
-    public double getDouble(String key) {
-        try {
-            return Double.parseDouble(get(key));
-        } catch (NumberFormatException e) {
-            throw new ConfigurationException("Unable to read double from config file key " + key, e);
-        }
-    }
-
-    @Override
-    public Color getColor(String key) {
-        try {
-            Field field = Class.forName("java.awt.Color").getField(get(key));
-            return (Color) field.get(null);
-        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
-            throw new ConfigurationException("Unable to read color from config file key " + key, e);
-        }
-    }
-
-    @Override
-    public int getHexColor(String key) {
-        try {
-            return Integer.parseInt(get(key), 16);
-        } catch (NumberFormatException e) {
-            throw new ConfigurationException("Unable to read hex color from config file key " + key, e);
-        }
-    }
-
-    @Override
-    public Point getPoint(String key) {
-        return new Point(getInt(key + ".x"), getInt(key + ".y"));
-    }
-
-    @Override
-    public Coordinate getCoord(String key) {
-        return new Coordinate(getInt(key + ".x"), getInt(key + ".y"));
-    }
-
-    @Override
-    public Dimension getDimension(String key) {
-        return new Dimension(getInt(key + ".width"), getInt(key + ".height"));
     }
 
     private String search(String key) {
@@ -124,38 +69,33 @@ public abstract class RootConfigSource implements ConfigSource {
         }
 
         @Override
-        public int getInt(String key) {
-            return RootConfigSource.this.getInt(prefix + key);
-        }
+        public Iterator<Map.Entry<String, String>> iterator() {
+            return new Iterator<Map.Entry<String, String>>() {
+                private Iterator<Map.Entry<String, String>> parent = RootConfigSource.this.iterator();
+                private Map.Entry<String, String> next = findNext();
 
-        @Override
-        public double getDouble(String key) {
-            return RootConfigSource.this.getDouble(prefix + key);
-        }
+                private Map.Entry<String, String> findNext() {
+                    while (parent.hasNext()) {
+                        Map.Entry<String, String> next = parent.next();
+                        if (next.getKey().startsWith(prefix)) {
+                            return next;
+                        }
+                    }
+                    return null;
+                }
 
-        @Override
-        public Color getColor(String key) {
-            return RootConfigSource.this.getColor(prefix + key);
-        }
+                @Override
+                public boolean hasNext() {
+                    return this.next != null;
+                }
 
-        @Override
-        public int getHexColor(String key) {
-            return RootConfigSource.this.getHexColor(prefix + key);
-        }
-
-        @Override
-        public Point getPoint(String key) {
-            return RootConfigSource.this.getPoint(prefix + key);
-        }
-
-        @Override
-        public Coordinate getCoord(String key) {
-            return RootConfigSource.this.getCoord(prefix + key);
-        }
-
-        @Override
-        public Dimension getDimension(String key) {
-            return RootConfigSource.this.getDimension(prefix + key);
+                @Override
+                public Map.Entry<String, String> next() {
+                    Map.Entry<String, String> next = this.next;
+                    this.next = findNext();
+                    return next;
+                }
+            };
         }
     }
 

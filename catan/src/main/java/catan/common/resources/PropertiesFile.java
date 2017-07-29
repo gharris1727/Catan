@@ -1,6 +1,9 @@
-package catan.common.config;
+package catan.common.resources;
 
 import catan.ExternalResource;
+import catan.common.config.ConfigurationException;
+import catan.common.config.EditableConfigSource;
+import catan.common.config.RootConfigSource;
 
 import java.io.*;
 import java.util.Iterator;
@@ -11,27 +14,27 @@ import java.util.Properties;
  * Created by greg on 1/18/16.
  * Class to access configuration details stored in an external file.
  */
-public class PropertiesFile extends RootConfigSource implements EditableConfigSource, Iterable<Map.Entry<String,String>>{
+public class PropertiesFile extends RootConfigSource implements EditableConfigSource {
 
     private final String path;
     private final String comment;
-    private final Properties config;
+    private final Properties file;
     private boolean needsSaving;
 
     public PropertiesFile(String path, String comment) {
         this.path = path;
         this.comment = comment;
-        config = new Properties();
+        file = new Properties();
         needsSaving = false;
         //Load defaults that come packaged with the program
         try {
-            config.load(ExternalResource.getStaticResource(path));
+            file.load(ExternalResource.getStaticResource(path));
         } catch (IOException e) {
             throw new ConfigurationException("Unable to load default config", e);
         }
         //Override the defaults with user configurable versions
         try {
-            config.load(new BufferedReader(new FileReader(ExternalResource.getUserResource(path))));
+            file.load(new BufferedReader(new FileReader(ExternalResource.getUserResource(path))));
         } catch (FileNotFoundException ignored) {
             //We ignore errors when the file does not exist
         } catch (IOException e) {
@@ -48,7 +51,7 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
                     if (!file.createNewFile())
                         throw new IOException("Unable to create new file to save.");
                 }
-                config.store(new BufferedWriter(new FileWriter(file)), comment);
+                this.file.store(new BufferedWriter(new FileWriter(file)), comment);
                 needsSaving = false;
             } catch (IOException e) {
                 throw new ConfigurationException("Unable to save configuration data.");
@@ -58,26 +61,26 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
 
     @Override
     protected String getEntry(String key) {
-        return config.getProperty(key);
+        return file.getProperty(key);
     }
 
     @Override
     public void setEntry(String key, String value) {
         if (key != null && value != null) {
-            config.setProperty(key, value);
+            file.setProperty(key, value);
             needsSaving = true;
         }
     }
 
     @Override
     public void clearEntries() {
-        config.clear();
+        file.clear();
     }
 
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
         //Get the iterator from the internal storage
-        Iterator<Map.Entry<Object, Object>> objIterator = config.entrySet().iterator();
+        Iterator<Map.Entry<Object, Object>> objIterator = file.entrySet().iterator();
         //We cant cast, so we need to cast everything individually.
         return new Iterator<Map.Entry<String, String>>() {
             @Override

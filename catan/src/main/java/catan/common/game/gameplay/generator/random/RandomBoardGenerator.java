@@ -22,9 +22,7 @@ import java.util.*;
  */
 public class RandomBoardGenerator implements BoardGenerator {
 
-    public static final RandomBoardGenerator instance = new RandomBoardGenerator();
-
-    private RandomBoardGenerator() {
+    public RandomBoardGenerator() {
     }
 
     @Override
@@ -89,5 +87,13 @@ public class RandomBoardGenerator implements BoardGenerator {
     @Override
     public String toString() {
         return "RandomBoardGenerator";
+    }
+
+    public boolean equals(Object o) {
+        return this == o || (o != null && this.getClass() == o.getClass());
+    }
+
+    public int hashCode() {
+        return 0;
     }
 }

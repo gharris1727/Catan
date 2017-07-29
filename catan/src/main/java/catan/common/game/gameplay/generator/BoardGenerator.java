@@ -30,9 +30,7 @@ public interface BoardGenerator extends Serializable {
     default void setResourceTile(HexagonalArray hexArray, Map<DiceRoll, Set<Coordinate>> diceRolls, Coordinate c, ResourceTile tile) {
         DiceRoll diceRoll = tile.getDiceRoll();
         hexArray.setTile(c, tile);
-        Set<Coordinate> coordinates = diceRolls.get(diceRoll);
-        if (coordinates == null)
-            diceRolls.put(diceRoll, coordinates = new HashSet<>());
+        Set<Coordinate> coordinates = diceRolls.computeIfAbsent(diceRoll, k -> new HashSet<>());
         coordinates.add(c);
     }
 

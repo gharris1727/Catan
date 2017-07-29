@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by greg on 7/9/16.
@@ -24,7 +24,7 @@ public class CatanGameFuzzTest {
 
     @Test
     public void testRandomGame() {
-        Set<Username> users = GameTestUtils.generatePlayerUsernames(seed, players);
+        List<Username> users = GameTestUtils.generatePlayerUsernames(seed, players);
         GameSettings settings = GameTestUtils.createSettings(seed, users);
         CatanGame game = new CatanGame(settings);
         GameEventGenerator generator = new GameEventGenerator(settings.seed, game);

@@ -1,7 +1,7 @@
 package catan.client.structure;
 
 import catan.common.config.ConfigurationException;
-import catan.common.config.PropertiesFile;
+import catan.common.resources.PropertiesFile;
 import catan.common.resources.PropertiesFileInfo;
 import catan.common.resources.ResourceLoader;
 

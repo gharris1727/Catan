@@ -33,7 +33,7 @@ public class CatanGameEqualityTester implements EqualityTester<CatanGame> {
         PlayerPoolEqualityTester.INSTANCE.assertEquals(expected.players, actual.players);
         TeamPoolEqualityTester.INSTANCE.assertEquals(expected.teams, actual.teams);
         ScoreStateEqualityTester.INSTANCE.assertEquals(expected.scoring, actual.scoring);
-        Assert.assertEquals(expected.listeners, actual.listeners);
+        Assert.assertEquals(expected.triggerListeners, actual.triggerListeners);
 
     }
 }

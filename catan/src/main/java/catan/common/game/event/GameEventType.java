@@ -5,6 +5,7 @@ import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.gameplay.trade.Trade;
 import catan.common.game.util.EnumCounter;
 import catan.common.game.util.GameResource;
+import catan.common.structure.game.GameSettings;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -14,7 +15,7 @@ import catan.common.game.util.GameResource;
  */
 public enum GameEventType implements EventType {
 
-    Start(null),
+    Start(GameSettings.class),
     Turn_Advance(null),
     Player_Move_Robber(Coordinate.class),
     Build_Settlement(Coordinate.class),

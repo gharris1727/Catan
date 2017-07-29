@@ -2,14 +2,12 @@ package catan.common.structure.lobby;
 
 import catan.common.crypto.Username;
 import catan.common.game.gameplay.allocator.PreferenceTeamAllocator;
-import catan.common.game.gameplay.allocator.TeamAllocator;
 import catan.common.game.gameplay.generator.BoardGenerator;
 import catan.common.game.gameplay.generator.better.BetterGenerator;
 import catan.common.game.gameplay.generator.copy.CopyGenerator;
 import catan.common.game.gameplay.generator.random.RandomBoardGenerator;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.scoring.rules.GameRules;
-import catan.common.game.teams.TeamColor;
 import catan.common.resources.BoardLayoutInfo;
 import catan.common.resources.GameRulesInfo;
 import catan.common.resources.ResourceLoadException;
@@ -111,18 +109,16 @@ public class Lobby implements Serializable {
         //Choose the generator to use.
         BoardGenerator boardGenerator;
         if (copyGenerator.find())
-            boardGenerator = CopyGenerator.instance;
+            boardGenerator = new CopyGenerator();
         else if (betterGenerator.find())
-            boardGenerator = BetterGenerator.instance;
+            boardGenerator = new BetterGenerator();
         else
-            boardGenerator = RandomBoardGenerator.instance;
+            boardGenerator = new RandomBoardGenerator();
 
-        Map<Username, TeamColor> preferences = new HashMap<>();
-        //Save all of the players that have made an explicit teamColor choice.
+        PreferenceTeamAllocator players = new PreferenceTeamAllocator();
+
         for (Map.Entry<Username, LobbyUser> user : users.entrySet())
-            preferences.put(user.getKey(), user.getValue().getTeamColor());
-
-        TeamAllocator players = new PreferenceTeamAllocator(preferences);
+            players.addPreference(user.getKey(), user.getValue().getTeamColor());
 
         return new GameSettings(seed, boardLayout, boardGenerator, rules, players);
     }

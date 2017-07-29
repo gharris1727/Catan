@@ -17,7 +17,9 @@ import catan.common.game.event.*;
 import catan.common.game.gameplay.allocator.TeamAllocation;
 import catan.common.game.gameplay.trade.Trade;
 import catan.common.game.gamestate.*;
-import catan.common.game.listeners.GameListener;
+import catan.common.game.listeners.GameEventListener;
+import catan.common.game.listeners.GameTriggerListener;
+import catan.common.game.listeners.ReversibleEventListener;
 import catan.common.game.players.*;
 import catan.common.game.scoring.ScoreEvent;
 import catan.common.game.scoring.ScoreEventType;
@@ -52,7 +54,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     //Score event listening
     final ScoreState scoring;
-    final List<GameListener> listeners;
+    final List<GameEventListener> gameListeners;
+    final List<GameTriggerListener> triggerListeners;
 
     //Historical event data
     final Stack<GameHistory> history;
@@ -69,7 +72,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         history = new Stack<>();
         history.push(new GameHistory(new GameEvent(null, GameEventType.Start, null), TeamColor.None, Collections.emptyList()));
         scoring = new ScoreState(board, players, teams);
-        listeners = new ArrayList<>();
+        gameListeners = new ArrayList<>();
+        triggerListeners = new ArrayList<>();
         observer = new GameObserver(this);
     }
 
@@ -77,12 +81,20 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         return observer;
     }
 
-    public void addListener(GameListener listener) {
-        listeners.add(listener);
+    public void addListener(ReversibleEventListener<?> listener) {
+        if (listener instanceof GameEventListener) {
+            gameListeners.add((GameEventListener) listener);
+        } else if (listener instanceof GameTriggerListener) {
+            triggerListeners.add((GameTriggerListener) listener);
+        }
     }
 
-    public void removeListener(GameListener listener) {
-        listeners.remove(listener);
+    public void removeListener(ReversibleEventListener<?> listener) {
+        if (listener instanceof GameEventListener) {
+            gameListeners.remove(listener);
+        } else if (listener instanceof GameTriggerListener) {
+            triggerListeners.remove(listener);
+        }
     }
 
     private LogicEvent trigger(GameTriggerEvent event) {
@@ -115,175 +127,178 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     private LogicEvent getLogicTree(GameEvent event) {
         Username origin = event.getOrigin();
-        TeamColor teamColor = players.getPlayer(origin).getTeamColor();
-        switch (event.getType()) {
-            case Start:
-                return new LogicEvent(this, LogicEventType.NOT, new LogicEvent(this, LogicEventType.NOP, null));
-            case Turn_Advance:
-                //Advancing the turn requires all of these events to fire.
-                EnumCounter<DevelopmentCard> boughtCards = players.getPlayer(origin).getBoughtCards();
-                boughtCards = new EnumAccumulator<>(DevelopmentCard.class, boughtCards);
-                return compound(LogicEventType.AND,
-                    //Needs to be their turn.
-                    state(origin, GameStateEventType.Active_Turn, teamColor),
-                    //Need to pass the turn to the next team
-                    state(origin, GameStateEventType.Advance_Turn, teamColor),
-                    //Choose whether this is a starter turn or a real turn.
-                    compound(LogicEventType.OR,
-                        //If its a starter turn, signal we are ready to advance.
-                        team(teamColor, TeamEventType.Finish_Setup_Turn, teamColor),
-                        //Otherwise it might be a regular turn.
-                        compound(LogicEventType.AND,
-                            //Advance the turn as regular
-                            team(teamColor, TeamEventType.Finish_Turn, teamColor),
-                            //Give everyone their income
-                            diceRollEvents(origin, state.getDiceRoll()),
-                            //Roll the dice to get the next income round.
-                            state(origin, GameStateEventType.Roll_Dice, state.getDiceRoll())
-                        )
-                    ),
-                    //Mature all of the cards that a user bought this turn.
-                    player(origin, PlayerEventType.Mature_DevelopmentCards, boughtCards)
-                );
-            case Player_Move_Robber:
-                //Moving the robber requires checking if the move can be made, and the player is allowed to do it.
-                return compound(LogicEventType.AND,
-                    //Needs to be their turn.
-                    state(origin, GameStateEventType.Active_Turn, teamColor),
-                    //Choose whether to use up the free robber from the start of turn or use a development card.
-                    compound(LogicEventType.OR,
-                        team(teamColor, TeamEventType.Use_Robber, event.getPayload()),
-                        compound(LogicEventType.AND,
-                            player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Knight),
-                            score(origin, ScoreEventType.Play_Development, DevelopmentCard.Knight)
-                        )
-                    ),
-                    //Check the board to see if the robber is in a valid location.
-                    board(teamColor, BoardEventType.Place_Robber, event.getPayload())
-                );
-            case Build_Settlement:
-                //A settlement build can happen as an outpost or as a normal settlement.
-                return compound(LogicEventType.AND,
-                    //Needs to be their turn.
-                    state(origin, GameStateEventType.Active_Turn, teamColor),
-                    compound(LogicEventType.OR,
-                        //If we make a regular settlement, the purchase and placement must be valid
-                        compound(LogicEventType.AND,
-                            player(origin, PlayerEventType.Lose_Resources, Purchase.Settlement),
-                            board(teamColor, BoardEventType.Place_Settlement, event.getPayload())
-                        ),
-                        //If we make a first outpost, we need to check for outpost placement
-                        compound(LogicEventType.AND,
-                            team(teamColor, TeamEventType.Build_First_Outpost, event.getPayload()),
-                            board(teamColor, BoardEventType.Place_Outpost, event.getPayload())
-                        ),
-                        //If we make a second outpost, we need to allocate the correct resources.
-                        compound(LogicEventType.AND,
-                            team(teamColor, TeamEventType.Build_Second_Outpost, event.getPayload()),
-                            board(teamColor, BoardEventType.Place_Outpost, event.getPayload()),
-                            player(origin, PlayerEventType.Gain_Resources, getTownIncome((Coordinate) event.getPayload()))
-                        )
-                    ),
-                    score(origin, ScoreEventType.Build_Settlement, event.getPayload())
-                );
-            case Build_City:
-                //All cities are purchased manually.
-                return compound(LogicEventType.AND,
-                    //Needs to be their turn.
-                    state(origin, GameStateEventType.Active_Turn, teamColor),
-                    //Need to be able to purchase the city
-                    player(origin, PlayerEventType.Lose_Resources, Purchase.City),
-                    //Place the city on the board
-                    board(teamColor, BoardEventType.Place_City, event.getPayload()),
-                    //Need to notify the scorers.
-                    score(origin, ScoreEventType.Build_City, event.getPayload())
-                );
-            case Build_Road:
-                //A road can be built either using the free outpost or as a purchase.
-                return compound(LogicEventType.AND,
-                    //Needs to be their turn.
-                    state(origin, GameStateEventType.Active_Turn, teamColor),
-                    //Decide between the free or purchased road
-                    compound(LogicEventType.OR,
-                        team(teamColor, TeamEventType.Build_Free_Road, event.getPayload()),
-                        player(origin, PlayerEventType.Lose_Resources, Purchase.Road)
-                    ),
-                    //Place the road on the board.
-                    board(teamColor, BoardEventType.Place_Road, event.getPayload()),
-                    //Notify the scorers.
-                    score(origin, ScoreEventType.Build_Road, event.getPayload())
-                );
-            case Buy_Development:
-                //In order to gain a development card, one must exist and the user must have enough resources.
-                return compound(LogicEventType.AND,
-                    //Needs to be their turn.
-                    state(origin, GameStateEventType.Active_Turn, teamColor),
-                    //Need to remove a card from the deck
-                    state(origin, GameStateEventType.Draw_DevelopmentCard, state.getDevelopmentCard()),
-                    //Need to purchase a card
-                    player(origin, PlayerEventType.Lose_Resources, Purchase.DevelopmentCard),
-                    //Need to add the development card to their inventory
-                    player(origin, PlayerEventType.Gain_DevelopmentCard, state.getDevelopmentCard()),
-                    //Need to notify the scorers.
-                    score(origin, ScoreEventType.Buy_Development, state.getDevelopmentCard())
-                );
-            case Offer_Trade:
-                return player(origin, PlayerEventType.Offer_Trade, event.getPayload());
-            case Cancel_Trade:
-                return player(origin, PlayerEventType.Cancel_Trade, event.getPayload());
-            case Make_Trade: {
-                Trade t = (Trade) event.getPayload();
-                TeamColor otherTeam = t.getSeller() == null ? null : players.getPlayer(t.getSeller()).getTeamColor();
-                return compound(LogicEventType.AND,
-                    compound(LogicEventType.OR,
-                        //Needs to be our turn
-                        state(origin, GameStateEventType.Active_Turn, teamColor),
-                        //Needs to be the other players turn
-                        state(origin, GameStateEventType.Active_Turn, otherTeam)
-                    ),
-                    player(origin, PlayerEventType.Gain_Resources, t.getOffer()),
-                    player(origin, PlayerEventType.Lose_Resources, t.getRequest()),
-                    player(t.getSeller(), PlayerEventType.Gain_Resources, t.getRequest()),
-                    player(t.getSeller(), PlayerEventType.Lose_Resources, t.getOffer()),
-                    player(t.getSeller(), PlayerEventType.Use_Trade, t)
-                );
-            }
-            case Discard_Resources:
-                return player(origin, PlayerEventType.Discard_Resources, event.getPayload());
-            case Steal_Resources:
-                return compound(LogicEventType.AND,
-                    team(teamColor, TeamEventType.Steal_Resources, null),
-                    getStolenResources(origin, (Coordinate) event.getPayload())
-                );
-            case Play_RoadBuilding:
-                return compound(LogicEventType.AND,
-                    team(teamColor, TeamEventType.Activate_RoadBuilding, null),
-                    player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.RoadBuilding)
-                );
-            case Play_YearOfPlenty:
-                return compound(LogicEventType.AND,
-                    player(origin, PlayerEventType.Gain_Resources, event.getPayload()),
-                    player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.YearOfPlenty)
-                );
-            case Play_Monopoly: {
-                GameResource resource = (GameResource) event.getPayload();
-                int total = 0;
-                List<LogicEvent> playerEvents = new ArrayList<>();
-                for (Username username : players) {
-                    if (username != null) {
-                        Player p = players.getPlayer(username);
-                        int count = p.getInventory().get(resource);
-                        if (count > 0) {
-                            total += count;
-                            EnumCounter<GameResource> loss = new EnumAccumulator<>(GameResource.class, resource, count);
-                            playerEvents.add(player(username, PlayerEventType.Lose_Resources, loss));
+        Player player = players.getPlayer(origin);
+        if (player != null) {
+            TeamColor teamColor = player.getTeamColor();
+            switch (event.getType()) {
+                case Start:
+                    return new LogicEvent(this, LogicEventType.NOT, new LogicEvent(this, LogicEventType.NOP, null));
+                case Turn_Advance:
+                    //Advancing the turn requires all of these events to fire.
+                    EnumCounter<DevelopmentCard> boughtCards = player.getBoughtCards();
+                    boughtCards = new EnumAccumulator<>(DevelopmentCard.class, boughtCards);
+                    return compound(LogicEventType.AND,
+                            //Needs to be their turn.
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            //Need to pass the turn to the next team
+                            state(origin, GameStateEventType.Advance_Turn, teamColor),
+                            //Choose whether this is a starter turn or a real turn.
+                            compound(LogicEventType.OR,
+                                    //If its a starter turn, signal we are ready to advance.
+                                    team(teamColor, TeamEventType.Finish_Setup_Turn, teamColor),
+                                    //Otherwise it might be a regular turn.
+                                    compound(LogicEventType.AND,
+                                            //Advance the turn as regular
+                                            team(teamColor, TeamEventType.Finish_Turn, teamColor),
+                                            //Give everyone their income
+                                            diceRollEvents(origin, state.getDiceRoll()),
+                                            //Roll the dice to get the next income round.
+                                            state(origin, GameStateEventType.Roll_Dice, state.getDiceRoll())
+                                    )
+                            ),
+                            //Mature all of the cards that a user bought this turn.
+                            player(origin, PlayerEventType.Mature_DevelopmentCards, boughtCards)
+                    );
+                case Player_Move_Robber:
+                    //Moving the robber requires checking if the move can be made, and the player is allowed to do it.
+                    return compound(LogicEventType.AND,
+                            //Needs to be their turn.
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            //Choose whether to use up the free robber from the start of turn or use a development card.
+                            compound(LogicEventType.OR,
+                                    team(teamColor, TeamEventType.Use_Robber, event.getPayload()),
+                                    compound(LogicEventType.AND,
+                                            player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Knight),
+                                            score(origin, ScoreEventType.Play_Development, DevelopmentCard.Knight)
+                                    )
+                            ),
+                            //Check the board to see if the robber is in a valid location.
+                            board(teamColor, BoardEventType.Place_Robber, event.getPayload())
+                    );
+                case Build_Settlement:
+                    //A settlement build can happen as an outpost or as a normal settlement.
+                    return compound(LogicEventType.AND,
+                            //Needs to be their turn.
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            compound(LogicEventType.OR,
+                                    //If we make a regular settlement, the purchase and placement must be valid
+                                    compound(LogicEventType.AND,
+                                            player(origin, PlayerEventType.Lose_Resources, Purchase.Settlement),
+                                            board(teamColor, BoardEventType.Place_Settlement, event.getPayload())
+                                    ),
+                                    //If we make a first outpost, we need to check for outpost placement
+                                    compound(LogicEventType.AND,
+                                            team(teamColor, TeamEventType.Build_First_Outpost, event.getPayload()),
+                                            board(teamColor, BoardEventType.Place_Outpost, event.getPayload())
+                                    ),
+                                    //If we make a second outpost, we need to allocate the correct resources.
+                                    compound(LogicEventType.AND,
+                                            team(teamColor, TeamEventType.Build_Second_Outpost, event.getPayload()),
+                                            board(teamColor, BoardEventType.Place_Outpost, event.getPayload()),
+                                            player(origin, PlayerEventType.Gain_Resources, getTownIncome((Coordinate) event.getPayload()))
+                                    )
+                            ),
+                            score(origin, ScoreEventType.Build_Settlement, event.getPayload())
+                    );
+                case Build_City:
+                    //All cities are purchased manually.
+                    return compound(LogicEventType.AND,
+                            //Needs to be their turn.
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            //Need to be able to purchase the city
+                            player(origin, PlayerEventType.Lose_Resources, Purchase.City),
+                            //Place the city on the board
+                            board(teamColor, BoardEventType.Place_City, event.getPayload()),
+                            //Need to notify the scorers.
+                            score(origin, ScoreEventType.Build_City, event.getPayload())
+                    );
+                case Build_Road:
+                    //A road can be built either using the free outpost or as a purchase.
+                    return compound(LogicEventType.AND,
+                            //Needs to be their turn.
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            //Decide between the free or purchased road
+                            compound(LogicEventType.OR,
+                                    team(teamColor, TeamEventType.Build_Free_Road, event.getPayload()),
+                                    player(origin, PlayerEventType.Lose_Resources, Purchase.Road)
+                            ),
+                            //Place the road on the board.
+                            board(teamColor, BoardEventType.Place_Road, event.getPayload()),
+                            //Notify the scorers.
+                            score(origin, ScoreEventType.Build_Road, event.getPayload())
+                    );
+                case Buy_Development:
+                    //In order to gain a development card, one must exist and the user must have enough resources.
+                    return compound(LogicEventType.AND,
+                            //Needs to be their turn.
+                            state(origin, GameStateEventType.Active_Turn, teamColor),
+                            //Need to remove a card from the deck
+                            state(origin, GameStateEventType.Draw_DevelopmentCard, state.getDevelopmentCard()),
+                            //Need to purchase a card
+                            player(origin, PlayerEventType.Lose_Resources, Purchase.DevelopmentCard),
+                            //Need to add the development card to their inventory
+                            player(origin, PlayerEventType.Gain_DevelopmentCard, state.getDevelopmentCard()),
+                            //Need to notify the scorers.
+                            score(origin, ScoreEventType.Buy_Development, state.getDevelopmentCard())
+                    );
+                case Offer_Trade:
+                    return player(origin, PlayerEventType.Offer_Trade, event.getPayload());
+                case Cancel_Trade:
+                    return player(origin, PlayerEventType.Cancel_Trade, event.getPayload());
+                case Make_Trade: {
+                    Trade t = (Trade) event.getPayload();
+                    TeamColor otherTeam = t.getSeller() == null ? null : players.getPlayer(t.getSeller()).getTeamColor();
+                    return compound(LogicEventType.AND,
+                            compound(LogicEventType.OR,
+                                    //Needs to be our turn
+                                    state(origin, GameStateEventType.Active_Turn, teamColor),
+                                    //Needs to be the other players turn
+                                    state(origin, GameStateEventType.Active_Turn, otherTeam)
+                            ),
+                            player(origin, PlayerEventType.Gain_Resources, t.getOffer()),
+                            player(origin, PlayerEventType.Lose_Resources, t.getRequest()),
+                            player(t.getSeller(), PlayerEventType.Gain_Resources, t.getRequest()),
+                            player(t.getSeller(), PlayerEventType.Lose_Resources, t.getOffer()),
+                            player(t.getSeller(), PlayerEventType.Use_Trade, t)
+                    );
+                }
+                case Discard_Resources:
+                    return player(origin, PlayerEventType.Discard_Resources, event.getPayload());
+                case Steal_Resources:
+                    return compound(LogicEventType.AND,
+                            team(teamColor, TeamEventType.Steal_Resources, null),
+                            getStolenResources(origin, (Coordinate) event.getPayload())
+                    );
+                case Play_RoadBuilding:
+                    return compound(LogicEventType.AND,
+                            team(teamColor, TeamEventType.Activate_RoadBuilding, null),
+                            player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.RoadBuilding)
+                    );
+                case Play_YearOfPlenty:
+                    return compound(LogicEventType.AND,
+                            player(origin, PlayerEventType.Gain_Resources, event.getPayload()),
+                            player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.YearOfPlenty)
+                    );
+                case Play_Monopoly: {
+                    GameResource resource = (GameResource) event.getPayload();
+                    int total = 0;
+                    List<LogicEvent> playerEvents = new ArrayList<>();
+                    for (Username username : players) {
+                        if (username != null) {
+                            Player p = players.getPlayer(username);
+                            int count = p.getInventory().get(resource);
+                            if (count > 0) {
+                                total += count;
+                                EnumCounter<GameResource> loss = new EnumAccumulator<>(GameResource.class, resource, count);
+                                playerEvents.add(player(username, PlayerEventType.Lose_Resources, loss));
+                            }
                         }
                     }
+                    EnumCounter<GameResource> gain = new EnumAccumulator<>(GameResource.class, resource, total);
+                    playerEvents.add(player(origin, PlayerEventType.Gain_Resources, gain));
+                    playerEvents.add(player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Monopoly));
+                    return compound(LogicEventType.AND, playerEvents.toArray(new LogicEvent[playerEvents.size()]));
                 }
-                EnumCounter<GameResource> gain = new EnumAccumulator<>(GameResource.class, resource, total);
-                playerEvents.add(player(origin, PlayerEventType.Gain_Resources, gain));
-                playerEvents.add(player(origin, PlayerEventType.Use_DevelopmentCard, DevelopmentCard.Monopoly));
-                return compound(LogicEventType.AND, playerEvents.toArray(new LogicEvent[playerEvents.size()]));
             }
         }
         return new LogicEvent(this, LogicEventType.NOP, null);
@@ -308,9 +323,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     Town town = board.getTown(vertex);
                     TeamColor teamColor = (town != null ? town.getTeam() : TeamColor.None);
                     if (teamColor != TeamColor.None) {
-                        EnumAccumulator<GameResource> teamIncome = income.get(teamColor);
-                        if (teamIncome == null)
-                            income.put(teamColor, teamIncome = new EnumAccumulator<>(GameResource.class));
+                        EnumAccumulator<GameResource> teamIncome =
+                                income.computeIfAbsent(teamColor, k -> new EnumAccumulator<>(GameResource.class));
                         if (town instanceof Settlement)
                             teamIncome.increment(resource, rules.getSettlementResources());
                         if (town instanceof City)
@@ -403,16 +417,15 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             scoring.execute((ScoreEvent) event);
         else
             throw new EventConsumerException("Unknown event type!");
-        for (GameListener listener : listeners) {
+        for (GameTriggerListener listener : triggerListeners) {
             EventConsumerProblem problem = listener.test(event);
             if (problem != null) {
                 listener.reportTestProblem(problem);
             } else {
                 try {
                     listener.execute(event);
-                } catch (Exception e) {
-                    if (e instanceof EventConsumerException)
-                        listener.reportExecuteError((EventConsumerException) e);
+                } catch (EventConsumerException e) {
+                    listener.reportExecuteException(e);
                 }
             }
         }
@@ -431,6 +444,13 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             scoring.undo();
         else
             throw new EventConsumerException("Unknown event type!");
+        for (GameTriggerListener listener : triggerListeners) {
+            try {
+                listener.undo();
+            } catch (EventConsumerException e) {
+                listener.reportUndoException(e);
+            }
+        }
     }
 
     private void revertHistory(Stack<GameTriggerEvent> past, int nEvents) throws EventConsumerException {
@@ -516,6 +536,19 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         } catch (EventConsumerException e) {
             throw new EventConsumerException(event, e);
         }
+
+        for (GameEventListener listener : gameListeners) {
+            EventConsumerProblem problem = listener.test(event);
+            if (problem != null) {
+                listener.reportTestProblem(problem);
+            } else {
+                try {
+                    listener.execute(event);
+                } catch (EventConsumerException e) {
+                    listener.reportExecuteException(e);
+                }
+            }
+        }
     }
 
     @Override
@@ -526,6 +559,14 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         ListIterator<GameTriggerEvent> iterator = triggered.listIterator(triggered.size());
         while (iterator.hasPrevious()) {
             undoTrigger(iterator.previous());
+        }
+
+        for (GameEventListener listener : gameListeners) {
+            try {
+                listener.undo();
+            } catch (EventConsumerException e) {
+                listener.reportUndoException(e);
+            }
         }
     }
 

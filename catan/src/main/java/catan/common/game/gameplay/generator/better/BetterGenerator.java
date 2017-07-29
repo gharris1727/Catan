@@ -10,9 +10,7 @@ import catan.common.game.gameplay.layout.BoardLayout;
  */
 public class BetterGenerator implements BoardGenerator {
 
-    public static final BetterGenerator instance = new BetterGenerator();
-
-    private BetterGenerator() {
+    public BetterGenerator() {
     }
 
     @Override
@@ -24,5 +22,13 @@ public class BetterGenerator implements BoardGenerator {
     @Override
     public String toString() {
         return "BetterGenerator";
+    }
+
+    public boolean equals(Object o) {
+        return this == o || (o != null && this.getClass() == o.getClass());
+    }
+
+    public int hashCode() {
+        return 0;
     }
 }

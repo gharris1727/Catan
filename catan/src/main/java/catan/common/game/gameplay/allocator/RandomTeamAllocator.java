@@ -11,9 +11,9 @@ import java.util.*;
  */
 public class RandomTeamAllocator implements TeamAllocator {
 
-    private final Set<Username> usernames;
+    private final List<Username> usernames;
 
-    public RandomTeamAllocator(Set<Username> usernames) {
+    public RandomTeamAllocator(List<Username> usernames) {
         this.usernames = usernames;
     }
 
@@ -40,5 +40,24 @@ public class RandomTeamAllocator implements TeamAllocator {
         }
 
         return new TeamAllocation(users, teams);
+    }
+
+    public String toString() {
+        return "RandomTeamAllocator";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RandomTeamAllocator that = (RandomTeamAllocator) o;
+
+        return usernames.equals(that.usernames);
+    }
+
+    @Override
+    public int hashCode() {
+        return usernames.hashCode();
     }
 }

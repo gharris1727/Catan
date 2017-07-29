@@ -3,7 +3,6 @@ package catan.common.resources;
 import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.graphics.GraphicSource;
 import catan.client.graphics.masks.RenderMask;
-import catan.common.config.PropertiesFile;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.gameplay.layout.DynamicBoardLayout;
 import catan.common.game.gameplay.layout.StaticBoardLayout;

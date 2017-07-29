@@ -12,10 +12,14 @@ import java.util.*;
  */
 public class PreferenceTeamAllocator implements TeamAllocator {
 
-    private final Map<Username, TeamColor> preferences;
+    private final List<Preference> preferences;
 
-    public PreferenceTeamAllocator(Map<Username, TeamColor> preferences) {
-        this.preferences = preferences;
+    public PreferenceTeamAllocator() {
+        this.preferences = new LinkedList<>();
+    }
+
+    public void addPreference(Username username, TeamColor teamColor) {
+        preferences.add(new Preference(username, teamColor));
     }
 
     @Override
@@ -29,17 +33,16 @@ public class PreferenceTeamAllocator implements TeamAllocator {
         Set<TeamColor> teamsToAllocate = TeamColor.getTeamSet();
 
         //Go over all of the user preferences and assign them.
-        for (Map.Entry<Username, TeamColor> preference : preferences.entrySet()) {
-            TeamColor teamColor = preference.getValue();
+        for (Preference preference : preferences) {
 
-            if (teamColor == null || teamColor == TeamColor.None) {
+            if (preference.teamColor == null || preference.teamColor == TeamColor.None) {
                 //If they didnt specify a preference, then add them to be addressed later.
-                usersToAllocate.add(preference.getKey());
+                usersToAllocate.add(preference.username);
             } else {
                 //Remove this team from first-round re-allocation.
-                teamsToAllocate.remove(teamColor);
+                teamsToAllocate.remove(preference.teamColor);
                 //Assign this player their preferred color.
-                TeamAllocation.allocatePlayer(users, teams, preference.getKey(), preference.getValue());
+                TeamAllocation.allocatePlayer(users, teams, preference.username, preference.teamColor);
             }
         }
 
@@ -61,4 +64,28 @@ public class PreferenceTeamAllocator implements TeamAllocator {
         return new TeamAllocation(users, teams);
     }
 
+    private class Preference {
+        private final Username username;
+        private final TeamColor teamColor;
+
+        private Preference(Username username, TeamColor teamColor) {
+            this.username = username;
+            this.teamColor = teamColor;
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PreferenceTeamAllocator that = (PreferenceTeamAllocator) o;
+
+        return preferences.equals(that.preferences);
+    }
+
+    @Override
+    public int hashCode() {
+        return preferences.hashCode();
+    }
 }

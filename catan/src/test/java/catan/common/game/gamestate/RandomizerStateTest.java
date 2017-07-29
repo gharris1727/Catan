@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Created by greg on 12/21/16.
@@ -24,7 +23,7 @@ public class RandomizerStateTest {
     private final Username greg = new Username("Greg");
     private final Username bob = new Username("Bob");
     private final GameSettings gameSettings = GameTestUtils.createSettings(
-        System.nanoTime(), new HashSet<>(Arrays.asList(greg, bob)));
+        System.nanoTime(), Arrays.asList(greg, bob));
 
     @Test
     public void testDiceRolls() throws EventConsumerException {

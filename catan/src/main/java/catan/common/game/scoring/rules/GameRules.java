@@ -38,5 +38,4 @@ public interface GameRules {
 
     int getMaxCities();
 
-
 }

@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 import static catan.common.game.event.GameEventType.*;
 
@@ -24,7 +23,7 @@ public class CatanGameTest {
     private final Username greg = new Username("Greg");
     private final Username bob = new Username("Bob");
     private final GameSettings gameSettings = GameTestUtils.createSettings(
-        System.nanoTime(), new HashSet<>(Arrays.asList(greg, bob)));
+        317239L, Arrays.asList(greg, bob));
 
     private CatanGame startTwoPlayerGame() {
         CatanGame game = new CatanGame(gameSettings);

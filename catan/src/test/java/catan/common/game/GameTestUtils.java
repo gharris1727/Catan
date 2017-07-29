@@ -15,10 +15,10 @@ import catan.common.resources.ResourceLoader;
 import catan.common.structure.game.GameSettings;
 import org.junit.Assert;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Created by greg on 6/29/16.
@@ -26,9 +26,9 @@ import java.util.Set;
  */
 public class GameTestUtils {
 
-    public static Set<Username> generatePlayerUsernames(long seed, int count) {
+    public static List<Username> generatePlayerUsernames(long seed, int count) {
         Random random = new Random(seed);
-        Set<Username> users = new HashSet<>();
+        List<Username> users = new ArrayList<>();
         int length;
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < count; i++) {
@@ -39,14 +39,14 @@ public class GameTestUtils {
                 builder.append((char) (random.nextInt('z'-'a') + 'a'));
             users.add(new Username(builder.toString()));
         }
-        return Collections.unmodifiableSet(users);
+        return Collections.unmodifiableList(users);
     }
 
-    public static GameSettings createSettings(long seed, Set<Username> usernames) {
+    public static GameSettings createSettings(long seed, List<Username> usernames) {
         BoardLayout baseLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("base"));
         GameRules baseRules = ResourceLoader.getGameRuleSet(new GameRulesInfo("default"));
         TeamAllocator players = new RandomTeamAllocator(usernames);
-        return new GameSettings(seed, baseLayout, RandomBoardGenerator.instance, baseRules, players);
+        return new GameSettings(seed, baseLayout, new RandomBoardGenerator(), baseRules, players);
     }
 
     public static void assertExecute(CatanGame game, GameEvent event, boolean expectSuccess) {

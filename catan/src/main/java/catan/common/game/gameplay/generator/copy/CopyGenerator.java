@@ -19,9 +19,7 @@ import java.util.*;
  */
 public class CopyGenerator implements BoardGenerator {
 
-    public static final CopyGenerator instance = new CopyGenerator();
-
-    private CopyGenerator() {
+    public CopyGenerator() {
     }
 
     @Override
@@ -50,5 +48,13 @@ public class CopyGenerator implements BoardGenerator {
     @Override
     public String toString() {
         return "CopyGenerator";
+    }
+
+    public boolean equals(Object o) {
+        return this == o || (o != null && this.getClass() == o.getClass());
+    }
+
+    public int hashCode() {
+        return 0;
     }
 }

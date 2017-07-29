@@ -1,11 +1,11 @@
 package catan.common.game.gameplay.layout;
 
 import catan.common.config.ConfigSource;
-import catan.common.config.PropertiesFile;
 import catan.common.game.board.Terrain;
 import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.gameplay.trade.TradingPostType;
 import catan.common.game.gamestate.DiceRoll;
+import catan.common.resources.PropertiesFile;
 import catan.common.resources.PropertiesFileInfo;
 import catan.common.resources.ResourceLoader;
 
@@ -253,5 +253,41 @@ public class StaticBoardLayout implements BoardLayout {
     @Override
     public String toString() {
         return "StaticBoardLayout " + name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StaticBoardLayout that = (StaticBoardLayout) o;
+
+        if (tileCount != that.tileCount) return false;
+        if (desertCount != that.desertCount) return false;
+        if (portCount != that.portCount) return false;
+        if (!name.equals(that.name)) return false;
+        if (!size.equals(that.size)) return false;
+        if (robber != null ? !robber.equals(that.robber) : that.robber != null) return false;
+        if (!tiles.equals(that.tiles)) return false;
+        if (!ports.equals(that.ports)) return false;
+        if (!terrain.equals(that.terrain)) return false;
+        if (!rolls.equals(that.rolls)) return false;
+        return posts.equals(that.posts);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + size.hashCode();
+        result = 31 * result + (robber != null ? robber.hashCode() : 0);
+        result = 31 * result + tileCount;
+        result = 31 * result + desertCount;
+        result = 31 * result + portCount;
+        result = 31 * result + tiles.hashCode();
+        result = 31 * result + ports.hashCode();
+        result = 31 * result + terrain.hashCode();
+        result = 31 * result + rolls.hashCode();
+        result = 31 * result + posts.hashCode();
+        return result;
     }
 }

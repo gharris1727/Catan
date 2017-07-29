@@ -1,8 +1,8 @@
 package catan.common.game.scoring.rules;
 
-import catan.common.config.PropertiesFile;
 import catan.common.game.gamestate.DevelopmentCard;
 import catan.common.game.scoring.achievement.AchievementCard;
+import catan.common.resources.PropertiesFile;
 import catan.common.resources.PropertiesFileInfo;
 import catan.common.resources.ResourceLoader;
 
@@ -203,5 +203,13 @@ public class StaticGameRules implements Serializable, GameRules {
     @Override
     public String toString() {
         return "StaticGameRules";
+    }
+
+    public boolean equals(Object o) {
+        return this == o || (o != null && this.getClass() == o.getClass());
+    }
+
+    public int hashCode() {
+        return 0;
     }
 }

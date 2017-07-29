@@ -43,7 +43,7 @@ public class EventConsumerProblem {
     }
 
     public String toString() {
-        return message;
+        return getMessage();
     }
 
     public String getMessage() {

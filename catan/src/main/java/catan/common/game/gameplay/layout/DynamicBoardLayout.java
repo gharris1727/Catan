@@ -81,4 +81,19 @@ public class DynamicBoardLayout implements BoardLayout {
     public String toString() {
         return "DynamicBoardLayout(" + seed + ")";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DynamicBoardLayout that = (DynamicBoardLayout) o;
+
+        return seed == that.seed;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (seed ^ (seed >>> 32));
+    }
 }

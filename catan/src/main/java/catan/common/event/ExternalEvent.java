@@ -2,7 +2,7 @@ package catan.common.event;
 
 import catan.common.crypto.Username;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -65,5 +65,27 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
         result = 31 * result + type.hashCode();
         result = 31 * result + (payload != null ? payload.hashCode() : 0);
         return result;
+    }
+
+    public byte[] serialize() {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        try (ObjectOutputStream objectStream = new ObjectOutputStream(byteStream)) {
+            objectStream.writeObject(this);
+            return byteStream.toByteArray();
+        } catch (IOException e) {
+            throw new Error(e);
+        }
+    }
+
+    public static ExternalEvent deserialize(byte[] serialized) throws IOException {
+        try {
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(serialized);
+            ObjectInputStream objectStream = new ObjectInputStream(byteStream);
+            Object out = objectStream.readObject();
+            objectStream.close();
+            return (ExternalEvent) out;
+        } catch (ClassCastException | ClassNotFoundException e) {
+            throw new IOException("Could not deserialize GameEvent.", e);
+        }
     }
 }

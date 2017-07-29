@@ -31,4 +31,27 @@ public class GameSettings extends EventPayload {
         return "GameSettings(" + seed + "/" + boardLayout + "/" + boardGenerator + "/" + rules + "/" + playerTeams + ")";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GameSettings that = (GameSettings) o;
+
+        if (seed != that.seed) return false;
+        if (!boardLayout.equals(that.boardLayout)) return false;
+        if (!boardGenerator.equals(that.boardGenerator)) return false;
+        if (!rules.equals(that.rules)) return false;
+        return playerTeams.equals(that.playerTeams);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (seed ^ (seed >>> 32));
+        result = 31 * result + boardLayout.hashCode();
+        result = 31 * result + boardGenerator.hashCode();
+        result = 31 * result + rules.hashCode();
+        result = 31 * result + playerTeams.hashCode();
+        return result;
+    }
 }

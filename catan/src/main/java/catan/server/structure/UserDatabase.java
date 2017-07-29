@@ -1,7 +1,7 @@
 package catan.server.structure;
 
-import catan.common.config.PropertiesFile;
 import catan.common.crypto.*;
+import catan.common.resources.PropertiesFile;
 import catan.common.resources.PropertiesFileInfo;
 import catan.common.resources.ResourceLoader;
 import catan.common.structure.UserInfo;
