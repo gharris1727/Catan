@@ -19,7 +19,7 @@ public class ReplayRecordingThread extends QueuedInputThread<ReplayEvent> {
     }
 
     @Override
-    protected void execute() throws ThreadStop {
+    protected void execute() throws ThreadStopException {
         ReplayEvent event = getEvent(true);
 
     }

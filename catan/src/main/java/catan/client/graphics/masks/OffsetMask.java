@@ -9,16 +9,13 @@ import java.awt.*;
 public class OffsetMask extends RenderMask {
 
     public OffsetMask(RenderMask other, Point offset) {
-        width = other.width + offset.x;
-        height = other.height + offset.y;
-        padding = new int[height];
-        widths = new int[height];
+        setSize(other.width + offset.x, other.height + offset.y);
         for (int i = 0; i < height; i++) {
             int pad = other.padding[i];
             int wid = other.widths[i];
             if (pad < offset.x) {
                 padding[i] = 0;
-                widths[i] = wid + pad - offset.x;
+                widths[i] = (wid + pad) - offset.x;
             } else {
                 padding[i] = pad - offset.x;
                 widths[i] = wid;

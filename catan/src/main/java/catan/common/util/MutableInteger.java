@@ -17,6 +17,6 @@ public class MutableInteger {
     }
 
     public int get() {
-        return this.value;
+        return value;
     }
 }

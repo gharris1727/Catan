@@ -3,10 +3,7 @@ package catan.common.game.gameplay.generator.random;
 import catan.common.game.gameplay.generator.FeatureGenerator;
 import catan.common.game.gamestate.DiceRoll;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -14,8 +11,8 @@ import java.util.Random;
  */
 public class TokenGenerator implements FeatureGenerator<DiceRoll> {
 
-    private final static int[] genOrder = {6, 8, 5, 9, 4, 10, 3, 11, 2, 12};
-    private final ArrayList<DiceRoll> dice;
+    private static final int[] genOrder = {6, 8, 5, 9, 4, 10, 3, 11, 2, 12};
+    private final List<DiceRoll> dice;
 
     public TokenGenerator(int numTokens) {
         dice = new ArrayList<>(numTokens);

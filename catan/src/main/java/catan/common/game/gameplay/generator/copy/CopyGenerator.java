@@ -19,26 +19,24 @@ import java.util.*;
  */
 public class CopyGenerator implements BoardGenerator {
 
-    public CopyGenerator() {
-    }
-
     @Override
     public GameBoard generate(BoardLayout layout, long seed) {
         Dimension size = layout.getSize();
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
         Map<DiceRoll, Set<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
-        Set<Coordinate> tradingPosts = new HashSet<>();
         Iterator<Coordinate> tiles = layout.getTiles();
-        Iterator<Coordinate> ports = layout.getPorts();
         Iterator<Terrain> terrain = layout.getTerrain();
         Iterator<DiceRoll> rolls = layout.getRolls();
-        Iterator<TradingPostType> posts = layout.getPosts();
         //Place all of the resource tiles
         while (tiles.hasNext() && terrain.hasNext() && rolls.hasNext())
             setResourceTile(hexArray, diceRolls, tiles.next(), new ResourceTile(terrain.next(), rolls.next()));
         //Generate the beaches.
         generateBeachTiles(hexArray);
+
         //Replace the beaches with trading posts.
+        Iterator<Coordinate> ports = layout.getPorts();
+        Iterator<TradingPostType> posts = layout.getPosts();
+        Set<Coordinate> tradingPosts = new HashSet<>();
         while(ports.hasNext() && posts.hasNext())
             setTradingPost(hexArray, tradingPosts, ports.next(), posts.next());
         ((ResourceTile) hexArray.getTile(layout.getRobber())).placeRobber();
@@ -51,7 +49,7 @@ public class CopyGenerator implements BoardGenerator {
     }
 
     public boolean equals(Object o) {
-        return this == o || (o != null && this.getClass() == o.getClass());
+        return (this == o) || ((o != null) && (this.getClass() == o.getClass()));
     }
 
     public int hashCode() {

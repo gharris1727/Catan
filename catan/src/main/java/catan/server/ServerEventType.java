@@ -18,15 +18,15 @@ public enum ServerEventType implements EventType {
     User_Disconnect(Username.class); //Removes a connection from the server after a logout.
 
 
-    private final Class payloadType;
+    private final Class type;
 
-    ServerEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    ServerEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 
 }

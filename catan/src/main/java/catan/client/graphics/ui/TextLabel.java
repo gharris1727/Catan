@@ -34,7 +34,7 @@ public class TextLabel extends ConfigurableGraphicObject {
                 text = "!!";
             }
         }
-        if (isRenderable() && text != null && text.length() > 0)
+        if (isRenderable() && (text != null) && !text.isEmpty())
             setGraphic(new TextGraphic(getConfig(), getConfig().getLayout().get("style"), text));
         else
             setGraphic(new Graphic(new RectangularMask(new Dimension(1, 1)), true));

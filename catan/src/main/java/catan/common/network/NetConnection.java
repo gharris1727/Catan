@@ -20,8 +20,8 @@ public abstract class NetConnection implements Runnable {
 
     protected final Logger logger;
     protected final EventProcessor<GenericEvent> host;
+    protected final NetID remote;
     protected NetID local;
-    protected NetID remote;
 
     protected Socket socket;
     private final Thread connect;
@@ -32,45 +32,40 @@ public abstract class NetConnection implements Runnable {
     protected boolean open;
     protected AuthToken token;
 
-    protected NetConnection(EventProcessor<GenericEvent> host, Logger logger) {
+    protected NetConnection(EventProcessor<GenericEvent> host, Logger logger, NetID remote) {
         this.host = host;
         this.logger = logger;
+        this.remote = remote;
         //Thread to establish a connection, uses this class' own run() method from Runnable.
         connect = new Thread(this);
         //Thread to accept incoming objects and sendEvent them to the process implementation.
-        receive = new Thread("Receive") {
-            @Override
-            public void run() {
-                while (open) {
-                    try {
-                        process((NetEvent) in.readObject());
-                    } catch (SocketException | EOFException e) {
-                        onClose(e);
-                    } catch (Exception e) {
-                        onError("Receive", e);
-                    }
-                }
-            }
-        };
-        //Thread to close the socket and sever the connection.
-        disconnect = new Thread("Disconnect") {
-            @Override
-            public void run() {
-                open = false;
+        receive = new Thread(() -> {
+            while (open) {
                 try {
-                    connect.join();
-                    if (in != null)
-                        in.close();
-                    if (out != null)
-                        out.close();
-                    if (socket != null)
-                        socket.close();
-                    receive.join();
+                    process((NetEvent) in.readObject());
+                } catch (SocketException | EOFException e) {
+                    onClose(e);
                 } catch (Exception e) {
-                    onError("Disconnect", e);
+                    onError("Receive", e);
                 }
             }
-        };
+        }, "Receive");
+        //Thread to close the socket and sever the connection.
+        disconnect = new Thread(() -> {
+            open = false;
+            try {
+                connect.join();
+                if (in != null)
+                    in.close();
+                if (out != null)
+                    out.close();
+                if (socket != null)
+                    socket.close();
+                receive.join();
+            } catch (Exception e) {
+                onError("Disconnect", e);
+            }
+        }, "Disconnect");
     }
 
     public void sendEvent(NetEventType type, Object payload) {

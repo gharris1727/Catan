@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 /**
  * Created by greg on 6/26/16.
- * Implmentation of the Bank player.
+ * A Player object that represents the bank, for purposes of trading.
  */
 public class Bank implements Player {
 

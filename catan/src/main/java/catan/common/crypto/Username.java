@@ -32,7 +32,7 @@ public final class Username extends EventPayload implements Comparable<Username>
     }
 
     @Override
-    public int compareTo(Username username) {
-        return this.username.compareTo(username.username);
+    public int compareTo(Username t) {
+        return this.username.compareTo(t.username);
     }
 }

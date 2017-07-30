@@ -27,19 +27,19 @@ public final class PropertiesFileInfo extends ResourceCacheKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        PropertiesFileInfo that = (PropertiesFileInfo) o;
+        PropertiesFileInfo other = (PropertiesFileInfo) o;
 
-        if (path != null ? !path.equals(that.path) : that.path != null) return false;
-        return comment != null ? comment.equals(that.comment) : that.comment == null;
+        if ((path != null) ? !path.equals(other.path) : (other.path != null)) return false;
+        return (comment != null) ? comment.equals(other.comment) : (other.comment == null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = path != null ? path.hashCode() : 0;
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        int result = (path != null) ? path.hashCode() : 0;
+        result = (31 * result) + ((comment != null) ? comment.hashCode() : 0);
         return result;
     }
 

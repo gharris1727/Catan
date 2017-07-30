@@ -11,14 +11,14 @@ public final class BoardLayoutInfo extends ResourceCacheKey {
     private final long seed;
 
     public BoardLayoutInfo(String name) {
-        this.dynamic = false;
+        dynamic = false;
         this.name = name;
-        this.seed = 0L;
+        seed = 0L;
     }
 
     public BoardLayoutInfo(long seed) {
-        this.dynamic = true;
-        this.name = "";
+        dynamic = true;
+        name = "";
         this.seed = seed;
     }
 
@@ -37,20 +37,20 @@ public final class BoardLayoutInfo extends ResourceCacheKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        BoardLayoutInfo that = (BoardLayoutInfo) o;
+        BoardLayoutInfo other = (BoardLayoutInfo) o;
 
-        if (dynamic != that.dynamic) return false;
-        if (seed != that.seed) return false;
-        return name != null ? name.equals(that.name) : that.name == null;
+        if (dynamic != other.dynamic) return false;
+        if (seed != other.seed) return false;
+        return (name != null) ? name.equals(other.name) : (other.name == null);
     }
 
     @Override
     public int hashCode() {
         int result = (dynamic ? 1 : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (int) (seed ^ (seed >>> 32));
+        result = (31 * result) + ((name != null) ? name.hashCode() : 0);
+        result = (31 * result) + (int) (seed ^ (seed >>> 32));
         return result;
     }
 

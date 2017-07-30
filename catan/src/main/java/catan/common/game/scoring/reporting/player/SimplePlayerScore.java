@@ -20,10 +20,7 @@ public class SimplePlayerScore implements PlayerScoreReport {
     public SimplePlayerScore(Username username, Map<String, Integer> breakdown) {
         this.username = username;
         this.breakdown = breakdown;
-        int points = 0;
-        for (Integer i : breakdown.values())
-            points += i;
-        this.points = points;
+        this.points = breakdown.values().stream().mapToInt(i -> i).sum();
     }
 
     public SimplePlayerScore(PlayerScoreReport a, PlayerScoreReport b) throws ScoreException {

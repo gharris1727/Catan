@@ -95,7 +95,7 @@ public class ClientImpl extends CoreThread implements Client {
 
     @Override
     protected void externalEvent(ExternalEvent event) {
-        if (event instanceof ChatEvent && chatThread != null)
+        if ((event instanceof ChatEvent) && (chatThread != null))
             chatThread.addEvent((ChatEvent) event);
         else if (event instanceof GameEvent)
             gameEvent((GameEvent) event);
@@ -109,7 +109,7 @@ public class ClientImpl extends CoreThread implements Client {
 
     @Override
     protected void internalEvent(InternalEvent event) {
-        if (event instanceof RenderEvent && renderThread != null)
+        if ((event instanceof RenderEvent) && (renderThread != null))
             renderThread.addEvent((RenderEvent) event);
         else if (event instanceof ClientEvent)
             clientEvent((ClientEvent) event);
@@ -233,15 +233,15 @@ public class ClientImpl extends CoreThread implements Client {
     private void controlEvent(ControlEvent event) {
         switch (event.getType()) {
             case Server_Disconnect:
-                throw new RuntimeException("Unimplemented");
+                throw new UnsupportedOperationException("Unimplemented");
             case Name_Change:
             case Pass_Change:
             case Delete_Account:
                 throw new IllegalStateException();
             case Pass_Change_Success:
-                throw new RuntimeException("Unimplemented");
+                throw new UnsupportedOperationException("Unimplemented");
             case Pass_Change_Failure:
-                throw new RuntimeException("Unimplemented");
+                throw new UnsupportedOperationException("Unimplemented");
             case User_Pool_Sync:
                 matchmakingPool = (MatchmakingPool) event.getPayload();
                 changeScreen(new LobbyJoinMenu(matchmakingPool));
@@ -288,7 +288,7 @@ public class ClientImpl extends CoreThread implements Client {
                         changeScreen(new SpectateScreenRegion(gameManager));
                     break;
                 case Game_Finish:
-                    if (gameManager != null && gameManager.getLocalGame().isFinished())
+                    if ((gameManager != null) && gameManager.getLocalGame().isFinished())
                         changeScreen(new PostGameScreenRegion(gameManager));
                     break;
                 default:
@@ -385,14 +385,14 @@ public class ClientImpl extends CoreThread implements Client {
     }
 
     private void disconnect(String reason) {
-        if (connection != null && connection.isOpen()) {
+        if ((connection != null) && connection.isOpen()) {
             connection.sendEvent(NetEventType.Disconnect, reason);
             connection.disconnect();
         }
     }
 
     private void sendEvent(ExternalEvent event) {
-        if (connection != null && connection.isOpen())
+        if ((connection != null) && connection.isOpen())
             connection.sendEvent(NetEventType.External_Event, event);
     }
 

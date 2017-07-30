@@ -25,14 +25,14 @@ public enum LobbyEventType implements EventType {
     Game_Sync(GameProgress.class), //Server -> Client when a player joins a game and needs a synced list of GameEvents
     Game_Finish(null); //Server -> Client when a game finishes and will not be accepting further changes.
 
-    private final Class payloadType;
+    private final Class type;
 
-    LobbyEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    LobbyEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

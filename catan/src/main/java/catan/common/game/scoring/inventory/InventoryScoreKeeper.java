@@ -12,7 +12,11 @@ import catan.common.game.scoring.reporting.scores.ScoreReport;
 import catan.common.game.scoring.reporting.scores.SimpleScoreReport;
 import catan.common.game.scoring.rules.GameRules;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * Created by greg on 5/26/16.
@@ -76,28 +80,28 @@ public class InventoryScoreKeeper implements ScoreKeeper {
 
     @Override
     public ScoreReport score(GameRules rules) {
-        Collection<PlayerScoreReport> scores = new ArrayList<>();
-        for (InventoryCounter counter : counts.values())
-            scores.add(counter.score(rules));
-        return new SimpleScoreReport(scores);
+        List<PlayerScoreReport> reports = counts.values().stream()
+                .map(counter -> counter.score(rules))
+                .collect(Collectors.toList());
+        return new SimpleScoreReport(reports);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        InventoryScoreKeeper that = (InventoryScoreKeeper) o;
+        InventoryScoreKeeper other = (InventoryScoreKeeper) o;
 
-        if (!counts.equals(that.counts)) return false;
-        return history.equals(that.history);
+        if (!counts.equals(other.counts)) return false;
+        return history.equals(other.history);
 
     }
 
     @Override
     public int hashCode() {
         int result = counts.hashCode();
-        result = 31 * result + history.hashCode();
+        result = (31 * result) + history.hashCode();
         return result;
     }
 

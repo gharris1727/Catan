@@ -62,7 +62,7 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
     @Override
     public EventConsumerProblem test(ScoreEvent event) {
         //non-null events are always successfully applied to this listener, but not necessarily its child listeners.
-        return event == null ? new EventConsumerProblem("No event") : null;
+        return (event == null) ? new EventConsumerProblem("No event") : null;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
         if (problem != null)
             throw new EventConsumerException(event, problem);
         try {
-            ArrayList<ScoreKeeper> affected = new ArrayList<>();
+            List<ScoreKeeper> affected = new ArrayList<>();
             history.push(affected);
             for (ScoreKeeper listener : listeners) {
                 if (listener.test(event) == null) {

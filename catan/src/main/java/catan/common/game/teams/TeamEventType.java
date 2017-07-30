@@ -18,14 +18,14 @@ public enum TeamEventType implements EventType {
     Finish_Setup_Turn(null),
     Finish_Turn(null);
 
-    private final Class payloadType;
+    private final Class type;
 
-    TeamEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    TeamEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

@@ -2,6 +2,7 @@ package catan.client.ui.lobbyjoinmenu;
 
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
+import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.UIConfig;
 import catan.client.input.UserEventListener;
@@ -77,13 +78,13 @@ public class LobbyJoinMenu extends ClientScreen {
 
     private class LobbyTabRegion extends ConfigurableScreenRegion {
 
-        private final catan.client.graphics.ui.Button pregame;
-        private final catan.client.graphics.ui.Button ingame;
-        private final catan.client.graphics.ui.Button create;
+        private final Button pregame;
+        private final Button ingame;
+        private final Button create;
 
         private LobbyTabRegion() {
             super("LobbyTabs", 0, "tabs");
-            pregame = new catan.client.graphics.ui.Button("PregameButton", 0, "pregame", "Join") {
+            pregame = new Button("PregameButton", 0, "pregame", "Join") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     LobbyJoinMenu.this.clear();
@@ -93,7 +94,7 @@ public class LobbyJoinMenu extends ClientScreen {
                     update();
                 }
             };
-            ingame = new catan.client.graphics.ui.Button("SpectateButton", 0, "ingame", "Spectate") {
+            ingame = new Button("SpectateButton", 0, "ingame", "Spectate") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     LobbyJoinMenu.this.clear();
@@ -103,7 +104,7 @@ public class LobbyJoinMenu extends ClientScreen {
                     update();
                 }
             };
-            create = new catan.client.graphics.ui.Button("CreateNew", 0, "create", "Create Game") {
+            create = new Button("CreateNew", 0, "create", "Create Game") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     LobbyJoinMenu.this.clear();
@@ -126,7 +127,7 @@ public class LobbyJoinMenu extends ClientScreen {
             RectangularMask thirdMask = new RectangularMask(new Dimension(thirdWidth, mask.getHeight()));
             pregame.setMask(thirdMask);
             ingame.setMask(thirdMask);
-            create.setMask(new RectangularMask(new Dimension(mask.getWidth()-2*thirdWidth, mask.getHeight())));
+            create.setMask(new RectangularMask(new Dimension(mask.getWidth() - (2 * thirdWidth), mask.getHeight())));
         }
     }
 }

@@ -24,15 +24,17 @@ import java.util.Random;
  * Created by greg on 6/29/16.
  * A set of utility functions for testing elements of gameplay.
  */
-public class GameTestUtils {
+public final class GameTestUtils {
+
+    private GameTestUtils() {
+    }
 
     public static List<Username> generatePlayerUsernames(long seed, int count) {
         Random random = new Random(seed);
         List<Username> users = new ArrayList<>();
-        int length;
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < count; i++) {
-            length = random.nextInt(10)+4;
+            int length = random.nextInt(10)+4;
             builder.setLength(0);
             builder.ensureCapacity(length);
             for (int j = 0; j < length; j++)
@@ -51,19 +53,18 @@ public class GameTestUtils {
 
     public static void assertExecute(CatanGame game, GameEvent event, boolean expectSuccess) {
         EventConsumerProblem problem = game.test(event);
-        if (problem == null && !expectSuccess) {
+        if ((problem == null) && !expectSuccess) {
             Assert.fail("Expected test to fail for " + event);
-        } else if (problem != null && expectSuccess) {
+        } else if ((problem != null) && expectSuccess) {
             Assert.fail("Expected test to succeed for " + event + " but problem occurred: " + problem);
         }
         try {
             game.execute(event);
             if (!expectSuccess)
                 Assert.fail();
-        } catch (EventConsumerException ignored) {
+        } catch (EventConsumerException e) {
             if (expectSuccess) {
-                ignored.printStackTrace();
-                Assert.fail();
+                throw new AssertionError(e);
             }
         }
     }

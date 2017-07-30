@@ -35,10 +35,10 @@ public class UIConfig {
     }
 
     public UIConfig(UIConfig config) {
-        this.style = config.style;
-        this.layout = config.layout;
-        this.locale = config.locale;
-        this.teamColors = config.teamColors;
+        style = config.style;
+        layout = config.layout;
+        locale = config.locale;
+        teamColors = config.teamColors;
     }
 
     public UIConfig narrow(String prefix) {
@@ -92,9 +92,9 @@ public class UIConfig {
             String fontName = style.get(textStyleKey + fontNameKey);
             String fontStyleName = style.get(textStyleKey + fontStyleKey).toUpperCase();
             int fontSize = style.getInt(textStyleKey + fontSizeKey);
-            this.color = style.getColor(textStyleKey + fontColorKey);
-            this.font = new Font(fontName, getFontStyle(fontStyleName), fontSize);
-            this.spacing = style.getInt(textStyleKey + fontSpacingKey);
+            color = style.getColor(textStyleKey + fontColorKey);
+            font = new Font(fontName, getFontStyle(fontStyleName), fontSize);
+            spacing = style.getInt(textStyleKey + fontSpacingKey);
         }
 
         private int getFontStyle(String fontStyleName) {

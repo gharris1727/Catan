@@ -17,8 +17,7 @@ public class ClientConnection extends NetConnection {
     private final Object payload;
 
     public ClientConnection(Client client, Logger logger, NetID remote, NetEventType action, Object payload) {
-        super(client, logger);
-        this.remote = remote;
+        super(client, logger, remote);
         this.action = action;
         this.payload = payload;
     }

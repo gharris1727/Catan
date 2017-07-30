@@ -3,6 +3,7 @@ package catan.common.config;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by greg on 3/26/16.
@@ -23,7 +24,7 @@ public class DummyConfigSource extends RootConfigSource implements EditableConfi
 
     @Override
     public void setEntry(String key, String value) {
-        if (key != null && value != null)
+        if ((key != null) && (value != null))
             entries.put(key, value);
     }
 
@@ -37,7 +38,7 @@ public class DummyConfigSource extends RootConfigSource implements EditableConfi
     }
 
     @Override
-    public Iterator<Map.Entry<String, String>> iterator() {
+    public Iterator<Entry<String, String>> iterator() {
         return entries.entrySet().iterator();
     }
 }

@@ -16,6 +16,7 @@ import catan.server.Server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by greg on 1/26/16.
@@ -25,14 +26,14 @@ public class GamePool {
 
     private final Server host;
     private final Logger logger;
-    private final HashMap<Integer, GameThread> games;
+    private final Map<Integer, GameThread> games;
     private int nextGameID;
 
     public GamePool(Server host, Logger logger) {
         this.host = host;
         this.logger = logger;
-        this.games = new HashMap<>();
-        this.nextGameID = 0;
+        games = new HashMap<>();
+        nextGameID = 0;
     }
 
     private synchronized int getNextGameID() {
@@ -43,13 +44,13 @@ public class GamePool {
         games.get(gameID).addEvent(event);
     }
 
-    public synchronized int start(GameSettings settings) {
+    public synchronized int startGame(GameSettings settings) {
         GameThread thread = new GameThread(settings);
         games.put(thread.gameId, thread);
         return thread.gameId;
     }
 
-    public synchronized void finish(int gameID) {
+    public synchronized void finishGame(int gameID) {
         games.remove(gameID).stop();
     }
 
@@ -79,7 +80,7 @@ public class GamePool {
             super(GamePool.this.logger);
             gameId = getNextGameID();
             this.settings = settings;
-            this.game = new CatanGame(settings);
+            game = new CatanGame(settings);
             start();
         }
 
@@ -95,7 +96,7 @@ public class GamePool {
 
         //Process GameEvents from the event queue.
         @Override
-        protected void execute() throws ThreadStop {
+        protected void execute() throws ThreadStopException {
             GameEvent event = getEvent(true);
             //logger.log(this + " Received " + event, LogLevel.DEBUG);
             if (game.test(event) == null) {

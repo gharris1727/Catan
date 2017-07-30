@@ -47,8 +47,8 @@ public abstract class TradeDisplay extends ConfigurableScreenRegion {
     @Override
     protected void renderContents() {
         assertRenderable();
-        int width = (getMask().getWidth() - (elementBorder.x * 4)) / 2;
-        int height = getMask().getHeight() - (elementBorder.y * 2);
+        int width = (getMask().getWidth() - (elementBorder.x << 2)) / 2;
+        int height = getMask().getHeight() - (elementBorder.y << 1);
         RenderMask counterSize = new RectangularMask(new Dimension(width, height));
         request.setMask(counterSize);
         offer.setMask(counterSize);

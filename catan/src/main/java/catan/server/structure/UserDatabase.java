@@ -9,6 +9,7 @@ import catan.common.structure.UserLogin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by Greg on 1/8/2015.
@@ -22,9 +23,9 @@ public class UserDatabase {
 
     public UserDatabase(PropertiesFileInfo databaseFile) {
         this.databaseFile = databaseFile;
-        this.database = ResourceLoader.getPropertiesFile(databaseFile);
+        database = ResourceLoader.getPropertiesFile(databaseFile);
         accounts = new HashMap<>();
-        for (Map.Entry<String, String> entry : database) {
+        for (Entry<String, String> entry : database) {
             Username username = new Username(entry.getKey());
             UserAccount account = new UserAccount(username, entry.getValue());
             accounts.put(username, account);
@@ -32,7 +33,7 @@ public class UserDatabase {
     }
 
     public void save() {
-        for (Map.Entry<Username, UserAccount> entry : accounts.entrySet())
+        for (Entry<Username, UserAccount> entry : accounts.entrySet())
             database.setEntry(entry.getKey().username, entry.getValue().toString());
         ResourceLoader.savePropertiesFile(databaseFile);
     }
@@ -48,7 +49,7 @@ public class UserDatabase {
         UserAccount user = accounts.get(login.username);
         if (user == null)
             throw new UserNotFoundException();
-        if (!user.validatePassword(login.password))
+        if (!user.isPasswordValid(login.password))
             throw new AuthenticationException();
         return user.generateAuthToken();
     }
@@ -57,7 +58,7 @@ public class UserDatabase {
         UserAccount user = accounts.get(token.username);
         if (user == null)
             throw new UserNotFoundException();
-        if (!user.validateToken(token))
+        if (!user.isTokenValid(token))
             throw new AuthenticationException();
     }
 

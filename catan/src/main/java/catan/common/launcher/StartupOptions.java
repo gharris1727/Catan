@@ -6,7 +6,7 @@ package catan.common.launcher;
  */
 public class StartupOptions {
 
-    private boolean hasError = false;
+    private boolean hasError;
     private String errorMessage = "";
 
     public StartupOptions(String[] args) {

@@ -26,7 +26,7 @@ public class PlayerObserver {
     PlayerObserver(CatanGame game, Username username) {
         this.game = game;
         synchronized (game) {
-            this.player = game.players.getPlayer(username);
+            player = game.players.getPlayer(username);
         }
         this.username = username;
     }

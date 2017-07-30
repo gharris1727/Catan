@@ -19,7 +19,7 @@ public class DynamicBoardLayout implements BoardLayout {
     public DynamicBoardLayout(long seed) {
         this.seed = seed;
         //TODO: explore procedurally generating game boards.
-        throw new RuntimeException("Unimplemented");
+        throw new UnsupportedOperationException("Unimplemented");
     }
 
     @Override
@@ -85,11 +85,11 @@ public class DynamicBoardLayout implements BoardLayout {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        DynamicBoardLayout that = (DynamicBoardLayout) o;
+        DynamicBoardLayout other = (DynamicBoardLayout) o;
 
-        return seed == that.seed;
+        return seed == other.seed;
     }
 
     @Override

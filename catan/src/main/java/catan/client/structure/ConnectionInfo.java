@@ -56,7 +56,7 @@ public class ConnectionInfo {
         this.password = new Password(password);
     }
 
-    public ServerLogin createServerLogin() throws NumberFormatException, UnknownHostException {
+    public ServerLogin createServerLogin() throws UnknownHostException {
         int portNumber = Integer.parseInt(port);
         NetID netID = new NetID(InetAddress.getByName(hostname), portNumber);
         UserLogin userLogin = new UserLogin(new Username(username), password);
@@ -66,23 +66,23 @@ public class ConnectionInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        ConnectionInfo that = (ConnectionInfo) o;
+        ConnectionInfo other = (ConnectionInfo) o;
 
-        if (hostname != null ? !hostname.equals(that.hostname) : that.hostname != null) return false;
-        if (port != null ? !port.equals(that.port) : that.port != null) return false;
-        if (username != null ? !username.equals(that.username) : that.username != null) return false;
-        return password != null ? password.equals(that.password) : that.password == null;
+        if ((hostname != null) ? !hostname.equals(other.hostname) : (other.hostname != null)) return false;
+        if ((port != null) ? !port.equals(other.port) : (other.port != null)) return false;
+        if ((username != null) ? !username.equals(other.username) : (other.username != null)) return false;
+        return (password != null) ? password.equals(other.password) : (other.password == null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = hostname != null ? hostname.hashCode() : 0;
-        result = 31 * result + (port != null ? port.hashCode() : 0);
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
+        int result = hostname == null ? 0 : hostname.hashCode();
+        result = (31 * result) + (port == null ? 0 : port.hashCode());
+        result = (31 * result) + (username == null ? 0 : username.hashCode());
+        result = (31 * result) + (password == null ? 0 : password.hashCode());
         return result;
     }
 }

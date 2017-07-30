@@ -23,15 +23,15 @@ public abstract class DirectionalTile extends Tile {
         if (this == o) return true;
         if (!(o instanceof DirectionalTile)) return false;
 
-        DirectionalTile that = (DirectionalTile) o;
+        DirectionalTile other = (DirectionalTile) o;
 
-        return direction == that.direction;
+        return direction == other.direction;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + direction.hashCode();
+        result = (31 * result) + direction.hashCode();
         return result;
     }
 }

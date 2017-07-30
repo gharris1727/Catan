@@ -15,14 +15,14 @@ public enum GameStateEventType implements EventType {
     Advance_Theft(null),
     Active_Turn(TeamColor.class);
 
-    private final Class payloadType;
+    private final Class type;
 
-    GameStateEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    GameStateEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

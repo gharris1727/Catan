@@ -18,7 +18,8 @@ public class GraphicSource extends Graphic {
         //Load the external image.
         BufferedImage image = ImageIO.read(ExternalResource.getStaticResource(path));
         //Calculate the dimensions we need to save.
-        int width = image.getWidth(), height = image.getHeight();
+        int width = image.getWidth();
+        int height = image.getHeight();
         //Create a buffer to import the RGBA pixels.
         int pixelsRGBA[] = new int[width * height];
         //Pull the image data into the rgba buffer.
@@ -27,7 +28,7 @@ public class GraphicSource extends Graphic {
         init(new RectangularMask(new Dimension(width,height)), true);
         loadRaster();
         //Copy the pixels, changing pixel format RGBA -> RGB
-        for (int i = 0; i < width * height; i++)
+        for (int i = 0; i < (width * height); i++)
             pixels[i] = pixelsRGBA[i] & 0xffffff;
     }
 }

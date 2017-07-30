@@ -14,13 +14,12 @@ public class ChevronMask extends RenderMask {
     }
 
     public ChevronMask(Dimension size, int centerOffset) {
-        width = size.width;
-        height = size.height;
-        padding = new int[height];
-        widths = new int[height];
+        setSize(size.width, size.height);
         Arrays.fill(widths, width - centerOffset);
-        for (int i = 0; i <= height/2; i++)
-            padding[i] = padding[height-i-1] = (centerOffset * i * 2) / height;
+        for (int i = 0; i <= (height / 2); i++) {
+            padding[i] = (centerOffset * i * 2) / height;
+            padding[height - i - 1] = padding[i];
+        }
         init();
     }
 }

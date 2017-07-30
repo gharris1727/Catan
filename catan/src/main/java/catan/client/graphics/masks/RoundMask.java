@@ -11,34 +11,35 @@ import java.awt.*;
 public class RoundMask extends RenderMask {
 
     public RoundMask(Dimension size) {
-        width = size.width;
-        height = size.height;
-        padding = new int[height];
-        widths = new int[height];
+        setSize(size.width, size.height);
         generate((width - 1) / 2, (height - 1) / 2, (width - 1) / 2, (height - 1) / 2);
         init();
     }
 
     private void generate(int xc, int yc, int a, int b) {
         //TODO: parse this function.
-        int x = 0, y = b;
+        int x = 0;
+        int y = b;
         int width = 1;
-        long a2 = (long) a * a, b2 = (long) b * b;
-        long crit1 = -(a2 / 4 + a % 2 + b2);
-        long crit2 = -(b2 / 4 + b % 2 + a2);
-        long crit3 = -(b2 / 4 + b % 2);
+        long a2 = (long) a * a;
+        long b2 = (long) b * b;
+        long crit1 = -((a2 / 4) + (a % 2) + b2);
+        long crit2 = -((b2 / 4) + (b % 2) + a2);
+        long crit3 = -((b2 / 4) + (b % 2));
         long t = -a2 * y; /* e(x+1/2,y-1/2) - (a^2+b^2)/4 */
-        long dxt = 2 * b2 * x, dyt = -2 * a2 * y;
-        long d2xt = 2 * b2, d2yt = 2 * a2;
+        long dxt = 2 * b2 * x;
+        long dyt = -2 * a2 * y;
+        long d2xt = 2 * b2;
+        long d2yt = 2 * a2;
 
-        while (y >= 0 && x <= a) {
-            if (t + b2 * x <= crit1 ||     /* e(x+1,y-1/2) <= 0 */
-                    t + a2 * y <= crit3) {     /* e(x+1/2,y) <= 0 */
+        while ((y >= 0) && (x <= a)) {
+            if (((t + (b2 * x)) <= crit1) ||     /* e(x+1,y-1/2) <= 0 */
+                    ((t + (a2 * y)) <= crit3)) {     /* e(x+1/2,y) <= 0 */
                 x++;
                 dxt += d2xt;
                 t += dxt;
                 width += 2;
-            } else if (t - a2 * y > crit2) { /* e(x+1/2,y-1) > 0 */
+            } else if ((t - (a2 * y)) > crit2) { /* e(x+1/2,y-1) > 0 */
                 row(xc - x, yc - y, width);
                 if (y != 0)
                     row(xc - x, yc + y, width);
@@ -59,7 +60,7 @@ public class RoundMask extends RenderMask {
             }
         }
         if (b == 0)
-            row(xc - a, yc, 2 * a + 1);
+            row(xc - a, yc, (2 * a) + 1);
     }
 
     private void row(int x, int y, int len) {

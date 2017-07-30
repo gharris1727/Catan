@@ -87,8 +87,8 @@ public class GraphicalLauncher extends CoreWindow {
 
         ActionButton(String label, int x, int y, int w, int h) {
             this.label = label;
-            this.position = new Point(x - w / 2, y - h / 2);
-            this.size = new Dimension(w, h);
+            position = new Point(x - (w / 2), y - (h / 2));
+            size = new Dimension(w, h);
         }
 
         private Rectangle getBounds() {

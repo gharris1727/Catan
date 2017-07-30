@@ -19,8 +19,8 @@ public class TeamAllocation {
 
     TeamAllocation(Map<Username, TeamColor> users, Map<TeamColor, Set<Username>> teams) {
         //Make all of the interior collections immutable.
-        for (TeamColor color : teams.keySet()) {
-            teams.put(color, Collections.unmodifiableSet(teams.get(color)));
+        for (Map.Entry<TeamColor, Set<Username>> teamColorSetEntry : teams.entrySet()) {
+            teams.put(teamColorSetEntry.getKey(), Collections.unmodifiableSet(teamColorSetEntry.getValue()));
         }
 
         //Make the maps immutable.
@@ -29,7 +29,7 @@ public class TeamAllocation {
     }
 
     public static void allocatePlayer(Map<Username, TeamColor> users, Map<TeamColor, Set<Username>> teams, Username username, TeamColor teamColor) {
-        //If we dont already have a list of users, create it.
+        //If we don't already have a list of users, create it.
         if (!teams.containsKey(teamColor))
             teams.put(teamColor, new HashSet<>());
 

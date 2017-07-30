@@ -21,7 +21,7 @@ public abstract class LocalizedPrinter<T> {
     protected String getLocalization(String key) {
         try {
             return locale.get(key);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             return key;
         }
     }

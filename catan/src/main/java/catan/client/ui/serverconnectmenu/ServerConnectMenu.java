@@ -3,6 +3,7 @@ package catan.client.ui.serverconnectmenu;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.masks.RoundedRectangularMask;
+import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
@@ -56,7 +57,7 @@ public class ServerConnectMenu extends ClientScreen {
         //Resize the background region
         background.setMask(mask);
         //Resize the server list scroll.
-        Dimension scrollSize = new Dimension(serverSize.getWidth(), mask.getHeight() - footerSize.getHeight() - 2*spacing);
+        Dimension scrollSize = new Dimension(serverSize.getWidth(), mask.getHeight() - footerSize.getHeight() - (2 * spacing));
         scroll.setMask(new RectangularMask(scrollSize));
         scroll.setInsets(new Insets(0,0,0,0));
         //Resize the existing footer
@@ -89,7 +90,7 @@ public class ServerConnectMenu extends ClientScreen {
 
         @Override
         public void loadConfig(UIConfig config) {
-            setElementSize(RenderMask.parseMask(config.getLayout().narrow("mask")));
+            setElementSize(config.getLayout().getRenderMask("mask"));
         }
 
         @Override
@@ -166,27 +167,27 @@ public class ServerConnectMenu extends ClientScreen {
     private class ServerListFooter extends ConfigurableScreenRegion {
 
         private final TiledBackground background;
-        private final catan.client.graphics.ui.Button newButton;
-        private final catan.client.graphics.ui.Button editButton;
-        private final catan.client.graphics.ui.Button connectButton;
+        private final Button newButton;
+        private final Button editButton;
+        private final Button connectButton;
         private final TextBox passwordBox;
 
         private ServerListFooter() {
             super("Footer", 2, "footer");
             background = new EdgedTiledBackground();
-            newButton = new catan.client.graphics.ui.Button("NewButton", 1, "new", "New") {
+            newButton = new Button("NewButton", 1, "new", "New") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     detail(null);
                 }
             };
-            editButton = new catan.client.graphics.ui.Button("EditButton", 1, "edit", "Edit") {
+            editButton = new Button("EditButton", 1, "edit", "Edit") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     if (selected != null) detail(selected);
                 }
             };
-            connectButton = new catan.client.graphics.ui.Button("ConenctButton", 1, "connect", "Connect") {
+            connectButton = new Button("ConenctButton", 1, "connect", "Connect") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     connect(listener);
@@ -237,9 +238,9 @@ public class ServerConnectMenu extends ClientScreen {
         private final TextBox hostname;
         private final TextBox port;
         private final TextBox username;
-        private final catan.client.graphics.ui.Button saveButton;
-        private final catan.client.graphics.ui.Button deleteButton;
-        private final catan.client.graphics.ui.Button cancelButton;
+        private final Button saveButton;
+        private final Button deleteButton;
+        private final Button cancelButton;
 
         private ServerDetailPopup(ConnectionInfo server) {
             super("ServerDetails", "serverdetail", ServerConnectMenu.this);
@@ -263,19 +264,19 @@ public class ServerConnectMenu extends ClientScreen {
                     submit(listener);
                 }
             };
-            saveButton = new catan.client.graphics.ui.Button("SaveButton", 1, "save", "Save") {
+            saveButton = new Button("SaveButton", 1, "save", "Save") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     submit(listener);
                 }
             };
-            deleteButton = new catan.client.graphics.ui.Button("DeleteButton", 1, "delete", "Delete") {
+            deleteButton = new Button("DeleteButton", 1, "delete", "Delete") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     delete(listener);
                 }
             };
-            cancelButton = new catan.client.graphics.ui.Button("CancelButton", 1, "cancel", "Cancel") {
+            cancelButton = new Button("CancelButton", 1, "cancel", "Cancel") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     expire();
@@ -306,7 +307,7 @@ public class ServerConnectMenu extends ClientScreen {
             String portText = port.getText();
             String usernameText = username.getText();
             ConnectionInfo newInfo = new ConnectionInfo(hostnameText, portText, usernameText);
-            if (!newInfo.equals(server) && hostnameText.length() > 0 && portText.length() > 0 && usernameText.length() >0) {
+            if (!newInfo.equals(server) && !hostnameText.isEmpty() && !portText.isEmpty() && !usernameText.isEmpty()) {
                 listener.onUserEvent(new UserEvent(this, UserEventType.Server_Remove, server));
                 listener.onUserEvent(new UserEvent(this, UserEventType.Server_Add, newInfo));
             }
@@ -315,7 +316,7 @@ public class ServerConnectMenu extends ClientScreen {
 
         @Override
         public void loadConfig(UIConfig config) {
-            setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
+            setMask(config.getLayout().getRenderMask("mask"));
         }
 
         @Override

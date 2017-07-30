@@ -65,23 +65,23 @@ public class ConstructionCounter implements PlayerScorable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        ConstructionCounter that = (ConstructionCounter) o;
+        ConstructionCounter other = (ConstructionCounter) o;
 
-        if (settlements != that.settlements) return false;
-        if (cities != that.cities) return false;
-        if (roads != that.roads) return false;
-        return username.equals(that.username);
+        if (settlements != other.settlements) return false;
+        if (cities != other.cities) return false;
+        if (roads != other.roads) return false;
+        return username.equals(other.username);
 
     }
 
     @Override
     public int hashCode() {
         int result = username.hashCode();
-        result = 31 * result + settlements;
-        result = 31 * result + cities;
-        result = 31 * result + roads;
+        result = (31 * result) + settlements;
+        result = (31 * result) + cities;
+        result = (31 * result) + roads;
         return result;
     }
 

@@ -12,14 +12,14 @@ public enum ClientEventType implements EventType {
     Startup(null), //Event that starts the client from inside its own thread.
     Quit_All(null); //Kills all client processes and exits the game.
 
-    private final Class payloadType;
+    private final Class type;
 
-    ClientEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    ClientEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

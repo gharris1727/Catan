@@ -25,14 +25,14 @@ public enum RenderEventType implements EventType {
     Popup_Remove(PopupWindow.class),
     Animation_Step(null); //Step all animations.
 
-    private final Class payloadType;
+    private final Class type;
 
-    RenderEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    RenderEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

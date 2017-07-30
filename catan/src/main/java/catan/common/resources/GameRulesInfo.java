@@ -19,16 +19,16 @@ public final class GameRulesInfo extends ResourceCacheKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        GameRulesInfo that = (GameRulesInfo) o;
+        GameRulesInfo other = (GameRulesInfo) o;
 
-        return name != null ? name.equals(that.name) : that.name == null;
+        return (name != null) ? name.equals(other.name) : (other.name == null);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        return (name != null) ? name.hashCode() : 0;
     }
 
     @Override

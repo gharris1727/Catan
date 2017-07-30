@@ -25,14 +25,14 @@ public abstract class BoardObject {
         if (this == o) return true;
         if (!(o instanceof BoardObject)) return false;
 
-        BoardObject that = (BoardObject) o;
+        BoardObject other = (BoardObject) o;
 
-        return position != null ? position.equals(that.position) : that.position == null;
+        return (position != null) ? position.equals(other.position) : (other.position == null);
 
     }
 
     @Override
     public int hashCode() {
-        return position != null ? position.hashCode() : 0;
+        return (position != null) ? position.hashCode() : 0;
     }
 }

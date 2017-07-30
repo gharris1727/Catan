@@ -16,6 +16,6 @@ public class PrintStreamListener implements LogListener {
 
     @Override
     public void onLogEvent(LogEvent e) {
-        output.println(e.toString());
+        output.println(e);
     }
 }

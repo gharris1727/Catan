@@ -48,29 +48,35 @@ public class TeamTurnState implements ReversibleIterator<TeamColor> {
 
     @Override
     public TeamColor get() {
-        return secondRound() ?
-                turnOrder.get(turnOrder.size()-(turnNumber % turnOrder.size()) - 1) :
-                turnOrder.get(turnNumber % turnOrder.size());
+        int turnIndex = turnNumber % turnOrder.size();
+        return turnOrder.get(isSecondRound() ? turnOrder.size() - turnIndex - 1 : turnIndex);
     }
 
-    private boolean starting() {
-        return turnNumber < turnOrder.size() * 2;
+    private boolean isGameStarting() {
+        return turnNumber < (turnOrder.size() << 1);
     }
 
-    private boolean firstRound() { return turnNumber < turnOrder.size(); }
+    private boolean isFirstRound() { return turnNumber < turnOrder.size(); }
 
-    private boolean secondRound() { return starting() && !firstRound(); }
+    private boolean isSecondRound() { return isGameStarting() && !isFirstRound(); }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        TeamTurnState that = (TeamTurnState) o;
+        TeamTurnState other = (TeamTurnState) o;
 
-        if (turnNumber != that.turnNumber) return false;
-        return turnOrder.equals(that.turnOrder);
+        if (turnNumber != other.turnNumber) return false;
+        return turnOrder.equals(other.turnOrder);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = turnOrder.hashCode();
+        result = 31 * result + turnNumber;
+        return result;
     }
 
     @Override

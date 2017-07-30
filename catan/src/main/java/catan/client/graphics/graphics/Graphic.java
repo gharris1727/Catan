@@ -17,8 +17,8 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  */
 public class Graphic implements Maskable {
 
-    private static final int transColor = 0xff00ff; //Transparency color (pink)
-    protected int[] pixels = null; //Pixel array for rasterization.
+    private static final int TRANSPARENCY = 0xff00ff; //Transparency color (pink)
+    protected int[] pixels; //Pixel array for rasterization.
     protected RenderMask mask; //Details about the image size and shape.
     protected BufferedImage buffer; //Hardware accelerated form of the graphic.
     private boolean transparency; //Flag on whether to use transparency.
@@ -45,26 +45,20 @@ public class Graphic implements Maskable {
     //Initialize the graphic with the specified mask and transparency.
     protected void init(RenderMask mask, boolean transparency) {
         this.mask = mask;
-        if (mask.hasContent())
-            this.buffer = new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB);
-        else
-            this.buffer = null;
+        buffer = mask.hasContent() ? new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB) : null;
         this.transparency = transparency;
     }
 
     //Rasterize the image to the pixel buffer for manual rendering. De-accelerates the graphic.
     protected void loadRaster() {
         if (pixels == null) {
-            if (buffer != null)
-                pixels = ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData();
-            else
-                pixels = new int[0];
+            pixels = buffer != null ? ((DataBufferInt) buffer.getRaster().getDataBuffer()).getData() : new int[0];
         }
     }
 
     //Find out whether the graphic is hardware accelerated or not.
-    private boolean accelerated() {
-        return pixels == null && !transparency && mask instanceof RectangularMask;
+    private boolean isAccelerated() {
+        return (pixels == null) && !transparency && (mask instanceof RectangularMask);
     }
 
     //Render one graphic to another using their render masks.
@@ -82,23 +76,22 @@ public class Graphic implements Maskable {
         int[] fromPadding = fromMask.getPadding();
         int[] fromLength = fromMask.getWidths();
         //These are the differences between the from coordinates and the toCoordinates.
-        //These must stay the same throughout execution.
-        final int diffX = toStart.x - fromStart.x;
-        final int diffY = toStart.y - fromStart.y;
+        int diffX = toStart.x - fromStart.x;
+        int diffY = toStart.y - fromStart.y;
 
         //Start at 0, and limit inward.
         int startX = 0;
         if (startX < fromStart.x) startX = fromStart.x;
-        if (startX + diffX < 0) startX = -diffX;
+        if ((startX + diffX) < 0) startX = -diffX;
 
         //Start at 0, and limit inward.
         int startY = 0;
         if (startY < fromStart.y) startY = fromStart.y;
-        if (startY + diffY < 0) startY = -diffY;
+        if ((startY + diffY) < 0) startY = -diffY;
 
         //Start at one height, and limit inward.
         int endY = fromMask.getHeight();
-        if (endY + diffY > toMask.getHeight()) endY = toMask.getHeight() - diffY;
+        if ((endY + diffY) > toMask.getHeight()) endY = toMask.getHeight() - diffY;
 
         for (int currY = startY; currY < endY; currY++) {
             int fromPad = fromPadding[currY];
@@ -108,10 +101,10 @@ public class Graphic implements Maskable {
             //Start at one extreme and work inward.
             int currX = startX;
             if (currX < fromPad) currX = fromPad;
-            if (currX + diffX < toPad) currX = toPad - diffX;
+            if ((currX + diffX) < toPad) currX = toPad - diffX;
             //Start at
             int endX = fromPad + fromLen;
-            if (endX + diffX > toPad + toLen) endX = toPad + toLen - diffX;
+            if ((endX + diffX) > (toPad + toLen)) endX = (toPad + toLen) - diffX;
             //Find the length
             int length = endX - currX;
             if (length < 1) continue;
@@ -123,28 +116,28 @@ public class Graphic implements Maskable {
     //Copy pixels and clickable pixels, using faster method if possible.
     protected void pixelCopy(int[] src, int srcPos, int srcStep, int[] dst, int dstPos, int dstStep, int length, int color, boolean trans) {
         if (trans) {
-            if (srcStep == 1 && dstStep == 1) {
+            if ((srcStep == 1) && (dstStep == 1)) {
                 for (int i = 0; i < length; i++) {
                     int pixel = src[i + srcPos];
-                    if (pixel != transColor)
+                    if (pixel != TRANSPARENCY)
                         dst[i + dstPos] = pixel;
                 }
             } else {
                 for (int i = 0; i < length; i++) {
-                    int srcCurr = i * srcStep + srcPos;
-                    int dstCurr = i * dstStep + dstPos;
+                    int srcCurr = (i * srcStep) + srcPos;
+                    int dstCurr = (i * dstStep) + dstPos;
                     int pixel = src[srcCurr];
-                    if (pixel != transColor)
+                    if (pixel != TRANSPARENCY)
                         dst[dstCurr] = pixel;
                 }
             }
         } else {
-            if (srcStep == 1 && dstStep == 1) {
+            if ((srcStep == 1) && (dstStep == 1)) {
                 System.arraycopy(src, srcPos, dst, dstPos, length);
             } else {
                 for (int i = 0; i < length; i++) {
-                    int srcCurr = i * srcStep + srcPos;
-                    int dstCurr = i * dstStep + dstPos;
+                    int srcCurr = (i * srcStep) + srcPos;
+                    int dstCurr = (i * dstStep) + dstPos;
                     dst[dstCurr] = src[srcCurr];
                 }
             }
@@ -164,8 +157,8 @@ public class Graphic implements Maskable {
     //Render from another graphic onto this graphic.
     public void renderFrom(Graphic from, Point fromPos, int color) {
         if (from.mask.hasContent() && mask.hasContent()) {
-            if (accelerated() && from.accelerated()) {
-                //If we are accelerated then do the hardware acceleration render.
+            if (isAccelerated() && from.isAccelerated()) {
+                //If we are isAccelerated then do the hardware acceleration render.
                 buffer.getGraphics().drawImage(from.buffer, fromPos.x, fromPos.y, from.mask.getWidth(), from.mask.getHeight(), null);
             } else {
                 //Otherwise we need to do the traditional render.
@@ -178,7 +171,7 @@ public class Graphic implements Maskable {
 
     //Render to a graphics, filling the space.
     public void renderTo(Graphics graphics, int width, int height) {
-        if (mask.hasContent() && width > 0 && height >0)
+        if (mask.hasContent() && (width > 0) && (height > 0))
             graphics.drawImage(buffer, 0, 0, width, height, null);
     }
 
@@ -194,13 +187,13 @@ public class Graphic implements Maskable {
     //Clear the image, trying to preserve acceleration.
     public void clear() {
         if (mask.hasContent()) {
-            if (accelerated()) {
+            if (isAccelerated()) {
                 Graphics graphics = buffer.getGraphics();
                 graphics.setColor(Color.black);
                 graphics.drawRect(0, 0, mask.getWidth(), mask.getHeight());
             } else {
                 loadRaster();
-                Arrays.fill(pixels, transColor);
+                Arrays.fill(pixels, TRANSPARENCY);
             }
         }
     }

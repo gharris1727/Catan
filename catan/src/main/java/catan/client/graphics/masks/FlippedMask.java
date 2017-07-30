@@ -7,25 +7,17 @@ package catan.client.graphics.masks;
 public class FlippedMask extends RenderMask {
 
     public FlippedMask(RenderMask other, Direction direction) {
-        width = other.width;
-        height = other.height;
-        switch (direction) {
-            case VERTICAL:
-                padding = new int[height];
-                widths = new int[height];
-                for (int i = 0; i < height; i++) {
-                    padding[i] = other.padding[height - 1 - i];
-                    widths[i] = other.widths[height - 1 - i];
-                }
-                break;
-            case HORIZONTAL:
-            default:
-                padding = new int[height];
-                widths = other.widths;
-                for (int i = 0; i < height; i++) {
-                    padding[i] = width - other.padding[i] - other.widths[i];
-                }
-                break;
+        setSize(other.width, other.height);
+        if (direction == Direction.VERTICAL) {
+            for (int i = 0; i < height; i++) {
+                padding[i] = other.padding[height - 1 - i];
+                widths[i] = other.widths[height - 1 - i];
+            }
+        } else {
+            for (int i = 0; i < height; i++) {
+                padding[i] = width - other.padding[i] - other.widths[i];
+                widths[i] = other.widths[i];
+            }
         }
         init();
     }

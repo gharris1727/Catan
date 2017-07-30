@@ -14,6 +14,7 @@ import catan.client.input.UserEventListener;
 import catan.common.IllegalStateException;
 import catan.common.config.ConfigSource;
 import catan.common.game.BoardObserver;
+import catan.common.game.board.hexarray.CoordTransforms;
 import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.board.paths.Path;
 import catan.common.game.board.tiles.BeachTile;
@@ -121,29 +122,29 @@ public class MapRegion extends ScrollingScreenRegion {
         townOffset = layout.getPoint("towns.offset");
 
         GraphicSourceInfo bridgeSource = new GraphicSourceInfo(layout.get("bridges.path"));
-        RenderMask bridgeHorizontal = RenderMask.parseMask(layout.narrow("bridges.horizontal"));
-        RenderMask bridgeDiagonalUp = RenderMask.parseMask(layout.narrow("bridges.diagonal.up"));
+        RenderMask bridgeHorizontal = layout.getRenderMask("bridges.horizontal");
+        RenderMask bridgeDiagonalUp = layout.getRenderMask("bridges.diagonal.up");
         RenderMask brigeDiagonalDown = new FlippedMask(bridgeDiagonalUp, FlippedMask.Direction.VERTICAL);
-        RenderMask[] masks = new RenderMask[]{null, null, null, bridgeHorizontal, bridgeHorizontal, brigeDiagonalDown, bridgeDiagonalUp, bridgeDiagonalUp, brigeDiagonalDown};
+        RenderMask[] masks = {null, null, null, bridgeHorizontal, bridgeHorizontal, brigeDiagonalDown, bridgeDiagonalUp, bridgeDiagonalUp, brigeDiagonalDown};
         tradeBridges = new GraphicSet(bridgeSource, masks, null);
 
         GraphicSourceInfo buildingSource = new GraphicSourceInfo(layout.get("buildings.source"));
-        RenderMask buildingHorizontal = RenderMask.parseMask(layout.narrow("buildings.horizontal"));
-        RenderMask buildingDiagonalUp = RenderMask.parseMask(layout.narrow("buildings.diagonal.up"));
-        RenderMask buildingDiagonalDown = RenderMask.parseMask(layout.narrow("buildings.diagonal.down"));
-        RenderMask settlement = RenderMask.parseMask(layout.narrow("buildings.settlement"));
-        RenderMask city = RenderMask.parseMask(layout.narrow("buildings.city"));
-        RenderMask robber = RenderMask.parseMask(layout.narrow("buildings.robber"));
-        RenderMask[] buildingMasks = new RenderMask[]{buildingHorizontal, buildingDiagonalUp, buildingDiagonalDown, settlement, city, robber};
+        RenderMask buildingHorizontal = layout.getRenderMask("buildings.horizontal");
+        RenderMask buildingDiagonalUp = layout.getRenderMask("buildings.diagonal.up");
+        RenderMask buildingDiagonalDown = layout.getRenderMask("buildings.diagonal.down");
+        RenderMask settlement = layout.getRenderMask("buildings.settlement");
+        RenderMask city = layout.getRenderMask("buildings.city");
+        RenderMask robber = layout.getRenderMask("buildings.robber");
+        RenderMask[] buildingMasks = {buildingHorizontal, buildingDiagonalUp, buildingDiagonalDown, settlement, city, robber};
         buildings = new EnumMap<>(TeamColor.class);
         TeamColorSwaps teamColorSwaps = new TeamColorSwaps(config.getTeamColors());
         for (TeamColor teamColor : TeamColor.values())
             buildings.put(teamColor, new GraphicSet(buildingSource, buildingMasks, teamColorSwaps.getSwaps(teamColor)));
 
-        RectangularMask mask;
-            mask = new RectangularMask(boardToScreen(board.getSize()));
         Dimension borderBuffer = layout.getDimension("borderbuffer");
         setInsets(new Insets(borderBuffer.height, borderBuffer.width, borderBuffer.height, borderBuffer.width));
+
+        RectangularMask mask = new RectangularMask(boardToScreen(board.getSize()));
         setMask(mask);
         background.setMask(mask);
     }
@@ -222,10 +223,7 @@ public class MapRegion extends ScrollingScreenRegion {
         private PathObject(Path path) {
             super(path.toString(), 1);
             this.path = path;
-            //The pattern of orientation repeats every 6 x indices
-            int type = path.getPosition().x % 6;
-            //The pattern goes 1 2 0 2 1 0 for each
-            int orientation = (type == 0 || type == 4) ? 1 : ((type == 1 || type == 3) ? 2 : 0);
+            int orientation = CoordTransforms.getEdgeOrientation(path.getPosition());
             //Load the background graphic based on the team and the orientation chosen.
             Graphic background = buildings.get(path.getTeam()).getGraphic(orientation);
             //Add a new graphic object using that graphic background.
@@ -277,7 +275,7 @@ public class MapRegion extends ScrollingScreenRegion {
             } else if (tile instanceof BeachTile) {
                 BeachTile beach = (BeachTile) tile;
                 //The beach tile background depends on the number of sides and the direction of the beach.
-                background = (beach.getSides() == 1 ? singleBeach : doubleBeach).getGraphic(beach.getDirection().ordinal());
+                background = ((beach.getSides() == 1) ? singleBeach : doubleBeach).getGraphic(beach.getDirection().ordinal());
                 //If it also happens to be a trading post, then we need to render the trading post details.
                 if (tile instanceof TradeTile) {
                     TradeTile trade = (TradeTile) tile;
@@ -320,7 +318,7 @@ public class MapRegion extends ScrollingScreenRegion {
             this.town = town;
             //Decide on the background graphic
             Graphic background;
-            if (town instanceof Settlement || town instanceof EmptyTown) {
+            if ((town instanceof Settlement) || (town instanceof EmptyTown)) {
                 //We render it as a settlement
                 background = buildings.get(town.getTeam()).getGraphic(3);
             } else if (town instanceof City) {

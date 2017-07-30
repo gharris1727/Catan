@@ -17,7 +17,7 @@ public class ResourceTile extends Tile {
     public ResourceTile(Terrain terrain, DiceRoll diceRoll) {
         this.terrain = terrain;
         this.diceRoll = diceRoll;
-        this.robber = false;
+        robber = false;
     }
 
     public Terrain getTerrain() {
@@ -41,7 +41,7 @@ public class ResourceTile extends Tile {
     }
 
     public GameResource getResource() {
-        if (robber || terrain == null) return null;
+        if (robber || (terrain == null)) return null;
         return terrain.gameResource;
     }
 
@@ -50,20 +50,20 @@ public class ResourceTile extends Tile {
         if (this == o) return true;
         if (!(o instanceof ResourceTile)) return false;
 
-        ResourceTile that = (ResourceTile) o;
+        ResourceTile other = (ResourceTile) o;
 
-        if (robber != that.robber) return false;
-        if (diceRoll != that.diceRoll) return false;
-        return terrain == that.terrain;
+        if (robber != other.robber) return false;
+        if (diceRoll != other.diceRoll) return false;
+        return terrain == other.terrain;
 
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + diceRoll.hashCode();
-        result = 31 * result + terrain.hashCode();
-        result = 31 * result + (robber ? 1 : 0);
+        result = (31 * result) + diceRoll.hashCode();
+        result = (31 * result) + terrain.hashCode();
+        result = (31 * result) + (robber ? 1 : 0);
         return result;
     }
 

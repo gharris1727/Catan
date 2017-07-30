@@ -21,9 +21,16 @@ public final class AuthToken implements Serializable {
             return true;
         if (o instanceof AuthToken) {
             AuthToken at = (AuthToken) o;
-            return username.equals(at.username) && sessionID == at.sessionID;
+            return username.equals(at.username) && (sessionID == at.sessionID);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = username.hashCode();
+        result = 31 * result + sessionID;
+        return result;
     }
 
     public String toString() {

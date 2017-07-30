@@ -67,14 +67,22 @@ public class HexagonalArray {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        HexagonalArray that = (HexagonalArray) o;
+        HexagonalArray other = (HexagonalArray) o;
 
-        if (!spaces.equals(that.spaces)) return false;
-        if (!edges.equals(that.edges)) return false;
-        return vertices.equals(that.vertices);
+        if (!spaces.equals(other.spaces)) return false;
+        if (!edges.equals(other.edges)) return false;
+        return vertices.equals(other.vertices);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = spaces.hashCode();
+        result = 31 * result + edges.hashCode();
+        result = 31 * result + vertices.hashCode();
+        return result;
     }
 
     @Override

@@ -75,20 +75,20 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion imp
 
     private void checkBounds() {
         Point position = getPosition();
-        if (position.x < minX + insets.left)
+        if (position.x < (minX + insets.left))
             position.x = minX + insets.left;
-        if (position.y < minY + insets.top)
+        if (position.y < (minY + insets.top))
             position.y = minY + insets.top;
-        if (position.x > maxX - insets.right)
+        if (position.x > (maxX - insets.right))
             position.x = maxX - insets.right;
-        if (position.y > maxY - insets.bottom)
+        if (position.y > (maxY - insets.bottom))
             position.y = maxY - insets.bottom;
         host.forceRender();
     }
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && host != null && host.isRenderable() && insets != null;
+        return super.isRenderable() && (host != null) && host.isRenderable() && (insets != null);
     }
 
     @Override

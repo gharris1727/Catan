@@ -42,22 +42,22 @@ public final class GraphicInfo extends ResourceCacheKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        GraphicInfo that = (GraphicInfo) o;
+        GraphicInfo other = (GraphicInfo) o;
 
-        if (source != null ? !source.equals(that.source) : that.source != null) return false;
-        if (mask != null ? !mask.equals(that.mask) : that.mask != null) return false;
-        if (location != null ? !location.equals(that.location) : that.location != null) return false;
-        return Arrays.equals(swaps, that.swaps);
+        if ((source != null) ? !source.equals(other.source) : (other.source != null)) return false;
+        if ((mask != null) ? !mask.equals(other.mask) : (other.mask != null)) return false;
+        if ((location != null) ? !location.equals(other.location) : (other.location != null)) return false;
+        return Arrays.equals(swaps, other.swaps);
     }
 
     @Override
     public int hashCode() {
-        int result = source != null ? source.hashCode() : 0;
-        result = 31 * result + (mask != null ? mask.hashCode() : 0);
-        result = 31 * result + (location != null ? location.hashCode() : 0);
-        result = 31 * result + Arrays.hashCode(swaps);
+        int result = (source != null) ? source.hashCode() : 0;
+        result = (31 * result) + ((mask != null) ? mask.hashCode() : 0);
+        result = (31 * result) + ((location != null) ? location.hashCode() : 0);
+        result = (31 * result) + Arrays.hashCode(swaps);
         return result;
     }
 

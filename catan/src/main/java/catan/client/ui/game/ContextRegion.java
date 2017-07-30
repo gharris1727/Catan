@@ -111,7 +111,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
         int index = 0;
         for (ContextButton button : buttons) {
             add(button);
-            //TODO: make buttons fall to secon
+            //TODO: allow buttons to support multiple rows and standard positions.
             button.setPosition(getButtonLocation(index++, 0));
         }
         add(background);
@@ -123,7 +123,7 @@ public class ContextRegion extends ConfigurableScreenRegion implements Updatable
     private Point getButtonLocation(int x, int y) {
         Point offset = getConfig().getLayout().getPoint("offset");
         Point spacing = getConfig().getLayout().getPoint("spacing");
-        return new Point(offset.x + x*spacing.x, offset.y + y*spacing.y);
+        return new Point(offset.x + (x * spacing.x), offset.y + (y * spacing.y));
     }
 
     private void renderTurnAdvance() {

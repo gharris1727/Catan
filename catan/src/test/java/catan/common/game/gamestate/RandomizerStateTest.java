@@ -18,7 +18,7 @@ import java.util.Arrays;
 @Category(FuzzTests.class)
 public class RandomizerStateTest {
 
-    private static final int runs = 100000;
+    private static final int RUNS = 100000;
 
     private final Username greg = new Username("Greg");
     private final Username bob = new Username("Bob");
@@ -29,7 +29,7 @@ public class RandomizerStateTest {
     public void testDiceRolls() throws EventConsumerException {
         RandomizerState a = new RandomizerState(gameSettings);
         RandomizerState b = new RandomizerState(gameSettings);
-        for (int i = 0; i < runs; i++) {
+        for (int i = 0; i < RUNS; i++) {
             GameStateEvent event = new GameStateEvent(null, GameStateEventType.Roll_Dice, a.getDiceRoll());
             Assert.assertNull(a.test(event));
             Assert.assertEquals(a.getDiceRoll(), b.getDiceRoll());

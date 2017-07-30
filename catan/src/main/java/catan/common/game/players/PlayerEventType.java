@@ -22,14 +22,14 @@ public enum PlayerEventType implements EventType {
     Cancel_Trade(null),
     Finish_Discarding(null);
 
-    private final Class payloadType;
+    private final Class type;
 
-    PlayerEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    PlayerEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

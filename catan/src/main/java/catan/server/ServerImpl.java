@@ -106,9 +106,8 @@ public class ServerImpl extends CoreThread implements Server {
                 shutdown();
                 break;
             case Client_Connect:
-                connection = new ServerConnection(this, logger, (Socket) event.getPayload());
+                connection = connectionPool.startConnection(logger, (Socket) event.getPayload());
                 connection.setToken(token);
-                connectionPool.addConnection(connection);
                 connection.connect();
                 break;
             case User_Connect:
@@ -200,7 +199,7 @@ public class ServerImpl extends CoreThread implements Server {
                     break;
                 case Game_Start:
                     GameSettings settings = (GameSettings) event.getPayload();
-                    lobby.setGameID(gamePool.start(settings));
+                    lobby.setGameID(gamePool.startGame(settings));
                     for (Username username : lobby.getPlayers())
                         addEvent(new LobbyEvent(username, LobbyEventType.Game_Join, null));
                     break;
@@ -214,7 +213,7 @@ public class ServerImpl extends CoreThread implements Server {
                 case Game_Sync:
                     break;
                 case Game_Finish:
-                    gamePool.finish(matchmakingPool.getLobbyList().userGetLobby(origin).getGameID());
+                    gamePool.finishGame(matchmakingPool.getLobbyList().userGetLobby(origin).getGameID());
                     break;
             }
             //Rebroadcast the event to everyone connected.
@@ -305,35 +304,33 @@ public class ServerImpl extends CoreThread implements Server {
     private void startup(int port) {
         config = ResourceLoader.getPropertiesFile(configFile);
         Console console = new Console(logger);
-        if (GraphicsEnvironment.isHeadless())
+        if (GraphicsEnvironment.isHeadless()) {
             commandLine = new CommandLine(console);
-        else
+            commandLine.start();
+        } else {
             window = new ServerWindow(this, logger, console);
-        connectionPool = new ConnectionPool();
+        }
+        connectionPool = new ConnectionPool(this);
         database = new UserDatabase(new PropertiesFileInfo(config.get("database"), "User database"));
         matchmakingPool = new MatchmakingPool();
         gamePool = new GamePool(this, logger);
         try {
-            if (port <= 1024) throw new IOException("Port Number Reserved");
             socket = new ServerSocket(port);
-            listen = new Thread("Listen") {
-                @Override
-                public void run() {
-                    logger.log("Listening...", LogLevel.INFO);
-                    listening = true;
-                    while (listening) {
-                        try {
-                            addEvent(new ServerEvent(this,ServerEventType.Client_Connect,socket.accept()));
-                        } catch (SocketException ignored) {
-                            listening = false;
-                            logger.log("Listening Stopped", LogLevel.INFO);
-                        } catch (IOException e) {
-                            listening = false;
-                            logger.log("Listen Failure", e, LogLevel.WARN);
-                        }
+            listen = new Thread(() -> {
+                logger.log("Listening...", LogLevel.INFO);
+                listening = true;
+                while (listening) {
+                    try {
+                        addEvent(new ServerEvent(this,ServerEventType.Client_Connect,socket.accept()));
+                    } catch (SocketException ignored) {
+                        listening = false;
+                        logger.log("Listening Stopped", LogLevel.INFO);
+                    } catch (IOException e) {
+                        listening = false;
+                        logger.log("Listen Failure", e, LogLevel.WARN);
                     }
                 }
-            };
+            }, "Listen");
             listen.start();
         } catch (IOException e) {
             logger.log("Server connection failure", e, LogLevel.WARN);

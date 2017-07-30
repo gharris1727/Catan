@@ -31,7 +31,7 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
         TextLabel label = new TextLabel(toString() + "Label", 1, "label", null);
         background.setConfig(config);
         label.setConfig(config);
-        setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
+        setMask(config.getLayout().getRenderMask("mask"));
         clear();
         center(label);
         add(background).setClickable(this);
@@ -93,7 +93,25 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
     }
 
     @Override
-    public int compareTo(TaskbarMenu other) {
-        return getRenderPriority() - other.getRenderPriority();
+    public int compareTo(TaskbarMenu t) {
+        return getRenderPriority() - t.getRenderPriority();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TaskbarMenu that = (TaskbarMenu) o;
+
+        if (!background.equals(that.background)) return false;
+        return popup.equals(that.popup);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = background.hashCode();
+        result = 31 * result + popup.hashCode();
+        return result;
     }
 }

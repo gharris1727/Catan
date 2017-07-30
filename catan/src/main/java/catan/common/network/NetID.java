@@ -30,8 +30,15 @@ public class NetID implements Serializable {
     public boolean equals(Object o) {
         if (o instanceof NetID) {
             NetID nid = (NetID) o;
-            return (nid.address.equals(address) && nid.port == port);
+            return (nid.address.equals(address) && (nid.port == port));
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = address.hashCode();
+        result = 31 * result + port;
+        return result;
     }
 }

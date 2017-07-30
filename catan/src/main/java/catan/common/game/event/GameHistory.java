@@ -36,19 +36,19 @@ public class GameHistory {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        GameHistory that = (GameHistory) o;
+        GameHistory other = (GameHistory) o;
 
-        if (!gameEvent.equals(that.gameEvent)) return false;
-        return triggeredEvents.equals(that.triggeredEvents);
+        if (!gameEvent.equals(other.gameEvent)) return false;
+        return triggeredEvents.equals(other.triggeredEvents);
 
     }
 
     @Override
     public int hashCode() {
         int result = gameEvent.hashCode();
-        result = 31 * result + triggeredEvents.hashCode();
+        result = (31 * result) + triggeredEvents.hashCode();
         return result;
     }
 

@@ -5,6 +5,7 @@ import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.TiledBackground;
 
 import java.awt.*;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -15,7 +16,7 @@ public class TaskbarRegion extends ConfigurableScreenRegion {
 
     private final TiledBackground background;
 
-    private final TreeSet<TaskbarMenu> menus;
+    private final Set<TaskbarMenu> menus;
 
     public TaskbarRegion() {
         super("Taskbar", 1, "taskbar");

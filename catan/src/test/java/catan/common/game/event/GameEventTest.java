@@ -20,10 +20,10 @@ import static catan.common.game.event.GameEventType.*;
  */
 public class GameEventTest {
 
-    private Username greg = new Username("Greg");
-    private Username bob = new Username("Bob");
+    private final Username greg = new Username("Greg");
+    private final Username bob = new Username("Bob");
 
-    private void assertCorrectlySerialized(GameEvent event) throws IOException {
+    private static void assertCorrectlySerialized(GameEvent event) throws IOException {
         byte[] serialized = event.serialize();
         GameEvent deserialized = (GameEvent) GameEvent.deserialize(serialized);
         byte[] serializedTwice = deserialized.serialize();

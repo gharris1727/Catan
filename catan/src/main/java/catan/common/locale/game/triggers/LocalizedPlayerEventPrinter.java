@@ -1,7 +1,6 @@
 package catan.common.locale.game.triggers;
 
 import catan.common.config.ConfigSource;
-import catan.common.game.gamestate.DevelopmentCard;
 import catan.common.game.players.PlayerEvent;
 import catan.common.game.util.EnumCounter;
 import catan.common.game.util.GameResource;
@@ -35,7 +34,9 @@ public class LocalizedPlayerEventPrinter extends LocalizedPrinter<PlayerEvent> {
             case Lose_Resources:
                 return out + ": " + resourcePrinter.getLocalization((EnumCounter<GameResource>) instance.getPayload());
             case Use_DevelopmentCard:
-                return out + ": " + developmentPrinter.getLocalization((DevelopmentCard) instance.getPayload());
+                return out + ": " + developmentPrinter.getLocalization((Enum) instance.getPayload());
+            case Use_Trade:
+                break;
             case Offer_Trade:
             case Cancel_Trade:
                 return out;

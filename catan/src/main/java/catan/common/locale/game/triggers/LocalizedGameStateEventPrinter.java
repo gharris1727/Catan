@@ -27,6 +27,7 @@ public class LocalizedGameStateEventPrinter extends LocalizedPrinter<GameStateEv
         switch (instance.getType()) {
             case Roll_Dice:
                 return out + diceRollPrinter.getLocalization((Enum) instance.getPayload());
+            case Advance_Theft:
             case Draw_DevelopmentCard:
             case Advance_Turn:
             case Active_Turn:

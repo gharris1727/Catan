@@ -10,7 +10,8 @@ import java.util.Set;
  */
 public class TwoDimensionalArray<T> {
 
-    private final int sizeX, sizeY;
+    private final int sizeX;
+    private final int sizeY;
     private final Object[] data;
 
     public TwoDimensionalArray(int x, int y) {
@@ -21,7 +22,7 @@ public class TwoDimensionalArray<T> {
 
     private void set(int x, int y, T o) {
         rangeCheck(x, y);
-        data[x + y * sizeX] = o;
+        data[x + (y * sizeX)] = o;
     }
 
     public void set(Coordinate c, T o) {
@@ -31,7 +32,7 @@ public class TwoDimensionalArray<T> {
     @SuppressWarnings("unchecked")
     public T get(int x, int y) {
         rangeCheck(x, y);
-        return (T) data[x + y * sizeX];
+        return (T) data[x + (y * sizeX)];
     }
 
     public T get(Coordinate c) {
@@ -53,8 +54,7 @@ public class TwoDimensionalArray<T> {
         Set<Coordinate> coordinates = new HashSet<>();
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
-                T obj = get(x, y);
-                if (obj != null) {
+                if (get(x, y) != null) {
                     coordinates.add(new Coordinate(x, y));
                 }
             }
@@ -63,7 +63,7 @@ public class TwoDimensionalArray<T> {
     }
 
     private void rangeCheck(int x, int y) {
-        if (x < 0 || x >= sizeX || y < 0 || y >= sizeY) {
+        if ((x < 0) || (x >= sizeX) || (y < 0) || (y >= sizeY)) {
             throw new IndexOutOfBoundsException("X: " + x + "/" + sizeX + " Y: " + y + "/" + sizeY);
         }
     }
@@ -71,14 +71,22 @@ public class TwoDimensionalArray<T> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        TwoDimensionalArray<?> that = (TwoDimensionalArray<?>) o;
+        TwoDimensionalArray<?> other = (TwoDimensionalArray<?>) o;
 
-        if (sizeX != that.sizeX) return false;
-        if (sizeY != that.sizeY) return false;
-        return Arrays.equals(data, that.data);
+        if (sizeX != other.sizeX) return false;
+        if (sizeY != other.sizeY) return false;
+        return Arrays.equals(data, other.data);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sizeX;
+        result = 31 * result + sizeY;
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
     }
 
     @Override

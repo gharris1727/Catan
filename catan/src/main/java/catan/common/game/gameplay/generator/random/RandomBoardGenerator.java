@@ -22,20 +22,13 @@ import java.util.*;
  */
 public class RandomBoardGenerator implements BoardGenerator {
 
-    public RandomBoardGenerator() {
-    }
-
     @Override
     public GameBoard generate(BoardLayout layout, long seed) {
         Random random = new Random(seed);
 
         Dimension size = layout.getSize();
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
-        Map<DiceRoll, Set<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
-        Set<Coordinate> tradingPosts = new HashSet<>();
 
-        Iterator<Coordinate> resourceTiles = layout.getTiles();
-        Iterator<Coordinate> tradingPorts = layout.getPorts();
         //Prep all of the helper classes to generate map features.
         TerrainGenerator terrainGenerator = new TerrainGenerator(layout.getTileCount());
         TokenGenerator tokenGenerator = new TokenGenerator(layout.getTileCount() - layout.getDesertCount()); //Don't generate tokens for the desert.
@@ -49,14 +42,16 @@ public class RandomBoardGenerator implements BoardGenerator {
         Set<Coordinate> validEdges = new HashSet<>();
 
         //Generate and place playable hexagons
+        Iterator<Coordinate> resourceTiles = layout.getTiles();
+        Map<DiceRoll, Set<Coordinate>> diceRolls = new EnumMap<>(DiceRoll.class);
         Coordinate robberLocation = null;
         while (resourceTiles.hasNext()) {
             Coordinate c = resourceTiles.next();
             validVertices.addAll(CoordTransforms.getAdjacentVerticesFromSpace(c).values());
             validEdges.addAll(CoordTransforms.getAdjacentEdgesFromSpace(c).values());
             Terrain t = terrain.next();
-            if (t.equals(Terrain.Desert)) {
-                setResourceTile(hexArray, diceRolls, c,  new ResourceTile(t, DiceRoll.Seven));
+            if (t == Terrain.Desert) {
+                setResourceTile(hexArray, diceRolls, c,  new ResourceTile(Terrain.Desert, DiceRoll.Seven));
                 robberLocation = c;
             } else {
                 setResourceTile(hexArray, diceRolls, c, new ResourceTile(t, tokens.next()));
@@ -77,6 +72,8 @@ public class RandomBoardGenerator implements BoardGenerator {
 
         //Place trading posts.
         TradeGenerator trades = new TradeGenerator(layout.getPortCount());
+        Iterator<Coordinate> tradingPorts = layout.getPorts();
+        Set<Coordinate> tradingPosts = new HashSet<>();
         trades.randomize(random);
         for (TradingPostType trade : trades)
             setTradingPost(hexArray, tradingPosts, tradingPorts.next(), trade);
@@ -90,7 +87,7 @@ public class RandomBoardGenerator implements BoardGenerator {
     }
 
     public boolean equals(Object o) {
-        return this == o || (o != null && this.getClass() == o.getClass());
+        return (this == o) || ((o != null) && (this.getClass() == o.getClass()));
     }
 
     public int hashCode() {

@@ -9,7 +9,8 @@ import java.io.Serializable;
  */
 public final class Coordinate implements Serializable {
 
-    public final int x, y;
+    public final int x;
+    public final int y;
 
     public Coordinate() {
         x = 0;
@@ -33,17 +34,17 @@ public final class Coordinate implements Serializable {
         if (o == this)
             return true;
         if (o instanceof Coordinate) {
-            Coordinate c = (Coordinate) o;
-            return c.x == x && c.y == y;
+            Coordinate coord = (Coordinate) o;
+            return (coord.x == x) && (coord.y == y);
         }
         return false;
     }
 
     public int hashCode() {
         //Using Szudzik's Formula.
-        int A = x >= 0 ? 2 * x : -2 * x - 1;
-        int B = y >= 0 ? 2 * y : -2 * y - 1;
-        return A >= B ? A * A + A + B : A + B * B;
+        int a = (x >= 0) ? (2 * x) : ((-2 * x) - 1);
+        int b = (y >= 0) ? (2 * y) : ((-2 * y) - 1);
+        return (a >= b) ? ((a * a) + a + b) : (a + (b * b));
     }
 
     public String toString() {

@@ -43,11 +43,11 @@ public class GameManager {
     }
 
     public synchronized boolean isLive() {
-        return localhistoryIndex == events.size() - 1;
+        return localhistoryIndex == (events.size() - 1);
     }
 
     public synchronized void jumpToEvent(int index) throws EventConsumerException {
-        if (index < 0 || index > events.size())
+        if ((index < 0) || (index > events.size()))
             index = events.size() - 1;
         if (localhistoryIndex < index) {
             for (int i = localhistoryIndex + 1; i <= index; i++) {
@@ -72,7 +72,7 @@ public class GameManager {
     }
 
     public synchronized boolean test(GameEvent gameEvent) {
-        return isLive() && local.test(gameEvent) == null;
+        return isLive() && (local.test(gameEvent) == null);
     }
 
     public Username getLocalUsername() {

@@ -18,15 +18,15 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
     private final LobbyPool lobbies;
 
     public MatchmakingPool() {
-        this.clients = new ClientPool();
-        this.lobbies = new LobbyPool();
+        clients = new ClientPool();
+        lobbies = new LobbyPool();
     }
 
     @Override
     public EventConsumerProblem test(LobbyEvent event) {
         Username origin = event.getOrigin();
         boolean exists = clients.hasUser(origin);
-        boolean inLobby = exists && lobbies.userInLobby(origin);
+        boolean inLobby = exists && lobbies.isUserInLobby(origin);
         switch (event.getType()) {
             case User_Connect:
                 if (exists)
@@ -47,7 +47,7 @@ public class MatchmakingPool extends EventPayload implements EventConsumer<Lobby
                     return new EventConsumerProblem("User does not exist");
                 if (inLobby)
                     return new EventConsumerProblem("User is already in a lobby");
-                if (!lobbies.userInLobby((Username) event.getPayload()))
+                if (!lobbies.isUserInLobby((Username) event.getPayload()))
                     return new EventConsumerProblem("Other user is not in a lobby");
                 break;
             case Lobby_Change_Config:

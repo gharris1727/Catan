@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public class NetEvent extends GenericEvent implements Serializable {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private final AuthToken origin;
     private final NetEventType type;
@@ -56,19 +56,19 @@ public class NetEvent extends GenericEvent implements Serializable {
 
         NetEvent netEvent = (NetEvent) o;
 
-        if (origin != null ? !origin.equals(netEvent.origin) : netEvent.origin != null) return false;
+        if ((origin != null) ? !origin.equals(netEvent.origin) : (netEvent.origin != null)) return false;
         if (type != netEvent.type) return false;
-        if (payload != null ? !payload.equals(netEvent.payload) : netEvent.payload != null) return false;
-        return connection != null ? connection.equals(netEvent.connection) : netEvent.connection == null;
+        if ((payload != null) ? !payload.equals(netEvent.payload) : (netEvent.payload != null)) return false;
+        return (connection != null) ? connection.equals(netEvent.connection) : (netEvent.connection == null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = origin != null ? origin.hashCode() : 0;
-        result = 31 * result + type.hashCode();
-        result = 31 * result + (payload != null ? payload.hashCode() : 0);
-        result = 31 * result + (connection != null ? connection.hashCode() : 0);
+        int result = (origin != null) ? origin.hashCode() : 0;
+        result = (31 * result) + type.hashCode();
+        result = (31 * result) + ((payload != null) ? payload.hashCode() : 0);
+        result = (31 * result) + ((connection != null) ? connection.hashCode() : 0);
         return result;
     }
 }

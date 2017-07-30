@@ -18,7 +18,7 @@ public class ReversiblePRNG {
         try {
             hash = MessageDigest.getInstance("SHA");
         } catch (NoSuchAlgorithmException e) {
-            throw new Error(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -33,7 +33,7 @@ public class ReversiblePRNG {
     private byte[] getBytes() {
         byte[] arr = new byte[8];
         for (int i = 0; i < 8; i++)
-            arr[i] = (byte) (seed >> 8*i);
+            arr[i] = (byte) (seed >> (8 * i));
         hash.reset();
         return hash.digest(arr);
     }
@@ -42,7 +42,7 @@ public class ReversiblePRNG {
         byte[] bytes = getBytes();
         int out = 0;
         for (int i = 0; i < 4; i++) {
-            out = out << 8;
+            out <<= 8;
             out |= bytes[i];
         }
         return out & 0x7fffffff;
@@ -68,9 +68,9 @@ public class ReversiblePRNG {
         if (this == o) return true;
         if (!(o instanceof ReversiblePRNG)) return false;
 
-        ReversiblePRNG that = (ReversiblePRNG) o;
+        ReversiblePRNG other = (ReversiblePRNG) o;
 
-        return seed == that.seed;
+        return seed == other.seed;
     }
 
     @Override

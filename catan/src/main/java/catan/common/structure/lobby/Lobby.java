@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,8 +36,8 @@ public class Lobby implements Serializable {
     private LobbyConfig config;
 
     public Lobby(LobbyConfig config) {
-        this.users = new HashMap<>(config.getMaxPlayers());
-        this.connected = new HashSet<>();
+        users = new HashMap<>(config.getMaxPlayers());
+        connected = new HashSet<>();
         setConfig(config);
     }
 
@@ -82,7 +83,7 @@ public class Lobby implements Serializable {
             BoardLayoutInfo info = null;
             //TODO: put the regex stuff somewhere so that we can use it to validate when saving the game.
             //Static map file name, maybe having .properties appended (ignored).
-            Matcher staticConfigName = Pattern.compile("^(?<name>[a-zA-Z]+)(?:\\.properties)??$").matcher(config.getLayoutName());
+            Matcher staticConfigName = Pattern.compile("^(?<name>[a-zA-Z]+)(?:[.]properties)??$").matcher(config.getLayoutName());
             //Dynamic numeric seed that consists of "dynamic.<number>" where the number is the actual seed.
             Matcher dynamicNumericSeed = Pattern.compile("^\\d+$").matcher(config.getLayoutName());
             // Each of these options are mutually exclusive, and can fail for whatever reason.
@@ -90,11 +91,10 @@ public class Lobby implements Serializable {
                 info = new BoardLayoutInfo(staticConfigName.group("name"));
             else if (dynamicNumericSeed.find()) // Number specifies a manual seed.
                 info = new BoardLayoutInfo(Long.parseLong(config.getLayoutName()));
-            else if ("".equals(config.getLayoutName())) // Empty string triggers random seed.
+            else if (config.getLayoutName() != null && config.getLayoutName().isEmpty()) // Empty string triggers random seed.
                 info = new BoardLayoutInfo(seed);
             boardLayout = ResourceLoader.getBoardLayout(info);
-        } catch (ResourceLoadException e) {
-            e.printStackTrace();
+        } catch (ResourceLoadException ignored) {
             // Fall back to the text seeded map.
             boardLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo(config.getLayoutName().hashCode()));
         }
@@ -117,7 +117,7 @@ public class Lobby implements Serializable {
 
         PreferenceTeamAllocator players = new PreferenceTeamAllocator();
 
-        for (Map.Entry<Username, LobbyUser> user : users.entrySet())
+        for (Entry<Username, LobbyUser> user : users.entrySet())
             players.addPreference(user.getKey(), user.getValue().getTeamColor());
 
         return new GameSettings(seed, boardLayout, boardGenerator, rules, players);

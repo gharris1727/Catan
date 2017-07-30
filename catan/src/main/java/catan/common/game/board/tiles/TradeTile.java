@@ -5,6 +5,8 @@ import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.gameplay.trade.TradingPostType;
 import catan.common.util.Direction;
 
+import java.util.Arrays;
+
 import static catan.common.util.Direction.*;
 
 /**
@@ -60,10 +62,9 @@ public class TradeTile extends BeachTile {
     }
 
     public Coordinate[] getTradingPostCoordinates() {
-        Coordinate[] coordinates = new Coordinate[directions.length];
-        for (int i = 0; i < directions.length; i++)
-            coordinates[i] = CoordTransforms.getVertexCoordinateFromSpace(getPosition(), directions[i]);
-        return coordinates;
+        return Arrays.stream(directions)
+                .map(direction -> CoordTransforms.getVertexCoordinateFromSpace(getPosition(), direction))
+                .toArray(Coordinate[]::new);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class TradeTile extends BeachTile {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + tradingPostType.hashCode();
+        result = (31 * result) + tradingPostType.hashCode();
         return result;
     }
 

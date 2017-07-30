@@ -56,13 +56,13 @@ public class LobbyPool implements Serializable {
     public void disconnect(Username user) {
         Lobby lobby = userMap.get(user);
         lobby.disconnect(user);
-        if (lobby.getConnectedPlayers().size() == 0)
+        if (lobby.getConnectedPlayers().isEmpty())
             synchronized (ingameLobbies) {
                 ingameLobbies.remove(lobby);
             }
     }
 
-    public boolean userInLobby(Username username) {
+    public boolean isUserInLobby(Username username) {
         return userMap.containsKey(username);
     }
 

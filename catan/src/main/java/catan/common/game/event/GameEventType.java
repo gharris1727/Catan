@@ -31,15 +31,15 @@ public enum GameEventType implements EventType {
     Play_YearOfPlenty(EnumCounter.class),
     Play_Monopoly(GameResource.class);
 
-    private final Class payloadType;
+    private final Class type;
 
-    GameEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    GameEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 
 }

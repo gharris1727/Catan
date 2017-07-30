@@ -21,16 +21,16 @@ public final class GraphicSourceInfo extends ResourceCacheKey{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        GraphicSourceInfo that = (GraphicSourceInfo) o;
+        GraphicSourceInfo other = (GraphicSourceInfo) o;
 
-        return path != null ? path.equals(that.path) : that.path == null;
+        return (path != null) ? path.equals(other.path) : (other.path == null);
     }
 
     @Override
     public int hashCode() {
-        return path != null ? path.hashCode() : 0;
+        return (path != null) ? path.hashCode() : 0;
     }
 
     @Override

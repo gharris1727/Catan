@@ -15,9 +15,9 @@ public class TeamColorSwaps {
     private final Map<TeamColor, int[]> swaps;
 
     public TeamColorSwaps(ConfigSource source) {
-        this.swaps = new EnumMap<>(TeamColor.class);
+        swaps = new EnumMap<>(TeamColor.class);
         for (TeamColor teamColor : TeamColor.values()) {
-            int[] colorSwaps = new int[]{
+            int[] colorSwaps = {
                     source.getHexColor("None.primary"), source.getHexColor(teamColor + ".primary"),
                     source.getHexColor("None.highlight"), source.getHexColor(teamColor + ".primary"),
                     source.getHexColor("None.shadow"), source.getHexColor(teamColor + ".shadow"),

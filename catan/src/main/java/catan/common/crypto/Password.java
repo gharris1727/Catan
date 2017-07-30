@@ -19,11 +19,11 @@ public final class Password extends EventPayload {
     }
 
     public String getHiddenPassword() {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         for (int i = 0; i < password.length(); i++) {
-            out += "*";
+            out.append("*");
         }
-        return out;
+        return out.toString();
     }
 
     public String toString() {

@@ -27,12 +27,13 @@ public enum Direction {
     }
 
     Direction(Direction a, Direction b) {
-        this.x = a.x + b.x;
-        this.y = a.y + b.y;
+        x = a.x + b.x;
+        y = a.y + b.y;
     }
 
     public static Direction getAverage(Set<Direction> input) {
-        int sumX = 0, sumY = 0;
+        int sumX = 0;
+        int sumY = 0;
         for (Direction d : input) {
             sumX += d.x;
             sumY += d.y;

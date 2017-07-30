@@ -109,9 +109,8 @@ public class StaticGameRules implements Serializable, GameRules {
                 return armyPoints;
             case LongestRoad:
                 return roadPoints;
-            default:
-                return 0;
         }
+        return 0;
     }
 
     @Override
@@ -121,9 +120,8 @@ public class StaticGameRules implements Serializable, GameRules {
                 return armyMinimum;
             case LongestRoad:
                 return roadMinimum;
-            default:
-                return 0;
         }
+        return 0;
     }
 
     @Override
@@ -165,9 +163,8 @@ public class StaticGameRules implements Serializable, GameRules {
                 return plentyCount;
             case RoadBuilding:
                 return roadbuildingCount;
-            default:
-                return 0;
         }
+        return 0;
     }
 
     @Override
@@ -206,7 +203,7 @@ public class StaticGameRules implements Serializable, GameRules {
     }
 
     public boolean equals(Object o) {
-        return this == o || (o != null && this.getClass() == o.getClass());
+        return (this == o) || ((o != null) && (this.getClass() == o.getClass()));
     }
 
     public int hashCode() {

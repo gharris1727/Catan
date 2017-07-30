@@ -18,7 +18,7 @@ public class ClientPool extends EventPayload implements Iterable<Username>  {
     private final Map<Username, UserInfo> clients;
 
     public ClientPool() {
-        this.clients = new HashMap<>();
+        clients = new HashMap<>();
     }
 
     @Override

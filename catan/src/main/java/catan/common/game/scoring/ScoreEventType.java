@@ -16,14 +16,14 @@ public enum ScoreEventType implements EventType {
     Buy_Development(DevelopmentCard.class),
     Play_Development(DevelopmentCard.class);
 
-    private final Class payloadType;
+    private final Class type;
 
-    ScoreEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    ScoreEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

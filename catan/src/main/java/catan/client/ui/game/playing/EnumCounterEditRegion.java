@@ -32,7 +32,7 @@ public class EnumCounterEditRegion<T extends Enum<T>> extends ConfigurableScreen
         enableTransparency();
         background = new EdgedTiledBackground();
         icon = new GraphicObject("ResourceCounterImage", 1, null);
-        count = new TextLabel("ResourceCounterCount", 2, "count", "" + counter.get(instance));
+        count = new TextLabel("ResourceCounterCount", 2, "count", String.valueOf(counter.get(instance)));
         //Add everything to the screen.
         add(background).setClickable(this);
         add(icon).setClickable(this);
@@ -70,7 +70,7 @@ public class EnumCounterEditRegion<T extends Enum<T>> extends ConfigurableScreen
         setMask(icons.getMask());
         assertRenderable();
         icon.setGraphic(icons.getGraphic(instance.ordinal()));
-        count.setText("" + counter.get(instance));
+        count.setText(String.valueOf(counter.get(instance)));
         count.setPosition(new Point(0, icons.getMask().getHeight() - count.getGraphic().getMask().getHeight()));
     }
 }

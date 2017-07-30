@@ -20,7 +20,7 @@ public class ClientWindow extends CoreWindow {
     private final InputListener listener;
     private ScreenCanvas canvas;
     //Field to prevent the onResize function from spamming setMask requests when there is one still processing.
-    private boolean resizing = false;
+    private boolean resizing;
 
     public ClientWindow(Client client, Logger logger, InputListener listener) {
         super("Settlers of Catan - Client", new Dimension(800, 600), true, logger);
@@ -60,9 +60,10 @@ public class ClientWindow extends CoreWindow {
         boolean shouldResize = false;
         // This synchronization block ensures that the decision on running the real resize is atomic.
         synchronized (this) {
-            if (!resizing)
-                shouldResize = resizing = true;
-
+            if (!resizing) {
+                shouldResize = true;
+                resizing = true;
+            }
         }
         // Now the slow code that actually does the resizing can happen asynchronously.
         if (shouldResize) {

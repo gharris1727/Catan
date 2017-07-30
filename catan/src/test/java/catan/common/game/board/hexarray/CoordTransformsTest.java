@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @Category(UnitTests.class)
 public class CoordTransformsTest {
 
-    private void test(Coordinate[] expected, Map<Direction,Coordinate> map, Function<Direction, Coordinate> get) {
+    private static void test(Coordinate[] expected, Map<Direction, Coordinate> map, Function<Direction, Coordinate> get) {
         for (int i = 0; i < Direction.values().length; i++) {
             assertEquals("Get " + Direction.values()[i] + " Incorrect", expected[i], get.apply(Direction.values()[i]));
             assertEquals("Map " + Direction.values()[i] + " Incorrect", expected[i], map.get(Direction.values()[i]));

@@ -2,6 +2,7 @@ package catan.client.ui.lobbyjoinmenu;
 
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
+import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
@@ -14,6 +15,7 @@ import catan.common.structure.lobby.LobbySortOption;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -297,7 +299,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         @Override
         protected void renderContents() {
             clear();
-            TreeSet<Lobby> sorted = new TreeSet<>(new LobbyComparator(sortOption));
+            Set<Lobby> sorted = new TreeSet<>(new LobbyComparator(sortOption));
             synchronized (lobbies) {
                 for (Lobby lobby : lobbies)
                     sorted.add(lobby);
@@ -324,8 +326,8 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
                 background = new TiledBackground();
                 lobbyNameText = new TextLabel("LobbyName", 1, "name", lobby.getConfig().getLobbyName());
                 gameTypeText = new TextLabel("GameType", 1, "type", lobby.getConfig().getLayoutName());
-                currentClientsText = new TextLabel("CurrentClients", 1, "current", "" + lobby.size());
-                openSlotsText = new TextLabel("OpenSlots", 1, "open", "" + (lobby.getConfig().getMaxPlayers() - lobby.size()));
+                currentClientsText = new TextLabel("CurrentClients", 1, "current", String.valueOf(lobby.size()));
+                openSlotsText = new TextLabel("OpenSlots", 1, "open", String.valueOf(lobby.getConfig().getMaxPlayers() - lobby.size()));
                 add(background).setClickable(this);
                 add(lobbyNameText).setClickable(this);
                 add(gameTypeText).setClickable(this);
@@ -349,7 +351,7 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
 
             @Override
             public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                selected = this.lobby;
+                selected = lobby;
             }
 
             @Override
@@ -362,12 +364,12 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
     private class LobbyListFooter extends ConfigurableScreenRegion {
 
         private final TiledBackground background;
-        private final catan.client.graphics.ui.Button joinButton;
+        private final Button joinButton;
 
         private LobbyListFooter() {
             super("Footer", 2, "footer");
             background = new EdgedTiledBackground();
-            joinButton = new catan.client.graphics.ui.Button("JoinButton", 1, "join", "Join") {
+            joinButton = new Button("JoinButton", 1, "join", "Join") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     if (selected != null)

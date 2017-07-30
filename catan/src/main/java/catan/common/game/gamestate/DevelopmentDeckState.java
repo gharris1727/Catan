@@ -3,10 +3,7 @@ package catan.common.game.gamestate;
 import catan.common.game.scoring.rules.GameRules;
 import catan.common.util.ReversibleIterator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by greg on 2/27/16.
@@ -18,9 +15,7 @@ public class DevelopmentDeckState implements ReversibleIterator<DevelopmentCard>
     private int index;
 
     public DevelopmentDeckState(GameRules rules, long seed) {
-        int total = 0;
-        for (DevelopmentCard card : DevelopmentCard.values())
-            total += rules.getDevelopmentCardCount(card);
+        int total = Arrays.stream(DevelopmentCard.values()).mapToInt(rules::getDevelopmentCardCount).sum();
         deck = new ArrayList<>(total);
         for (DevelopmentCard card : DevelopmentCard.values())
             for (int i = 0; i < rules.getDevelopmentCardCount(card); i++)
@@ -40,6 +35,9 @@ public class DevelopmentDeckState implements ReversibleIterator<DevelopmentCard>
 
     @Override
     public DevelopmentCard next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         return deck.get(index++);
     }
 
@@ -56,12 +54,19 @@ public class DevelopmentDeckState implements ReversibleIterator<DevelopmentCard>
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        DevelopmentDeckState that = (DevelopmentDeckState) o;
+        DevelopmentDeckState other = (DevelopmentDeckState) o;
 
-        if (index != that.index) return false;
-        return deck.equals(that.deck);
+        if (index != other.index) return false;
+        return deck.equals(other.deck);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = deck.hashCode();
+        result = 31 * result + index;
+        return result;
     }
 
     @Override

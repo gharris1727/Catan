@@ -23,7 +23,7 @@ public abstract class ScreenObject implements Clickable, Graphical {
     private RenderThread renderer;
 
     protected ScreenObject(String name, int priority) {
-        this.position = new Point();
+        position = new Point();
         this.name = name;
         this.priority = priority;
         clickableColor = UniqueColor.getNext();

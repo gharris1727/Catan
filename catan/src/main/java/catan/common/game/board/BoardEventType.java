@@ -15,14 +15,14 @@ public enum BoardEventType implements EventType {
     Place_City(Coordinate.class),
     Place_Road(Coordinate.class);
 
-    private final Class payloadType;
+    private final Class type;
 
-    BoardEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    BoardEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

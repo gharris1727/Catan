@@ -19,7 +19,7 @@ public class ChatThread extends QueuedInputThread<ChatEvent> {
 
     //Process the ChatEvent queue and add messages to the ChatLog.
     @Override
-    public void execute() throws ThreadStop {
+    public void execute() throws ThreadStopException {
         ChatEvent event = getEvent(true);
         chatLog.addMessage(event.getMessage());
     }

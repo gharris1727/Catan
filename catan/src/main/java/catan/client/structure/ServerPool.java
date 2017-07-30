@@ -21,7 +21,7 @@ public class ServerPool implements Iterable<ConnectionInfo> {
     @SuppressWarnings("InfiniteLoopStatement")
     public ServerPool(PropertiesFileInfo fileInfo) {
         this.fileInfo = fileInfo;
-        this.list = new LinkedList<>();
+        list = new LinkedList<>();
         PropertiesFile file = ResourceLoader.getPropertiesFile(fileInfo);
         try {
             int i = 0;

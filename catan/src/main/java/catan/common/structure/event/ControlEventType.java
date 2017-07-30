@@ -20,14 +20,14 @@ public enum ControlEventType implements EventType {
     User_Pool_Sync(MatchmakingPool.class); //Server -> Client, when first joining to send the current client pool state.
 
 
-    private final Class payloadType;
+    private final Class type;
 
-    ControlEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    ControlEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

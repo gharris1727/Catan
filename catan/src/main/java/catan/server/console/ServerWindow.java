@@ -65,8 +65,8 @@ public class ServerWindow extends CoreWindow {
         }
 
         @Override
-        public void keyTyped(KeyEvent event) {
-            char typed = event.getKeyChar();
+        public void keyTyped(KeyEvent keyEvent) {
+            char typed = keyEvent.getKeyChar();
             if (typed == '\n') {
                 console.process(commandLine.toString());
                 commandLine.setLength(0);
@@ -82,11 +82,11 @@ public class ServerWindow extends CoreWindow {
         }
 
         @Override
-        public void keyPressed(KeyEvent event) {
+        public void keyPressed(KeyEvent keyEvent) {
         }
 
         @Override
-        public void keyReleased(KeyEvent event) {
+        public void keyReleased(KeyEvent keyEvent) {
         }
 
         @Override

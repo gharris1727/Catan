@@ -1,5 +1,7 @@
 package catan.client.graphics.masks;
 
+import static catan.client.graphics.masks.InvertedMask.Direction.RIGHT;
+
 /**
  * Created by Greg on 12/31/2014.
  * Mask for inverting either the left or right sides of another render mask.
@@ -25,32 +27,20 @@ public class InvertedMask extends RenderMask {
             }
         }
         if (first == -1) {
-            height = 0;
-            width = 0;
+            setSize(0,0);
         } else {
-            height = last - first + 1;
-            switch (direction) {
-                case RIGHT:
-                    width = other.width - minTot;
-                    break;
-                case LEFT:
-                default:
-                    width = leftWidth;
-                    break;
+            if (direction == RIGHT) {
+                setSize(other.width - minTot, last - first + 1);
+            } else {
+                setSize(leftWidth, last - first + 1);
             }
         }
-        padding = new int[height];
-        widths = new int[height];
         for (int i = 0; i < height; i++) {
-            switch (direction) {
-                case RIGHT:
-                    padding[i] = other.padding[i] + other.widths[i];
-                    widths[i] = width - padding[i];
-                    break;
-                default:
-                case LEFT:
-                    widths[i] = other.padding[i];
-                    break;
+            if (direction == RIGHT) {
+                padding[i] = other.padding[i] + other.widths[i];
+                widths[i] = width - padding[i];
+            } else {
+                widths[i] = other.padding[i];
             }
         }
         init();

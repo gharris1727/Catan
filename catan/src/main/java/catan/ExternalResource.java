@@ -8,7 +8,10 @@ import java.io.InputStream;
  * Created by greg on 1/19/16.
  * Directory manager for external resources
  */
-public class ExternalResource {
+public final class ExternalResource {
+
+    private ExternalResource() {
+    }
 
     public static String getConfigDirectory() {
         return "config/";

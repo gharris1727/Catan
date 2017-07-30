@@ -47,7 +47,7 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
         //Look at each of the neighbors of the edge being deleted.
         for (Coordinate adjacent : CoordTransforms.getAdjacentEdgesFromEdge(edge).values()) {
             //If the RoadSystem for the neighbor has not been updated, we need to update it.
-            if (roadSystems.get(adjacent) == path)
+            if (roadSystems.get(adjacent).equals(path))
                 discoverRoadSystem(adjacent);
         }
     }
@@ -56,7 +56,7 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
         //Get the path at the origin coordinate
         Path originPath = board.getPath(origin);
         //If there is no edge, or it is a non-teamColor path then we shouldn't process anything.
-        if (originPath != null && originPath.getTeam() != TeamColor.None) {
+        if ((originPath != null) && (originPath.getTeam() != TeamColor.None)) {
             //Create the new path
             RoadSystem roadSystem = new RoadSystem(board, origin);
             //Add this path to the overall list of roadSystems.
@@ -67,7 +67,7 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
                 //If there was an existing path, it is now invalid so remove it from the priority queue.
                 if (existing != null)
                 //Now map this edge to the new path.
-                this.roadSystems.put(p.getPosition(), roadSystem);
+                    roadSystems.put(p.getPosition(), roadSystem);
             }
         }
     }
@@ -77,19 +77,15 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
         if (history.isEmpty())
             throw new EventConsumerException("No event");
         ScoreEvent event = history.pop();
-        try {
-            switch (event.getType()) {
-                case Build_Settlement:
-                    updateVertex((Coordinate) event.getPayload());
-                    break;
-                case Build_Road:
-                    updateEdge((Coordinate) event.getPayload());
-                    break;
-                default:
-                    throw new EventConsumerException("Inconsistent ScoreEvent Undo");
-            }
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
+        switch (event.getType()) {
+            case Build_Settlement:
+                updateVertex((Coordinate) event.getPayload());
+                break;
+            case Build_Road:
+                updateEdge((Coordinate) event.getPayload());
+                break;
+            default:
+                throw new EventConsumerException("Inconsistent ScoreEvent Undo");
         }
     }
 
@@ -110,22 +106,19 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
     @Override
     public void execute(ScoreEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
-        if (problem != null)
+        if (problem != null) {
             throw new EventConsumerException(event, problem);
-        try {
-            history.push(event);
-            switch (event.getType()){
-                case Build_Settlement:
-                    updateVertex((Coordinate) event.getPayload());
-                    break;
-                case Build_Road:
-                    discoverRoadSystem((Coordinate) event.getPayload());
-                    break;
-                default:
-                    throw new EventConsumerException("Inconsistent ScoreEvent Exec");
-            }
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
+        }
+        history.push(event);
+        switch (event.getType()){
+            case Build_Settlement:
+                updateVertex((Coordinate) event.getPayload());
+                break;
+            case Build_Road:
+                discoverRoadSystem((Coordinate) event.getPayload());
+                break;
+            default:
+                throw new EventConsumerException("Inconsistent ScoreEvent Exec");
         }
     }
 

@@ -10,6 +10,7 @@ import catan.common.resources.PropertiesFileInfo;
 import catan.common.resources.ResourceLoader;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -69,13 +70,13 @@ public class StaticBoardLayout implements BoardLayout {
         try {
             //Look for an explicit robber location first
             return file.getCoord("robber");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             Iterator<Coordinate> tiles = getTiles();
             Iterator<Terrain> terrain = getTerrain();
             //Look through all of the terrain tiles
             while (tiles.hasNext() && terrain.hasNext()) {
                 Coordinate c = tiles.next();
-                if (terrain.next().equals(Terrain.Desert))
+                if (terrain.next() == Terrain.Desert)
                     return c;
             }
             //We looked through all of the tiles and didn't find a desert. No robber in file.
@@ -98,13 +99,9 @@ public class StaticBoardLayout implements BoardLayout {
         try {
             //Check for explicit desert count.
             return file.getInt("deserts");
-        } catch (Exception e) {
-            int count = 0;
+        } catch (Exception ignored) {
             //If the user didn't specify the number of deserts, it must be implicit
-            for (Terrain t : terrain)
-                if (t.equals(Terrain.Desert))
-                    count++;
-            return count;
+            return (int) terrain.stream().filter(t -> t == Terrain.Desert).count();
         }
     }
 
@@ -124,7 +121,7 @@ public class StaticBoardLayout implements BoardLayout {
         try {
             for (int i = 0; true; i++)
                 list.add(file.getCoord("resource." + i));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
         return list;
@@ -141,7 +138,7 @@ public class StaticBoardLayout implements BoardLayout {
         try {
             for (int i = 0; true; i++)
                 list.add(file.getCoord("trade." + i));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
         return list;
@@ -177,11 +174,11 @@ public class StaticBoardLayout implements BoardLayout {
                         found = Terrain.Desert;
                         break;
                     default:
-                        throw new Exception("NO TERRAIN FOUND");
+                        throw new IOException("NO TERRAIN FOUND");
                 }
                 list.add(found);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             //The above loop runs until the list bottoms out and excepts.
         }
         return list;
@@ -198,7 +195,7 @@ public class StaticBoardLayout implements BoardLayout {
         try {
             for (int i = 0; true; i++)
                 list.add(DiceRoll.get(file.getInt("resource." + i + ".roll")));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
         return list;
@@ -235,11 +232,11 @@ public class StaticBoardLayout implements BoardLayout {
                         found = TradingPostType.Wildcard;
                         break;
                     default:
-                        throw new Exception("NO RESOURCE FOUND");
+                        throw new IOException("NO RESOURCE FOUND");
                 }
-                posts.add(found);
+                list.add(found);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
         return list;
@@ -258,36 +255,36 @@ public class StaticBoardLayout implements BoardLayout {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        StaticBoardLayout that = (StaticBoardLayout) o;
+        StaticBoardLayout other = (StaticBoardLayout) o;
 
-        if (tileCount != that.tileCount) return false;
-        if (desertCount != that.desertCount) return false;
-        if (portCount != that.portCount) return false;
-        if (!name.equals(that.name)) return false;
-        if (!size.equals(that.size)) return false;
-        if (robber != null ? !robber.equals(that.robber) : that.robber != null) return false;
-        if (!tiles.equals(that.tiles)) return false;
-        if (!ports.equals(that.ports)) return false;
-        if (!terrain.equals(that.terrain)) return false;
-        if (!rolls.equals(that.rolls)) return false;
-        return posts.equals(that.posts);
+        if (tileCount != other.tileCount) return false;
+        if (desertCount != other.desertCount) return false;
+        if (portCount != other.portCount) return false;
+        if (!name.equals(other.name)) return false;
+        if (!size.equals(other.size)) return false;
+        if ((robber != null) ? !robber.equals(other.robber) : (other.robber != null)) return false;
+        if (!tiles.equals(other.tiles)) return false;
+        if (!ports.equals(other.ports)) return false;
+        if (!terrain.equals(other.terrain)) return false;
+        if (!rolls.equals(other.rolls)) return false;
+        return posts.equals(other.posts);
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + size.hashCode();
-        result = 31 * result + (robber != null ? robber.hashCode() : 0);
-        result = 31 * result + tileCount;
-        result = 31 * result + desertCount;
-        result = 31 * result + portCount;
-        result = 31 * result + tiles.hashCode();
-        result = 31 * result + ports.hashCode();
-        result = 31 * result + terrain.hashCode();
-        result = 31 * result + rolls.hashCode();
-        result = 31 * result + posts.hashCode();
+        result = (31 * result) + size.hashCode();
+        result = (31 * result) + ((robber != null) ? robber.hashCode() : 0);
+        result = (31 * result) + tileCount;
+        result = (31 * result) + desertCount;
+        result = (31 * result) + portCount;
+        result = (31 * result) + tiles.hashCode();
+        result = (31 * result) + ports.hashCode();
+        result = (31 * result) + terrain.hashCode();
+        result = (31 * result) + rolls.hashCode();
+        result = (31 * result) + posts.hashCode();
         return result;
     }
 }

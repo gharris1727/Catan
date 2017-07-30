@@ -10,42 +10,42 @@ import java.util.function.Consumer;
  */
 public class UnmodifiableEnumCounter<T extends Enum<T>> implements Serializable, EnumCounter<T> {
 
-    private final EnumCounter<T> other;
+    private final EnumCounter<T> backingCounter;
 
-    public UnmodifiableEnumCounter(EnumCounter<T> other) {
-        this.other = other;
+    public UnmodifiableEnumCounter(EnumCounter<T> backingCounter) {
+        this.backingCounter = backingCounter;
     }
 
     @Override
     public int get(T e) {
-        return other.get(e);
+        return backingCounter.get(e);
     }
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-        other.forEach(consumer);
+        backingCounter.forEach(consumer);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        UnmodifiableEnumCounter<?> that = (UnmodifiableEnumCounter<?>) o;
+        UnmodifiableEnumCounter<?> other = (UnmodifiableEnumCounter<?>) o;
 
-        return other.equals(that.other);
+        return this.backingCounter.equals(other.backingCounter);
     }
 
     @Override
     public int hashCode() {
-        return other.hashCode();
+        return backingCounter.hashCode();
     }
 
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
 
-            private final Iterator<T> otherIterator = other.iterator();
+            private final Iterator<T> otherIterator = backingCounter.iterator();
 
             @Override
             public boolean hasNext() {

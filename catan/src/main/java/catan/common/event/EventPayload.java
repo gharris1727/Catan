@@ -8,6 +8,4 @@ import java.io.Serializable;
  * Other payloads are used, but all implement serializable.
  */
 public abstract class EventPayload implements Serializable {
-
-    public static final long serialVersionUID = 1L;
 }

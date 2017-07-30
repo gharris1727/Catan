@@ -67,7 +67,7 @@ public class DiscardPopup extends PopupWindow {
     public void loadConfig(UIConfig config) {
         elementOffset = config.getLayout().getPoint("offset");
         elementSpacing = config.getLayout().getPoint("spacing");
-        setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
+        setMask(config.getLayout().getRenderMask("mask"));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DiscardPopup extends PopupWindow {
         int index = 0;
         for (GameResource resource : amount) {
             counters.get(resource).setPosition(new Point(
-                elementOffset.x + index * elementSpacing.x,
+                    elementOffset.x + (index * elementSpacing.x),
                 elementOffset.y));
             index++;
         }

@@ -26,21 +26,17 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
     protected QueuedInputThread(Logger logger, BlockingQueue<T> queue) {
         this.logger = logger;
         this.queue = queue;
-        run = new Thread(toString()) {
-            @Override
-            public void run() {
-                while (running) {
-                    try {
-                        execute();
-                    } catch (Throwable t) {
-                        if (t instanceof ThreadStop)
-                            running = false;
-                        else
-                            onException(t);
-                    }
+        run = new Thread(() -> {
+            while (running) {
+                try {
+                    execute();
+                } catch (ThreadStopException ignored) {
+                    running = false;
+                } catch (Exception t) {
+                    onException(t);
                 }
             }
-        };
+        }, toString());
     }
 
     //Starts the queue processing event.
@@ -50,7 +46,6 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
     }
 
     //Stops the queue processing event.
-    @SuppressWarnings("unchecked")
     public void stop() {
         running = false;
         run.interrupt();
@@ -76,20 +71,18 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
     }
 
     //pulls an object from the queue, blocks if argument is true.
-    protected T getEvent(boolean block) throws ThreadStop {
-        if (!block)
-            return queue.poll();
-        else {
+    protected T getEvent(boolean block) throws ThreadStopException {
+        if (block) {
             try {
                 return queue.take();
             } catch (InterruptedException e) {
-                throw new ThreadStop();
+                throw new ThreadStopException();
             }
-        }
+        } else return queue.poll();
     }
 
     //Processing function that is called repeatedly.
-    protected abstract void execute() throws ThreadStop;
+    protected abstract void execute() throws ThreadStopException;
 
     protected void onException(Throwable t) {
         logger.log("Exception in thread: " + this, t, LogLevel.ERROR);
@@ -101,6 +94,6 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
         return running;
     }
 
-    protected static class ThreadStop extends Exception {
+    protected static class ThreadStopException extends Exception {
     }
 }

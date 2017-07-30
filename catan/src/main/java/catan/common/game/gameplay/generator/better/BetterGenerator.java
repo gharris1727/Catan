@@ -10,13 +10,10 @@ import catan.common.game.gameplay.layout.BoardLayout;
  */
 public class BetterGenerator implements BoardGenerator {
 
-    public BetterGenerator() {
-    }
-
     @Override
     public GameBoard generate(BoardLayout layout, long seed) {
         //TODO: implement the BetterSettlers generation algorithm.
-        throw new RuntimeException("Unimplemented");
+        throw new UnsupportedOperationException("Unimplemented");
     }
 
     @Override
@@ -25,7 +22,7 @@ public class BetterGenerator implements BoardGenerator {
     }
 
     public boolean equals(Object o) {
-        return this == o || (o != null && this.getClass() == o.getClass());
+        return (this == o) || ((o != null) && (this.getClass() == o.getClass()));
     }
 
     public int hashCode() {

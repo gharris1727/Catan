@@ -31,7 +31,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
     }
 
     @Override
-    protected void execute() throws ThreadStop {
+    protected void execute() throws ThreadStopException {
         //Block when waiting for a new canvas.
         RenderEvent event = getEvent(false);
         root.reset();
@@ -70,7 +70,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
             events.mark();
             root.addChild(events);
         } else { //No event to be processed this round.
-            if (canvas != null && base.isRenderable()) {
+            if ((canvas != null) && base.isRenderable()) {
                 base.setRenderer(this);
                 canvas.render(base.getGraphic());
                 root.addChild(base.getRenderTime());

@@ -7,7 +7,7 @@ import catan.common.locale.LocalizedPrinter;
 
 /**
  * Created by greg on 6/11/16.
- * LocalizedPrinter resposible for printing trades between players.
+ * LocalizedPrinter responsible for printing trades between players.
  */
 public class LocalizedTradePrinter extends LocalizedPrinter<Trade> {
 
@@ -22,14 +22,14 @@ public class LocalizedTradePrinter extends LocalizedPrinter<Trade> {
     public String getLocalization(Trade instance) {
         StringBuilder trade = new StringBuilder();
         String request = counterPrinter.getLocalization(instance.getRequest());
-        if (request.length() == 0)
+        if (request.isEmpty())
             request = getLocalization("nothing");
         trade.append(request);
         trade.append(' ');
         trade.append(getLocalization("for"));
         trade.append(' ');
         String offer = counterPrinter.getLocalization(instance.getOffer());
-        if (offer.length() == 0)
+        if (offer.isEmpty())
             offer = getLocalization("nothing");
         trade.append(offer);
         trade.append(' ');

@@ -49,8 +49,8 @@ public class InventoryRegion extends ConfigurableScreenRegion implements Updatab
     @Override
     protected void renderContents() {
         cards.setPosition(new Point(cardBorder.x, cardBorder.y + usernameHeight));
-        int width = getMask().getWidth() - 2 * cardBorder.x;
-        int height = getMask().getHeight() - 2 * cardBorder.y;
+        int width = getMask().getWidth() - (2 * cardBorder.x);
+        int height = getMask().getHeight() - (2 * cardBorder.y);
         cards.setMask(new RectangularMask(new Dimension(width, height)));
         center(username).y = usernameHeight;
     }

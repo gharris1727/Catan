@@ -43,14 +43,10 @@ public class TeamPool implements ReversibleEventConsumer<TeamEvent>, Iterable<Te
         if (history.isEmpty())
             throw new EventConsumerException("No event");
         TeamEvent event = history.pop();
-        try {
-            Team team = getTeam(event.getOrigin());
-            if (team == null)
-                throw new EventConsumerException("No team");
-            team.undo();
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
-        }
+        Team team = getTeam(event.getOrigin());
+        if (team == null)
+            throw new EventConsumerException("No team");
+        team.undo();
     }
 
     @Override

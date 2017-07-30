@@ -129,11 +129,7 @@ public class RandomizerState implements ReversibleEventConsumer<GameStateEvent> 
     }
 
     public DevelopmentCard getDevelopmentCard() {
-        try {
-            return cards.get();
-        } catch (IndexOutOfBoundsException ignored) {
-            return null;
-        }
+        return cards.hasNext() ? cards.get() : null;
     }
 
     public TeamColor getNextTeam() {

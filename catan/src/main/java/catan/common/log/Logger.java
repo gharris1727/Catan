@@ -2,6 +2,7 @@ package catan.common.log;
 
 import catan.common.event.QueuedInputThread;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ public class Logger {
         thread = new QueuedInputThread<LogEvent>(this) {
 
             @Override
-            protected void execute() throws ThreadStop {
+            protected void execute() throws ThreadStopException {
                 LogEvent e = getEvent(true);
                 for (LogListener l : listeners) {
                     l.onLogEvent(e);
@@ -79,12 +80,15 @@ public class Logger {
         thread.addEvent(new LogEvent("<" + origin + "> " + s, LogLevel.DEBUG));
     }
 
-    private String printStack(Throwable t) {
-        StringWriter sw = new StringWriter();
-        sw.append(ANSI_RED);
-        t.printStackTrace(new PrintWriter(sw));
-        sw.append(ANSI_RESET);
-        return sw.toString();
+    private static String printStack(Throwable t) {
+        try (StringWriter sw = new StringWriter()) {
+            sw.append(ANSI_RED);
+            t.printStackTrace(new PrintWriter(sw));
+            sw.append(ANSI_RESET);
+            return sw.toString();
+        } catch (IOException e) {
+            return e.toString();
+        }
     }
 
 }

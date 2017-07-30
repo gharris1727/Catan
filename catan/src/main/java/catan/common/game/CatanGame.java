@@ -35,6 +35,7 @@ import catan.common.game.util.GameResource;
 import catan.common.structure.game.GameSettings;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -247,7 +248,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
                     return player(origin, PlayerEventType.Cancel_Trade, event.getPayload());
                 case Make_Trade: {
                     Trade t = (Trade) event.getPayload();
-                    TeamColor otherTeam = t.getSeller() == null ? null : players.getPlayer(t.getSeller()).getTeamColor();
+                    TeamColor otherTeam = (t.getSeller() == null) ? null : players.getPlayer(t.getSeller()).getTeamColor();
                     return compound(LogicEventType.AND,
                             compound(LogicEventType.OR,
                                     //Needs to be our turn
@@ -321,7 +322,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             if (resource != null) {
                 for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromSpace(space).values()) {
                     Town town = board.getTown(vertex);
-                    TeamColor teamColor = (town != null ? town.getTeam() : TeamColor.None);
+                    TeamColor teamColor = ((town != null) ? town.getTeam() : TeamColor.None);
                     if (teamColor != TeamColor.None) {
                         EnumAccumulator<GameResource> teamIncome =
                                 income.computeIfAbsent(teamColor, k -> new EnumAccumulator<>(GameResource.class));
@@ -334,7 +335,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             }
         }
         //Transform the team income to player income events.
-        for (Map.Entry<TeamColor, EnumAccumulator<GameResource>> entry : income.entrySet())
+        for (Entry<TeamColor, EnumAccumulator<GameResource>> entry : income.entrySet())
             for (Username name : teams.getTeam(entry.getKey()).getPlayers())
                 events.add(player(name, PlayerEventType.Gain_Resources, entry.getValue()));
         //Return all of the events ANDed together so they must all occur.
@@ -358,13 +359,15 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         TeamColor team = board.getTown(vertex).getTeam();
         if (team == TeamColor.None)
             return new LogicEvent(this, LogicEventType.NOP, null);
-        int total = 0;
-        for (Username username : teams.getTeam(team).getPlayers()) {
-            Player p = players.getPlayer(username);
-            EnumCounter<GameResource> inventory = p.getInventory();
-            for (GameResource r : GameResource.values())
-                total += inventory.get(r);
-        }
+        int total = teams.getTeam(team).getPlayers().stream()
+                .map(players::getPlayer)
+                .map(Player::getInventory)
+                .mapToInt(inventory ->
+                        Arrays.stream(GameResource.values())
+                                .mapToInt(inventory::get)
+                                .sum()
+                )
+                .sum();
         if (total == 0)
             return new LogicEvent(this, LogicEventType.NOP, null);
         int stolen = (total == 1) ? 0 : state.getTheftInt(total);
@@ -376,7 +379,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             EnumCounter<GameResource> inventory = p.getInventory();
             for (GameResource r : GameResource.values()) {
                 total += inventory.get(r);
-                if (total >= stolen && target == null && inventory.contains(r, 1)) {
+                if ((total >= stolen) && (target == null) && inventory.contains(r, 1)) {
                     target = username;
                     amount.increment(r, 1);
                 }
@@ -467,10 +470,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         switch (event.getType()) {
             case AND:
                 for (LogicEvent child : (List<LogicEvent>) payload) {
-                    problem = executeLogic(child, past);
-                    if (problem != null) {
-                        break;
-                    }
+                    problem = problem != null ? problem : executeLogic(child, past);
                 }
                 break;
             case OR:
@@ -525,22 +525,18 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     @Override
     public synchronized void execute(GameEvent event) throws EventConsumerException {
-        try {
-            Stack<GameTriggerEvent> actions = new Stack<>();
-            EventConsumerProblem problem = executeLogic(getLogicTree(event), actions);
-            if (problem != null) {
-                throw new EventConsumerException(event, problem);
-            }
-            TeamColor team = teamAllocation.getPlayerTeams().get(event.getOrigin());
-            history.push(new GameHistory(event, team, actions));
-        } catch (EventConsumerException e) {
-            throw new EventConsumerException(event, e);
+        Stack<GameTriggerEvent> actions = new Stack<>();
+        EventConsumerProblem problem = executeLogic(getLogicTree(event), actions);
+        if (problem != null) {
+            throw new EventConsumerException(event, problem);
         }
+        TeamColor team = teamAllocation.getPlayerTeams().get(event.getOrigin());
+        history.push(new GameHistory(event, team, actions));
 
         for (GameEventListener listener : gameListeners) {
-            EventConsumerProblem problem = listener.test(event);
-            if (problem != null) {
-                listener.reportTestProblem(problem);
+            EventConsumerProblem listenerProblem = listener.test(event);
+            if (listenerProblem != null) {
+                listener.reportTestProblem(listenerProblem);
             } else {
                 try {
                     listener.execute(event);
@@ -573,7 +569,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     @Override
     public synchronized boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
         CatanGame catanGame = (CatanGame) o;
 
@@ -584,6 +580,22 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         if (!teams.equals(catanGame.teams)) return false;
         return history.equals(catanGame.history);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = rules.hashCode();
+        result = 31 * result + teamAllocation.hashCode();
+        result = 31 * result + board.hashCode();
+        result = 31 * result + players.hashCode();
+        result = 31 * result + teams.hashCode();
+        result = 31 * result + state.hashCode();
+        result = 31 * result + scoring.hashCode();
+        result = 31 * result + gameListeners.hashCode();
+        result = 31 * result + triggerListeners.hashCode();
+        result = 31 * result + history.hashCode();
+        result = 31 * result + observer.hashCode();
+        return result;
     }
 
     @Override

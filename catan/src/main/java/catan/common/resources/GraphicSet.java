@@ -21,7 +21,7 @@ public class GraphicSet {
     public GraphicSet(ConfigSource definition, String configKey, int[] swaps) {
         ConfigSource config = definition.narrow(configKey);
         GraphicSourceInfo source = new GraphicSourceInfo(config.get("path"));
-        RenderMask mask = RenderMask.parseMask(config.narrow("mask"));
+        RenderMask mask = config.getRenderMask("mask");
         int num = config.getInt("count");
         masks = new RenderMask[num];
         Arrays.fill(masks, mask);
@@ -50,7 +50,7 @@ public class GraphicSet {
 
     public Graphic getGraphic(int index) {
         try {
-            if (index < 0 || index >= graphics.length)
+            if ((index < 0) || (index >= graphics.length))
                 throw new IllegalArgumentException("Unable to provide selected graphic: Out of range");
             return ResourceLoader.getGraphic(graphics[index]);
         } catch (ResourceLoadException e) {
@@ -63,7 +63,7 @@ public class GraphicSet {
     }
 
     public RenderMask getMask(int ordinal) {
-        if (ordinal < 0 || ordinal >= masks.length)
+        if ((ordinal < 0) || (ordinal >= masks.length))
             throw new IllegalArgumentException("Unable to provide selected graphic: Out of range");
         return masks[ordinal];
     }

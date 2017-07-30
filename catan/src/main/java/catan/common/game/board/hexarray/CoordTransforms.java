@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * Created by greg on 4/15/16.
  * A common location for all coordinate transforms used in referencing different locations in a game board.
  */
-public class CoordTransforms {
+public final class CoordTransforms {
 
     private static final List<Direction> spaceToSpaceDirections = Arrays.asList(
             Direction.up, Direction.down, Direction.upleft,
@@ -170,6 +170,11 @@ public class CoordTransforms {
                     {0, 0, 0, 0, 2, 0, 1, 0, 0}, //X
                     {0, 0, 0, 0, 0, 0, 0, 0, 0}}}; //Y
 
+    private static final int[] edgeOrientations = {1, 2, 0, 2, 1, 0};
+
+    private CoordTransforms() {
+    }
+
     private static Coordinate convert(Coordinate c, Direction d, int[][] additions) {
         int outX = c.x + additions[0][d.ordinal()];
         int outY = c.y + additions[1][d.ordinal()];
@@ -288,5 +293,9 @@ public class CoordTransforms {
     public static Map<Direction, Coordinate> getAdjacentEdgesFromVertex(Coordinate vertex) {
         return vertexToEdgeDirections.get(vertex.x % vertexToEdgeDirections.size()).stream()
             .collect(Collectors.toMap(d->d, d-> getEdgeCoordinateFromVertex(vertex, d)));
+    }
+
+    public static int getEdgeOrientation(Coordinate edge) {
+        return edgeOrientations[edge.x % 6];
     }
 }

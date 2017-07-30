@@ -28,14 +28,14 @@ public enum UserEventType implements EventType {
     History_Jump(Integer.class), //Jump to that historical event.
     Linger_Trigger(Number.class); //Trigger a delay to call the onLinger method.
 
-    private final Class payloadType;
+    private final Class type;
 
-    UserEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    UserEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

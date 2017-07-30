@@ -7,7 +7,7 @@ import catan.common.config.RootConfigSource;
 
 import java.io.*;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -54,7 +54,7 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
                 this.file.store(new BufferedWriter(new FileWriter(file)), comment);
                 needsSaving = false;
             } catch (IOException e) {
-                throw new ConfigurationException("Unable to save configuration data.");
+                throw new ConfigurationException("Unable to save configuration data.", e);
             }
         }
     }
@@ -66,7 +66,7 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
 
     @Override
     public void setEntry(String key, String value) {
-        if (key != null && value != null) {
+        if ((key != null) && (value != null)) {
             file.setProperty(key, value);
             needsSaving = true;
         }
@@ -78,20 +78,20 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
     }
 
     @Override
-    public Iterator<Map.Entry<String, String>> iterator() {
+    public Iterator<Entry<String, String>> iterator() {
         //Get the iterator from the internal storage
-        Iterator<Map.Entry<Object, Object>> objIterator = file.entrySet().iterator();
+        Iterator<Entry<Object, Object>> objIterator = file.entrySet().iterator();
         //We cant cast, so we need to cast everything individually.
-        return new Iterator<Map.Entry<String, String>>() {
+        return new Iterator<Entry<String, String>>() {
             @Override
             public boolean hasNext() {
                 return objIterator.hasNext();
             }
 
             @Override
-            public Map.Entry<String, String> next() {
-                Map.Entry<Object, Object> objEntry = objIterator.next();
-                return new Map.Entry<String, String>() {
+            public Entry<String, String> next() {
+                Entry<Object, Object> objEntry = objIterator.next();
+                return new Entry<String, String>() {
                     @Override
                     public String getKey() {
                         return (String) objEntry.getKey();
@@ -103,8 +103,8 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
                     }
 
                     @Override
-                    public String setValue(String s) {
-                        return (String) objEntry.setValue(s);
+                    public String setValue(String v) {
+                        return (String) objEntry.setValue(v);
                     }
                 };
             }

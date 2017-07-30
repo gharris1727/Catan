@@ -11,8 +11,8 @@ import catan.common.util.BlockChain;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Map.Entry;
 
 /**
  * Created by greg on 7/4/17.
@@ -26,22 +26,25 @@ public class Replay implements ReversibleEventConsumer<GameEvent> {
     private BigInteger current;
     private final boolean writable;
 
-    {
+    public Replay(GameEvent genesis) {
         try {
-            stateStorage = new BlockChain<>("SHA");
+            this.stateStorage = new BlockChain<>("SHA");
         } catch (NoSuchAlgorithmException e) {
             throw new Error(e);
         }
-    }
-
-    public Replay(GameEvent genesis) {
-        this.genesis = this.current = this.stateStorage.addBlock(null, genesis);
+        this.genesis = this.stateStorage.addBlock(null, genesis);
+        this.current = this.genesis;
         this.writable = true;
     }
 
     public Replay(ConfigSource storage) throws ReplayFormatException {
         // Load all nodes from storage and create ReplayNodes for them.
-        for (Map.Entry<String, String> entry : storage) {
+        try {
+            stateStorage = new BlockChain<>("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            throw new Error(e);
+        }
+        for (Entry<String, String> entry : storage) {
             String[] arr = entry.getValue().split(",");
             if (arr.length != 2) {
                 throw new ReplayFormatException("Incomplete record");
@@ -55,17 +58,18 @@ public class Replay implements ReversibleEventConsumer<GameEvent> {
             }
         }
 
-        this.genesis = this.current = this.stateStorage.resolveGenesis();
-        this.writable = false;
+        genesis = stateStorage.resolveGenesis();
+        this.current = this.genesis;
+        writable = false;
 
-        if (this.genesis == null) {
+        if (genesis == null) {
             throw new ReplayFormatException("No unique genesis node found");
         }
     }
 
     public void save(EditableConfigSource storage) {
         storage.clearEntries();
-        for (Map.Entry<BigInteger, GameEvent> entry : stateStorage) {
+        for (Entry<BigInteger, GameEvent> entry : stateStorage) {
             String identity = entry.getKey().toString(16);
             String parent = stateStorage.getParent(entry.getKey()).toString(16);
             String event = new BigInteger(entry.getValue().serialize()).toString(16);
@@ -75,14 +79,14 @@ public class Replay implements ReversibleEventConsumer<GameEvent> {
 
     @Override
     public EventConsumerProblem test(GameEvent event) {
-        if (this.writable) {
-            // Alwas succeed if this replay is writable.
+        if (writable) {
+            // Always succeed if this replay is writable.
             return null;
         } else {
             // If we are reading from this replay, then test() should reflect whether that event was valid in the replay.
-            Iterator<BigInteger> it = this.stateStorage.getChildren(this.current);
-            while (it.hasNext()) {
-                if (this.stateStorage.get(it.next()).equals(event)) {
+            Collection<BigInteger> children = stateStorage.getChildren(current);
+            for (BigInteger child : children) {
+                if (stateStorage.get(child).equals(event)) {
                     // We found a child state that exists in the tree, so it's allowed.
                     return null;
                 }
@@ -94,11 +98,11 @@ public class Replay implements ReversibleEventConsumer<GameEvent> {
 
     @Override
     public void execute(GameEvent event) throws EventConsumerException {
-        this.current = this.stateStorage.addBlock(this.current, event);
+        current = stateStorage.addBlock(current, event);
     }
 
     @Override
     public void undo() throws EventConsumerException {
-        this.current = this.stateStorage.getParent(this.current);
+        current = stateStorage.getParent(current);
     }
 }

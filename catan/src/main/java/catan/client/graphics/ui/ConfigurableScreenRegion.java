@@ -40,7 +40,7 @@ public abstract class ConfigurableScreenRegion extends ScreenRegion implements C
 
     @Override
     public boolean isRenderable() {
-        return super.isRenderable() && config != null;
+        return super.isRenderable() && (config != null);
     }
 
     @Override

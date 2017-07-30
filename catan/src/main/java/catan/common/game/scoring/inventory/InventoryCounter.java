@@ -44,19 +44,19 @@ public class InventoryCounter implements PlayerScorable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        InventoryCounter that = (InventoryCounter) o;
+        InventoryCounter other = (InventoryCounter) o;
 
-        if (!username.equals(that.username)) return false;
-        return counts.equals(that.counts);
+        if (!username.equals(other.username)) return false;
+        return counts.equals(other.counts);
 
     }
 
     @Override
     public int hashCode() {
         int result = username.hashCode();
-        result = 31 * result + counts.hashCode();
+        result = (31 * result) + counts.hashCode();
         return result;
     }
 

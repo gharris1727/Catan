@@ -18,18 +18,18 @@ import java.util.List;
 @Category(FuzzTests.class)
 public class CatanGameFuzzTest {
 
-    private static final int players = 3;
-    private static final int rounds = 1000;
-    private static final long seed = System.nanoTime();
+    private static final int PLAYERS = 3;
+    private static final int ROUNDS = 1000;
+    private static final long SEED = System.nanoTime();
 
     @Test
     public void testRandomGame() {
-        List<Username> users = GameTestUtils.generatePlayerUsernames(seed, players);
-        GameSettings settings = GameTestUtils.createSettings(seed, users);
+        List<Username> users = GameTestUtils.generatePlayerUsernames(SEED, PLAYERS);
+        GameSettings settings = GameTestUtils.createSettings(SEED, users);
         CatanGame game = new CatanGame(settings);
         GameEventGenerator generator = new GameEventGenerator(settings.seed, game);
         CatanGame game2 = new CatanGame(settings);
-        for (int i = 0; i < rounds;) {
+        for (int i = 0; i < ROUNDS;) {
             GameEvent event = generator.next();
             if (game.test(event) != null)
                 continue;
@@ -43,10 +43,10 @@ public class CatanGameFuzzTest {
                 game2.execute(event);
                 CatanGameEqualityTester.INSTANCE.assertEquals(game2, game);
                 i++;
-            } catch (EventConsumerException e) {
+            } catch (EventConsumerException ignored) {
                 Assert.fail();
             }
         }
-        game.getObserver().readHistory(gameHistory -> System.out.println(gameHistory.getGameEvent()));
+        //game.getObserver().readHistory(gameHistory -> System.out.println(gameHistory.getGameEvent()));
     }
 }

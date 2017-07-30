@@ -4,7 +4,6 @@ import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.ScrollingScreenContainer;
 import catan.client.graphics.ui.UIConfig;
-import catan.client.graphics.ui.Updatable;
 import catan.client.structure.GameManager;
 import catan.client.ui.ClientScreen;
 import catan.client.ui.game.ContextRegion;
@@ -17,7 +16,7 @@ import java.awt.*;
  * Created by Greg on 1/3/2015.
  * The area that renders all features visible while the client is in a game.
  */
-public class PlayingScreenRegion extends ClientScreen implements Updatable {
+public class PlayingScreenRegion extends ClientScreen {
 
     private final GameManager manager;
     //Configuration dependencies

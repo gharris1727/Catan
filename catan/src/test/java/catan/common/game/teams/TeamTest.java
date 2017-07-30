@@ -14,7 +14,7 @@ import static catan.common.game.teams.TeamEventType.*;
  * Unit tests for the Team class
  */
 @Category(UnitTests.class)
-public class TeamUnitTests {
+public class TeamTest {
 
     private Team team1;
     private Team team2;

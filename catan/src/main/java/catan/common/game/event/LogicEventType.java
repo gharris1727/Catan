@@ -16,15 +16,15 @@ public enum LogicEventType implements EventType {
     NOP(null),
     Trigger(GameTriggerEvent.class);
 
-    private final Class payloadType;
+    private final Class type;
 
-    LogicEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    LogicEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 
 

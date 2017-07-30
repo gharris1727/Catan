@@ -30,18 +30,18 @@ public class GameProgress extends EventPayload {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        GameProgress that = (GameProgress) o;
+        GameProgress other = (GameProgress) o;
 
-        if (settings != null ? !settings.equals(that.settings) : that.settings != null) return false;
-        return history != null ? history.equals(that.history) : that.history == null;
+        if ((settings != null) ? !settings.equals(other.settings) : (other.settings != null)) return false;
+        return (history != null) ? history.equals(other.history) : (other.history == null);
     }
 
     @Override
     public int hashCode() {
-        int result = settings != null ? settings.hashCode() : 0;
-        result = 31 * result + (history != null ? history.hashCode() : 0);
+        int result = (settings != null) ? settings.hashCode() : 0;
+        result = (31 * result) + ((history != null) ? history.hashCode() : 0);
         return result;
     }
 

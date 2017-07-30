@@ -10,8 +10,6 @@ import java.io.*;
  */
 public abstract class ExternalEvent<T extends EventType> extends GenericEvent implements Serializable, TypedPayloadEvent<Username, T> {
 
-    public static final long serialVersionUID = 1L;
-
     private final Username origin;
     private final T type;
     private final Object payload;
@@ -23,8 +21,8 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
         //Check to make sure the payload is valid.
         //Prevents ClassCastExceptions later.
         type.checkPayload(payload);
-        if (payload != null && !(payload instanceof Serializable))
-            throw new EventPayloadException(payload, Serializable.class);
+        if ((payload != null) && !(payload instanceof Serializable))
+            throw new EventPayloadError(payload, Serializable.class);
     }
 
     @Override
@@ -51,19 +49,19 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
         if (this == o) return true;
         if (!(o instanceof ExternalEvent)) return false;
 
-        ExternalEvent<?> that = (ExternalEvent<?>) o;
+        ExternalEvent<?> other = (ExternalEvent<?>) o;
 
-        if (origin != null ? !origin.equals(that.origin) : that.origin != null) return false;
-        if (!type.equals(that.type)) return false;
-        return payload != null ? payload.equals(that.payload) : that.payload == null;
+        if ((origin != null) ? !origin.equals(other.origin) : (other.origin != null)) return false;
+        if (!type.equals(other.type)) return false;
+        return (payload != null) ? payload.equals(other.payload) : (other.payload == null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = origin != null ? origin.hashCode() : 0;
-        result = 31 * result + type.hashCode();
-        result = 31 * result + (payload != null ? payload.hashCode() : 0);
+        int result = (origin != null) ? origin.hashCode() : 0;
+        result = (31 * result) + type.hashCode();
+        result = (31 * result) + ((payload != null) ? payload.hashCode() : 0);
         return result;
     }
 
@@ -73,17 +71,13 @@ public abstract class ExternalEvent<T extends EventType> extends GenericEvent im
             objectStream.writeObject(this);
             return byteStream.toByteArray();
         } catch (IOException e) {
-            throw new Error(e);
+            throw new RuntimeException(e);
         }
     }
 
     public static ExternalEvent deserialize(byte[] serialized) throws IOException {
-        try {
-            ByteArrayInputStream byteStream = new ByteArrayInputStream(serialized);
-            ObjectInputStream objectStream = new ObjectInputStream(byteStream);
-            Object out = objectStream.readObject();
-            objectStream.close();
-            return (ExternalEvent) out;
+        try (ObjectInputStream objectStream = new ObjectInputStream(new ByteArrayInputStream(serialized))) {
+            return (ExternalEvent) objectStream.readObject();
         } catch (ClassCastException | ClassNotFoundException e) {
             throw new IOException("Could not deserialize GameEvent.", e);
         }

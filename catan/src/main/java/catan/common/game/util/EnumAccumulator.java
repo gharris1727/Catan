@@ -3,6 +3,7 @@ package catan.common.game.util;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 /**
@@ -16,7 +17,7 @@ public class EnumAccumulator<T extends Enum<T>> implements Serializable, EnumCou
 
     public EnumAccumulator(Class<T> tClass) {
         this.tClass = tClass;
-        this.map = new EnumMap<>(tClass);
+        map = new EnumMap<>(tClass);
         for (T e : tClass.getEnumConstants())
             map.put(e, 0);
     }
@@ -74,32 +75,35 @@ public class EnumAccumulator<T extends Enum<T>> implements Serializable, EnumCou
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        EnumAccumulator<?> that = (EnumAccumulator<?>) o;
+        EnumAccumulator<?> other = (EnumAccumulator<?>) o;
 
-        if (!tClass.equals(that.tClass)) return false;
-        return map.equals(that.map);
+        if (!tClass.equals(other.tClass)) return false;
+        return map.equals(other.map);
 
     }
 
     @Override
     public int hashCode() {
         int result = tClass.hashCode();
-        result = 31 * result + map.hashCode();
+        result = (31 * result) + map.hashCode();
         return result;
     }
 
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-            private int index = 0;
+            private int index;
             @Override
             public boolean hasNext() {
                 return index < tClass.getEnumConstants().length;
             }
             @Override
             public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return tClass.getEnumConstants()[index++];
             }
         };

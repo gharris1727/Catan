@@ -47,7 +47,7 @@ public class LobbyScreen extends ClientScreen {
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        int userListWidth = mask.getWidth()*2/3;
+        int userListWidth = (mask.getWidth() * 2) / 3;
         int sidebarWidth = mask.getWidth() - userListWidth;
         int settingsHeight = mask.getHeight() - buttonsHeight;
         userList.setMask(new RectangularMask(new Dimension(userListWidth, mask.getHeight())));

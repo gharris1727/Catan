@@ -10,6 +10,7 @@ import catan.common.log.Logger;
 import catan.junit.ManualTests;
 import catan.server.Server;
 import catan.server.ServerImpl;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /**
@@ -19,20 +20,16 @@ import org.junit.experimental.categories.Category;
 @Category(ManualTests.class)
 public class PlayTest {
 
-    @org.junit.Test
-    public void gameplayTest() {
+    @Test
+    public void gameplayTest() throws InterruptedException {
         //Create a common logger.
         Logger logger = new Logger();
         logger.useStdOut();
         //Start a server for testing.
         Server server = new ServerImpl(logger, 25000);
         //Make sure the server is listening before proceeding, as the creation of a server is asynchronous.
-        try {
-            while (!server.isListening())
-                Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        while (!server.isListening())
+            Thread.sleep(100);
         //Start some clients and trigger some events.
         Client greg = new ClientImpl(logger);
         Client michael = new ClientImpl(logger);

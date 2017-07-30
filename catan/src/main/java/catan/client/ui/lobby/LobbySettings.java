@@ -32,7 +32,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
             @Override
             public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
-                        this.getText(),
+                        getText(),
                         config.getLayoutName(),
                         config.getGeneratorName(),
                         config.getRulesetName(),
@@ -45,7 +45,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
             public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
-                        this.getText(),
+                        getText(),
                         config.getGeneratorName(),
                         config.getRulesetName(),
                         config.getMaxPlayers());
@@ -58,20 +58,20 @@ public class LobbySettings extends ConfigurableScreenRegion {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
                         config.getLayoutName(),
-                        this.getText(),
+                        getText(),
                         config.getRulesetName(),
                         config.getMaxPlayers());
                 listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
-        ruleset = new TextBox("RulsesetBox", 1, "ruleset", "RuleSet", false) {
+        ruleset = new TextBox("RulesetBox", 1, "ruleset", "RuleSet", false) {
             @Override
             public void onAccept(UserEventListener listener) {
                 LobbyConfig newConfig = new LobbyConfig(
                         config.getLobbyName(),
                         config.getLayoutName(),
                         config.getGeneratorName(),
-                        this.getText(),
+                        getText(),
                         config.getMaxPlayers());
                 listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
@@ -84,7 +84,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
                         config.getLayoutName(),
                         config.getGeneratorName(),
                         config.getRulesetName(),
-                        this.getInt());
+                        getInt());
                 listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
             }
         };
@@ -108,7 +108,7 @@ public class LobbySettings extends ConfigurableScreenRegion {
         type.setText(config.getLayoutName());
         generator.setText(config.getGeneratorName());
         ruleset.setText(config.getRulesetName());
-        clients.setText(""+config.getMaxPlayers());
+        clients.setText(String.valueOf(config.getMaxPlayers()));
     }
 
     @Override

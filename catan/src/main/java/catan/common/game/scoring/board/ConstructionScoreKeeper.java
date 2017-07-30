@@ -11,7 +11,11 @@ import catan.common.game.scoring.reporting.scores.ScoreReport;
 import catan.common.game.scoring.reporting.scores.SimpleScoreReport;
 import catan.common.game.scoring.rules.GameRules;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * Created by greg on 5/26/16.
@@ -36,23 +40,19 @@ public class ConstructionScoreKeeper implements ScoreKeeper {
         if (history.isEmpty())
             throw new EventConsumerException("No event");
         ScoreEvent event = history.pop();
-        try {
-            ConstructionCounter counter = counts.get(event.getOrigin());
-            switch (event.getType()) {
-                case Build_Settlement:
-                    counter.undoBuildSettlement();
-                    break;
-                case Build_City:
-                    counter.undoBuildCity();
-                    break;
-                case Build_Road:
-                    counter.undoBuildRoad();
-                    break;
-                default:
-                    throw new EventConsumerException("Inconsistent ScoreEvent Undo");
-            }
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
+        ConstructionCounter counter = counts.get(event.getOrigin());
+        switch (event.getType()) {
+            case Build_Settlement:
+                counter.undoBuildSettlement();
+                break;
+            case Build_City:
+                counter.undoBuildCity();
+                break;
+            case Build_Road:
+                counter.undoBuildRoad();
+                break;
+            default:
+                throw new EventConsumerException("Inconsistent ScoreEvent Undo");
         }
     }
 
@@ -76,53 +76,51 @@ public class ConstructionScoreKeeper implements ScoreKeeper {
     @Override
     public void execute(ScoreEvent event) throws EventConsumerException {
         EventConsumerProblem problem = test(event);
-        if (problem != null)
+        if (problem != null) {
             throw new EventConsumerException(event, problem);
-        try {
-            history.push(event);
-            ConstructionCounter counter = counts.get(event.getOrigin());
-            switch (event.getType()) {
-                case Build_Settlement:
-                    counter.buildSettlement();
-                    break;
-                case Build_City:
-                    counter.buildCity();
-                    break;
-                case Build_Road:
-                    counter.buildRoad();
-                    break;
-                default:
-                    throw new EventConsumerException("Inconsistent ScoreEvent Exec");
-            }
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
+        }
+        history.push(event);
+        ConstructionCounter counter = counts.get(event.getOrigin());
+        switch (event.getType()) {
+            case Build_Settlement:
+                counter.buildSettlement();
+                break;
+            case Build_City:
+                counter.buildCity();
+                break;
+            case Build_Road:
+                counter.buildRoad();
+                break;
+            default:
+                throw new EventConsumerException("Inconsistent ScoreEvent Exec");
         }
     }
 
     @Override
     public ScoreReport score(GameRules rules) {
-        Collection<PlayerScoreReport> scores = new ArrayList<>();
-        for (ConstructionCounter counter : counts.values())
-            scores.add(counter.score(rules));
-        return new SimpleScoreReport(scores);
+        Collection<PlayerScoreReport> reports = counts.values().stream()
+                .map((ConstructionCounter counter) -> counter.score(rules))
+                .collect(Collectors.toList());
+
+        return new SimpleScoreReport(reports);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        ConstructionScoreKeeper that = (ConstructionScoreKeeper) o;
+        ConstructionScoreKeeper other = (ConstructionScoreKeeper) o;
 
-        if (!counts.equals(that.counts)) return false;
-        return history.equals(that.history);
+        if (!counts.equals(other.counts)) return false;
+        return history.equals(other.history);
 
     }
 
     @Override
     public int hashCode() {
         int result = counts.hashCode();
-        result = 31 * result + history.hashCode();
+        result = (31 * result) + history.hashCode();
         return result;
     }
 

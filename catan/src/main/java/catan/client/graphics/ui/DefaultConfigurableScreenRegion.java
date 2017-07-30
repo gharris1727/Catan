@@ -1,6 +1,5 @@
 package catan.client.graphics.ui;
 
-import catan.client.graphics.masks.RenderMask;
 import catan.common.config.ConfigurationException;
 
 /**
@@ -20,7 +19,7 @@ public abstract class DefaultConfigurableScreenRegion extends ConfigurableScreen
         } catch (ConfigurationException ignored) {
         }
         try {
-            setMask(RenderMask.parseMask(config.getLayout().narrow("mask")));
+            setMask(config.getLayout().getRenderMask("mask"));
         } catch (ConfigurationException ignored) {
         }
     }

@@ -7,7 +7,7 @@ package catan.common.event;
 public class EventConsumerException extends Exception {
 
     private EventConsumerException(String message, GenericEvent event, Throwable t) {
-        super(event == null ? message : message + ": " + event, t);
+        super((event == null) ? message : (message + ": " + event), t);
     }
 
     public EventConsumerException(GenericEvent event, EventConsumerProblem problem) {

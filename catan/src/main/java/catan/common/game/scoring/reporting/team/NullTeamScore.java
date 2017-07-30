@@ -5,6 +5,7 @@ import catan.common.game.scoring.reporting.scores.ScoreReport;
 import catan.common.game.teams.TeamColor;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Created by greg on 5/28/16.
@@ -32,7 +33,7 @@ public class NullTeamScore implements TeamScoreReport {
 
             @Override
             public TeamColor next() {
-                return null;
+                throw new NoSuchElementException();
             }
         };
     }

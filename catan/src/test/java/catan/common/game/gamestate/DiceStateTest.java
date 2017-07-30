@@ -13,18 +13,18 @@ import static org.junit.Assert.assertEquals;
 @Category(FuzzTests.class)
 public class DiceStateTest {
 
-    private static final int runs = 100000;
-    private static final long seed = System.nanoTime();
+    private static final int RUNS = 100000;
+    private static final long SEED = System.nanoTime();
 
     @Test
     public void testStateCreation() {
-        new DiceState(seed);
+        new DiceState(SEED);
     }
 
     @Test
     public void testUndo() {
-        DiceState a = new DiceState(seed);
-        for (int i = 0; i < runs; i++) {
+        DiceState a = new DiceState(SEED);
+        for (int i = 0; i < RUNS; i++) {
             DiceRoll roll = a.get();
             assertEquals(roll, a.next());
             assertEquals(roll, a.prev());
@@ -35,9 +35,9 @@ public class DiceStateTest {
 
     @Test
     public void testDeterminism() {
-        DiceState a = new DiceState(seed);
-        DiceState b = new DiceState(seed);
-        for (int i = 0; i < runs; i++)
+        DiceState a = new DiceState(SEED);
+        DiceState b = new DiceState(SEED);
+        for (int i = 0; i < RUNS; i++)
             assertEquals(a.next(), b.next());
     }
 }

@@ -14,7 +14,7 @@ public class EventConsumerProblem {
 
     public EventConsumerProblem(String message) {
         this.message = message;
-        this.causes = new ArrayList<>();
+        causes = new ArrayList<>();
     }
 
     public EventConsumerProblem(EventConsumerException exception) {

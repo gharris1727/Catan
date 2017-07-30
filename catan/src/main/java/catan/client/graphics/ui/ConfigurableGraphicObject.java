@@ -1,14 +1,13 @@
 package catan.client.graphics.ui;
 
 import catan.client.graphics.screen.GraphicObject;
-import catan.client.graphics.screen.Graphical;
 import catan.client.renderer.NotYetRenderableException;
 
 /**
  * Created by greg on 2/28/16.
  * Class representing a graphic object that depends on a UIConfig
  */
-public abstract class ConfigurableGraphicObject extends GraphicObject implements Configurable, Graphical {
+public abstract class ConfigurableGraphicObject extends GraphicObject implements Configurable {
 
     private final String configKey;
     private UIConfig config;

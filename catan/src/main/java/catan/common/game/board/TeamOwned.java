@@ -32,7 +32,7 @@ public abstract class TeamOwned extends BoardObject {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + owner.hashCode();
+        result = (31 * result) + owner.hashCode();
         return result;
     }
 }

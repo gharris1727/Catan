@@ -15,7 +15,7 @@ public class PreferenceTeamAllocator implements TeamAllocator {
     private final List<Preference> preferences;
 
     public PreferenceTeamAllocator() {
-        this.preferences = new LinkedList<>();
+        preferences = new LinkedList<>();
     }
 
     public void addPreference(Username username, TeamColor teamColor) {
@@ -35,8 +35,8 @@ public class PreferenceTeamAllocator implements TeamAllocator {
         //Go over all of the user preferences and assign them.
         for (Preference preference : preferences) {
 
-            if (preference.teamColor == null || preference.teamColor == TeamColor.None) {
-                //If they didnt specify a preference, then add them to be addressed later.
+            if ((preference.teamColor == null) || (preference.teamColor == TeamColor.None)) {
+                //If they didn't specify a preference, then add them to be addressed later.
                 usersToAllocate.add(preference.username);
             } else {
                 //Remove this team from first-round re-allocation.
@@ -77,11 +77,11 @@ public class PreferenceTeamAllocator implements TeamAllocator {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        PreferenceTeamAllocator that = (PreferenceTeamAllocator) o;
+        PreferenceTeamAllocator other = (PreferenceTeamAllocator) o;
 
-        return preferences.equals(that.preferences);
+        return preferences.equals(other.preferences);
     }
 
     @Override

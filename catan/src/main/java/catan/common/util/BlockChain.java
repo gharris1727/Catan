@@ -7,26 +7,27 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by greg on 7/4/17.
  * Implementation of a MessageDigest-based blockchain value store.
  */
-public class BlockChain<T> implements Iterable<Map.Entry<BigInteger, T>> {
+public class BlockChain<T> implements Iterable<Entry<BigInteger, T>> {
 
     private final MessageDigest digester;
-    private final HashMap<BigInteger, BlockchainNode> nodes;
-    private final HashSet<BigInteger> unlinkedIDs;
+    private final Map<BigInteger, BlockchainNode> nodes;
+    private final Set<BigInteger> unlinkedIDs;
 
     public BlockChain(String hashType) throws NoSuchAlgorithmException {
-        this.digester = MessageDigest.getInstance(hashType);
-        this.nodes = new HashMap<>();
-        this.unlinkedIDs = new HashSet<>();
+        digester = MessageDigest.getInstance(hashType);
+        nodes = new HashMap<>();
+        unlinkedIDs = new HashSet<>();
     }
 
     public BigInteger addBlock(BigInteger parent, T value) {
         if (parent == null) {
-            parent = new BigInteger("0", 16);
+            parent = new BigInteger("0");
         }
         BlockchainNode node = new BlockchainNode(parent, value);
         if (!nodes.containsKey(node.identity)) {
@@ -40,17 +41,17 @@ public class BlockChain<T> implements Iterable<Map.Entry<BigInteger, T>> {
 
     public T get(BigInteger key) {
         BlockchainNode node = nodes.get(key);
-        return node != null ? node.value : null;
+        return (node != null) ? node.value : null;
     }
 
     public BigInteger getParent(BigInteger key) {
         BlockchainNode node = nodes.get(key);
-        return node != null ? node.parent : null;
+        return (node != null) ? node.parent : null;
     }
 
-    public Iterator<BigInteger> getChildren(BigInteger key) {
+    public Collection<BigInteger> getChildren(BigInteger key) {
         BlockchainNode node = nodes.get(key);
-        return node != null ? node.childNodes.iterator() : Collections.emptyIterator();
+        return (node != null) ? Collections.unmodifiableCollection(node.childNodes) : Collections.EMPTY_SET;
     }
 
     public BigInteger resolveGenesis() {
@@ -61,14 +62,14 @@ public class BlockChain<T> implements Iterable<Map.Entry<BigInteger, T>> {
                 it.remove();
             }
         }
-        return unlinkedIDs.size() == 1 ? unlinkedIDs.iterator().next() : null;
+        return (unlinkedIDs.size() == 1) ? unlinkedIDs.iterator().next() : null;
     }
 
     @Override
-    public Iterator<Map.Entry<BigInteger, T>> iterator() {
-        return new Iterator<Map.Entry<BigInteger, T>> () {
+    public Iterator<Entry<BigInteger, T>> iterator() {
+        return new Iterator<Entry<BigInteger, T>> () {
 
-            private Iterator<BigInteger> it = nodes.keySet().iterator();
+            private final Iterator<BigInteger> it = nodes.keySet().iterator();
 
             @Override
             public boolean hasNext() {
@@ -76,7 +77,7 @@ public class BlockChain<T> implements Iterable<Map.Entry<BigInteger, T>> {
             }
 
             @Override
-            public Map.Entry<BigInteger, T> next() {
+            public Entry<BigInteger, T> next() {
                 return new BlockchainEntry(it.next());
             }
         };
@@ -88,15 +89,15 @@ public class BlockChain<T> implements Iterable<Map.Entry<BigInteger, T>> {
             objectStream.writeObject(object);
             return byteStream.toByteArray();
         } catch (IOException e) {
-            throw new Error(e);
+            throw new RuntimeException(e);
         }
     }
 
-    private class BlockchainEntry implements Map.Entry<BigInteger, T> {
+    private class BlockchainEntry implements Entry<BigInteger, T> {
 
         private final BigInteger key;
 
-        public BlockchainEntry(BigInteger key) {
+        private BlockchainEntry(BigInteger key) {
             this.key = key;
         }
 
@@ -111,34 +112,34 @@ public class BlockChain<T> implements Iterable<Map.Entry<BigInteger, T>> {
         }
 
         @Override
-        public T setValue(T o) {
+        public T setValue(T v) {
             throw new UnsupportedOperationException();
         }
     }
 
-    private class BlockchainNode {
+    private final class BlockchainNode {
         private final BigInteger parent;
         private final BigInteger identity;
         private final T value;
 
         private BlockchainNode parentNode;
-        private final HashSet<BigInteger> childNodes;
+        private final Set<BigInteger> childNodes;
 
         private BlockchainNode(BigInteger parent, T value) {
             digester.reset();
             byte[] p = parent.toByteArray();
             digester.update(p);
             this.parent = parent;
-            this.identity = new BigInteger(digester.digest(serialize(value)));
+            identity = new BigInteger(digester.digest(serialize(value)));
             this.value = value;
-            this.parentNode = null;
-            this.childNodes = new HashSet<>();
+            parentNode = null;
+            childNodes = new HashSet<>();
         }
 
         private boolean linkParent() {
             BlockchainNode parentNode = nodes.get(parent);
 
-            if (this.parentNode == null && parentNode != null) {
+            if ((this.parentNode == null) && (parentNode != null)) {
                 this.parentNode = parentNode;
                 this.parentNode.childNodes.add(identity);
             }

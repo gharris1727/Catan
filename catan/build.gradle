@@ -34,7 +34,7 @@ jacocoTestReport {
 
 
 task copyLicense(type: Copy) {
-    def distDir = file("${buildDir}/dist")
+    final def distDir = file("${buildDir}/dist")
     from '../'
     into distDir
     include('*.md')

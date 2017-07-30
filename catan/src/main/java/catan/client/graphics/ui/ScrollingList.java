@@ -30,7 +30,7 @@ public abstract class ScrollingList extends ScrollingScreenRegion {
             if (element instanceof Configurable)
                 ((Configurable) element).setConfig(getConfig());
             RenderMask elementMask;
-            if (elementSize != null && element instanceof Resizable) {
+            if ((elementSize != null) && (element instanceof Resizable)) {
                 ((Resizable) element).setMask(elementSize);
                 elementMask = elementSize;
             } else {

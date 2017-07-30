@@ -39,17 +39,18 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
 
     @Override
     public void step() {
-        if (frames.size() == 0) return;
-        if (it.hasNext())
-            current = it.next();
-        else {
-            if (loop) {
-                reset();
-                step();
-            } else
-                current = null;
+        if (!frames.isEmpty()) {
+            if (it.hasNext())
+                current = it.next();
+            else {
+                if (loop) {
+                    reset();
+                    step();
+                } else
+                    current = null;
+            }
+            needsRendering = true;
         }
-        needsRendering = true;
     }
 
     @Override

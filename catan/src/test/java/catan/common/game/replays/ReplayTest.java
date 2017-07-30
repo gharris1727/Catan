@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import static catan.common.game.event.GameEventType.*;
 
@@ -96,13 +95,10 @@ public class ReplayTest {
         }
         DummyConfigSource storage = new DummyConfigSource();
         replay.save(storage);
-        for (Map.Entry<String, String> e : storage) {
-            System.out.println(e.getKey() + "=" + e.getValue());
-        }
     }
 
     @Test
-    public void testExistingGame() throws EventConsumerException, ReplayFormatException {
+    public void testExistingGame() throws Exception {
         Replay replay = new Replay(genesis);
         for (GameEvent e : gameA) {
             replay.execute(e);
@@ -110,14 +106,12 @@ public class ReplayTest {
         for (GameEvent e : gameA) {
             replay.undo();
         }
-        /*
         for (GameEvent e : gameB) {
             replay.execute(e);
         }
         for (GameEvent e : gameB) {
             replay.undo();
         }
-        */
         DummyConfigSource storage = new DummyConfigSource();
         replay.save(storage);
 

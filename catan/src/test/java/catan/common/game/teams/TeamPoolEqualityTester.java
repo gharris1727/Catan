@@ -23,7 +23,7 @@ public class TeamPoolEqualityTester implements EqualityTester<TeamPool> {
             if (expected.teams.containsKey(tc))
                 TeamEqualityTester.INSTANCE.assertEquals(expected.teams.get(tc), actual.teams.get(tc));
             else if (actual.teams.containsKey(tc))
-                Assert.assertEquals(null, actual.teams.get(tc));
+                Assert.assertNull(actual.teams.get(tc));
         }
         Assert.assertEquals(expected.history, actual.history);
     }

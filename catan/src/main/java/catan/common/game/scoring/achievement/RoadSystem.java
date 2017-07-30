@@ -20,7 +20,7 @@ public class RoadSystem implements Comparable<RoadSystem>, Iterable<Path> {
 
     public RoadSystem(GameBoard board, Coordinate start) {
         //Create a set of all paths considered part of this RoadSystem.
-        this.paths = new HashSet<>();
+        paths = new HashSet<>();
         //Create a queue of paths to expand while searching.
         Queue<Path> search = new LinkedList<>();
         //Get the origin path from its coordinate.
@@ -53,7 +53,7 @@ public class RoadSystem implements Comparable<RoadSystem>, Iterable<Path> {
         }
         //If that fails, we have only cycles, so check starting everywhere.
         //TODO: try to cull some obviously bad paths, checking everything is slow.
-        if (maximum.size() == 0) {
+        if (maximum.isEmpty()) {
             for (Path p : paths) {
                 List<Path> candidate = searchLongest(board, p);
                 if (maximum.size() < candidate.size())
@@ -67,10 +67,10 @@ public class RoadSystem implements Comparable<RoadSystem>, Iterable<Path> {
         List<Coordinate> out = new LinkedList<>();
         for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromEdge(path.getPosition()).values()) {
             Town town = board.getTown(vertex);
-            if (town != null && (town.getTeam() == TeamColor.None || town.getTeam() == path.getTeam())) {
+            if ((town != null) && ((town.getTeam() == TeamColor.None) || (town.getTeam() == path.getTeam()))) {
                 for (Coordinate edge : CoordTransforms.getAdjacentEdgesFromVertex(vertex).values()) {
                     Path neighbor = board.getPath(edge);
-                    if (neighbor != null && neighbor != path && neighbor.getTeam() == path.getTeam())
+                    if ((neighbor != null) && (neighbor != path) && (neighbor.getTeam() == path.getTeam()))
                         out.add(edge);
                 }
             }
@@ -117,8 +117,26 @@ public class RoadSystem implements Comparable<RoadSystem>, Iterable<Path> {
     }
 
     @Override
-    public int compareTo(RoadSystem paths) {
-        return longest.size() - paths.longest.size();
+    public int compareTo(RoadSystem t) {
+        return longest.size() - t.longest.size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RoadSystem paths1 = (RoadSystem) o;
+
+        if (!paths.equals(paths1.paths)) return false;
+        return longest.equals(paths1.longest);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = paths.hashCode();
+        result = 31 * result + longest.hashCode();
+        return result;
     }
 
     @Override

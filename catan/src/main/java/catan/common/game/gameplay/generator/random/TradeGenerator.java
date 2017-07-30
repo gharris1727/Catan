@@ -3,10 +3,7 @@ package catan.common.game.gameplay.generator.random;
 import catan.common.game.gameplay.generator.FeatureGenerator;
 import catan.common.game.gameplay.trade.TradingPostType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -14,7 +11,7 @@ import java.util.Random;
  */
 public class TradeGenerator implements FeatureGenerator<TradingPostType> {
 
-    private final ArrayList<TradingPostType> posts;
+    private final List<TradingPostType> posts;
 
     public TradeGenerator(int numTradingPosts) {
         posts = new ArrayList<>(numTradingPosts);
@@ -37,8 +34,8 @@ public class TradeGenerator implements FeatureGenerator<TradingPostType> {
                 specPosts = numTradingPosts / 7; //Integer division intentional.
                 break;
         }
-        int randPosts = numTradingPosts - specPosts * 5;
-        for (int i = 0; i < specPosts * 5; i++) {
+        int randPosts = numTradingPosts - (specPosts * 5);
+        for (int i = 0; i < (specPosts * 5); i++) {
             posts.add(TradingPostType.values()[i % 5]);
         }
         for (int i = 0; i < randPosts; i++) {

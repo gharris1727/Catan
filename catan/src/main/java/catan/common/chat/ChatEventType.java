@@ -14,15 +14,15 @@ public enum ChatEventType implements EventType {
     Lobby(null), //Message should be rebroadcast to only the clients in a local Group.
     Private(Username.class); //Message should be forwarded to only the destination client.
 
-    private final Class payloadType;
+    private final Class type;
 
-    ChatEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    ChatEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 
 }

@@ -8,6 +8,7 @@ import catan.common.game.gameplay.allocator.TeamAllocation;
 import catan.common.game.teams.TeamColor;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by greg on 2/5/16.
@@ -21,7 +22,7 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
 
     public PlayerPool(TeamAllocation teamAllocation) {
         players = new HashMap<>();
-        for (Map.Entry<Username, TeamColor> entry : teamAllocation.getPlayerTeams().entrySet())
+        for (Entry<Username, TeamColor> entry : teamAllocation.getPlayerTeams().entrySet())
             players.put(entry.getKey(), new HumanPlayer(entry.getKey(), entry.getValue()));
         players.put(null, new Bank());
         discards = new Stack<>();
@@ -50,13 +51,21 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        PlayerPool that = (PlayerPool) o;
+        PlayerPool other = (PlayerPool) o;
 
-        if (!players.equals(that.players)) return false;
-        return history.equals(that.history);
+        if (!players.equals(other.players)) return false;
+        return history.equals(other.history);
 
+    }
+
+    @Override
+    public int hashCode() {
+        int result = players.hashCode();
+        result = 31 * result + discards.hashCode();
+        result = 31 * result + history.hashCode();
+        return result;
     }
 
     @Override
@@ -84,7 +93,7 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
         if (event.getType() == PlayerEventType.Finish_Discarding) {
             for (Username username : this) {
                 Player p = players.get(username);
-                if (p.getDiscardCount() > 0 && !discards.peek().contains(username))
+                if ((p.getDiscardCount() > 0) && !discards.peek().contains(username))
                     return new EventConsumerProblem(username + " has not finished discarding");
             }
             return null;
@@ -92,7 +101,7 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
             Player player = getPlayer(event.getOrigin());
             if (player == null)
                 return new EventConsumerProblem("No player");
-            if (event.getType() == PlayerEventType.Discard_Resources && discards.peek().contains(event.getOrigin()))
+            if ((event.getType() == PlayerEventType.Discard_Resources) && discards.peek().contains(event.getOrigin()))
                 return new EventConsumerProblem("Player already discarded");
             return player.test(event);
         }

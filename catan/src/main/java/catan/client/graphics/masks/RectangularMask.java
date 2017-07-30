@@ -10,10 +10,7 @@ import java.util.Arrays;
 public class RectangularMask extends RenderMask {
 
     public RectangularMask(Dimension size) {
-        width = size.width;
-        height = size.height;
-        padding = new int[height];
-        widths = new int[height];
+        setSize(size.width, size.height);
         Arrays.fill(widths, width);
         init();
     }

@@ -42,9 +42,9 @@ public class GameObserver {
 
     public boolean mustDiscard(Username username) {
         synchronized (game) {
-            return game.state.getDiceRoll() == DiceRoll.Seven
-                && game.players.getPlayer(username).getDiscardCount() > 0
-                && !game.players.hasDiscarded(username);
+            return (game.state.getDiceRoll() == DiceRoll.Seven)
+                    && (game.players.getPlayer(username).getDiscardCount() > 0)
+                    && !game.players.hasDiscarded(username);
         }
     }
 
@@ -52,7 +52,7 @@ public class GameObserver {
         synchronized (game) {
             try {
                 return game.scoring.score(game.rules);
-            } catch (ScoreException e) {
+            } catch (ScoreException ignored) {
                 return NullTeamScore.INSTANCE;
             }
         }

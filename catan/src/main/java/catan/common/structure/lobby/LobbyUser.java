@@ -13,7 +13,7 @@ public class LobbyUser implements Serializable {
     private TeamColor teamColor;
 
     public LobbyUser() {
-        this.teamColor = TeamColor.None;
+        teamColor = TeamColor.None;
     }
 
     public TeamColor getTeamColor() {

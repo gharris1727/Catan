@@ -5,6 +5,7 @@ import catan.common.game.scoring.reporting.player.NullPlayerScore;
 import catan.common.game.scoring.reporting.player.PlayerScoreReport;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Created by greg on 5/28/16.
@@ -37,7 +38,7 @@ public class NullScoreReport implements ScoreReport {
 
             @Override
             public Username next() {
-                return null;
+                throw new NoSuchElementException();
             }
         };
     }

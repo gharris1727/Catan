@@ -1,12 +1,13 @@
 package catan.common.structure.lobby;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Created by greg on 4/2/16.
  * A comparator that sorts lobbies by their different qualities.
  */
-public class LobbyComparator implements Comparator<Lobby> {
+public class LobbyComparator implements Comparator<Lobby>, Serializable {
 
     private final LobbySortOption sortOption;
 
@@ -30,12 +31,11 @@ public class LobbyComparator implements Comparator<Lobby> {
             case Num_Clients_Desc:
                 return s.size() - f.size();
             case Open_Spaces_Asc:
-                return f.getConfig().getMaxPlayers() - f.size() - s.getConfig().getMaxPlayers() + s.size();
+                return (f.getConfig().getMaxPlayers() - f.size() - s.getConfig().getMaxPlayers()) + s.size();
             case Open_Spaces_Desc:
-                return s.getConfig().getMaxPlayers() - s.size() - f.getConfig().getMaxPlayers() + f.size();
-            default:
-                return 0;
+                return (s.getConfig().getMaxPlayers() - s.size() - f.getConfig().getMaxPlayers()) + f.size();
         }
+        return 0;
     }
 
 }

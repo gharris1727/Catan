@@ -19,16 +19,16 @@ public class RandomTeamAllocator implements TeamAllocator {
 
     @Override
     public TeamAllocation allocate(long seed) {
-        //Create inner storage for the maps.
-        Map<Username, TeamColor> users = new HashMap<>();
-        Map<TeamColor, Set<Username>> teams = new EnumMap<>(TeamColor.class);
-
         //Start allocating teams.
         Iterator<TeamColor> teamAllocator = TeamColor.getTeamSet().iterator();
 
         List<Username> randomizedUsernames = new ArrayList<>(usernames);
         Collections.sort(randomizedUsernames);
         Collections.shuffle(randomizedUsernames, new Random(seed));
+
+        //Create inner storage for the maps.
+        Map<Username, TeamColor> users = new HashMap<>();
+        Map<TeamColor, Set<Username>> teams = new EnumMap<>(TeamColor.class);
 
         for (Username user : randomizedUsernames) {
             //If we exhausted all the teams, then refresh the list and keep going.
@@ -49,11 +49,11 @@ public class RandomTeamAllocator implements TeamAllocator {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
-        RandomTeamAllocator that = (RandomTeamAllocator) o;
+        RandomTeamAllocator other = (RandomTeamAllocator) o;
 
-        return usernames.equals(that.usernames);
+        return usernames.equals(other.usernames);
     }
 
     @Override

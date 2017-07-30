@@ -42,14 +42,14 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
             HexagonalArray hexArray,
             Map<DiceRoll, Set<Coordinate>> diceRolls,
             Set<Coordinate> tradingPosts,
-            Coordinate initialRobberPosition) {
+            Coordinate robberStartPosition) {
         this.size = size;
         this.hexArray = hexArray;
         this.diceRolls = diceRolls;
         this.tradingPosts = tradingPosts;
-        this.history = new Stack<>();
-        this.robberLocations = new Stack<>();
-        this.robberLocations.push(initialRobberPosition);
+        history = new Stack<>();
+        robberLocations = new Stack<>();
+        robberLocations.push(robberStartPosition);
     }
 
     public Dimension getSize() {
@@ -100,7 +100,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
 
     public Set<Coordinate> getActiveTiles(DiceRoll roll) {
         return Collections.unmodifiableSet(
-            roll == DiceRoll.Seven ? Collections.emptySet() : diceRolls.get(roll)
+                (roll == DiceRoll.Seven) ? Collections.emptySet() : diceRolls.get(roll)
         );
     }
 
@@ -110,7 +110,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
             TradeTile tradeTile = (TradeTile) hexArray.getTile(tradeSpace);
             for (Coordinate tradeTown : tradeTile.getTradingPostCoordinates()) {
                 Town town = hexArray.getTown(tradeTown);
-                if (town != null && town.getTeam() == teamColor)
+                if ((town != null) && (town.getTeam() == teamColor))
                     trades.add(tradeTile.getTradingPostType());
             }
         }
@@ -148,7 +148,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     @Override
     public EventConsumerProblem test(BoardEvent event) {
         Coordinate c = (Coordinate) event.getPayload();
-        //If the user didnt specify a coordinate
+        //If the user didn't specify a coordinate
         if (c == null)
             return new EventConsumerProblem("Location not specified");
         switch (event.getType()) {
@@ -157,7 +157,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
                 if (!(hexArray.getTile(c) instanceof ResourceTile))
                     return new EventConsumerProblem("Location invalid");
                 //If the location was already robbed.
-                if (c == robberLocations.peek())
+                if (c.equals(robberLocations.peek()))
                     return new EventConsumerProblem("Location already occupied");
                 break;
             case Place_Settlement:
@@ -165,28 +165,29 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
                 boolean foundRoad = false;
                 for (Coordinate a : CoordTransforms.getAdjacentEdgesFromVertex(c).values()) {
                     Path p = hexArray.getPath(a);
-                    foundRoad = foundRoad || (p instanceof Road && p.getTeam() == event.getOrigin());
+                    foundRoad = foundRoad || ((p instanceof Road) && (p.getTeam() == event.getOrigin()));
                 }
                 //If there was no nearby roads
                 if (!foundRoad)
                     return new EventConsumerProblem("No adjoining road");
                 //Intentionally flow into the next case.
+                //noinspection fallthrough
             case Place_Outpost:
                 //If the town is not ready for settling
                 if (!(hexArray.getTown(c) instanceof EmptyTown))
                     return new EventConsumerProblem("Location invalid");
                 //Look over all adjacent town locations for a nearby town.
-                for (Coordinate town : CoordTransforms.getAdjacentVerticesFromVertex(c).values()) {
-                    Town t = hexArray.getTown(town);
-                    //If there was a settled town nearby.
-                    if (t instanceof Settlement || t instanceof City)
-                        return new EventConsumerProblem("Location too close to other town");
+                //If there was a settled town nearby.
+                if (CoordTransforms.getAdjacentVerticesFromVertex(c).values().stream()
+                        .map(hexArray::getTown)
+                        .anyMatch(t -> (t instanceof Settlement) || (t instanceof City))) {
+                    return new EventConsumerProblem("Location too close to other town");
                 }
                 break;
             case Place_City:
                 Town e = hexArray.getTown(c);
                 //If the town is not one of our settlements
-                if (!(e instanceof Settlement) || e.getTeam() != event.getOrigin())
+                if (!(e instanceof Settlement) || (e.getTeam() != event.getOrigin()))
                     return new EventConsumerProblem("Invalid location");
                 return null;
             case Place_Road:
@@ -198,19 +199,19 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
                 for (Coordinate vertex : CoordTransforms.getAdjacentVerticesFromEdge(c).values()) {
                     Town t  = hexArray.getTown(vertex);
                     //If there is a friendly town there, great!
-                    if (t != null && t.getTeam() == teamColor)
+                    if ((t != null) && (t.getTeam() == teamColor))
                         return null;
                     //If it is an unsettled town, check for incoming roads.
                     if (t instanceof EmptyTown) {
-                        for (Coordinate edge : CoordTransforms.getAdjacentEdgesFromVertex(vertex).values()) {
-                            Path p = hexArray.getPath(edge);
-                            //If there is a friendly road, great!
-                            if (p instanceof Road && p.getTeam() == teamColor)
-                                return null;
+                        //If there is a friendly road, great!
+                        if (CoordTransforms.getAdjacentEdgesFromVertex(vertex).values().stream()
+                                .map(hexArray::getPath)
+                                .anyMatch(p -> (p instanceof Road) && (p.getTeam() == teamColor))) {
+                            return null;
                         }
                     }
                 }
-                //Otherwise we couldnt find any friendly people nearby.
+                //Otherwise we couldn't find any friendly people nearby.
                 return new EventConsumerProblem("Location too far from civilization");
         }
         return null;
@@ -260,7 +261,7 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
         GameBoard gameBoard = (GameBoard) o;
 
@@ -270,6 +271,17 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
         if (!tradingPosts.equals(gameBoard.tradingPosts)) return false;
         if (!history.equals(gameBoard.history)) return false;
         return robberLocations.equals(gameBoard.robberLocations);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = size.hashCode();
+        result = 31 * result + hexArray.hashCode();
+        result = 31 * result + diceRolls.hashCode();
+        result = 31 * result + tradingPosts.hashCode();
+        result = 31 * result + history.hashCode();
+        result = 31 * result + robberLocations.hashCode();
+        return result;
     }
 
     @Override

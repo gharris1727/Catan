@@ -9,9 +9,6 @@ import org.junit.Assert;
  */
 public class EnumCounterEqualityTester<T extends Enum<T>> implements EqualityTester<EnumCounter<T>> {
 
-    public EnumCounterEqualityTester() {
-    }
-
     @Override
     public void assertEquals(EnumCounter<T> expected, EnumCounter<T> actual) {
         if (expected == actual)

@@ -7,8 +7,8 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Random;
 
 /**
@@ -18,7 +18,7 @@ import java.util.Random;
 @Category(UnitTests.class)
 public class BlockChainTest {
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Test
     public void testConstructor() throws NoSuchAlgorithmException {
@@ -46,8 +46,8 @@ public class BlockChainTest {
         BlockChain<String> bc = new BlockChain<>("SHA");
         BigInteger parent = bc.addBlock(null, "Parent");
         BigInteger child = bc.addBlock(parent, "Child");
-        Assert.assertTrue(bc.getChildren(parent).hasNext());
-        Assert.assertEquals(child, bc.getChildren(parent).next());
+        Assert.assertFalse(bc.getChildren(parent).isEmpty());
+        Assert.assertTrue(bc.getChildren(parent).contains(child));
     }
 
     @Test
@@ -62,8 +62,8 @@ public class BlockChainTest {
     public void testNoChildren() throws NoSuchAlgorithmException {
         BlockChain<String> bc = new BlockChain<>("SHA");
         BigInteger parent = bc.addBlock(null, "Parent");
-        Assert.assertFalse(bc.getChildren(parent).hasNext());
-        Assert.assertFalse(bc.getChildren(new BigInteger(160, random)).hasNext());
+        Assert.assertTrue(bc.getChildren(parent).isEmpty());
+        Assert.assertTrue(bc.getChildren(new BigInteger(160, random)).isEmpty());
     }
 
     @Test
@@ -72,15 +72,10 @@ public class BlockChainTest {
         BigInteger parent = bc.addBlock(null, "Parent");
         BigInteger childA = bc.addBlock(parent, "ChildA");
         BigInteger childB = bc.addBlock(parent, "ChildB");
-        Iterator<BigInteger> children = bc.getChildren(parent);
-        Assert.assertTrue(children.hasNext());
-        BigInteger first = children.next();
-        Assert.assertTrue(children.hasNext());
-        BigInteger second = children.next();
-        Assert.assertTrue(
-                (first.equals(childA) && second.equals(childB)) ||
-                (first.equals(childB) && second.equals(childA))
-        );
+        Collection<BigInteger> children = bc.getChildren(parent);
+        Assert.assertEquals(2, children.size());
+        Assert.assertTrue(children.contains(childA));
+        Assert.assertTrue(children.contains(childB));
     }
 
     @Test
@@ -101,11 +96,11 @@ public class BlockChainTest {
         BigInteger parent = bc.addBlock(null, "Parent");
         BigInteger child = bc.addBlock(parent, "Child");
 
-        bc = new BlockChain<>("SHA");
-        Assert.assertEquals(child, bc.addBlock(parent, "Child"));
-        Assert.assertEquals(parent, bc.addBlock(null, "Parent"));
+        BlockChain<String> bc2 = new BlockChain<>("SHA");
+        Assert.assertEquals(child, bc2.addBlock(parent, "Child"));
+        Assert.assertEquals(parent, bc2.addBlock(null, "Parent"));
 
-        Assert.assertEquals(parent, bc.resolveGenesis());
+        Assert.assertEquals(parent, bc2.resolveGenesis());
     }
 
     @Test
@@ -120,7 +115,7 @@ public class BlockChainTest {
     public void testIterator() throws NoSuchAlgorithmException {
         BlockChain<String> bc = new BlockChain<>("SHA");
         BigInteger parent = bc.addBlock(null, "Parent");
-        for (Map.Entry<BigInteger, String> e : bc) {
+        for (Entry<BigInteger, String> e : bc) {
             Assert.assertEquals(parent, e.getKey());
             Assert.assertEquals("Parent", e.getValue());
         }

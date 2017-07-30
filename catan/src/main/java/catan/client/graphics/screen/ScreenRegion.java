@@ -32,7 +32,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     //and create any permanent ScreenObjects needed in the render.
     protected ScreenRegion(String name, int priority) {
         super(name, priority);
-        timeSlice = new TimeSlice(this.toString());
+        timeSlice = new TimeSlice(toString());
         clear();
     }
 
@@ -44,7 +44,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     public final void enableTransparency() {
-        this.transparency = true;
+        transparency = true;
     }
 
     @Override
@@ -84,7 +84,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         //TODO: if possible, use rectangular collision boxes rather than pixel based collisions.
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
-        if (result == this && pixelHitbox != null && mask.containsPoint(p)) {
+        if ((result == this) && (pixelHitbox != null) && mask.containsPoint(p)) {
             //There was no redirect object specified, and we are already rendered.
             int color = pixelHitbox.getClickableColor(p);
             ScreenObject object = clickableColorMap.get(color);
@@ -101,11 +101,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     protected ScreenObject add(ScreenObject object) {
         if (object != null) {
             clickableColorMap.put(object.getClickableColor(), object);
-            List<ScreenObject> objects = priorityMap.get(object.getRenderPriority());
-            if (objects == null) {
-                objects = new LinkedList<>();
-                priorityMap.put(object.getRenderPriority(), objects);
-            }
+            List<ScreenObject> objects = priorityMap.computeIfAbsent(object.getRenderPriority(), k -> new LinkedList<>());
             objects.add(object);
             forceRender();
         }
@@ -146,14 +142,14 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
 
             @Override
             public boolean hasNext() {
-                return treeIterator.hasNext() || (listIterator != null && listIterator.hasNext());
+                return treeIterator.hasNext() || ((listIterator != null) && listIterator.hasNext());
             }
 
             @Override
             public ScreenObject next() {
                 if (!hasNext())
                     throw new NoSuchElementException();
-                if (listIterator == null || !listIterator.hasNext())
+                if ((listIterator == null) || !listIterator.hasNext())
                     listIterator = treeIterator.next().iterator();
                 return listIterator.next();
             }

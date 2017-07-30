@@ -11,7 +11,10 @@ import java.awt.*;
  * Created by Greg on 8/8/2014.
  * catan.Main game file that contains the main(String[] args) to execute the program from an executable jar.
  */
-public class Main {
+public final class Main {
+
+    private Main() {
+    }
 
     public static void main(String[] args) {
         // Interpret the command line arguments.

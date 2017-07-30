@@ -32,7 +32,7 @@ public final class UserAccount implements Serializable {
 
     public UserAccount(Username username, Password password) {
         this.username = username;
-        this.displayName = username.username;
+        displayName = username.username;
         setPassword(password);
         invalidateSession();
     }
@@ -40,15 +40,15 @@ public final class UserAccount implements Serializable {
     public void setPassword(Password password) {
         try {
             passwordHash = PasswordHash.createHash(password.getPassword());
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ignored) {
             passwordHash = "";
         }
     }
 
-    public boolean validatePassword(Password password) {
+    public boolean isPasswordValid(Password password) {
         try {
             return PasswordHash.validatePassword(password.getPassword(), passwordHash);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ignored) {
             return false;
         }
     }
@@ -57,12 +57,13 @@ public final class UserAccount implements Serializable {
         this.displayName = displayName;
     }
 
-    public boolean validateToken(AuthToken token) {
+    public boolean isTokenValid(AuthToken token) {
         return (this.token != null) && this.token.equals(token);
     }
 
     public AuthToken generateAuthToken() {
-        return token = new AuthToken(username, new SecureRandom().nextInt());
+        token = new AuthToken(username, new SecureRandom().nextInt());
+        return token;
     }
 
     public void invalidateSession() {

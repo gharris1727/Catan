@@ -5,6 +5,7 @@ import catan.common.game.util.EnumCounter;
 import catan.common.game.util.GameResource;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 /**
@@ -25,20 +26,23 @@ public enum Purchase implements EnumCounter<GameResource> {
     }
 
     @Override
-    public int get(GameResource r) {
-        return cost.get(r);
+    public int get(GameResource e) {
+        return cost.get(e);
     }
 
     @Override
     public Iterator<GameResource> iterator() {
         return new Iterator<GameResource>() {
-            private int index = 0;
+            private int index;
             @Override
             public boolean hasNext() {
                 return index < GameResource.values().length;
             }
             @Override
             public GameResource next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return GameResource.values()[index++];
             }
         };

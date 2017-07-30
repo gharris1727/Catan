@@ -21,14 +21,14 @@ public enum NetEventType implements EventType {
     Link_Error(String.class),
     External_Event(ExternalEvent.class);
 
-    private final Class payloadType;
+    private final Class type;
 
-    NetEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    NetEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }

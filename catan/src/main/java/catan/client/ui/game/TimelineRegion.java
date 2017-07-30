@@ -105,8 +105,8 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         @Override
         protected void renderContents() {
             clear();
-            final MutableInteger width = new MutableInteger();
-            final MutableInteger count = new MutableInteger();
+            MutableInteger width = new MutableInteger();
+            MutableInteger count = new MutableInteger();
             manager.getRemoteGame().readHistory(history -> {
                     add(new EventListElement(count.get(), history)).setPosition(new Point(width.get(), 0));
                     width.inc(eventSpacing);
@@ -214,7 +214,7 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         protected void renderContents() {
             label.setText(printer.getLocalization(event));
             Dimension labelSize = label.getGraphic().getMask().getSize();
-            setMask(new RectangularMask(new Dimension(labelSize.width + spacing * 2, labelSize.height + spacing * 2)));
+            setMask(new RectangularMask(new Dimension(labelSize.width + (spacing << 1), labelSize.height + (spacing << 1))));
             center(label);
         }
 

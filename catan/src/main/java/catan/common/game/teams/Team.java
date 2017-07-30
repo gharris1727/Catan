@@ -80,6 +80,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     if (round == 1) {
                         state = TeamState.Done;
                     }
+                    //noinspection fallthrough
                 case Finish_Turn:
                     round--;
                     break;
@@ -105,17 +106,17 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     return new EventConsumerProblem("Cannot steal");
                 break;
             case Build_First_Outpost:
-                if (state != TeamState.Outpost || round != 0)
+                if ((state != TeamState.Outpost) || (round != 0))
                     return new EventConsumerProblem("First outpost not avaliable");
                 break;
             case Build_Second_Outpost:
-                if (state != TeamState.Outpost || round != 1)
+                if ((state != TeamState.Outpost) || (round != 1))
                     return new EventConsumerProblem("Second outpost not avaliable");
                 break;
             case Activate_RoadBuilding:
                 break;
             case Build_Free_Road:
-                if (state != TeamState.Road && freeRoads <= 0)
+                if ((state != TeamState.Road) && (freeRoads <= 0))
                     return new EventConsumerProblem("Road not avaliable");
                 break;
             case Finish_Setup_Turn:
@@ -125,7 +126,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     return new EventConsumerProblem("Setup round finished already");
                 break;
             case Finish_Turn:
-                if (state != TeamState.Done || round < 2)
+                if ((state != TeamState.Done) || (round < 2))
                     return new EventConsumerProblem("Setup not finished");
                 if (freeRobber != RobberState.Inactive)
                     return new EventConsumerProblem("Robber still active");
@@ -171,6 +172,7 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     if (round == 0) {
                         state = TeamState.Outpost;
                     }
+                    //noinspection fallthrough
                 case Finish_Turn:
                     round++;
                     break;

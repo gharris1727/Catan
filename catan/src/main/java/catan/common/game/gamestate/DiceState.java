@@ -15,8 +15,8 @@ public class DiceState implements ReversibleIterator<DiceRoll> {
     private final ReversiblePRNG dieTwo;
 
     public DiceState(long seed) {
-        this.dieOne = new ReversiblePRNG(seed);
-        this.dieTwo = new ReversiblePRNG(new Random(seed).nextLong());
+        dieOne = new ReversiblePRNG(seed);
+        dieTwo = new ReversiblePRNG(new Random(seed).nextLong());
     }
 
     @Override
@@ -54,9 +54,16 @@ public class DiceState implements ReversibleIterator<DiceRoll> {
         if (this == o) return true;
         if (!(o instanceof DiceState)) return false;
 
-        DiceState that = (DiceState) o;
+        DiceState other = (DiceState) o;
 
-        return dieOne.equals(that.dieOne) && dieTwo.equals(that.dieTwo);
+        return dieOne.equals(other.dieOne) && dieTwo.equals(other.dieTwo);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = dieOne.hashCode();
+        result = 31 * result + dieTwo.hashCode();
+        return result;
     }
 
     @Override

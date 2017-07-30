@@ -15,20 +15,20 @@ import java.awt.*;
 public class LobbyUserList extends ConfigurableScreenRegion {
 
     private final Lobby lobby;
-    private final TiledBackground background;
+    private final TiledBackground lobbyBackground;
     private RenderMask userSize;
     private int spacing;
 
     public LobbyUserList(Lobby lobby) {
         super("LobbyUserList", 2, "users");
         this.lobby = lobby;
-        background = new EdgedTiledBackground();
-        add(background).setClickable(this);
+        lobbyBackground = new EdgedTiledBackground();
+        add(lobbyBackground).setClickable(this);
     }
 
     @Override
     protected void resizeContents(RenderMask mask) {
-        background.setMask(mask);
+        lobbyBackground.setMask(mask);
     }
 
     @Override
@@ -50,30 +50,30 @@ public class LobbyUserList extends ConfigurableScreenRegion {
             height += userSize.getHeight();
             height += spacing;
         }
-        add(background);
+        add(lobbyBackground);
     }
 
     private class LobbyUserListElement extends ConfigurableScreenRegion {
 
-        private final TiledBackground background;
-        private final TextLabel name;
+        private final TiledBackground elementBackground;
+        private final TextLabel usernameLabel;
 
         private LobbyUserListElement(Username username) {
             super("UserListElement", 1, "element");
-            background = new TiledBackground();
-            name = new TextLabel("UserListNameLabel", 1, "name", username.username);
-            add(background).setClickable(this);
-            add(name).setClickable(this);
+            elementBackground = new TiledBackground();
+            usernameLabel = new TextLabel("UserListNameLabel", 1, "name", username.username);
+            add(elementBackground).setClickable(this);
+            add(usernameLabel).setClickable(this);
         }
 
         @Override
         protected void resizeContents(RenderMask mask) {
-            background.setMask(mask);
+            elementBackground.setMask(mask);
         }
 
         @Override
         protected void renderContents() {
-            center(name);
+            center(usernameLabel);
         }
     }
 }

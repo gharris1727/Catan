@@ -25,7 +25,7 @@ public class LogicEvent extends InternalEvent<CatanGame, LogicEventType> {
                 Iterator<LogicEvent> payload = ((List<LogicEvent>) getPayload()).iterator();
                 if (payload.hasNext()) {
                     StringBuilder builder = new StringBuilder("(");
-                    builder.append(payload.next().toString());
+                    builder.append(payload.next());
                     while (payload.hasNext()) {
                         builder.append(getType());
                         builder.append(payload.next());

@@ -39,11 +39,11 @@ public class Trade implements Comparable<Trade>, Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
         Trade trade = (Trade) o;
 
-        if (seller != null ? !seller.equals(trade.seller) : trade.seller != null) return false;
+        if ((seller != null) ? !seller.equals(trade.seller) : (trade.seller != null)) return false;
         if (!offer.equals(trade.offer)) return false;
         return request.equals(trade.request);
 
@@ -51,40 +51,39 @@ public class Trade implements Comparable<Trade>, Serializable {
 
     @Override
     public int hashCode() {
-        int result = seller != null ? seller.hashCode() : 0;
-        result = 31 * result + offer.hashCode();
-        result = 31 * result + request.hashCode();
+        int result = (seller != null) ? seller.hashCode() : 0;
+        result = (31 * result) + offer.hashCode();
+        result = (31 * result) + request.hashCode();
         return result;
     }
 
     @Override
-    public int compareTo(Trade trade) {
+    public int compareTo(Trade t) {
         if (seller == null) {
-            if (trade.seller != null) {
+            if (t.seller != null) {
                 return -1;
             } else {
                 for (GameResource r : GameResource.values()) {
-                    int diff = trade.offer.get(r) - offer.get(r);
+                    int diff = t.offer.get(r) - offer.get(r);
                     if (diff != 0) return diff;
-                    diff = trade.request.get(r) - request.get(r);
+                    diff = t.request.get(r) - request.get(r);
                     if (diff != 0) return diff;
                 }
                 return 0;
             }
         } else {
-            if (trade.seller == null) {
-                return 1;
-            } else {
-                return seller.username.compareTo(trade.seller.username);
-            }
+            return t.seller == null ? 1 : seller.username.compareTo(t.seller.username);
         }
     }
 
     @Override
     public String toString() {
-        String out = "Trade(" + seller + "/";
+        StringBuilder out = new StringBuilder("Trade(" + seller + "/");
         for (GameResource r : GameResource.values()) {
-            out += request.get(r) + "-" + offer.get(r) + "/";
+            out.append(request.get(r));
+            out.append("-");
+            out.append(offer.get(r));
+            out.append("/");
         }
         return out + ")";
     }

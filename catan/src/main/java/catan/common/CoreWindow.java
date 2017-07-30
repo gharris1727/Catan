@@ -31,23 +31,23 @@ public abstract class CoreWindow extends JFrame {
         }
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                setVisible(false);
-                onClose();
+            public void windowClosing(WindowEvent windowEvent) {
                 synchronized (closeNotification) {
+                    setVisible(false);
+                    onClose();
                     closeNotification.notify();
                 }
             }
         });
         addComponentListener(new ComponentAdapter() {
             @Override
-            public void componentResized(ComponentEvent e) {
+            public void componentResized(ComponentEvent componentEvent) {
                 //Uses the insets of the window to get the real content size of the window.
-                Dimension size = e.getComponent().getSize();
+                Dimension newSize = componentEvent.getComponent().getSize();
                 Insets i = getInsets();
-                size.width -= i.left + i.right;
-                size.height -= i.bottom + i.top;
-                onResize(size);
+                newSize.width -= i.left + i.right;
+                newSize.height -= i.bottom + i.top;
+                onResize(newSize);
             }
         });
         setTitle(title);
@@ -66,14 +66,14 @@ public abstract class CoreWindow extends JFrame {
     protected abstract void onResize(Dimension size);
 
     public void waitForClose() {
-        while (isVisible()) {
-            try {
-                synchronized (closeNotification) {
+        try {
+            synchronized (closeNotification) {
+                while (isVisible()) {
                     closeNotification.wait();
                 }
-            } catch (InterruptedException e) {
-                logger.log(e, LogLevel.WARN);
             }
+        } catch (InterruptedException e) {
+            logger.log(e, LogLevel.WARN);
         }
     }
 }

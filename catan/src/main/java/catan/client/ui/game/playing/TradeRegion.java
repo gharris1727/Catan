@@ -2,6 +2,7 @@ package catan.client.ui.game.playing;
 
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
+import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
@@ -58,7 +59,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
 
     @Override
     public void loadConfig(UIConfig config) {
-        panelSize = RenderMask.parseMask(config.getLayout().narrow("panel.mask"));
+        panelSize = config.getLayout().getRenderMask("panel.mask");
     }
 
     @Override
@@ -89,7 +90,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
 
         @Override
         public void loadConfig(UIConfig config) {
-            setElementSize(RenderMask.parseMask(config.getLayout().narrow("mask")));
+            setElementSize(config.getLayout().getRenderMask("mask"));
         }
 
         @Override
@@ -172,15 +173,15 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
         //Sub-regions
         private final TiledBackground background;
         private final Map<GameResource, EnumCounterEditRegion<GameResource>> counters;
-        private final catan.client.graphics.ui.Button propose;
-        private final catan.client.graphics.ui.Button cancel;
+        private final Button propose;
+        private final Button cancel;
 
         private TradeControlPanel() {
             super("TradeControlPanel", 2, "panel");
             diff = new EnumAccumulator<>(GameResource.class);
             counters = new EnumMap<>(GameResource.class);
             background = new EdgedTiledBackground();
-            propose = new catan.client.graphics.ui.Button("ProposeButton", 1, "propose", "Propose") {
+            propose = new Button("ProposeButton", 1, "propose", "Propose") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     EnumAccumulator<GameResource> request = new EnumAccumulator<>(GameResource.class);
@@ -196,7 +197,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
                     listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
                 }
             };
-            cancel = new catan.client.graphics.ui.Button("CancelButton", 2, "cancel", "Cancel") {
+            cancel = new Button("CancelButton", 2, "cancel", "Cancel") {
                 @Override
                 public void onMouseClick(UserEventListener listener, MouseEvent event) {
                     GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Cancel_Trade, null);
@@ -231,7 +232,7 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
             int index = 0;
             for (GameResource resource : diff) {
                 counters.get(resource).setPosition(new Point(
-                    elementOffset.x + index * elementSpacing.x,
+                        elementOffset.x + (index * elementSpacing.x),
                     elementOffset.y));
                 index++;
             }

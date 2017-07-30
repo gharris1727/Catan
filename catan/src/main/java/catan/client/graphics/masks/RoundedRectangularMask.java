@@ -8,13 +8,14 @@ import java.awt.*;
  */
 public class RoundedRectangularMask extends RenderMask {
 
-    private static final int scale = 4;
+    private static final int SCALE = 4;
 
     private RenderMask corner;
 
     public RoundedRectangularMask(Dimension square) {
         //Auto-sizes the corners to be proportional to the whole window.
-        int radius = (square.width > square.height) ? square.height / scale : square.width / scale;
+
+        int radius = Math.min(square.width, square.height) / SCALE;
         init(square, new Dimension(radius, radius));
     }
 
@@ -24,8 +25,8 @@ public class RoundedRectangularMask extends RenderMask {
     }
 
     private void init(Dimension square, Dimension corner) {
-        this.width = square.width;
-        this.height = square.height;
+        width = square.width;
+        height = square.height;
         this.corner = new RoundMask(corner);
         padding = new int[height];
         widths = new int[height];
@@ -37,11 +38,13 @@ public class RoundedRectangularMask extends RenderMask {
     }
 
     private int getPadding(int lineNumber) {
-        if (lineNumber < corner.getWidth() / 2)
+        if (lineNumber < (corner.getHeight() / 2)) {
             return corner.padding[lineNumber];
-        if (getHeight() - 1 - lineNumber < corner.getHeight() / 2)
-            return getPadding(getHeight() - 1 - lineNumber);
-        return 0;
+        } else if ((getHeight() - 1 - lineNumber) < (corner.getHeight() / 2)) {
+            return corner.padding[getHeight() - 1 - lineNumber];
+        } else {
+            return 0;
+        }
     }
 
     private int getWidth(int lineNumber) {

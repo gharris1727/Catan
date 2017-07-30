@@ -28,7 +28,7 @@ public class HitboxGraphic extends Graphic {
             Arrays.fill(dst, dstPos, dstPos + length, color);
         } else {
             for (int i = 0; i < length; i++) {
-                int dstCurr = i * dstStep + dstPos;
+                int dstCurr = (i * dstStep) + dstPos;
                 dst[dstCurr] = color;
             }
         }

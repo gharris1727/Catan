@@ -43,19 +43,19 @@ public abstract class InternalEvent<O, T extends EventType> extends GenericEvent
         if (this == o) return true;
         if (!(o instanceof InternalEvent)) return false;
 
-        InternalEvent<?,?> that = (InternalEvent<?,?>) o;
+        InternalEvent<?,?> other = (InternalEvent<?,?>) o;
 
-        if (origin != null ? !origin.equals(that.origin) : that.origin != null) return false;
-        if (!type.equals(that.type)) return false;
-        return payload != null ? payload.equals(that.payload) : that.payload == null;
+        if ((origin != null) ? !origin.equals(other.origin) : (other.origin != null)) return false;
+        if (!type.equals(other.type)) return false;
+        return (payload != null) ? payload.equals(other.payload) : (other.payload == null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = origin != null ? origin.hashCode() : 0;
-        result = 31 * result + type.hashCode();
-        result = 31 * result + (payload != null ? payload.hashCode() : 0);
+        int result = (origin != null) ? origin.hashCode() : 0;
+        result = (31 * result) + type.hashCode();
+        result = (31 * result) + ((payload != null) ? payload.hashCode() : 0);
         return result;
     }
 }

@@ -17,21 +17,23 @@ import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
  * Created by Greg on 8/10/2014.
  * Generic generator class that chooses the placement of hexagons on the board.
  */
+@FunctionalInterface
 public interface BoardGenerator extends Serializable {
 
     GameBoard generate(BoardLayout layout, long seed);
 
-    default void setResourceTile(HexagonalArray hexArray, Map<DiceRoll, Set<Coordinate>> diceRolls, Coordinate c, ResourceTile tile) {
+    default void setResourceTile(HexagonalArray hexArray, Map<DiceRoll, Set<Coordinate>> diceRolls, Coordinate coord, ResourceTile tile) {
         DiceRoll diceRoll = tile.getDiceRoll();
-        hexArray.setTile(c, tile);
+        hexArray.setTile(coord, tile);
         Set<Coordinate> coordinates = diceRolls.computeIfAbsent(diceRoll, k -> new HashSet<>());
-        coordinates.add(c);
+        coordinates.add(coord);
     }
 
     //This generator call assumes that only resource tiles have been generated.
@@ -43,22 +45,22 @@ public interface BoardGenerator extends Serializable {
             beachTiles.addAll(CoordTransforms.getAdjacentSpacesFromSpace(c1).values());
         beachTiles.removeAll(landTiles);
 
-        for (Coordinate c : beachTiles) {
+        for (Coordinate coord : beachTiles) {
             Set<Direction> found = EnumSet.noneOf(Direction.class);
-            for (Map.Entry<Direction, Coordinate> e : CoordTransforms.getAdjacentSpacesFromSpace(c).entrySet()) {
+            for (Entry<Direction, Coordinate> e : CoordTransforms.getAdjacentSpacesFromSpace(coord).entrySet()) {
                 Tile t = hexArray.getTile(e.getValue());
-                if (t != null && t instanceof ResourceTile)
+                if ((t != null) && (t instanceof ResourceTile))
                     found.add(e.getKey());
             }
-            hexArray.setTile(c, new BeachTile(Direction.getAverage(found), found.size()));
+            hexArray.setTile(coord, new BeachTile(Direction.getAverage(found), found.size()));
         }
     }
 
     //This generator call assumes beaches have already been generated.
-    default void setTradingPost(HexagonalArray hexArray, Set<Coordinate> tradingPosts, Coordinate c, TradingPostType tradeType) {
-        BeachTile beach = (BeachTile) hexArray.getTile(c);
-        hexArray.setTile(c, new TradeTile(beach.getDirection(), beach.getSides(), tradeType));
-        tradingPosts.add(c);
+    default void setTradingPost(HexagonalArray hexArray, Set<Coordinate> tradingPosts, Coordinate coord, TradingPostType tradeType) {
+        BeachTile beach = (BeachTile) hexArray.getTile(coord);
+        hexArray.setTile(coord, new TradeTile(beach.getDirection(), beach.getSides(), tradeType));
+        tradingPosts.add(coord);
     }
 
     default void setRobber(HexagonalArray hexArray, Coordinate robberLocation) {

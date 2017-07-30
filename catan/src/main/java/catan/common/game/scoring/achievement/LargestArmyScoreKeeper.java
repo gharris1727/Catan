@@ -29,10 +29,6 @@ public class LargestArmyScoreKeeper implements ScoreKeeper {
         if (history.isEmpty())
             throw new EventConsumerException("No event");
         ScoreEvent event = history.pop();
-        try {
-        } catch (Exception e) {
-            throw new EventConsumerException(event, e);
-        }
     }
 
     @Override

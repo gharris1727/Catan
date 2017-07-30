@@ -46,14 +46,14 @@ public class ChatEvent extends ExternalEvent<ChatEventType> {
 
         ChatEvent chatEvent = (ChatEvent) o;
 
-        return message != null ? message.equals(chatEvent.message) : chatEvent.message == null;
+        return (message != null) ? message.equals(chatEvent.message) : (chatEvent.message == null);
 
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (message != null ? message.hashCode() : 0);
+        result = (31 * result) + ((message != null) ? message.hashCode() : 0);
         return result;
     }
 }

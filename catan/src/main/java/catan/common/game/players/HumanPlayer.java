@@ -10,6 +10,7 @@ import catan.common.game.util.EnumAccumulator;
 import catan.common.game.util.EnumCounter;
 import catan.common.game.util.GameResource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.Stack;
@@ -67,18 +68,13 @@ public class HumanPlayer implements Player {
 
     @Override
     public Set<Trade> getTrades() {
-        if (trades.peek() != null)
-            return Collections.singleton(trades.peek());
-        else
-            return Collections.EMPTY_SET;
+        return trades.peek() != null ? Collections.singleton(trades.peek()) : Collections.emptySet();
     }
 
     @Override
     public boolean canMakeTrade(Trade t) {
-        for (GameResource r : GameResource.values())
-            if (!inventory.contains(r, t.getRequest().get(r)))
-                return false;
-        return true;
+        return Arrays.stream(GameResource.values())
+                .allMatch(r -> inventory.contains(r, t.getRequest().get(r)));
     }
 
     @Override
@@ -88,7 +84,7 @@ public class HumanPlayer implements Player {
         for (GameResource resource : inventory)
             count += inventory.get(resource);
         //Integer division is intentional to round down
-        return (count > 7) ? count/2 : 0;
+        return (count > 7) ? (count / 2) : 0;
     }
 
     @Override
@@ -151,6 +147,7 @@ public class HumanPlayer implements Player {
                 if (count != getDiscardCount())
                     return new EventConsumerProblem("Incorrect number of cards discarded.");
                 //Intentionally flow into the next case.
+                //noinspection fallthrough
             case Lose_Resources:
                 EnumCounter<GameResource> loss = (EnumCounter<GameResource>) event.getPayload();
                 for (GameResource r : GameResource.values()) {
@@ -188,7 +185,7 @@ public class HumanPlayer implements Player {
                         return new EventConsumerProblem("Already proposed");
                     boolean trivial = true;
                     for (GameResource r : GameResource.values()) {
-                        if (trade.getOffer().get(r) != 0 || trade.getRequest().get(r) != 0)
+                        if ((trade.getOffer().get(r) != 0) || (trade.getRequest().get(r) != 0))
                             trivial = false;
                         if (!inventory.contains(r, trade.getOffer().get(r)))
                             return new EventConsumerProblem("Insufficient funds");
@@ -258,7 +255,7 @@ public class HumanPlayer implements Player {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if ((o == null) || (getClass() != o.getClass())) return false;
 
         HumanPlayer player = (HumanPlayer) o;
 
@@ -269,6 +266,18 @@ public class HumanPlayer implements Player {
         if (!active.equals(player.active)) return false;
         if (!history.equals(player.history)) return false;
         return (trades.equals(player.trades));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + teamColor.hashCode();
+        result = 31 * result + inventory.hashCode();
+        result = 31 * result + bought.hashCode();
+        result = 31 * result + active.hashCode();
+        result = 31 * result + history.hashCode();
+        result = 31 * result + trades.hashCode();
+        return result;
     }
 
     @Override

@@ -14,19 +14,19 @@ public abstract class ClickableAdapter implements Clickable {
     public void onMouseClick(UserEventListener listener, MouseEvent event) { }
 
     @Override
-    public void onMousePress(UserEventListener listener, MouseEvent e) { }
+    public void onMousePress(UserEventListener listener, MouseEvent event) { }
 
     @Override
-    public void onMouseRelease(UserEventListener listener, MouseEvent e) { }
+    public void onMouseRelease(UserEventListener listener, MouseEvent event) { }
 
     @Override
     public void onKeyTyped(UserEventListener listener, KeyEvent event) { }
 
     @Override
-    public void onKeyPressed(UserEventListener listener, KeyEvent e) { }
+    public void onKeyPressed(UserEventListener listener, KeyEvent event) { }
 
     @Override
-    public void onKeyReleased(UserEventListener listener, KeyEvent e) { }
+    public void onKeyReleased(UserEventListener listener, KeyEvent event) { }
 
     @Override
     public void onMouseScroll(UserEventListener listener, MouseWheelEvent event) { }

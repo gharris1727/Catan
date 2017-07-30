@@ -34,7 +34,7 @@ public class BeachTile extends DirectionalTile {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + sides;
+        result = (31 * result) + sides;
         return result;
     }
 

@@ -14,14 +14,14 @@ public enum ReplayEventType implements EventType {
     Undo(null),
     Save(EditableConfigSource.class);
 
-    private Class payloadType;
+    private final Class type;
 
-    ReplayEventType(Class payloadType) {
-        this.payloadType = payloadType;
+    ReplayEventType(Class type) {
+        this.type = type;
     }
 
     @Override
     public Class getType() {
-        return payloadType;
+        return type;
     }
 }
