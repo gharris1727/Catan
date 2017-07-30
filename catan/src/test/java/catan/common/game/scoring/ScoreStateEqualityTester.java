@@ -8,7 +8,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * Equality tester for a ScoreState.
  */
-public class ScoreStateEqualityTester implements EqualityTester<ScoreState> {
+public final class ScoreStateEqualityTester implements EqualityTester<ScoreState> {
 
     public static final ScoreStateEqualityTester INSTANCE = new ScoreStateEqualityTester();
 

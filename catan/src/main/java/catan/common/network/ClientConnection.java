@@ -23,7 +23,7 @@ public class ClientConnection extends NetConnection {
     }
 
     @Override
-    public void run() {
+    public void handshake() {
         try {
             open = true;
             socket = new Socket(remote.address, remote.port);

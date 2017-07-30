@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * Created by greg on 2/27/16.
  * An enum counting map that can be incremented and decremented.
  */
-public class EnumAccumulator<T extends Enum<T>> implements Serializable, EnumCounter<T> {
+public final class EnumAccumulator<T extends Enum<T>> implements Serializable, EnumCounter<T> {
 
     private final Class<T> tClass;
     private final EnumMap<T, Integer> map;

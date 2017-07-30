@@ -147,7 +147,6 @@ public class HumanPlayer implements Player {
                 if (count != getDiscardCount())
                     return new EventConsumerProblem("Incorrect number of cards discarded.");
                 //Intentionally flow into the next case.
-                //noinspection fallthrough
             case Lose_Resources:
                 EnumCounter<GameResource> loss = (EnumCounter<GameResource>) event.getPayload();
                 for (GameResource r : GameResource.values()) {

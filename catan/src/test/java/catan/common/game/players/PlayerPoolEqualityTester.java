@@ -8,7 +8,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * EqualityTester for the PlayerPool class.
  */
-public class PlayerPoolEqualityTester implements EqualityTester<PlayerPool> {
+public final class PlayerPoolEqualityTester implements EqualityTester<PlayerPool> {
 
     public static final PlayerPoolEqualityTester INSTANCE = new PlayerPoolEqualityTester();
 

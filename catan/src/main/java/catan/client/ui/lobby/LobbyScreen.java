@@ -6,7 +6,8 @@ import catan.client.graphics.ui.UIConfig;
 import catan.client.ui.ClientScreen;
 import catan.common.structure.lobby.Lobby;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 
 /**
  * Created by greg on 1/10/16.
@@ -35,7 +36,7 @@ public class LobbyScreen extends ClientScreen {
     }
 
     @Override
-    public void update() {
+    public final void update() {
         settings.setLobbyConfig(lobby.getConfig());
         userList.forceRender();
     }

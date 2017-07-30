@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
  * Created by greg on 5/28/16.
  * An empty team score card.
  */
-public class NullTeamScore implements TeamScoreReport {
+public final class NullTeamScore implements TeamScoreReport {
 
     public static final NullTeamScore INSTANCE = new NullTeamScore();
 

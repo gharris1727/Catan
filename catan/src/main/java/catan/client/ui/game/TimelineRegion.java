@@ -15,7 +15,9 @@ import catan.common.locale.game.LocalizedGameHistoryPrinter;
 import catan.common.resources.GraphicSet;
 import catan.common.util.MutableInteger;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.EnumMap;
@@ -213,8 +215,8 @@ public class TimelineRegion extends ConfigurableScreenRegion implements Updatabl
         @Override
         protected void renderContents() {
             label.setText(printer.getLocalization(event));
-            Dimension labelSize = label.getGraphic().getMask().getSize();
-            setMask(new RectangularMask(new Dimension(labelSize.width + (spacing << 1), labelSize.height + (spacing << 1))));
+            RenderMask labelSize = label.getGraphic().getMask();
+            setMask(new RectangularMask(new Dimension(labelSize.getWidth() + (spacing << 1), labelSize.getHeight() + (spacing << 1))));
             center(label);
         }
 

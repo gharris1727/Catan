@@ -4,7 +4,8 @@ import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.screen.ScreenRegion;
 import catan.client.renderer.NotYetRenderableException;
 
-import java.awt.*;
+import java.awt.Insets;
+import java.awt.Point;
 
 /**
  * Created by greg on 1/21/16.
@@ -58,10 +59,8 @@ public abstract class ScrollingScreenRegion extends ConfigurableScreenRegion imp
 
     protected void updateBounds() {
         if (isRenderable()) {
-            Dimension thisSize = getMask().getSize();
-            Dimension hostMask = getHostMask().getSize();
-            minX = hostMask.width - thisSize.width;
-            minY = hostMask.height - thisSize.height;
+            minX = getHostMask().getWidth() - getMask().getWidth();
+            minY = getHostMask().getHeight() - getMask().getHeight();
             maxX = 0;
             maxY = 0;
             checkBounds();

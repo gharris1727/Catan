@@ -61,7 +61,7 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
     //Historical event data
     final Stack<GameHistory> history;
 
-    final GameObserver observer;
+    private GameObserver observer;
 
     public CatanGame(GameSettings settings) {
         rules = settings.rules;
@@ -75,10 +75,12 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         scoring = new ScoreState(board, players, teams);
         gameListeners = new ArrayList<>();
         triggerListeners = new ArrayList<>();
-        observer = new GameObserver(this);
     }
 
-    public GameObserver getObserver() {
+    public synchronized GameObserver getObserver() {
+        if (observer == null) {
+            observer = new GameObserver(this);
+        }
         return observer;
     }
 

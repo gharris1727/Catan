@@ -6,7 +6,7 @@ import catan.client.graphics.ui.*;
 import catan.client.input.UserEventListener;
 import catan.client.ui.PopupWindow;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,10 +102,10 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TaskbarMenu that = (TaskbarMenu) o;
+        TaskbarMenu other = (TaskbarMenu) o;
 
-        if (!background.equals(that.background)) return false;
-        return popup.equals(that.popup);
+        if (!background.equals(other.background)) return false;
+        return popup.equals(other.popup);
     }
 
     @Override

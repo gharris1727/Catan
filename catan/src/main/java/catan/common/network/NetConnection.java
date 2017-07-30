@@ -16,7 +16,7 @@ import java.net.SocketException;
  * Created by Greg on 8/11/2014.
  * Generic connection class with buffers and IO functions built in.
  */
-public abstract class NetConnection implements Runnable {
+public abstract class NetConnection {
 
     protected final Logger logger;
     protected final EventProcessor<GenericEvent> host;
@@ -36,36 +36,12 @@ public abstract class NetConnection implements Runnable {
         this.host = host;
         this.logger = logger;
         this.remote = remote;
-        //Thread to establish a connection, uses this class' own run() method from Runnable.
-        connect = new Thread(this);
-        //Thread to accept incoming objects and sendEvent them to the process implementation.
-        receive = new Thread(() -> {
-            while (open) {
-                try {
-                    process((NetEvent) in.readObject());
-                } catch (SocketException | EOFException e) {
-                    onClose(e);
-                } catch (Exception e) {
-                    onError("Receive", e);
-                }
-            }
-        }, "Receive");
-        //Thread to close the socket and sever the connection.
-        disconnect = new Thread(() -> {
-            open = false;
-            try {
-                connect.join();
-                if (in != null)
-                    in.close();
-                if (out != null)
-                    out.close();
-                if (socket != null)
-                    socket.close();
-                receive.join();
-            } catch (Exception e) {
-                onError("Disconnect", e);
-            }
-        }, "Disconnect");
+        // Thread to establish the connection and perform an initial handshake.
+        connect = new Thread(this::handshake);
+        // Thread to continuously read data from the stream and process it.
+        receive = new Thread(this::read, "Receive");
+        // Thread to close the connection and clean up.
+        disconnect = new Thread(this::close, "Disconnect");
     }
 
     public void sendEvent(NetEventType type, Object payload) {
@@ -86,6 +62,36 @@ public abstract class NetConnection implements Runnable {
             open = false;
         event.setConnection(this);
         host.addEvent(event);
+    }
+
+    protected abstract void handshake();
+
+    private void read() {
+        while (open) {
+            try {
+                process((NetEvent) in.readObject());
+            } catch (SocketException | EOFException e) {
+                onClose(e);
+            } catch (Exception e) {
+                onError("Receive", e);
+            }
+        }
+    }
+
+    private void close() {
+        open = false;
+        try {
+            connect.join();
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+            if (socket != null)
+                socket.close();
+            receive.join();
+        } catch (Exception e) {
+            onError("Disconnect", e);
+        }
     }
 
     public void connect() {

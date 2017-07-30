@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
  * Created by greg on 5/28/16.
  * A dummy player score object.
  */
-public class NullPlayerScore implements PlayerScoreReport {
+public final class NullPlayerScore implements PlayerScoreReport {
 
     public static final NullPlayerScore INSTANCE = new NullPlayerScore();
 

@@ -3,7 +3,6 @@ package catan.client.ui.serverconnectmenu;
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.masks.RoundedRectangularMask;
-import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
@@ -13,7 +12,9 @@ import catan.client.structure.ServerPool;
 import catan.client.ui.ClientScreen;
 import catan.client.ui.PopupWindow;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
@@ -175,30 +176,18 @@ public class ServerConnectMenu extends ClientScreen {
         private ServerListFooter() {
             super("Footer", 2, "footer");
             background = new EdgedTiledBackground();
-            newButton = new Button("NewButton", 1, "new", "New") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    detail(null);
-                }
-            };
-            editButton = new Button("EditButton", 1, "edit", "Edit") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    if (selected != null) detail(selected);
-                }
-            };
-            connectButton = new Button("ConenctButton", 1, "connect", "Connect") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    connect(listener);
-                }
-            };
-            passwordBox = new TextBox("PasswordBox", 1, "password", "Password", false) {
-                @Override
-                public void onAccept(UserEventListener listener) {
-                    connect(listener);
-                }
-            };
+            newButton = new Button("NewButton", 1, "new", "New", (listener) -> {
+                detail(null);
+            });
+            editButton = new Button("EditButton", 1, "edit", "Edit", (listener) -> {
+                if (selected != null) detail(selected);
+            });
+            connectButton = new Button("ConenctButton", 1, "connect",
+                    "Connect", this::connect);
+            passwordBox = new TextBox("PasswordBox", 1, "password",
+                    "Password",
+                    false,
+                    this::connect);
             //Add the objects to the screen
             add(background).setClickable(this);
             add(newButton);
@@ -212,6 +201,10 @@ public class ServerConnectMenu extends ClientScreen {
                 editPopup = new ServerDetailPopup(selected);
                 editPopup.display();
             }
+        }
+
+        private void connect(UserEventListener listener, String ignored) {
+            connect(listener);
         }
 
         private void connect(UserEventListener listener) {
@@ -246,42 +239,23 @@ public class ServerConnectMenu extends ClientScreen {
             super("ServerDetails", "serverdetail", ServerConnectMenu.this);
             this.server = server;
             background = new EdgedTiledBackground();
-            hostname = new TextBox("HostnameBox", 1, "hostname" ,(server == null) ? "Hostname" : server.getHostname(), server != null) {
-                @Override
-                protected void onAccept(UserEventListener listener) {
-                    submit(listener);
-                }
-            };
-            port = new TextBox("PortBox", 1, "port" ,(server == null) ? "Port" : server.getPort(), server != null) {
-                @Override
-                protected void onAccept(UserEventListener listener) {
-                    submit(listener);
-                }
-            };
-            username = new TextBox("UsernameBox", 1, "username" ,(server == null) ? "Username" : server.getUsername(), server != null) {
-                @Override
-                protected void onAccept(UserEventListener listener) {
-                    submit(listener);
-                }
-            };
-            saveButton = new Button("SaveButton", 1, "save", "Save") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    submit(listener);
-                }
-            };
-            deleteButton = new Button("DeleteButton", 1, "delete", "Delete") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    delete(listener);
-                }
-            };
-            cancelButton = new Button("CancelButton", 1, "cancel", "Cancel") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    expire();
-                }
-            };
+            hostname = new TextBox("HostnameBox", 1, "hostname",
+                    (server == null) ? "Hostname" : server.getHostname(),
+                    server != null,
+                    this::submit);
+            port = new TextBox("PortBox", 1, "port",
+                    (server == null) ? "Port" : server.getPort(),
+                    server != null,
+                    this::submit);
+            username = new TextBox("UsernameBox", 1, "username",
+                    (server == null) ? "Username" : server.getUsername(),
+                    server != null,
+                    this::submit);
+            saveButton = new Button("SaveButton", 1, "save", "Save", this::submit);
+            deleteButton = new Button("DeleteButton", 1, "delete", "Delete", this::delete);
+            cancelButton = new Button("CancelButton", 1, "cancel", "Cancel", (listener) -> {
+                expire();
+            });
             add(background).setClickable(this);
             add(hostname);
             add(port);
@@ -300,6 +274,10 @@ public class ServerConnectMenu extends ClientScreen {
         private void delete(UserEventListener listener) {
             listener.onUserEvent(new UserEvent(this, UserEventType.Server_Remove, server));
             expire();
+        }
+
+        private void submit(UserEventListener listener, String ignored) {
+            submit(listener);
         }
 
         private void submit(UserEventListener listener) {

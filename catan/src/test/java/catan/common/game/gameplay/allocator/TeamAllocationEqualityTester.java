@@ -7,7 +7,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * An EqualityTester for allocations of users to teams.
  */
-public class TeamAllocationEqualityTester implements EqualityTester<TeamAllocation> {
+public final class TeamAllocationEqualityTester implements EqualityTester<TeamAllocation> {
 
     public static final TeamAllocationEqualityTester INSTANCE = new TeamAllocationEqualityTester();
 

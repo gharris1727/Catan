@@ -1,70 +1,98 @@
 package catan.client.graphics.masks;
 
-import java.awt.*;
+import java.awt.Dimension;
+
+import static catan.client.graphics.masks.SymmetricMask.Direction.HORIZONTAL;
 
 /**
  * Created by Greg on 8/21/2014.
- * A mask that traces a circular/oval shape
- * This behaves differently than other render masks, where it pre-generates the array
- * and uses that to look up values, rather than generating the array from the look-ups.
+ * A circle/elliptical mask that traces a rounded shape.
  */
-public class RoundMask extends RenderMask {
+public class RoundMask extends CachedMask {
 
     public RoundMask(Dimension size) {
-        setSize(size.width, size.height);
-        generate((width - 1) / 2, (height - 1) / 2, (width - 1) / 2, (height - 1) / 2);
-        init();
-    }
+        super(new SymmetricMask(HORIZONTAL, new RenderMask() {
 
-    private void generate(int xc, int yc, int a, int b) {
-        //TODO: parse this function.
-        int x = 0;
-        int y = b;
-        int width = 1;
-        long a2 = (long) a * a;
-        long b2 = (long) b * b;
-        long crit1 = -((a2 / 4) + (a % 2) + b2);
-        long crit2 = -((b2 / 4) + (b % 2) + a2);
-        long crit3 = -((b2 / 4) + (b % 2));
-        long t = -a2 * y; /* e(x+1/2,y-1/2) - (a^2+b^2)/4 */
-        long dxt = 2 * b2 * x;
-        long dyt = -2 * a2 * y;
-        long d2xt = 2 * b2;
-        long d2yt = 2 * a2;
+            private int[] padding = new int[size.height];
+            private int[] widths = new int[size.height];
 
-        while ((y >= 0) && (x <= a)) {
-            if (((t + (b2 * x)) <= crit1) ||     /* e(x+1,y-1/2) <= 0 */
-                    ((t + (a2 * y)) <= crit3)) {     /* e(x+1/2,y) <= 0 */
-                x++;
-                dxt += d2xt;
-                t += dxt;
-                width += 2;
-            } else if ((t - (a2 * y)) > crit2) { /* e(x+1/2,y-1) > 0 */
-                row(xc - x, yc - y, width);
-                if (y != 0)
-                    row(xc - x, yc + y, width);
-                y--;
-                dyt += d2yt;
-                t += dyt;
-            } else {
-                row(xc - x, yc - y, width);
-                if (y != 0)
-                    row(xc - x, yc + y, width);
-                x++;
-                dxt += d2xt;
-                t += dxt;
-                y--;
-                dyt += d2yt;
-                t += dyt;
-                width += 2;
+            @Override
+            public int getWidth() {
+                return size.width;
             }
-        }
-        if (b == 0)
-            row(xc - a, yc, (2 * a) + 1);
+
+            @Override
+            public int getHeight() {
+                return size.height;
+            }
+
+            @Override
+            public int getLinePadding(int line) {
+                return padding[line];
+            }
+
+            @Override
+            public int getLineWidth(int line) {
+                return widths[line];
+            }
+
+            {
+                int horizRadius = (size.width - 1) / 2;
+                int vertRadius = (size.height - 1) / 2;
+
+                if (vertRadius == 0 && size.height != 0) {
+                    row(0, 0, size.width);
+                } else {
+                    //TODO: parse this function.
+                    int x = 0;
+                    int y = vertRadius;
+                    int width = 1;
+                    long horizRadiusSquared = (long) horizRadius * horizRadius;
+                    long vertRadiusSquared = (long) vertRadius * vertRadius;
+                    long crit1 = -((horizRadiusSquared / 4) + (horizRadius % 2) + vertRadiusSquared);
+                    long crit2 = -((vertRadiusSquared / 4) + (vertRadius % 2) + horizRadiusSquared);
+                    long crit3 = -((vertRadiusSquared / 4) + (vertRadius % 2));
+                    long t = -horizRadiusSquared * y; /* e(x+1/2,y-1/2) - (a^2+b^2)/4 */
+                    long dxt = 2 * vertRadiusSquared * x;
+                    long dyt = -2 * horizRadiusSquared * y;
+                    long d2xt = 2 * vertRadiusSquared;
+                    long d2yt = 2 * horizRadiusSquared;
+
+                    while ((y >= 0) && (x <= horizRadius)) {
+                        if (((t + (vertRadiusSquared * x)) <= crit1) ||     /* e(x+1,y-1/2) <= 0 */
+                                ((t + (horizRadiusSquared * y)) <= crit3)) {     /* e(x+1/2,y) <= 0 */
+                            x++;
+                            dxt += d2xt;
+                            t += dxt;
+                            width += 2;
+                        } else if ((t - (horizRadiusSquared * y)) > crit2) { /* e(x+1/2,y-1) > 0 */
+                            row(horizRadius - x, vertRadius - y, width);
+                            if (y != 0)
+                                row(horizRadius - x, vertRadius + y, width);
+                            y--;
+                            dyt += d2yt;
+                            t += dyt;
+                        } else {
+                            row(horizRadius - x, vertRadius - y, width);
+                            if (y != 0)
+                                row(horizRadius - x, vertRadius + y, width);
+                            x++;
+                            dxt += d2xt;
+                            t += dxt;
+                            y--;
+                            dyt += d2yt;
+                            t += dyt;
+                            width += 2;
+                        }
+                    }
+                }
+            }
+
+            private void row(int x, int y, int len) {
+                padding[y] = x;
+                widths[y] = len;
+            }
+        }));
     }
 
-    private void row(int x, int y, int len) {
-        padding[y] = x;
-        widths[y] = len;
-    }
 }

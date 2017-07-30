@@ -20,7 +20,7 @@ import catan.common.game.gameplay.trade.TradingPostType;
 import catan.common.game.gamestate.DiceRoll;
 import catan.common.game.teams.TeamColor;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -171,7 +171,6 @@ public class GameBoard implements ReversibleEventConsumer<BoardEvent> {
                 if (!foundRoad)
                     return new EventConsumerProblem("No adjoining road");
                 //Intentionally flow into the next case.
-                //noinspection fallthrough
             case Place_Outpost:
                 //If the town is not ready for settling
                 if (!(hexArray.getTown(c) instanceof EmptyTown))

@@ -107,7 +107,7 @@ public class CardList extends ConfigurableScreenRegion {
         }
     }
 
-    private class GameResourceIcon extends CardIcon {
+    private final class GameResourceIcon extends CardIcon {
 
         //Instance information
         private final GameResource gameResource;
@@ -141,7 +141,7 @@ public class CardList extends ConfigurableScreenRegion {
         }
     }
 
-    private class DevelopmentCardIcon extends CardIcon {
+    private final class DevelopmentCardIcon extends CardIcon {
 
         //Instance information
         private final DevelopmentCard developmentCard;

@@ -13,7 +13,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * A tester to assert the equality of two CatanGames.
  */
-public class CatanGameEqualityTester implements EqualityTester<CatanGame> {
+public final class CatanGameEqualityTester implements EqualityTester<CatanGame> {
 
     public static final CatanGameEqualityTester INSTANCE = new CatanGameEqualityTester();
 

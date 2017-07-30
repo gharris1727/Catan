@@ -1,10 +1,8 @@
 package catan.client.ui.game.playing;
 
 import catan.client.graphics.masks.RenderMask;
-import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
-import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
 import catan.client.ui.PopupWindow;
 import catan.common.crypto.Username;
@@ -13,8 +11,7 @@ import catan.common.game.event.GameEventType;
 import catan.common.game.util.EnumAccumulator;
 import catan.common.game.util.GameResource;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
+import java.awt.Point;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -46,14 +43,11 @@ public class DiscardPopup extends PopupWindow {
             counters.put(resource, counter);
             add(counter);
         }
-        accept = new Button("AcceptButton", 2, "accept", "Accept") {
-            @Override
-            public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                EnumAccumulator<GameResource> copy = new EnumAccumulator<>(GameResource.class, amount);
-                GameEvent gameEvent = new GameEvent(username, GameEventType.Discard_Resources, copy);
-                listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
-            }
-        };
+        accept = new Button("AcceptButton", 2, "accept", "Accept", (listener) -> {
+            EnumAccumulator<GameResource> copy = new EnumAccumulator<>(GameResource.class, amount);
+            GameEvent gameEvent = new GameEvent(username, GameEventType.Discard_Resources, copy);
+            listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
+        });
         add(background).setClickable(this);
         add(accept);
     }

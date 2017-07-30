@@ -7,7 +7,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * EqualityTester for the TeamPool class.
  */
-public class TeamPoolEqualityTester implements EqualityTester<TeamPool> {
+public final class TeamPoolEqualityTester implements EqualityTester<TeamPool> {
 
     public static final TeamPoolEqualityTester INSTANCE = new TeamPoolEqualityTester();
 

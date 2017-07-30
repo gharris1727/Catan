@@ -1,110 +1,38 @@
 package catan.client.graphics.masks;
 
-import catan.common.IllegalStateException;
-
-import java.awt.*;
-import java.util.Arrays;
-
 /**
- * Created by Greg on 8/14/2014.
- * Mask for rendering complex shapes to the screen.
- * Returns two Iterators describing the shape that should be rendered.
- * Immutable at all times.
+ * Created by greg on 7/30/17.
+ * A type of object that defines a rasterized area made up of contguous segments.
  */
-public abstract class RenderMask {
+public interface RenderMask {
 
-    protected int width;
-    protected int height;
-    protected int[] padding;
-    protected int[] widths;
+    int getWidth();
 
-    protected void setSize(int width, int height) {
-        this.width = width;
-        this.height = height;
-        this.padding = new int[height];
-        this.widths = new int[height];
-    }
+    int getHeight();
 
-    protected void init() {
-        if ((padding == null) || (widths == null))
-            throw new IllegalStateException("Mask arrays not instantiated.");
-        if ((height != padding.length) || (height != widths.length))
-            throw new IllegalStateException("Mask height inconsistent");
-        for (int row = 0; row < height; row++)
-            if ((padding[row] + widths[row]) > width)
-                throw new IllegalStateException("Mask width inconsistent.");
-    }
+    int getLinePadding(int line);
 
-    public int getWidth() {
-        return width;
-    }
+    int getLineWidth(int line);
 
-    public int getHeight() {
-        return height;
-    }
-
-    public Dimension getSize() {
-        return new Dimension(width, height);
-    }
-
-    public int[] getPadding() {
-        return padding;
-    }
-
-    public int[] getWidths() {
-        return widths;
-    }
-
-    public int getIndex(Point p) {
-        return getIndex(p.x, p.y);
-    }
-
-    public int getIndex(int x, int y) {
+    default int getIndex(int x, int y) {
         if (!containsPoint(x, y))
             throw new IllegalArgumentException("Coordinate outside of mask bounds.");
-        return (y * getWidth()) + x;
+        return y * getWidth() + x;
     }
 
-    public boolean hasContent() {
-        return (width > 0) && (height > 0);
+    default boolean hasContent() {
+        return getWidth() != 0 && getHeight() != 0;
     }
 
-    public boolean containsPoint(Point p) {
-        return containsPoint(p.x, p.y);
-    }
-
-    public boolean containsPoint(int x, int y) {
-        if ((y < 0) || (y >= height))
+    default boolean containsPoint(int x, int y) {
+        if ((y < 0) || (y >= getHeight()))
             return false;
-        int minX = padding[y];
-        int maxX = minX + widths[y];
+        int minX = getLinePadding(y);
+        int maxX = minX + getLineWidth(y);
         return (x >= minX) && (x < maxX);
     }
 
-    @Override
-    public int hashCode() {
-        int hash = width;
-        hash = (31 * hash) + height;
-        hash = (31 * hash) + Arrays.hashCode(padding);
-        hash = (31 * hash) + Arrays.hashCode(widths);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (o instanceof RenderMask) {
-            RenderMask mask = (RenderMask) o;
-            return (width == mask.width) && (height == mask.height)
-                    && Arrays.equals(padding, mask.padding)
-                    && Arrays.equals(widths, mask.widths);
-        }
+    default boolean isAccelerable() {
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return "RenderMask(" + width + "/" + height + ")";
     }
 }

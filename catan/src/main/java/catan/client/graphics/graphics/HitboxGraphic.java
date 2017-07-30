@@ -2,7 +2,7 @@ package catan.client.graphics.graphics;
 
 import catan.client.graphics.masks.RenderMask;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.Arrays;
 
 /**
@@ -18,7 +18,7 @@ public class HitboxGraphic extends Graphic {
 
     //Get the color of the secondary array at a specified point.
     public int getClickableColor(Point p) {
-        return pixels[mask.getIndex(p)];
+        return pixels[mask.getIndex(p.x, p.y)];
     }
 
     //Copy pixels and clickable pixels, using faster method if possible.

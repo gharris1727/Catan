@@ -98,7 +98,7 @@ public class ReplayTest {
     }
 
     @Test
-    public void testExistingGame() throws Exception {
+    public void testExistingGame() throws EventConsumerException, ReplayFormatException {
         Replay replay = new Replay(genesis);
         for (GameEvent e : gameA) {
             replay.execute(e);

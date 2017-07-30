@@ -2,7 +2,6 @@ package catan.common.resources;
 
 import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.graphics.GraphicSource;
-import catan.client.graphics.masks.RenderMask;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.gameplay.layout.DynamicBoardLayout;
 import catan.common.game.gameplay.layout.StaticBoardLayout;
@@ -42,12 +41,8 @@ public final class ResourceLoader {
         protected synchronized Graphic load(GraphicInfo info) {
             try {
                 GraphicSource s = getGraphicSource(info.getSource());
-                RenderMask m = info.getMask();
-                Graphic graphic = new Graphic(s, m, info.getLocation(), true);
-                int[] swaps = info.getSwaps();
-                if (swaps != null)
-                    for (int i = 0; i < swaps.length; i +=2 )
-                        graphic.swap(swaps[i],swaps[i+1]);
+                Graphic graphic = new Graphic(s, info.getMask(), info.getLocation(), true);
+                graphic.applySwaps(info.getSwaps());
                 return graphic;
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);

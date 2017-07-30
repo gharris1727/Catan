@@ -10,7 +10,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * An EqualityTester for the Player class.
  */
-public class PlayerEqualityTester implements EqualityTester<Player> {
+public final class PlayerEqualityTester implements EqualityTester<Player> {
 
     public static final PlayerEqualityTester INSTANCE = new PlayerEqualityTester();
 

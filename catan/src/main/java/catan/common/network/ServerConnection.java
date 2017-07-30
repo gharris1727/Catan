@@ -24,7 +24,7 @@ public class ServerConnection extends NetConnection {
     }
 
     @Override
-    public void run() {
+    public void handshake() {
         try {
             open = true;
             out = new ObjectOutputStream(socket.getOutputStream());

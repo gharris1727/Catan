@@ -24,7 +24,6 @@ public class PlayerPool implements ReversibleEventConsumer<PlayerEvent>, Iterabl
         players = new HashMap<>();
         for (Entry<Username, TeamColor> entry : teamAllocation.getPlayerTeams().entrySet())
             players.put(entry.getKey(), new HumanPlayer(entry.getKey(), entry.getValue()));
-        players.put(null, new Bank());
         discards = new Stack<>();
         discards.push(new HashSet<>());
         history = new Stack<>();

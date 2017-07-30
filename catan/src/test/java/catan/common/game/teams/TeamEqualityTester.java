@@ -7,7 +7,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * an EqualityTester for Team objects.
  */
-public class TeamEqualityTester implements EqualityTester<Team> {
+public final class TeamEqualityTester implements EqualityTester<Team> {
 
     public static final TeamEqualityTester INSTANCE = new TeamEqualityTester();
 

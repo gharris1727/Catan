@@ -65,7 +65,7 @@ public class Lobby implements Serializable {
         return config;
     }
 
-    public void setConfig(LobbyConfig config) {
+    public final void setConfig(LobbyConfig config) {
         this.config = config;
     }
 

@@ -5,12 +5,11 @@ import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.UIConfig;
-import catan.client.input.UserEventListener;
 import catan.client.ui.ClientScreen;
 import catan.common.structure.lobby.MatchmakingPool;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
+import java.awt.Dimension;
+import java.awt.Point;
 
 /**
  * Created by Greg on 1/17/2015.
@@ -84,36 +83,27 @@ public class LobbyJoinMenu extends ClientScreen {
 
         private LobbyTabRegion() {
             super("LobbyTabs", 0, "tabs");
-            pregame = new Button("PregameButton", 0, "pregame", "Join") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    LobbyJoinMenu.this.clear();
-                    LobbyJoinMenu.this.add(lobbyTabs);
-                    LobbyJoinMenu.this.add(pregameLobbies);
-                    LobbyJoinMenu.this.add(userList);
-                    update();
-                }
-            };
-            ingame = new Button("SpectateButton", 0, "ingame", "Spectate") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    LobbyJoinMenu.this.clear();
-                    LobbyJoinMenu.this.add(lobbyTabs);
-                    LobbyJoinMenu.this.add(ingameLobbies);
-                    LobbyJoinMenu.this.add(userList);
-                    update();
-                }
-            };
-            create = new Button("CreateNew", 0, "create", "Create Game") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    LobbyJoinMenu.this.clear();
-                    LobbyJoinMenu.this.add(lobbyTabs);
-                    LobbyJoinMenu.this.add(createLobby);
-                    LobbyJoinMenu.this.add(userList);
-                    update();
-                }
-            };
+            pregame = new Button("PregameButton", 0, "pregame", "Join", (listener) -> {
+                LobbyJoinMenu.this.clear();
+                LobbyJoinMenu.this.add(lobbyTabs);
+                LobbyJoinMenu.this.add(pregameLobbies);
+                LobbyJoinMenu.this.add(userList);
+                update();
+            });
+            ingame = new Button("SpectateButton", 0, "ingame", "Spectate", (listener) -> {
+                LobbyJoinMenu.this.clear();
+                LobbyJoinMenu.this.add(lobbyTabs);
+                LobbyJoinMenu.this.add(ingameLobbies);
+                LobbyJoinMenu.this.add(userList);
+                update();
+            });
+            create = new Button("CreateNew", 0, "create", "Create Game", (listener) -> {
+                LobbyJoinMenu.this.clear();
+                LobbyJoinMenu.this.add(lobbyTabs);
+                LobbyJoinMenu.this.add(createLobby);
+                LobbyJoinMenu.this.add(userList);
+                update();
+            });
             add(pregame);
             add(ingame);
             add(create);

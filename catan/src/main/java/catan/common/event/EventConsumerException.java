@@ -18,10 +18,6 @@ public class EventConsumerException extends Exception {
         this(message, null, null);
     }
 
-    public EventConsumerException(String message, GenericEvent event) {
-        this(message, event, null);
-    }
-
     public EventConsumerException(String message, Throwable t) {
         this(message, null, t);
     }

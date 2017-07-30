@@ -8,10 +8,10 @@ import catan.client.input.Clickable;
 import catan.client.renderer.NotYetRenderableException;
 import catan.client.renderer.RenderThread;
 import catan.common.profiler.TimeSlice;
+import org.jetbrains.annotations.Contract;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created by Greg on 1/1/2015.
@@ -47,7 +47,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         transparency = true;
     }
 
-    @Override
+    @Contract(pure = true)
     public final RenderMask getMask() {
         return mask;
     }
@@ -73,7 +73,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
     }
 
     //Clear the screen of any objects. A render after this will not have anything visible.
-    protected void clear() {
+    protected final void clear() {
         priorityMap = new TreeMap<>();
         clickableColorMap = new HashMap<>();
     }
@@ -84,7 +84,7 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         //TODO: if possible, use rectangular collision boxes rather than pixel based collisions.
         //Find out what the redirect would have been.
         Clickable result = super.getClickable(p);
-        if ((result == this) && (pixelHitbox != null) && mask.containsPoint(p)) {
+        if ((result == this) && (pixelHitbox != null) && mask.containsPoint(p.x, p.y)) {
             //There was no redirect object specified, and we are already rendered.
             int color = pixelHitbox.getClickableColor(p);
             ScreenObject object = clickableColorMap.get(color);

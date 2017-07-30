@@ -19,7 +19,7 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
     private Graphic current;
     private boolean needsRendering;
 
-    public AnimatedObject(String name, int priority, boolean loop) {
+    protected AnimatedObject(String name, int priority, boolean loop) {
         super(name, priority);
         this.loop = loop;
         frames = new LinkedList<>();
@@ -32,7 +32,7 @@ public abstract class AnimatedObject extends ScreenObject implements Animated {
     }
 
     @Override
-    public void reset() {
+    public final void reset() {
         it = frames.iterator();
         needsRendering = true;
     }

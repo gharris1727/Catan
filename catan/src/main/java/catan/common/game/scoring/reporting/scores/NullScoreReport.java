@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
  * Created by greg on 5/28/16.
  * A score report with no contents.
  */
-public class NullScoreReport implements ScoreReport {
+public final class NullScoreReport implements ScoreReport {
 
     public static final NullScoreReport INSTANCE = new NullScoreReport();
 

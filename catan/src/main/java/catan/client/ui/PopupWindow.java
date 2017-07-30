@@ -6,7 +6,7 @@ import catan.client.input.UserEventListener;
 import catan.client.renderer.RenderEvent;
 import catan.client.renderer.RenderEventType;
 
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * Created by greg on 4/3/16.
@@ -33,12 +33,10 @@ public abstract class PopupWindow extends ScrollingScreenRegion {
     @Override
     protected void updateBounds() {
         if (isRenderable()){
-            Dimension thisSize = getMask().getSize();
-            Dimension hostMask = getHostMask().getSize();
             minX = 0;
             minY = 0;
-            maxX = hostMask.width - thisSize.width;
-            maxY = hostMask.height - thisSize.height;
+            maxX = getHostMask().getWidth() - getMask().getWidth();
+            maxY = getHostMask().getHeight() - getMask().getHeight();
         }
     }
 

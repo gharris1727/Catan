@@ -79,10 +79,9 @@ public class PropertiesFile extends RootConfigSource implements EditableConfigSo
 
     @Override
     public Iterator<Entry<String, String>> iterator() {
-        //Get the iterator from the internal storage
-        Iterator<Entry<Object, Object>> objIterator = file.entrySet().iterator();
-        //We cant cast, so we need to cast everything individually.
         return new Iterator<Entry<String, String>>() {
+            private Iterator<Entry<Object, Object>> objIterator = file.entrySet().iterator();
+
             @Override
             public boolean hasNext() {
                 return objIterator.hasNext();

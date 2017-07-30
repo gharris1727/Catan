@@ -7,7 +7,7 @@ import org.junit.Assert;
  * Created by greg on 7/9/16.
  * EqualityTester for the GameBoard class.
  */
-public class GameBoardEqualityTester implements EqualityTester<GameBoard> {
+public final class GameBoardEqualityTester implements EqualityTester<GameBoard> {
     
     public static final GameBoardEqualityTester INSTANCE = new GameBoardEqualityTester();
 

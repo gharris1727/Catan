@@ -80,7 +80,6 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     if (round == 1) {
                         state = TeamState.Done;
                     }
-                    //noinspection fallthrough
                 case Finish_Turn:
                     round--;
                     break;
@@ -172,7 +171,6 @@ public class Team implements ReversibleEventConsumer<TeamEvent> {
                     if (round == 0) {
                         state = TeamState.Outpost;
                     }
-                    //noinspection fallthrough
                 case Finish_Turn:
                     round++;
                     break;

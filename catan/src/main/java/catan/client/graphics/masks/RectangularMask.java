@@ -1,18 +1,39 @@
 package catan.client.graphics.masks;
 
-import java.awt.*;
-import java.util.Arrays;
+import java.awt.Dimension;
 
 /**
  * Created by Greg on 8/14/2014.
  * Generic mask for use with any normal rectangular/square sprite.
  */
-public class RectangularMask extends RenderMask {
+public class RectangularMask extends CachedMask {
 
     public RectangularMask(Dimension size) {
-        setSize(size.width, size.height);
-        Arrays.fill(widths, width);
-        init();
+        super(new RenderMask() {
+            @Override
+            public int getWidth() {
+                return size.width;
+            }
+
+            @Override
+            public int getHeight() {
+                return size.height;
+            }
+
+            @Override
+            public int getLinePadding(int line) {
+                return 0;
+            }
+
+            @Override
+            public int getLineWidth(int line) {
+                return size.width;
+            }
+        });
     }
 
+    @Override
+    public boolean isAccelerable() {
+        return true;
+    }
 }

@@ -1,40 +1,37 @@
 package catan.client.graphics.masks;
 
-import java.awt.*;
+import java.awt.Dimension;
+
+import static catan.client.graphics.masks.SymmetricMask.Direction.HORIZONTAL;
 
 /**
  * Created by Greg on 8/14/2014.
- * Helper class to generate iterators describing the masking on a hexagonal sprite.
- * Warning: most of what happens in this class is magic and needs the test class to be sure it works.
+ * Hexagon shaped mask that has flats up and down, and angles to the side.
  */
-public class HexagonalMask extends RenderMask {
-
+public class HexagonalMask extends CachedMask {
 
     public HexagonalMask(Dimension size) {
-        setSize(size.width, size.height);
-        for (int i = 0; i < height; i++) {
-            padding[i] = getLeftPadding(i);
-            widths[i] = getLineWidth(i);
-        }
-        init();
-    }
+        super(new SymmetricMask(HORIZONTAL, new RenderMask() {
+            @Override
+            public int getWidth() {
+                return size.width;
+            }
 
-    private int getLeftPadding(int lineNumber) {
-        if ((lineNumber * 2) > getHeight()) {
-            lineNumber = getHeight() - 1 - lineNumber;
-        }
-        return (width - getLineWidth(lineNumber)) / 2;
-    }
+            @Override
+            public int getHeight() {
+                return size.height;
+            }
 
-    private int getLineWidth(int lineNumber) {
-        if ((lineNumber * 2) > getHeight()) {
-            lineNumber = getHeight() - 1 - lineNumber;
-        }
-        return width - (2 * (getCenter(lineNumber) / 2));
-    }
+            @Override
+            public int getLinePadding(int line) {
+                return (size.width - getLineWidth(line)) / 2;
+            }
 
-    private int getCenter(int lineNumber) {
-        return (getHeight() / 2) - lineNumber;
+            @Override
+            public int getLineWidth(int line) {
+                return size.width - (2 * (((getHeight() / 2) - line) / 2));
+            }
+        }));
     }
 }
 

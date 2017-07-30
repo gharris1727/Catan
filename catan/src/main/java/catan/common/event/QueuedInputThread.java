@@ -16,7 +16,7 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
 
     public final Logger logger;
     private final BlockingQueue<T> queue;
-    private final Thread run;
+    private Thread run;
     private boolean running;
 
     protected QueuedInputThread(Logger logger) {
@@ -26,6 +26,13 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
     protected QueuedInputThread(Logger logger, BlockingQueue<T> queue) {
         this.logger = logger;
         this.queue = queue;
+    }
+
+    //Starts the queue processing event.
+    public void start() {
+        if (run != null) {
+            throw new IllegalThreadStateException(toString() + " already started.");
+        }
         run = new Thread(() -> {
             while (running) {
                 try {
@@ -37,10 +44,6 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
                 }
             }
         }, toString());
-    }
-
-    //Starts the queue processing event.
-    public void start() {
         running = true;
         run.start();
     }
@@ -75,7 +78,7 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
         if (block) {
             try {
                 return queue.take();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
                 throw new ThreadStopException();
             }
         } else return queue.poll();

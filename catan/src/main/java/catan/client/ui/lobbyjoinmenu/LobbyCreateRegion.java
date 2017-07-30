@@ -6,10 +6,7 @@ import catan.client.graphics.ui.ConfigurableScreenRegion;
 import catan.client.graphics.ui.EdgedTiledBackground;
 import catan.client.graphics.ui.TiledBackground;
 import catan.client.input.UserEvent;
-import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
-
-import java.awt.event.MouseEvent;
 
 /**
  * Created by greg on 4/2/16.
@@ -23,12 +20,9 @@ public class LobbyCreateRegion extends ConfigurableScreenRegion {
     public LobbyCreateRegion() {
         super("CreateLobby", 0, "create");
         background = new EdgedTiledBackground();
-        submitButton = new Button("CreateButton", 1, "submit", "Create new") {
-            @Override
-            public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Create, null));
-            }
-        };
+        submitButton = new Button("CreateButton", 1, "submit", "Create new", (listener) -> {
+            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Create, null));
+        });
         add(background).setClickable(this);
         add(submitButton);
     }

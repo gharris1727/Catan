@@ -51,7 +51,7 @@ public class BlockChain<T> implements Iterable<Entry<BigInteger, T>> {
 
     public Collection<BigInteger> getChildren(BigInteger key) {
         BlockchainNode node = nodes.get(key);
-        return (node != null) ? Collections.unmodifiableCollection(node.childNodes) : Collections.EMPTY_SET;
+        return (node != null) ? Collections.unmodifiableCollection(node.childNodes) : Collections.emptySet();
     }
 
     public BigInteger resolveGenesis() {
@@ -93,7 +93,7 @@ public class BlockChain<T> implements Iterable<Entry<BigInteger, T>> {
         }
     }
 
-    private class BlockchainEntry implements Entry<BigInteger, T> {
+    private final class BlockchainEntry implements Entry<BigInteger, T> {
 
         private final BigInteger key;
 

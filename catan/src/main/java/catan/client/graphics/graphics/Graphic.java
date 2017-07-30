@@ -1,10 +1,10 @@
 package catan.client.graphics.graphics;
 
-import catan.client.graphics.masks.Maskable;
-import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
  * Created by Greg on 8/15/2014.
  * Utility class to provide pixel-moving functions to the other image handlers.
  */
-public class Graphic implements Maskable {
+public class Graphic {
 
     private static final int TRANSPARENCY = 0xff00ff; //Transparency color (pink)
     protected int[] pixels; //Pixel array for rasterization.
@@ -43,7 +43,7 @@ public class Graphic implements Maskable {
     }
 
     //Initialize the graphic with the specified mask and transparency.
-    protected void init(RenderMask mask, boolean transparency) {
+    protected final void init(RenderMask mask, boolean transparency) {
         this.mask = mask;
         buffer = mask.hasContent() ? new BufferedImage(mask.getWidth(), mask.getHeight(), TYPE_INT_RGB) : null;
         this.transparency = transparency;
@@ -58,7 +58,7 @@ public class Graphic implements Maskable {
 
     //Find out whether the graphic is hardware accelerated or not.
     private boolean isAccelerated() {
-        return (pixels == null) && !transparency && (mask instanceof RectangularMask);
+        return (pixels == null) && !transparency && mask.isAccelerable();
     }
 
     //Render one graphic to another using their render masks.
@@ -70,11 +70,6 @@ public class Graphic implements Maskable {
         if (toStart.y >= toMask.getHeight()) return;
         if (fromStart.x >= fromMask.getWidth()) return;
         if (fromStart.y >= fromMask.getHeight()) return;
-        //Pull in the masks
-        int[] toPadding = toMask.getPadding();
-        int[] toLength = toMask.getWidths();
-        int[] fromPadding = fromMask.getPadding();
-        int[] fromLength = fromMask.getWidths();
         //These are the differences between the from coordinates and the toCoordinates.
         int diffX = toStart.x - fromStart.x;
         int diffY = toStart.y - fromStart.y;
@@ -94,10 +89,10 @@ public class Graphic implements Maskable {
         if ((endY + diffY) > toMask.getHeight()) endY = toMask.getHeight() - diffY;
 
         for (int currY = startY; currY < endY; currY++) {
-            int fromPad = fromPadding[currY];
-            int fromLen = fromLength[currY];
-            int toPad = toPadding[currY + diffY];
-            int toLen = toLength[currY + diffY];
+            int fromPad = fromMask.getLinePadding(currY);
+            int fromLen = fromMask.getLineWidth(currY);
+            int toPad = toMask.getLinePadding(currY + diffY);
+            int toLen = toMask.getLineWidth(currY + diffY);
             //Start at one extreme and work inward.
             int currX = startX;
             if (currX < fromPad) currX = fromPad;
@@ -144,14 +139,8 @@ public class Graphic implements Maskable {
         }
     }
 
-    @Override
     public RenderMask getMask() {
         return mask;
-    }
-
-    @Override
-    public void setMask(RenderMask mask) {
-        throw new UnsupportedOperationException("Cannot change the size of a graphic.");
     }
 
     //Render from another graphic onto this graphic.
@@ -175,7 +164,15 @@ public class Graphic implements Maskable {
             graphics.drawImage(buffer, 0, 0, width, height, null);
     }
 
-    public void swap(int from, int to) {
+    public void applySwaps(int[] swaps) {
+        if (swaps != null && (swaps.length % 2) == 0) {
+            for (int i = 0; i < swaps.length; i += 2) {
+                swap(swaps[i], swaps[i + 1]);
+            }
+        }
+    }
+
+    private void swap(int from, int to) {
         loadRaster();
         int length = pixels.length;
         for (int i = 0; i < length; i++) {
@@ -185,7 +182,7 @@ public class Graphic implements Maskable {
     }
 
     //Clear the image, trying to preserve acceleration.
-    public void clear() {
+    public final void clear() {
         if (mask.hasContent()) {
             if (isAccelerated()) {
                 Graphics graphics = buffer.getGraphics();

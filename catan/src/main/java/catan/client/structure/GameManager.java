@@ -16,7 +16,7 @@ import java.util.List;
  * Created by greg on 3/13/16.
  * Class that manages the local and remote games, and allows for lag-hiding and history previews.
  */
-public class GameManager {
+public final class GameManager {
 
     //TODO: explore lag-hiding and local/remote consistency verification.
 

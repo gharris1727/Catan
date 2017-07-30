@@ -2,10 +2,7 @@ package catan.client.ui.taskbar;
 
 import catan.client.graphics.ui.Button;
 import catan.client.input.UserEvent;
-import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
-
-import java.awt.event.MouseEvent;
 
 /**
  * Created by greg on 4/22/16.
@@ -26,17 +23,14 @@ public class FileMenu extends TaskbarMenu {
 
         private FileMenuPopup() {
             super("FileMenuPopup");
-            addListItem(new Button("QuitButton", 1, "quit", null) {
-
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    listener.onUserEvent(new UserEvent(this, UserEventType.Shutdown, null));
-                }
-            });
+            addListItem(new Button("QuitButton", 1, "quit", null, (listener) -> {
+                listener.onUserEvent(new UserEvent(this, UserEventType.Shutdown, null));
+            }));
         }
 
         @Override
         public void update() {
+
         }
     }
 

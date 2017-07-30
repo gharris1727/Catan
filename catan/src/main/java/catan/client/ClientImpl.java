@@ -89,7 +89,7 @@ public class ClientImpl extends CoreThread implements Client {
 
     public ClientImpl(Logger logger) {
         super(logger);
-        addEvent(new ClientEvent(this, ClientEventType.Startup, null));
+        addEvent(new ClientEvent(null, ClientEventType.Startup, null));
         start();
     }
 

@@ -3,7 +3,6 @@ package catan.client.ui.lobby;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
-import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
 import catan.common.structure.lobby.LobbyConfig;
 
@@ -28,66 +27,51 @@ public class LobbySettings extends ConfigurableScreenRegion {
         super("LobbySettings", 1, "settings");
         //Create sub-regions
         background = new EdgedTiledBackground();
-        name = new TextBox("LobbyNameBox", 1, "name", "Lobby Name", false) {
-            @Override
-            public void onAccept(UserEventListener listener) {
-                LobbyConfig newConfig = new LobbyConfig(
-                        getText(),
-                        config.getLayoutName(),
-                        config.getGeneratorName(),
-                        config.getRulesetName(),
-                        config.getMaxPlayers());
-                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
-            }
-        };
-        type = new TextBox("GameTypeBox", 1, "type", "Game Type", false) {
-            @Override
-            public void onAccept(UserEventListener listener) {
-                LobbyConfig newConfig = new LobbyConfig(
-                        config.getLobbyName(),
-                        getText(),
-                        config.getGeneratorName(),
-                        config.getRulesetName(),
-                        config.getMaxPlayers());
-                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
-            }
-        };
-        generator = new TextBox("MapGeneratorBox", 1, "generator", "Generator", false) {
-            @Override
-            public void onAccept(UserEventListener listener) {
-                LobbyConfig newConfig = new LobbyConfig(
-                        config.getLobbyName(),
-                        config.getLayoutName(),
-                        getText(),
-                        config.getRulesetName(),
-                        config.getMaxPlayers());
-                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
-            }
-        };
-        ruleset = new TextBox("RulesetBox", 1, "ruleset", "RuleSet", false) {
-            @Override
-            public void onAccept(UserEventListener listener) {
-                LobbyConfig newConfig = new LobbyConfig(
-                        config.getLobbyName(),
-                        config.getLayoutName(),
-                        config.getGeneratorName(),
-                        getText(),
-                        config.getMaxPlayers());
-                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
-            }
-        };
-        clients = new TextBox("ClientLimitBox", 1, "clients", "# Clients", false) {
-            @Override
-            public void onAccept(UserEventListener listener) {
-                LobbyConfig newConfig = new LobbyConfig(
-                        config.getLobbyName(),
-                        config.getLayoutName(),
-                        config.getGeneratorName(),
-                        config.getRulesetName(),
-                        getInt());
-                listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
-            }
-        };
+        name = new TextBox("LobbyNameBox", 1, "name", "Lobby Name", false, (listener, text) -> {
+            LobbyConfig newConfig = new LobbyConfig(
+                    text,
+                    config.getLayoutName(),
+                    config.getGeneratorName(),
+                    config.getRulesetName(),
+                    config.getMaxPlayers());
+            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
+        });
+        type = new TextBox("GameTypeBox", 1, "type", "Game Type", false, (listener, text) -> {
+            LobbyConfig newConfig = new LobbyConfig(
+                    config.getLobbyName(),
+                    text,
+                    config.getGeneratorName(),
+                    config.getRulesetName(),
+                    config.getMaxPlayers());
+            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
+        });
+        generator = new TextBox("MapGeneratorBox", 1, "generator", "Generator", false, (listener, text) -> {
+            LobbyConfig newConfig = new LobbyConfig(
+                    config.getLobbyName(),
+                    config.getLayoutName(),
+                    text,
+                    config.getRulesetName(),
+                    config.getMaxPlayers());
+            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
+        });
+        ruleset = new TextBox("RulesetBox", 1, "ruleset", "RuleSet", false, (listener, text) -> {
+            LobbyConfig newConfig = new LobbyConfig(
+                    config.getLobbyName(),
+                    config.getLayoutName(),
+                    config.getGeneratorName(),
+                    text,
+                    config.getMaxPlayers());
+            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
+        });
+        clients = new TextBox("ClientLimitBox", 1, "clients", "# Clients", false, (listener, text) -> {
+            LobbyConfig newConfig = new LobbyConfig(
+                    config.getLobbyName(),
+                    config.getLayoutName(),
+                    config.getGeneratorName(),
+                    config.getRulesetName(),
+                    Integer.parseInt(text));
+            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Edit, newConfig));
+        });
         //Add everything to the screen.
         add(background).setClickable(this);
         add(name);

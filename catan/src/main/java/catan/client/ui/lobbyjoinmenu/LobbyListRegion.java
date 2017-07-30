@@ -2,7 +2,6 @@ package catan.client.ui.lobbyjoinmenu;
 
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
-import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
@@ -12,7 +11,9 @@ import catan.common.structure.lobby.Lobby;
 import catan.common.structure.lobby.LobbyComparator;
 import catan.common.structure.lobby.LobbySortOption;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.Set;
@@ -369,13 +370,10 @@ public class LobbyListRegion extends ConfigurableScreenRegion {
         private LobbyListFooter() {
             super("Footer", 2, "footer");
             background = new EdgedTiledBackground();
-            joinButton = new Button("JoinButton", 1, "join", "Join") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    if (selected != null)
-                        listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayer()));
-                }
-            };
+            joinButton = new Button("JoinButton", 1, "join", "Join", (listener) -> {
+                if (selected != null)
+                    listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Join, selected.getPlayer()));
+            });
             //Add objects to the screen.
             add(background);
             add(joinButton);

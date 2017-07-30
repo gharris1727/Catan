@@ -2,7 +2,6 @@ package catan.client.ui.game.playing;
 
 import catan.client.graphics.masks.RectangularMask;
 import catan.client.graphics.masks.RenderMask;
-import catan.client.graphics.ui.Button;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
 import catan.client.input.UserEventListener;
@@ -16,7 +15,9 @@ import catan.common.game.gameplay.trade.Trade;
 import catan.common.game.util.EnumAccumulator;
 import catan.common.game.util.GameResource;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.EnumMap;
@@ -181,29 +182,23 @@ public class TradeRegion extends ConfigurableScreenRegion implements Updatable {
             diff = new EnumAccumulator<>(GameResource.class);
             counters = new EnumMap<>(GameResource.class);
             background = new EdgedTiledBackground();
-            propose = new Button("ProposeButton", 1, "propose", "Propose") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    EnumAccumulator<GameResource> request = new EnumAccumulator<>(GameResource.class);
-                    EnumAccumulator<GameResource> offer = new EnumAccumulator<>(GameResource.class);
-                    for (GameResource resource : GameResource.values()) {
-                        if (diff.get(resource) > 0)
-                            request.increment(resource, diff.get(resource));
-                        else
-                            offer.increment(resource, -1*diff.get(resource));
-                    }
-                    Trade trade = new Trade(observer.getUsername(), offer, request);
-                    GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Offer_Trade, trade);
-                    listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
+            propose = new Button("ProposeButton", 1, "propose", "Propose", (listener) -> {
+                EnumAccumulator<GameResource> request = new EnumAccumulator<>(GameResource.class);
+                EnumAccumulator<GameResource> offer = new EnumAccumulator<>(GameResource.class);
+                for (GameResource resource : GameResource.values()) {
+                    if (diff.get(resource) > 0)
+                        request.increment(resource, diff.get(resource));
+                    else
+                        offer.increment(resource, -1*diff.get(resource));
                 }
-            };
-            cancel = new Button("CancelButton", 2, "cancel", "Cancel") {
-                @Override
-                public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                    GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Cancel_Trade, null);
-                    listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
-                }
-            };
+                Trade trade = new Trade(observer.getUsername(), offer, request);
+                GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Offer_Trade, trade);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
+            });
+            cancel = new Button("CancelButton", 2, "cancel", "Cancel", (listener) -> {
+                GameEvent gameEvent = new GameEvent(observer.getUsername(), GameEventType.Cancel_Trade, null);
+                listener.onUserEvent(new UserEvent(this, UserEventType.Game_Event, gameEvent));
+            });
             for (GameResource resource : diff) {
                 EnumCounterEditRegion<GameResource> request = new EnumCounterEditRegion<>("TradeEditor", 3, "resource", diff, resource);
                 counters.put(resource, request);

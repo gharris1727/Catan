@@ -3,11 +3,8 @@ package catan.client.ui.disconnecting;
 import catan.client.graphics.masks.RenderMask;
 import catan.client.graphics.ui.*;
 import catan.client.input.UserEvent;
-import catan.client.input.UserEventListener;
 import catan.client.input.UserEventType;
 import catan.client.ui.ClientScreen;
-
-import java.awt.event.MouseEvent;
 
 /**
  * Created by Greg on 1/17/2015.
@@ -25,12 +22,11 @@ public class DisconnectingScreen extends ClientScreen {
         //Create subregions
         background = new EdgedTiledBackground();
         text = new TextLabel("DisconnectMessageLabel", 1, "message", disconnectMessage);
-        button = new Button("DisconnectButton", 2, "return", "Return to connect menu.") {
-            @Override
-            public void onMouseClick(UserEventListener listener, MouseEvent event) {
-                listener.onUserEvent(new UserEvent(this, UserEventType.Net_Clear, null));
-            }
-        };
+        button = new Button("DisconnectButton", 2, "return",
+                "Return to connect menu.",
+                (listener) -> {
+                    listener.onUserEvent(new UserEvent(this, UserEventType.Net_Clear, null));
+                });
         //Add the elements to the screen.
         add(background).setClickable(this);
         add(text).setClickable(this);
