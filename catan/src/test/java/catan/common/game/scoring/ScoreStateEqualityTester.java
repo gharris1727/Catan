@@ -10,17 +10,14 @@ import org.junit.Assert;
  */
 public final class ScoreStateEqualityTester implements EqualityTester<ScoreState> {
 
-    public static final ScoreStateEqualityTester INSTANCE = new ScoreStateEqualityTester();
-
-    private ScoreStateEqualityTester() {
-    }
+    private final PlayerPoolEqualityTester playerTester = new PlayerPoolEqualityTester();
 
     @Override
     public void assertEquals(ScoreState expected, ScoreState actual) {
         if (expected == actual)
             return;
 
-        PlayerPoolEqualityTester.INSTANCE.assertEquals(expected.players, actual.players);
+        playerTester.assertEquals(expected.players, actual.players);
         Assert.assertEquals(expected.listeners, actual.listeners);
         Assert.assertEquals(expected.history, actual.history);
     }

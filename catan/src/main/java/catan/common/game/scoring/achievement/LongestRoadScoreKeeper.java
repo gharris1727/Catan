@@ -125,6 +125,6 @@ public class LongestRoadScoreKeeper implements ScoreKeeper {
     @Override
     public ScoreReport score(GameRules rules) {
         //TODO: implement score counting of longest road.
-        return NullScoreReport.INSTANCE;
+        return new NullScoreReport();
     }
 }

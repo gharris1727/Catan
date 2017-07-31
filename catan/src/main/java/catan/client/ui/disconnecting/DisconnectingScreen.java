@@ -24,9 +24,7 @@ public class DisconnectingScreen extends ClientScreen {
         text = new TextLabel("DisconnectMessageLabel", 1, "message", disconnectMessage);
         button = new Button("DisconnectButton", 2, "return",
                 "Return to connect menu.",
-                (listener) -> {
-                    listener.onUserEvent(new UserEvent(this, UserEventType.Net_Clear, null));
-                });
+                (listener) -> listener.onUserEvent(new UserEvent(this, UserEventType.Net_Clear, null)));
         //Add the elements to the screen.
         add(background).setClickable(this);
         add(text).setClickable(this);

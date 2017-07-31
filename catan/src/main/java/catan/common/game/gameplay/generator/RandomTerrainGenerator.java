@@ -1,7 +1,6 @@
-package catan.common.game.gameplay.generator.random;
+package catan.common.game.gameplay.generator;
 
 import catan.common.game.board.Terrain;
-import catan.common.game.gameplay.generator.FeatureGenerator;
 
 import java.util.*;
 
@@ -9,11 +8,11 @@ import java.util.*;
  * Created by Greg on 8/13/2014.
  * Helper class to generate tiles with balanced terrain types.
  */
-public class TerrainGenerator implements FeatureGenerator<Terrain> {
+public class RandomTerrainGenerator implements FeatureGenerator<Terrain> {
 
     private final List<Terrain> terrain;
 
-    public TerrainGenerator(int numTiles) {
+    public RandomTerrainGenerator(int numTiles) {
         terrain = new ArrayList<>(numTiles);
         terrain.add(Terrain.Desert);
         for (int i = 0; i < numTiles - 1; i++) {

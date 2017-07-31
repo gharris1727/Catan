@@ -3,7 +3,6 @@ package catan.common.resources;
 import catan.client.graphics.graphics.Graphic;
 import catan.client.graphics.graphics.GraphicSource;
 import catan.common.game.gameplay.layout.BoardLayout;
-import catan.common.game.gameplay.layout.DynamicBoardLayout;
 import catan.common.game.gameplay.layout.StaticBoardLayout;
 import catan.common.game.scoring.rules.GameRules;
 import catan.common.game.scoring.rules.StaticGameRules;
@@ -18,7 +17,7 @@ public final class ResourceLoader {
         @Override
         protected synchronized BoardLayout load(BoardLayoutInfo info) {
             try {
-                return info.isDynamic() ? new DynamicBoardLayout(info.getSeed()) : new StaticBoardLayout(info.getPath());
+                return new StaticBoardLayout(info.getPath());
             } catch (Exception e) {
                 throw new ResourceLoadException(info.toString(), e);
             }

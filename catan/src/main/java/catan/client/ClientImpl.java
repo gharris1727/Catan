@@ -33,8 +33,6 @@ import catan.common.event.EventConsumerException;
 import catan.common.event.ExternalEvent;
 import catan.common.event.InternalEvent;
 import catan.common.game.event.GameEvent;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 import catan.common.network.ClientConnection;
 import catan.common.network.NetEvent;
 import catan.common.network.NetEventType;
@@ -50,6 +48,8 @@ import catan.common.structure.lobby.LobbyConfig;
 import catan.common.structure.lobby.MatchmakingPool;
 
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -69,6 +69,8 @@ public class ClientImpl extends CoreThread implements Client {
         uiLayoutFile = new PropertiesFileInfo("client/layout.properties", "UI Layout information");
     }
 
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
     private PropertiesFile config;
 
     private ChatThread chatThread;
@@ -84,11 +86,6 @@ public class ClientImpl extends CoreThread implements Client {
     private ClientWindow window;
 
     public ClientImpl() {
-        this(new Logger());
-    }
-
-    public ClientImpl(Logger logger) {
-        super(logger);
         addEvent(new ClientEvent(null, ClientEventType.Startup, null));
         start();
     }
@@ -152,10 +149,10 @@ public class ClientImpl extends CoreThread implements Client {
                 try {
                     ServerLogin server = ((ConnectionInfo) event.getPayload()).createServerLogin();
                     username = server.login.username;
-                    connection = new ClientConnection(this, logger, server.remote, NetEventType.Register, server.login);
+                    connection = new ClientConnection(this, server.remote, NetEventType.Register, server.login);
                     connection.connect();
                 } catch (UnknownHostException | NumberFormatException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to resolve server address", e);
                     changeScreen(new DisconnectingScreen(e.getMessage()));
                 }
                 break;
@@ -164,10 +161,10 @@ public class ClientImpl extends CoreThread implements Client {
                 try {
                     ServerLogin server = ((ConnectionInfo) event.getPayload()).createServerLogin();
                     username = server.login.username;
-                    connection = new ClientConnection(this, logger, server.remote, NetEventType.Log_In, server.login);
+                    connection = new ClientConnection(this, server.remote, NetEventType.Log_In, server.login);
                     connection.connect();
                 } catch (UnknownHostException | NumberFormatException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to resolve server address", e);
                     changeScreen(new DisconnectingScreen(e.getMessage()));
                 }
                 break;
@@ -209,7 +206,7 @@ public class ClientImpl extends CoreThread implements Client {
                 try {
                     gameManager.jumpToEvent((Integer) event.getPayload());
                 } catch (EventConsumerException e) {
-                    logger.log("Error while jumping in history.", e, LogLevel.WARN);
+                    logger.log(Level.SEVERE, "Error while jumping in history.", e);
                 }
                 break;
             case Linger_Trigger:
@@ -225,7 +222,7 @@ public class ClientImpl extends CoreThread implements Client {
                 gameManager.remote(event);
                 refreshScreen();
             } catch (EventConsumerException e) {
-                logger.log("Error while executing event from server.", e, LogLevel.WARN);
+                logger.log(Level.WARNING, "Error while executing event from server.", e);
             }
     }
 
@@ -297,7 +294,7 @@ public class ClientImpl extends CoreThread implements Client {
             //Force refresh any relevant screens
             refreshScreen();
         } catch (EventConsumerException e) {
-            logger.log(e, LogLevel.ERROR);
+            logger.log(Level.SEVERE, "Unable to apply lobby event", e);
         }
 
     }
@@ -354,10 +351,10 @@ public class ClientImpl extends CoreThread implements Client {
         //Create shared resources.
         serverPool = new ServerPool(serverFile);
         BaseRegion base = new BaseRegion();
-        listener = new InputListener(this, logger, base);
-        window = new ClientWindow(this, logger, listener);
+        listener = new InputListener(this, base);
+        window = new ClientWindow(this, listener);
         //Start and configure the renderer.
-        renderThread = new RenderThread(logger, base);
+        renderThread = new RenderThread(base);
         renderThread.addEvent(new RenderEvent(this, RenderEventType.Set_Configuration, new UIConfig(style, layout, locale, teamColors)));
         changeScreen(new ServerConnectMenu(serverPool));
         addMenu(new FileMenu());
@@ -377,7 +374,7 @@ public class ClientImpl extends CoreThread implements Client {
         try {
             config.save();
         } catch (ConfigurationException e) {
-            logger.log("Unable to save configuration", e, LogLevel.WARN);
+            logger.log(Level.WARNING, "Unable to save configuration", e);
         }
         window.dispose();
         window.waitForClose();

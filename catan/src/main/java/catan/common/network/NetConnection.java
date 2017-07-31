@@ -3,14 +3,14 @@ package catan.common.network;
 import catan.common.crypto.AuthToken;
 import catan.common.event.EventProcessor;
 import catan.common.event.GenericEvent;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 
 import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -18,7 +18,7 @@ import java.net.SocketException;
  */
 public abstract class NetConnection {
 
-    protected final Logger logger;
+    protected final Logger logger = Logger.getLogger(getClass().getName());
     protected final EventProcessor<GenericEvent> host;
     protected final NetID remote;
     protected NetID local;
@@ -32,9 +32,8 @@ public abstract class NetConnection {
     protected boolean open;
     protected AuthToken token;
 
-    protected NetConnection(EventProcessor<GenericEvent> host, Logger logger, NetID remote) {
+    protected NetConnection(EventProcessor<GenericEvent> host, NetID remote) {
         this.host = host;
-        this.logger = logger;
         this.remote = remote;
         // Thread to establish the connection and perform an initial handshake.
         connect = new Thread(this::handshake);
@@ -109,7 +108,7 @@ public abstract class NetConnection {
     protected void onError(String message, Exception e) {
         open = false;
         process(new NetEvent(token, NetEventType.Link_Error, message + " error: " + e.getMessage()));
-        logger.log(message + " error", e, LogLevel.ERROR);
+        logger.log(Level.WARNING, message + " error", e);
     }
 
     private void onClose(Exception e) {

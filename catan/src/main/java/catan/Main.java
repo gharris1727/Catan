@@ -3,9 +3,10 @@ package catan;
 import catan.common.launcher.GraphicalLauncher;
 import catan.common.launcher.HeadlessLauncher;
 import catan.common.launcher.StartupOptions;
-import catan.common.log.Logger;
 
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/8/2014.
@@ -23,13 +24,13 @@ public final class Main {
             options.printError();
         } else {
             // Create a logger to begin storing log information
-            Logger logger = new Logger();
-            logger.useStdOut();
+            Logger logger = Logger.getLogger("catan.Main");
+            logger.addHandler(new ConsoleHandler());
             // Choose the relevant launcher.
             if (GraphicsEnvironment.isHeadless()) {
-                new HeadlessLauncher(options, logger).waitForClose();
+                new HeadlessLauncher(options).waitForClose();
             } else {
-                new GraphicalLauncher(options, logger).waitForClose();
+                new GraphicalLauncher(options).waitForClose();
             }
         }
     }

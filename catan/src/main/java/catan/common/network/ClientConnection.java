@@ -1,7 +1,6 @@
 package catan.common.network;
 
 import catan.client.Client;
-import catan.common.log.Logger;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,8 +15,8 @@ public class ClientConnection extends NetConnection {
     private final NetEventType action;
     private final Object payload;
 
-    public ClientConnection(Client client, Logger logger, NetID remote, NetEventType action, Object payload) {
-        super(client, logger, remote);
+    public ClientConnection(Client client, NetID remote, NetEventType action, Object payload) {
+        super(client, remote);
         this.action = action;
         this.payload = payload;
     }

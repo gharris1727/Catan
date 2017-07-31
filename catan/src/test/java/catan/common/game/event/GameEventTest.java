@@ -1,6 +1,7 @@
 package catan.common.game.event;
 
 import catan.common.crypto.Username;
+import catan.common.event.ExternalEvent;
 import catan.common.game.GameTestUtils;
 import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.gameplay.trade.Trade;
@@ -25,11 +26,11 @@ public class GameEventTest {
 
     private static void assertCorrectlySerialized(GameEvent event) throws IOException {
         byte[] serialized = event.serialize();
-        GameEvent deserialized = (GameEvent) GameEvent.deserialize(serialized);
+        GameEvent deserialized = (GameEvent) ExternalEvent.deserialize(serialized);
         byte[] serializedTwice = deserialized.serialize();
-        GameEvent deserializedTwice = (GameEvent) GameEvent.deserialize(serializedTwice);
+        GameEvent deserializedTwice = (GameEvent) ExternalEvent.deserialize(serializedTwice);
         byte[] serializedThrice = deserializedTwice.serialize();
-        GameEvent deserializedThrice = (GameEvent) GameEvent.deserialize(serializedThrice);
+        GameEvent deserializedThrice = (GameEvent) ExternalEvent.deserialize(serializedThrice);
         Assert.assertEquals(deserializedTwice, deserializedThrice);
         Assert.assertArrayEquals(serializedTwice, serializedThrice);
         Assert.assertEquals(deserialized, deserializedTwice);

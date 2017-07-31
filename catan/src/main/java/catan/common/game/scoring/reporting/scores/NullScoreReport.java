@@ -13,14 +13,9 @@ import java.util.NoSuchElementException;
  */
 public final class NullScoreReport implements ScoreReport {
 
-    public static final NullScoreReport INSTANCE = new NullScoreReport();
-
-    private NullScoreReport() {
-    }
-
     @Override
     public PlayerScoreReport getPlayerReport(Username username) {
-        return NullPlayerScore.INSTANCE;
+        return new NullPlayerScore();
     }
 
     @Override

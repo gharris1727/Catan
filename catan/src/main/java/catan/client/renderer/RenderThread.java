@@ -7,8 +7,6 @@ import catan.client.ui.ClientScreen;
 import catan.client.ui.PopupWindow;
 import catan.client.ui.taskbar.TaskbarMenu;
 import catan.common.event.QueuedInputThread;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 import catan.common.profiler.TimeSlice;
 
 /**
@@ -23,8 +21,7 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
     private ScreenCanvas canvas;
     private final TimeSlice events;
 
-    public RenderThread(Logger logger, BaseRegion base) {
-        super(logger);
+    public RenderThread(BaseRegion base) {
         this.base = base;
         root = new TimeSlice("root");
         events = new TimeSlice("Events");
@@ -63,29 +60,19 @@ public class RenderThread extends QueuedInputThread<RenderEvent> {
                 case Popup_Remove:
                     base.removePopup((PopupWindow) event.getPayload());
                     break;
-                case Animation_Step:
-                    base.step();
-                    break;
             }
             events.mark();
             root.addChild(events);
-        } else { //No event to be processed this round.
-            if ((canvas != null) && base.isRenderable()) {
-                base.setRenderer(this);
-                canvas.render(base.getGraphic());
-                root.addChild(base.getRenderTime());
-                root.addChild(canvas.getRenderTime());
-            } else {
-                //This may be super spammy.
-                logger.log("Unable to render " + base + " to " + canvas, LogLevel.DEBUG);
-            }
+        } else if ((canvas != null) && base.isRenderable()) {
+            base.setRenderer(this);
+            canvas.render(base.getGraphic());
+            root.addChild(base.getRenderTime());
+            root.addChild(canvas.getRenderTime());
             root.waitUntil(33*TimeSlice.MILLION);
+        } else {
+            root.waitUntil(100*TimeSlice.MILLION);
         }
         root.mark();
-        /*
-        if (root.getTime() > 100*TimeSlice.MILLION)
-            logger.log("Slow Render!\n" + root.print(1, 0), LogLevel.WARN);
-        */
     }
 
     @Override

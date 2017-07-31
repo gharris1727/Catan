@@ -12,13 +12,8 @@ import org.junit.Assert;
  */
 public final class PlayerEqualityTester implements EqualityTester<Player> {
 
-    public static final PlayerEqualityTester INSTANCE = new PlayerEqualityTester();
-
     private final EnumCounterEqualityTester<GameResource> inventoryEqualityTester = new EnumCounterEqualityTester<>();
     private final EnumCounterEqualityTester<DevelopmentCard> cardsEqualityTester = new EnumCounterEqualityTester<>();
-
-    private PlayerEqualityTester() {
-    }
 
     @Override
     public void assertEquals(Player expected, Player actual) {

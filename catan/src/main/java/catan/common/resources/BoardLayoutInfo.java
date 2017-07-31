@@ -6,32 +6,14 @@ package catan.common.resources;
  */
 public final class BoardLayoutInfo extends ResourceCacheKey {
 
-    private final boolean dynamic;
     private final String name;
-    private final long seed;
 
     public BoardLayoutInfo(String name) {
-        dynamic = false;
         this.name = name;
-        seed = 0L;
-    }
-
-    public BoardLayoutInfo(long seed) {
-        dynamic = true;
-        name = "";
-        this.seed = seed;
-    }
-
-    public boolean isDynamic() {
-        return dynamic;
     }
 
     public String getPath() {
         return "games/" + name + ".properties";
-    }
-
-    public long getSeed() {
-        return seed;
     }
 
     @Override
@@ -41,21 +23,16 @@ public final class BoardLayoutInfo extends ResourceCacheKey {
 
         BoardLayoutInfo other = (BoardLayoutInfo) o;
 
-        if (dynamic != other.dynamic) return false;
-        if (seed != other.seed) return false;
         return (name != null) ? name.equals(other.name) : (other.name == null);
     }
 
     @Override
     public int hashCode() {
-        int result = (dynamic ? 1 : 0);
-        result = (31 * result) + ((name != null) ? name.hashCode() : 0);
-        result = (31 * result) + (int) (seed ^ (seed >>> 32));
-        return result;
+        return ((name != null) ? name.hashCode() : 0);
     }
 
     @Override
     public String toString() {
-        return "BoardLayoutInfo(" + (dynamic ? seed : getPath()) + ")";
+        return "BoardLayoutInfo(" + getPath() + ")";
     }
 }

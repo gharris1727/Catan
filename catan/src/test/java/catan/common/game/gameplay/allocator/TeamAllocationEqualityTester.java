@@ -9,11 +9,6 @@ import org.junit.Assert;
  */
 public final class TeamAllocationEqualityTester implements EqualityTester<TeamAllocation> {
 
-    public static final TeamAllocationEqualityTester INSTANCE = new TeamAllocationEqualityTester();
-
-    private TeamAllocationEqualityTester() {
-    }
-
     @Override
     public void assertEquals(TeamAllocation expected, TeamAllocation actual) {
         if (expected == actual)

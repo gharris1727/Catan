@@ -15,10 +15,13 @@ import org.junit.Assert;
  */
 public final class CatanGameEqualityTester implements EqualityTester<CatanGame> {
 
-    public static final CatanGameEqualityTester INSTANCE = new CatanGameEqualityTester();
-
-    private CatanGameEqualityTester() {
-    }
+    private RandomizerStateEqualityTester randomizerTester = new RandomizerStateEqualityTester();
+    private GameRulesEqualityTester rulesTester = new GameRulesEqualityTester();
+    private TeamAllocationEqualityTester allocationTester = new TeamAllocationEqualityTester();
+    private GameBoardEqualityTester boardTester = new GameBoardEqualityTester();
+    private PlayerPoolEqualityTester playerTester = new PlayerPoolEqualityTester();
+    private TeamPoolEqualityTester teamTester = new TeamPoolEqualityTester();
+    private ScoreStateEqualityTester scoreTester = new ScoreStateEqualityTester();
 
     @Override
     public void assertEquals(CatanGame expected, CatanGame actual) {
@@ -26,14 +29,13 @@ public final class CatanGameEqualityTester implements EqualityTester<CatanGame> 
             return;
 
         Assert.assertEquals(expected.history, actual.history);
-        RandomizerStateEqualityTester.INSTANCE.assertEquals(expected.state, actual.state);
-        GameRulesEqualityTester.INSTANCE.assertEquals(expected.rules, actual.rules);
-        TeamAllocationEqualityTester.INSTANCE.assertEquals(expected.teamAllocation, actual.teamAllocation);
-        GameBoardEqualityTester.INSTANCE.assertEquals(expected.board, actual.board);
-        PlayerPoolEqualityTester.INSTANCE.assertEquals(expected.players, actual.players);
-        TeamPoolEqualityTester.INSTANCE.assertEquals(expected.teams, actual.teams);
-        ScoreStateEqualityTester.INSTANCE.assertEquals(expected.scoring, actual.scoring);
-        Assert.assertEquals(expected.triggerListeners, actual.triggerListeners);
+        randomizerTester.assertEquals(expected.state, actual.state);
+        rulesTester.assertEquals(expected.rules, actual.rules);
+        allocationTester.assertEquals(expected.teamAllocation, actual.teamAllocation);
+        boardTester.assertEquals(expected.board, actual.board);
+        playerTester.assertEquals(expected.players, actual.players);
+        teamTester.assertEquals(expected.teams, actual.teams);
+        scoreTester.assertEquals(expected.scoring, actual.scoring);
 
     }
 }

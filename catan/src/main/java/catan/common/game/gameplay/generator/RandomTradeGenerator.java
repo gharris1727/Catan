@@ -1,6 +1,5 @@
-package catan.common.game.gameplay.generator.random;
+package catan.common.game.gameplay.generator;
 
-import catan.common.game.gameplay.generator.FeatureGenerator;
 import catan.common.game.gameplay.trade.TradingPostType;
 
 import java.util.*;
@@ -9,11 +8,11 @@ import java.util.*;
  * Created by Greg on 8/13/2014.
  * Helper class to generate TradingPosts.
  */
-public class TradeGenerator implements FeatureGenerator<TradingPostType> {
+public class RandomTradeGenerator implements FeatureGenerator<TradingPostType> {
 
     private final List<TradingPostType> posts;
 
-    public TradeGenerator(int numTradingPosts) {
+    public RandomTradeGenerator(int numTradingPosts) {
         posts = new ArrayList<>(numTradingPosts);
         int specPosts;
         switch (numTradingPosts) {

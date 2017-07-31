@@ -17,9 +17,6 @@ import catan.common.game.event.*;
 import catan.common.game.gameplay.allocator.TeamAllocation;
 import catan.common.game.gameplay.trade.Trade;
 import catan.common.game.gamestate.*;
-import catan.common.game.listeners.GameEventListener;
-import catan.common.game.listeners.GameTriggerListener;
-import catan.common.game.listeners.ReversibleEventListener;
 import catan.common.game.players.*;
 import catan.common.game.scoring.ScoreEvent;
 import catan.common.game.scoring.ScoreEventType;
@@ -55,8 +52,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
 
     //Score event listening
     final ScoreState scoring;
-    final List<GameEventListener> gameListeners;
-    final List<GameTriggerListener> triggerListeners;
 
     //Historical event data
     final Stack<GameHistory> history;
@@ -71,10 +66,8 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         teams = new TeamPool(teamAllocation);
         state = new RandomizerState(settings);
         history = new Stack<>();
-        history.push(new GameHistory(new GameEvent(null, GameEventType.Start, null), TeamColor.None, Collections.emptyList()));
+        history.push(new GameHistory(new GameEvent(null, GameEventType.Start, settings), TeamColor.None, Collections.emptyList()));
         scoring = new ScoreState(board, players, teams);
-        gameListeners = new ArrayList<>();
-        triggerListeners = new ArrayList<>();
     }
 
     public synchronized GameObserver getObserver() {
@@ -82,22 +75,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             observer = new GameObserver(this);
         }
         return observer;
-    }
-
-    public void addListener(ReversibleEventListener<?> listener) {
-        if (listener instanceof GameEventListener) {
-            gameListeners.add((GameEventListener) listener);
-        } else if (listener instanceof GameTriggerListener) {
-            triggerListeners.add((GameTriggerListener) listener);
-        }
-    }
-
-    public void removeListener(ReversibleEventListener<?> listener) {
-        if (listener instanceof GameEventListener) {
-            gameListeners.remove(listener);
-        } else if (listener instanceof GameTriggerListener) {
-            triggerListeners.remove(listener);
-        }
     }
 
     private LogicEvent trigger(GameTriggerEvent event) {
@@ -422,18 +399,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             scoring.execute((ScoreEvent) event);
         else
             throw new EventConsumerException("Unknown event type!");
-        for (GameTriggerListener listener : triggerListeners) {
-            EventConsumerProblem problem = listener.test(event);
-            if (problem != null) {
-                listener.reportTestProblem(problem);
-            } else {
-                try {
-                    listener.execute(event);
-                } catch (EventConsumerException e) {
-                    listener.reportExecuteException(e);
-                }
-            }
-        }
     }
 
     private void undoTrigger(GameTriggerEvent event) throws EventConsumerException {
@@ -449,13 +414,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
             scoring.undo();
         else
             throw new EventConsumerException("Unknown event type!");
-        for (GameTriggerListener listener : triggerListeners) {
-            try {
-                listener.undo();
-            } catch (EventConsumerException e) {
-                listener.reportUndoException(e);
-            }
-        }
     }
 
     private void revertHistory(Stack<GameTriggerEvent> past, int nEvents) throws EventConsumerException {
@@ -534,19 +492,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         }
         TeamColor team = teamAllocation.getPlayerTeams().get(event.getOrigin());
         history.push(new GameHistory(event, team, actions));
-
-        for (GameEventListener listener : gameListeners) {
-            EventConsumerProblem listenerProblem = listener.test(event);
-            if (listenerProblem != null) {
-                listener.reportTestProblem(listenerProblem);
-            } else {
-                try {
-                    listener.execute(event);
-                } catch (EventConsumerException e) {
-                    listener.reportExecuteException(e);
-                }
-            }
-        }
     }
 
     @Override
@@ -557,14 +502,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         ListIterator<GameTriggerEvent> iterator = triggered.listIterator(triggered.size());
         while (iterator.hasPrevious()) {
             undoTrigger(iterator.previous());
-        }
-
-        for (GameEventListener listener : gameListeners) {
-            try {
-                listener.undo();
-            } catch (EventConsumerException e) {
-                listener.reportUndoException(e);
-            }
         }
     }
 
@@ -593,8 +530,6 @@ public class CatanGame implements ReversibleEventConsumer<GameEvent> {
         result = 31 * result + teams.hashCode();
         result = 31 * result + state.hashCode();
         result = 31 * result + scoring.hashCode();
-        result = 31 * result + gameListeners.hashCode();
-        result = 31 * result + triggerListeners.hashCode();
         result = 31 * result + history.hashCode();
         result = 31 * result + observer.hashCode();
         return result;

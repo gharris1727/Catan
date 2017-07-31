@@ -9,10 +9,7 @@ import org.junit.Assert;
  */
 public final class TeamPoolEqualityTester implements EqualityTester<TeamPool> {
 
-    public static final TeamPoolEqualityTester INSTANCE = new TeamPoolEqualityTester();
-
-    private TeamPoolEqualityTester() {
-    }
+    private final TeamEqualityTester teamTester = new TeamEqualityTester();
 
     @Override
     public void assertEquals(TeamPool expected, TeamPool actual) {
@@ -21,7 +18,7 @@ public final class TeamPoolEqualityTester implements EqualityTester<TeamPool> {
 
         for (TeamColor tc : TeamColor.values()) {
             if (expected.teams.containsKey(tc))
-                TeamEqualityTester.INSTANCE.assertEquals(expected.teams.get(tc), actual.teams.get(tc));
+                teamTester.assertEquals(expected.teams.get(tc), actual.teams.get(tc));
             else if (actual.teams.containsKey(tc))
                 Assert.assertNull(actual.teams.get(tc));
         }

@@ -1,6 +1,5 @@
 package catan.common.launcher;
 
-import catan.common.log.Logger;
 import catan.server.ServerImpl;
 
 /**
@@ -11,9 +10,9 @@ public class HeadlessLauncher {
 
     private final ServerImpl server;
 
-    public HeadlessLauncher(StartupOptions options, Logger logger) {
+    public HeadlessLauncher(StartupOptions options) {
         //TODO: launch the requested features for a headless interface.
-        server = new ServerImpl(logger,25000);
+        server = new ServerImpl(25000);
     }
 
     public void waitForClose() {

@@ -9,7 +9,7 @@ import catan.common.resources.PropertiesFile;
 import catan.common.resources.PropertiesFileInfo;
 import catan.common.resources.ResourceLoader;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -119,8 +119,9 @@ public class StaticBoardLayout implements BoardLayout {
     private LinkedList<Coordinate> parseTiles(ConfigSource file) {
         LinkedList<Coordinate> list = new LinkedList<>();
         try {
-            for (int i = 0; true; i++)
-                list.add(file.getCoord("resource." + i));
+            int i = 0;
+            while (true)
+                list.add(file.getCoord("resource." + i++));
         } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
@@ -136,8 +137,9 @@ public class StaticBoardLayout implements BoardLayout {
     private LinkedList<Coordinate> parsePorts(ConfigSource file) {
         LinkedList<Coordinate> list = new LinkedList<>();
         try {
-            for (int i = 0; true; i++)
-                list.add(file.getCoord("trade." + i));
+            int i = 0;
+            while (true)
+                list.add(file.getCoord("trade." + i++));
         } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
@@ -152,9 +154,10 @@ public class StaticBoardLayout implements BoardLayout {
     private LinkedList<Terrain> parseTerrain(ConfigSource file) {
         LinkedList<Terrain> list = new LinkedList<>();
         try {
-            for (int i = 0; true; i++) {
+            int i = 0;
+            while (true) {
                 Terrain found;
-                switch (file.get("resource." + i + ".type").toUpperCase()) {
+                switch (file.get("resource." + i++ + ".type").toUpperCase()) {
                     case "SHEEP":
                         found = Terrain.Pasture;
                         break;
@@ -193,8 +196,9 @@ public class StaticBoardLayout implements BoardLayout {
     private LinkedList<DiceRoll> parseRolls(ConfigSource file) {
         LinkedList<DiceRoll> list = new LinkedList<>();
         try {
-            for (int i = 0; true; i++)
-                list.add(DiceRoll.get(file.getInt("resource." + i + ".roll")));
+            int i = 0;
+            while (true)
+                list.add(DiceRoll.get(file.getInt("resource." + i++ + ".roll")));
         } catch (Exception ignored) {
             //The above loop runs until the list of tiles bottoms out and excepts.
         }
@@ -210,9 +214,10 @@ public class StaticBoardLayout implements BoardLayout {
     private LinkedList<TradingPostType> parsePosts(ConfigSource file) {
         LinkedList<TradingPostType> list = new LinkedList<>();
         try {
-            for (int i = 0; true; i++) {
+            int i = 0;
+            while (true) {
                 TradingPostType found;
-                switch (file.get("trade." + i + ".type").toUpperCase()) {
+                switch (file.get("trade." + i++ + ".type").toUpperCase()) {
                     case "SHEEP":
                         found = TradingPostType.Wool;
                         break;

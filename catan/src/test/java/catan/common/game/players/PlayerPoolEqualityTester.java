@@ -10,10 +10,7 @@ import org.junit.Assert;
  */
 public final class PlayerPoolEqualityTester implements EqualityTester<PlayerPool> {
 
-    public static final PlayerPoolEqualityTester INSTANCE = new PlayerPoolEqualityTester();
-
-    private PlayerPoolEqualityTester() {
-    }
+    private final PlayerEqualityTester playerTester = new PlayerEqualityTester();
 
     @Override
     public void assertEquals(PlayerPool expected, PlayerPool actual) {
@@ -21,7 +18,7 @@ public final class PlayerPoolEqualityTester implements EqualityTester<PlayerPool
             return;
 
         for (Username u : expected)
-            PlayerEqualityTester.INSTANCE.assertEquals(expected.players.get(u), actual.players.get(u));
+            playerTester.assertEquals(expected.players.get(u), actual.players.get(u));
         Assert.assertEquals(expected.discards, actual.discards);
         Assert.assertEquals(expected.history, actual.history);
     }

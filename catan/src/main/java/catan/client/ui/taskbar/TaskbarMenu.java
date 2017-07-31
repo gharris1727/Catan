@@ -94,7 +94,7 @@ public abstract class TaskbarMenu extends ConfigurableScreenRegion implements Co
 
     @Override
     public int compareTo(TaskbarMenu t) {
-        return getRenderPriority() - t.getRenderPriority();
+        return Integer.compare(getRenderPriority(), t.getRenderPriority());
     }
 
     @Override

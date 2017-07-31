@@ -176,9 +176,8 @@ public class ServerConnectMenu extends ClientScreen {
         private ServerListFooter() {
             super("Footer", 2, "footer");
             background = new EdgedTiledBackground();
-            newButton = new Button("NewButton", 1, "new", "New", (listener) -> {
-                detail(null);
-            });
+            newButton = new Button("NewButton", 1, "new", "New",
+                    (listener) -> detail(null));
             editButton = new Button("EditButton", 1, "edit", "Edit", (listener) -> {
                 if (selected != null) detail(selected);
             });
@@ -253,9 +252,7 @@ public class ServerConnectMenu extends ClientScreen {
                     this::submit);
             saveButton = new Button("SaveButton", 1, "save", "Save", this::submit);
             deleteButton = new Button("DeleteButton", 1, "delete", "Delete", this::delete);
-            cancelButton = new Button("CancelButton", 1, "cancel", "Cancel", (listener) -> {
-                expire();
-            });
+            cancelButton = new Button("CancelButton", 1, "cancel", "Cancel", (listener) -> expire());
             add(background).setClickable(this);
             add(hostname);
             add(port);

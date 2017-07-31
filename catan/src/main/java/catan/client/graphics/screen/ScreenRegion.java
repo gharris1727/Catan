@@ -8,7 +8,6 @@ import catan.client.input.Clickable;
 import catan.client.renderer.NotYetRenderableException;
 import catan.client.renderer.RenderThread;
 import catan.common.profiler.TimeSlice;
-import org.jetbrains.annotations.Contract;
 
 import java.awt.Point;
 import java.util.*;
@@ -17,7 +16,7 @@ import java.util.*;
  * Created by Greg on 1/1/2015.
  * A ScreenObject that contains other ScreenObjects.
  */
-public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Animated, Resizable {
+public abstract class ScreenRegion extends ScreenObject implements Iterable<ScreenObject>, Resizable {
 
     private final TimeSlice timeSlice;
     private RenderMask mask;
@@ -47,7 +46,6 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
         transparency = true;
     }
 
-    @Contract(pure = true)
     public final RenderMask getMask() {
         return mask;
     }
@@ -154,20 +152,6 @@ public abstract class ScreenRegion extends ScreenObject implements Iterable<Scre
                 return listIterator.next();
             }
         };
-    }
-
-    @Override
-    public final void step() {
-        for (ScreenObject object : this)
-            if (object instanceof Animated)
-                ((Animated) object).step();
-    }
-
-    @Override
-    public final void reset() {
-        for (ScreenObject object : this)
-            if (object instanceof Animated)
-                ((Animated) object).reset();
     }
 
     @Override

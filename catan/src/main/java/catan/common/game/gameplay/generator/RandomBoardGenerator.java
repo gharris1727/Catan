@@ -1,4 +1,4 @@
-package catan.common.game.gameplay.generator.random;
+package catan.common.game.gameplay.generator;
 
 import catan.common.game.board.GameBoard;
 import catan.common.game.board.Terrain;
@@ -8,12 +8,11 @@ import catan.common.game.board.hexarray.HexagonalArray;
 import catan.common.game.board.paths.EmptyPath;
 import catan.common.game.board.tiles.ResourceTile;
 import catan.common.game.board.towns.EmptyTown;
-import catan.common.game.gameplay.generator.BoardGenerator;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.gameplay.trade.TradingPostType;
 import catan.common.game.gamestate.DiceRoll;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.*;
 
 /**
@@ -30,12 +29,12 @@ public class RandomBoardGenerator implements BoardGenerator {
         HexagonalArray hexArray = new HexagonalArray(size.width, size.height);
 
         //Prep all of the helper classes to generate map features.
-        TerrainGenerator terrainGenerator = new TerrainGenerator(layout.getTileCount());
-        TokenGenerator tokenGenerator = new TokenGenerator(layout.getTileCount() - layout.getDesertCount()); //Don't generate tokens for the desert.
-        terrainGenerator.randomize(random);
-        tokenGenerator.randomize(random);
-        Iterator<Terrain> terrain = terrainGenerator.iterator();
-        Iterator<DiceRoll> tokens = tokenGenerator.iterator();
+        RandomTerrainGenerator randomTerrainGenerator = new RandomTerrainGenerator(layout.getTileCount());
+        RandomTokenGenerator randomTokenGenerator = new RandomTokenGenerator(layout.getTileCount() - layout.getDesertCount()); //Don't generate tokens for the desert.
+        randomTerrainGenerator.randomize(random);
+        randomTokenGenerator.randomize(random);
+        Iterator<Terrain> terrain = randomTerrainGenerator.iterator();
+        Iterator<DiceRoll> tokens = randomTokenGenerator.iterator();
 
         //Use the valid hexagons to find all valid vertices and edges, as well as adjacent tiles that are beaches.
         Set<Coordinate> validVertices = new HashSet<>();
@@ -71,7 +70,7 @@ public class RandomBoardGenerator implements BoardGenerator {
         generateBeachTiles(hexArray);
 
         //Place trading posts.
-        TradeGenerator trades = new TradeGenerator(layout.getPortCount());
+        RandomTradeGenerator trades = new RandomTradeGenerator(layout.getPortCount());
         Iterator<Coordinate> tradingPorts = layout.getPorts();
         Set<Coordinate> tradingPosts = new HashSet<>();
         trades.randomize(random);

@@ -64,9 +64,9 @@ public class Trade implements Comparable<Trade>, Serializable {
                 return -1;
             } else {
                 for (GameResource r : GameResource.values()) {
-                    int diff = t.offer.get(r) - offer.get(r);
+                    int diff = Integer.compare(t.offer.get(r), offer.get(r));
                     if (diff != 0) return diff;
-                    diff = t.request.get(r) - request.get(r);
+                    diff = Integer.compare(t.request.get(r), request.get(r));
                     if (diff != 0) return diff;
                 }
                 return 0;

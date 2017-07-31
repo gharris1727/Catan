@@ -2,12 +2,16 @@ package catan.common.launcher;
 
 import catan.client.ClientImpl;
 import catan.common.CoreWindow;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 import catan.server.ServerImpl;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/10/2014.
@@ -15,12 +19,11 @@ import java.awt.*;
  */
 public class GraphicalLauncher extends CoreWindow {
 
-    private final Logger logger;
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
-    public GraphicalLauncher(StartupOptions options, Logger logger) {
+    public GraphicalLauncher(StartupOptions options) {
         //TODO: Clean up the graphical launcher to include features from the command line.
-        super("Settlers of Catan - Launcher", new Dimension(300, 500), false, logger);
-        this.logger = logger;
+        super("Settlers of Catan - Launcher", new Dimension(300, 500), false);
         JPanel contentPane = new JPanel();
         setContentPane(contentPane);
         setLayout(null);
@@ -30,7 +33,7 @@ public class GraphicalLauncher extends CoreWindow {
         for (ActionButton ab : ActionButton.values()) {
             JButton button = new JButton(ab.label);
             button.setBounds(ab.getBounds());
-            button.setHorizontalAlignment(JButton.CENTER);
+            button.setHorizontalAlignment(SwingConstants.CENTER);
             contentPane.add(button);
             buttons[j] = button;
             j++;
@@ -40,14 +43,14 @@ public class GraphicalLauncher extends CoreWindow {
             try {
                 startClient();
             } catch (Exception ex) {
-                logger.log("Error starting client", ex, LogLevel.ERROR);
+                logger.log(Level.SEVERE, "Error starting client", ex);
             }
         });
         buttons[1].addActionListener(e -> {
             try {
                 startServer();
             } catch (Exception ex) {
-                logger.log("Error while starting server", ex, LogLevel.ERROR);
+                logger.log(Level.SEVERE, "Error while starting server", ex);
             }
         });
         display();
@@ -56,11 +59,11 @@ public class GraphicalLauncher extends CoreWindow {
 
 
     private void startClient() {
-        new ClientImpl(logger);
+        new ClientImpl();
     }
 
     private void startServer() {
-        new ServerImpl(logger, 25000);
+        new ServerImpl(25000);
     }
 
     @Override

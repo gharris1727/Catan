@@ -24,6 +24,7 @@ public class CatanGameFuzzTest {
 
     @Test
     public void testRandomGame() {
+        CatanGameEqualityTester tester = new CatanGameEqualityTester();
         List<Username> users = GameTestUtils.generatePlayerUsernames(SEED, PLAYERS);
         GameSettings settings = GameTestUtils.createSettings(SEED, users);
         CatanGame game = new CatanGame(settings);
@@ -37,11 +38,11 @@ public class CatanGameFuzzTest {
                 //Undo Consistency
                 game.execute(event);
                 game.undo();
-                CatanGameEqualityTester.INSTANCE.assertEquals(game2, game);
+                tester.assertEquals(game2, game);
                 //Forward Consistency
                 game.execute(event);
                 game2.execute(event);
-                CatanGameEqualityTester.INSTANCE.assertEquals(game2, game);
+                tester.assertEquals(game2, game);
                 i++;
             } catch (EventConsumerException ignored) {
                 Assert.fail();

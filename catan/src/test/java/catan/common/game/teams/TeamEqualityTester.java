@@ -9,11 +9,6 @@ import org.junit.Assert;
  */
 public final class TeamEqualityTester implements EqualityTester<Team> {
 
-    public static final TeamEqualityTester INSTANCE = new TeamEqualityTester();
-
-    private TeamEqualityTester() {
-    }
-
     @Override
     public void assertEquals(Team expected, Team actual) {
         if (expected == actual)

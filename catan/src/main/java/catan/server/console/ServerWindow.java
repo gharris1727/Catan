@@ -1,17 +1,21 @@
 package catan.server.console;
 
 import catan.common.CoreWindow;
-import catan.common.log.LogEvent;
-import catan.common.log.LogListener;
-import catan.common.log.Logger;
 import catan.server.Server;
 import catan.server.ServerEvent;
 import catan.server.ServerEventType;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/11/2014.
@@ -24,20 +28,20 @@ public class ServerWindow extends CoreWindow {
     private final GraphicalConsole graphicalConsole;
 
     public ServerWindow(Server server, Logger logger, Console console) {
-        super("Settlers of Catan - Server", new Dimension(800, 600), true, logger);
+        super("Settlers of Catan - Server", new Dimension(800, 600), true);
         this.server = server;
         this.logger = logger;
         setLayout(new BorderLayout());
         graphicalConsole = new GraphicalConsole(console);
         getContentPane().add(graphicalConsole);
-        logger.addListener(graphicalConsole);
+        logger.addHandler(graphicalConsole.handler);
         display();
         setVisible(true);
     }
 
     @Override
     protected void onClose() {
-        logger.removeListener(graphicalConsole);
+        logger.removeHandler(graphicalConsole.handler);
         server.addEvent(new ServerEvent(server, ServerEventType.Quit_All, null));
     }
 
@@ -49,11 +53,12 @@ public class ServerWindow extends CoreWindow {
         return "ServerWindow";
     }
 
-    private class GraphicalConsole extends JPanel implements LogListener, KeyListener {
+    private class GraphicalConsole extends JPanel implements KeyListener {
 
         private final Console console;
         private final JTextArea textArea;
         private final StringBuilder commandLine;
+        private final Handler handler;
 
         private GraphicalConsole(Console console) {
             setLayout(new BorderLayout());
@@ -62,6 +67,7 @@ public class ServerWindow extends CoreWindow {
             commandLine = new StringBuilder();
             textArea.addKeyListener(this);
             add(new JScrollPane(textArea));
+            handler = new LogHandler();
         }
 
         @Override
@@ -89,15 +95,26 @@ public class ServerWindow extends CoreWindow {
         public void keyReleased(KeyEvent keyEvent) {
         }
 
-        @Override
-        public void onLogEvent(LogEvent e) {
-            //TODO: overwrite the user input and then print the half command out below the log message.
-            append(e.toString());
-        }
-
         private void append(String text) {
             SwingUtilities.invokeLater(() -> textArea.append(text + "\n"));
         }
 
+        private class LogHandler extends Handler {
+            @Override
+            public void publish(LogRecord logRecord) {
+                //TODO: overwrite the user input and then print the half command out below the log message.
+                append(logRecord.getMessage());
+            }
+
+            @Override
+            public void flush() {
+
+            }
+
+            @Override
+            public void close() throws SecurityException {
+
+            }
+        }
     }
 }

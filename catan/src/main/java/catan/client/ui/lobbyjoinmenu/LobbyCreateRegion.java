@@ -20,9 +20,8 @@ public class LobbyCreateRegion extends ConfigurableScreenRegion {
     public LobbyCreateRegion() {
         super("CreateLobby", 0, "create");
         background = new EdgedTiledBackground();
-        submitButton = new Button("CreateButton", 1, "submit", "Create new", (listener) -> {
-            listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Create, null));
-        });
+        submitButton = new Button("CreateButton", 1, "submit", "Create new",
+                (listener) -> listener.onUserEvent(new UserEvent(this, UserEventType.Lobby_Create, null)));
         add(background).setClickable(this);
         add(submitButton);
     }

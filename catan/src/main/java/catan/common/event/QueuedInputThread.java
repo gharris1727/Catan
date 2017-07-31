@@ -1,10 +1,9 @@
 package catan.common.event;
 
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/12/2014.
@@ -14,17 +13,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class QueuedInputThread<T> implements EventProcessor<T> {
 
-    public final Logger logger;
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private final BlockingQueue<T> queue;
     private Thread run;
     private boolean running;
 
-    protected QueuedInputThread(Logger logger) {
-        this(logger, new LinkedBlockingQueue<>());
+    protected QueuedInputThread() {
+        this(new LinkedBlockingQueue<>());
     }
 
-    protected QueuedInputThread(Logger logger, BlockingQueue<T> queue) {
-        this.logger = logger;
+    protected QueuedInputThread(BlockingQueue<T> queue) {
         this.queue = queue;
     }
 
@@ -59,7 +57,7 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
         try {
             run.join();
         } catch (InterruptedException e) {
-            logger.log("Error when stopping thread", e, LogLevel.ERROR);
+            logger.log(Level.SEVERE, "Error when stopping thread", e);
         }
     }
 
@@ -69,7 +67,7 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
         try {
             queue.put(event);
         } catch (InterruptedException e) {
-            logger.log("Error adding to event queue", e, LogLevel.ERROR);
+            logger.log(Level.SEVERE, "Error adding to event queue", e);
         }
     }
 
@@ -88,7 +86,7 @@ public abstract class QueuedInputThread<T> implements EventProcessor<T> {
     protected abstract void execute() throws ThreadStopException;
 
     protected void onException(Throwable t) {
-        logger.log("Exception in thread: " + this, t, LogLevel.ERROR);
+        logger.log(Level.SEVERE, "Exception in thread: " + this, t);
     }
 
     public abstract String toString(); //force downstream to override this.

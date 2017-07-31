@@ -5,8 +5,6 @@ import catan.common.event.QueuedInputThread;
 import catan.common.game.CatanGame;
 import catan.common.game.event.GameEvent;
 import catan.common.game.teams.TeamColor;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 import catan.common.structure.event.LobbyEvent;
 import catan.common.structure.event.LobbyEventType;
 import catan.common.structure.game.GameProgress;
@@ -17,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by greg on 1/26/16.
@@ -25,13 +25,12 @@ import java.util.Map;
 public class GamePool {
 
     private final Server host;
-    private final Logger logger;
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private final Map<Integer, GameThread> games;
     private int nextGameID;
 
-    public GamePool(Server host, Logger logger) {
+    public GamePool(Server host) {
         this.host = host;
-        this.logger = logger;
         games = new HashMap<>();
         nextGameID = 0;
     }
@@ -77,15 +76,10 @@ public class GamePool {
         private final CatanGame game;
 
         private GameThread(GameSettings settings) {
-            super(GamePool.this.logger);
             gameId = getNextGameID();
             this.settings = settings;
             game = new CatanGame(settings);
             start();
-        }
-
-        private CatanGame getGame() {
-            return game;
         }
 
         private GameProgress getProgress() {
@@ -98,7 +92,6 @@ public class GamePool {
         @Override
         protected void execute() throws ThreadStopException {
             GameEvent event = getEvent(true);
-            //logger.log(this + " Received " + event, LogLevel.DEBUG);
             if (game.test(event) == null) {
                 try {
                     game.execute(event);
@@ -106,10 +99,10 @@ public class GamePool {
                     if (game.getObserver().getWinner() != TeamColor.None)
                         host.addEvent(new LobbyEvent(event.getOrigin(), LobbyEventType.Game_Finish, null));
                 } catch (EventConsumerException e) {
-                    logger.log("Server unable to execute event!", e, LogLevel.ERROR);
+                    logger.log(Level.SEVERE, "Server unable to execute event!", e);
                 }
             } else {
-                logger.log("Server caught invalid event: " + event, LogLevel.WARN);
+                logger.log(Level.WARNING, "Server caught invalid event: " + event);
             }
         }
 

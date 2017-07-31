@@ -9,11 +9,6 @@ import org.junit.Assert;
  */
 public final class GameBoardEqualityTester implements EqualityTester<GameBoard> {
     
-    public static final GameBoardEqualityTester INSTANCE = new GameBoardEqualityTester();
-
-    private GameBoardEqualityTester() {
-    }
-
     @Override
     public void assertEquals(GameBoard expected, GameBoard actual) {
         if (expected == actual)

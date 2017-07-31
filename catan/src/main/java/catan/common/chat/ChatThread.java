@@ -1,7 +1,6 @@
 package catan.common.chat;
 
 import catan.common.event.QueuedInputThread;
-import catan.common.log.Logger;
 
 /**
  * Created by Greg on 8/13/2014.
@@ -12,8 +11,7 @@ public class ChatThread extends QueuedInputThread<ChatEvent> {
 
     private final ChatLog chatLog;
 
-    public ChatThread(Logger logger) {
-        super(logger);
+    public ChatThread() {
         chatLog = new ChatLog();
     }
 

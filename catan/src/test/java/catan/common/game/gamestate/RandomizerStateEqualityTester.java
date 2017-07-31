@@ -9,8 +9,6 @@ import org.junit.Assert;
  */
 public class RandomizerStateEqualityTester implements EqualityTester<RandomizerState> {
 
-    public static final RandomizerStateEqualityTester INSTANCE = new RandomizerStateEqualityTester();
-
     @Override
     public void assertEquals(RandomizerState expected, RandomizerState actual) {
         Assert.assertEquals(expected.dice, actual.dice);

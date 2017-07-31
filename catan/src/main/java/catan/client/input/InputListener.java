@@ -2,9 +2,8 @@ package catan.client.input;
 
 import catan.client.Client;
 import catan.common.event.QueuedInputThread;
-import catan.common.log.Logger;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -27,10 +26,10 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     private Clickable hover;
     private Point dragStart;
 
-    public InputListener(Client client, Logger logger, Clickable root) {
+    public InputListener(Client client, Clickable root) {
         this.client = client;
         listener = new UserEventDelegator();
-        queue = new HoverTimingThread(logger);
+        queue = new HoverTimingThread();
         queue.start();
         this.root = root;
         nullClickable = new ClickableAdapter() {
@@ -54,7 +53,6 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             hover.onUnHover(listener);
             hover = next;
             hover.onHover(listener);
-            //client.logger.log("Hovered "+ hover, LogLevel.DEBUG);
         }
     }
 
@@ -64,7 +62,6 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
             selected.onDeselect(listener);
             selected = hover;
             selected.onSelect(listener);
-            //client.logger.log("Selected "+ selected, LogLevel.DEBUG);
         }
     }
 
@@ -174,8 +171,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
 
     private class HoverTimingThread extends QueuedInputThread<HoverEvent> {
 
-        private HoverTimingThread(Logger logger) {
-            super(logger, new DelayQueue<>());
+        private HoverTimingThread() {
+            super(new DelayQueue<>());
         }
 
         @Override

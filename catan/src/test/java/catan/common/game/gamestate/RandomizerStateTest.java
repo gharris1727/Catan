@@ -45,6 +45,6 @@ public class RandomizerStateTest {
             b.execute(event);
             Assert.assertEquals(a.getDiceRoll(), b.getDiceRoll());
         }
-        RandomizerStateEqualityTester.INSTANCE.assertEquals(a, b);
+        new RandomizerStateEqualityTester().assertEquals(a, b);
     }
 }

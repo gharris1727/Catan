@@ -23,9 +23,8 @@ public class FileMenu extends TaskbarMenu {
 
         private FileMenuPopup() {
             super("FileMenuPopup");
-            addListItem(new Button("QuitButton", 1, "quit", null, (listener) -> {
-                listener.onUserEvent(new UserEvent(this, UserEventType.Shutdown, null));
-            }));
+            addListItem(new Button("QuitButton", 1, "quit", null,
+                    (listener) -> listener.onUserEvent(new UserEvent(this, UserEventType.Shutdown, null))));
         }
 
         @Override

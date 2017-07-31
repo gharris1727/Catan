@@ -16,11 +16,12 @@ import static catan.common.game.teams.TeamEventType.*;
 @Category(UnitTests.class)
 public class TeamTest {
 
+    private final TeamEqualityTester tester = new TeamEqualityTester();
     private Team team1;
     private Team team2;
 
     private void assertEquals() {
-        TeamEqualityTester.INSTANCE.assertEquals(team1, team2);
+        tester.assertEquals(team1, team2);
     }
 
     private void testFail(TeamEventType type) {

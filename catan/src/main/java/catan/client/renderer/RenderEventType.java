@@ -22,8 +22,7 @@ public enum RenderEventType implements EventType {
     Taskbar_Add(TaskbarMenu.class),
     Taskbar_Remove(TaskbarMenu.class),
     Popup_Show(PopupWindow.class),
-    Popup_Remove(PopupWindow.class),
-    Animation_Step(null); //Step all animations.
+    Popup_Remove(PopupWindow.class);
 
     private final Class type;
 

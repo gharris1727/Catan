@@ -11,12 +11,6 @@ import org.junit.Assert;
  */
 public final class GameRulesEqualityTester implements EqualityTester<GameRules> {
 
-    public static final GameRulesEqualityTester INSTANCE = new GameRulesEqualityTester();
-
-    private GameRulesEqualityTester() {
-
-    }
-
     @Override
     public void assertEquals(GameRules expected, GameRules actual) {
         if (expected == actual)

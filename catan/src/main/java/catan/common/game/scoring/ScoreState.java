@@ -88,8 +88,8 @@ public class ScoreState implements ReversibleEventConsumer<ScoreEvent>, TeamScor
     @Override
     public TeamScoreReport score(GameRules rules) throws ScoreException {
         if (listeners.isEmpty())
-            return NullTeamScore.INSTANCE;
-        ScoreReport report = NullScoreReport.INSTANCE;
+            return new NullTeamScore();
+        ScoreReport report = new NullScoreReport();
         for (Scorable scorable : listeners) {
                 report = new SimpleScoreReport(report, scorable.score(rules));
         }

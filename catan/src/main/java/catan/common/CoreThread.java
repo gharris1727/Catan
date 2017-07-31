@@ -4,9 +4,10 @@ import catan.common.event.ExternalEvent;
 import catan.common.event.GenericEvent;
 import catan.common.event.InternalEvent;
 import catan.common.event.QueuedInputThread;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 import catan.common.network.NetEvent;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by greg on 1/7/16.
@@ -15,14 +16,11 @@ import catan.common.network.NetEvent;
  */
 public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
 
-    protected CoreThread(Logger logger) {
-        super(logger);
-    }
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     @Override
     protected void execute() throws ThreadStopException {
         GenericEvent event = getEvent(true);
-        //logger.log(this + " Received " + event, LogLevel.DEBUG);
         if (event instanceof ExternalEvent) {
             externalEvent((ExternalEvent) event);
         } else if (event instanceof InternalEvent) {
@@ -30,7 +28,7 @@ public abstract class CoreThread extends QueuedInputThread<GenericEvent> {
         } else if (event instanceof NetEvent) {
             netEvent((NetEvent) event);
         } else {
-            logger.log("Received invalid GenericEvent.", LogLevel.WARN);
+            logger.log(Level.SEVERE, "Received invalid GenericEvent.");
         }
 
     }

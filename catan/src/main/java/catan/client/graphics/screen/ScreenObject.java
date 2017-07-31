@@ -4,10 +4,11 @@ import catan.client.input.Clickable;
 import catan.client.input.UserEventListener;
 import catan.client.renderer.RenderThread;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.security.SecureRandom;
 
 /**
  * Created by Greg on 8/19/2014.
@@ -26,7 +27,7 @@ public abstract class ScreenObject implements Clickable, Graphical {
         position = new Point();
         this.name = name;
         this.priority = priority;
-        clickableColor = UniqueColor.getNext();
+        clickableColor = new SecureRandom().nextInt(0xffffff);
         redirect = null;
     }
 

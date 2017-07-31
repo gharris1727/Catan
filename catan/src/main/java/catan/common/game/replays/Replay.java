@@ -4,6 +4,7 @@ import catan.common.config.ConfigSource;
 import catan.common.config.EditableConfigSource;
 import catan.common.event.EventConsumerException;
 import catan.common.event.EventConsumerProblem;
+import catan.common.event.ExternalEvent;
 import catan.common.event.ReversibleEventConsumer;
 import catan.common.game.event.GameEvent;
 import catan.common.util.BlockChain;
@@ -51,7 +52,7 @@ public class Replay implements ReversibleEventConsumer<GameEvent> {
             }
             try {
                 BigInteger parent = new BigInteger(arr[0], 16);
-                GameEvent event = (GameEvent) GameEvent.deserialize(new BigInteger(arr[1], 16).toByteArray());
+                GameEvent event = (GameEvent) ExternalEvent.deserialize(new BigInteger(arr[1], 16).toByteArray());
                 stateStorage.addBlock(parent, event);
             } catch (IOException e) {
                 throw new ReplayFormatException("Malformed game event", e);

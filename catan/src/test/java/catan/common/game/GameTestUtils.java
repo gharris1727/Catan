@@ -6,7 +6,7 @@ import catan.common.event.EventConsumerProblem;
 import catan.common.game.event.GameEvent;
 import catan.common.game.gameplay.allocator.RandomTeamAllocator;
 import catan.common.game.gameplay.allocator.TeamAllocator;
-import catan.common.game.gameplay.generator.random.RandomBoardGenerator;
+import catan.common.game.gameplay.generator.RandomBoardGenerator;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.scoring.rules.GameRules;
 import catan.common.resources.BoardLayoutInfo;
@@ -77,7 +77,4 @@ public final class GameTestUtils {
         }
     }
 
-    public static void assertGameEquals(CatanGame expected, CatanGame actual) {
-        CatanGameEqualityTester.INSTANCE.assertEquals(expected, actual);
-    }
 }

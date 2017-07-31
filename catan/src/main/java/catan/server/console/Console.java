@@ -1,7 +1,7 @@
 package catan.server.console;
 
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by greg on 4/27/16.
@@ -16,7 +16,7 @@ public class Console {
     }
 
     public void process(String command) {
-        logger.log("User command: " + command, LogLevel.DEBUG);
+        logger.log(Level.INFO, "User command: " + command);
         //TODO: process user input and generate an event to send to the server.
     }
 }

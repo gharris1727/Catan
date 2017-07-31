@@ -1,16 +1,15 @@
-package catan.common.game.gameplay.generator.copy;
+package catan.common.game.gameplay.generator;
 
 import catan.common.game.board.GameBoard;
 import catan.common.game.board.Terrain;
 import catan.common.game.board.hexarray.Coordinate;
 import catan.common.game.board.hexarray.HexagonalArray;
 import catan.common.game.board.tiles.ResourceTile;
-import catan.common.game.gameplay.generator.BoardGenerator;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.gameplay.trade.TradingPostType;
 import catan.common.game.gamestate.DiceRoll;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.*;
 
 /**

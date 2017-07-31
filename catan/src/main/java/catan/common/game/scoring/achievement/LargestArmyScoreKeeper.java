@@ -61,6 +61,6 @@ public class LargestArmyScoreKeeper implements ScoreKeeper {
     @Override
     public ScoreReport score(GameRules rules) {
         //TODO: implement counting scores of largest army.
-        return NullScoreReport.INSTANCE;
+        return new NullScoreReport();
     }
 }

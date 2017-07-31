@@ -3,9 +3,8 @@ package catan.common.structure.lobby;
 import catan.common.crypto.Username;
 import catan.common.game.gameplay.allocator.PreferenceTeamAllocator;
 import catan.common.game.gameplay.generator.BoardGenerator;
-import catan.common.game.gameplay.generator.better.BetterGenerator;
-import catan.common.game.gameplay.generator.copy.CopyGenerator;
-import catan.common.game.gameplay.generator.random.RandomBoardGenerator;
+import catan.common.game.gameplay.generator.CopyGenerator;
+import catan.common.game.gameplay.generator.RandomBoardGenerator;
 import catan.common.game.gameplay.layout.BoardLayout;
 import catan.common.game.scoring.rules.GameRules;
 import catan.common.resources.BoardLayoutInfo;
@@ -80,23 +79,19 @@ public class Lobby implements Serializable {
         BoardLayout boardLayout;
         long seed = System.nanoTime();
         try {
-            BoardLayoutInfo info = null;
+            BoardLayoutInfo info;
             //TODO: put the regex stuff somewhere so that we can use it to validate when saving the game.
             //Static map file name, maybe having .properties appended (ignored).
             Matcher staticConfigName = Pattern.compile("^(?<name>[a-zA-Z]+)(?:[.]properties)??$").matcher(config.getLayoutName());
-            //Dynamic numeric seed that consists of "dynamic.<number>" where the number is the actual seed.
-            Matcher dynamicNumericSeed = Pattern.compile("^\\d+$").matcher(config.getLayoutName());
             // Each of these options are mutually exclusive, and can fail for whatever reason.
             if (staticConfigName.find())
                 info = new BoardLayoutInfo(staticConfigName.group("name"));
-            else if (dynamicNumericSeed.find()) // Number specifies a manual seed.
-                info = new BoardLayoutInfo(Long.parseLong(config.getLayoutName()));
-            else if (config.getLayoutName() != null && config.getLayoutName().isEmpty()) // Empty string triggers random seed.
-                info = new BoardLayoutInfo(seed);
+            else
+                info = new BoardLayoutInfo("default");
             boardLayout = ResourceLoader.getBoardLayout(info);
         } catch (ResourceLoadException ignored) {
             // Fall back to the text seeded map.
-            boardLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo(config.getLayoutName().hashCode()));
+            boardLayout = ResourceLoader.getBoardLayout(new BoardLayoutInfo("default"));
         }
 
         //We really don't have an alternative than to spit the error back up.
@@ -104,16 +99,8 @@ public class Lobby implements Serializable {
 
         //Keyword 'copy' for selecting the copy generator
         Matcher copyGenerator = Pattern.compile("^[Cc]opy$").matcher(config.getGeneratorName());
-        //Keyword 'better settlers' for selecting the better generator.
-        Matcher betterGenerator = Pattern.compile("^[Bb]etter(?: )??(?:[Ss]ettlers)??$").matcher(config.getGeneratorName());
         //Choose the generator to use.
-        BoardGenerator boardGenerator;
-        if (copyGenerator.find())
-            boardGenerator = new CopyGenerator();
-        else if (betterGenerator.find())
-            boardGenerator = new BetterGenerator();
-        else
-            boardGenerator = new RandomBoardGenerator();
+        BoardGenerator boardGenerator = copyGenerator.find() ? new CopyGenerator() : new RandomBoardGenerator();
 
         PreferenceTeamAllocator players = new PreferenceTeamAllocator();
 

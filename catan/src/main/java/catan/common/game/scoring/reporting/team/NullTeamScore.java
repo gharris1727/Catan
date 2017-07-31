@@ -13,14 +13,9 @@ import java.util.NoSuchElementException;
  */
 public final class NullTeamScore implements TeamScoreReport {
 
-    public static final NullTeamScore INSTANCE = new NullTeamScore();
-
-    private NullTeamScore() {
-    }
-
     @Override
     public ScoreReport getScoreReport(TeamColor teamColor) {
-        return NullScoreReport.INSTANCE;
+        return new NullScoreReport();
     }
 
     @Override

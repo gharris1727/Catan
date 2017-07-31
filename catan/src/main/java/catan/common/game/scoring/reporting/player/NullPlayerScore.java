@@ -11,11 +11,9 @@ import java.util.NoSuchElementException;
  */
 public final class NullPlayerScore implements PlayerScoreReport {
 
-    public static final NullPlayerScore INSTANCE = new NullPlayerScore();
-
     private final Username username;
 
-    private NullPlayerScore() {
+    public NullPlayerScore() {
         username = new Username("Nobody");
     }
 

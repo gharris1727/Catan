@@ -53,7 +53,7 @@ public class GameObserver {
             try {
                 return game.scoring.score(game.rules);
             } catch (ScoreException ignored) {
-                return NullTeamScore.INSTANCE;
+                return new NullTeamScore();
             }
         }
     }

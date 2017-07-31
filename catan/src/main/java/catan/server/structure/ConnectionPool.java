@@ -1,7 +1,6 @@
 package catan.server.structure;
 
 import catan.common.crypto.Username;
-import catan.common.log.Logger;
 import catan.common.network.NetEventType;
 import catan.common.network.ServerConnection;
 import catan.server.Server;
@@ -30,8 +29,8 @@ public class ConnectionPool {
         connectionUsers = new HashMap<>();
     }
 
-    public ServerConnection startConnection(Logger logger, Socket socket) {
-        ServerConnection connection = new ServerConnection(server, logger, socket, nextID++);
+    public ServerConnection startConnection(Socket socket) {
+        ServerConnection connection = new ServerConnection(server, socket, nextID++);
         connections.put(connection.getConnectionID(), connection);
         return connection;
     }

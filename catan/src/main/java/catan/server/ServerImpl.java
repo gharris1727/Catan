@@ -1,6 +1,5 @@
 package catan.server;
 
-
 import catan.common.CoreThread;
 import catan.common.IllegalStateException;
 import catan.common.config.ConfigurationException;
@@ -11,8 +10,6 @@ import catan.common.crypto.Username;
 import catan.common.event.ExternalEvent;
 import catan.common.event.InternalEvent;
 import catan.common.game.event.GameEvent;
-import catan.common.log.LogLevel;
-import catan.common.log.Logger;
 import catan.common.network.NetEvent;
 import catan.common.network.NetEventType;
 import catan.common.network.ServerConnection;
@@ -35,12 +32,14 @@ import catan.server.console.Console;
 import catan.server.console.ServerWindow;
 import catan.server.structure.*;
 
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Greg on 8/9/2014.
@@ -48,6 +47,7 @@ import java.security.SecureRandom;
  */
 public class ServerImpl extends CoreThread implements Server {
 
+    private final Logger logger = Logger.getLogger(getClass().getName());
     private static final PropertiesFileInfo configFile;
 
     private PropertiesFile config;
@@ -69,11 +69,6 @@ public class ServerImpl extends CoreThread implements Server {
     }
 
     public ServerImpl(int port) {
-        this(new Logger(), port);
-    }
-
-    public ServerImpl(Logger logger, int port) {
-        super(logger);
         token = new AuthToken(new Username("Server"), new SecureRandom().nextInt());
         startup(port);
         start();
@@ -106,7 +101,7 @@ public class ServerImpl extends CoreThread implements Server {
                 shutdown();
                 break;
             case Client_Connect:
-                connection = connectionPool.startConnection(logger, (Socket) event.getPayload());
+                connection = connectionPool.startConnection((Socket) event.getPayload());
                 connection.setToken(token);
                 connection.connect();
                 break;
@@ -124,14 +119,14 @@ public class ServerImpl extends CoreThread implements Server {
                     lobbyEvent(new LobbyEvent(username, LobbyEventType.User_Connect, userInfo));
                 } catch (Exception e) {
                     addEvent(new ServerEvent(this, ServerEventType.Client_Disconnect, connection.getConnectionID()));
-                    logger.log("Unable to synchronize with a newly connected client.", e, LogLevel.ERROR);
+                    logger.log(Level.WARNING, "Unable to synchronize with a newly connected client.", e);
                 }
                 break;
             case User_Disconnect:
                 try {
                     database.invalidateSession((Username) event.getPayload());
                 } catch (UserNotFoundException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to invalidate user session", e);
                 }
                 break;
             case Client_Disconnect:
@@ -146,14 +141,14 @@ public class ServerImpl extends CoreThread implements Server {
                 try {
                     database.changeDisplayName(event.getOrigin(), (String) event.getPayload());
                 } catch (UserNotFoundException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to change user display name", e);
                 }
                 break;
             case Pass_Change:
                 try {
                     database.changePassword(event.getOrigin(), (Password) event.getPayload());
                 } catch (UserNotFoundException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to change user password", e);
                 }
                 break;
             case Delete_Account:
@@ -161,7 +156,7 @@ public class ServerImpl extends CoreThread implements Server {
                     database.removeAccount(event.getOrigin());
                     addEvent(new ServerEvent(this, ServerEventType.User_Disconnect, event.getOrigin()));
                 } catch (UserNotFoundException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to remove user account", e);
                 }
                 break;
             case Server_Disconnect:
@@ -223,7 +218,7 @@ public class ServerImpl extends CoreThread implements Server {
                     client.sendEvent(NetEventType.External_Event, event);
             }
         } catch (Exception e) {
-            logger.log(e, LogLevel.ERROR);
+            logger.log(Level.SEVERE, "Unable to apply lobby event", e);
         }
     }
 
@@ -295,7 +290,7 @@ public class ServerImpl extends CoreThread implements Server {
                     //Forward external events to be handled.
                     addEvent((ExternalEvent) event.getPayload());
                 } catch (UserNotFoundException | AuthenticationException e) {
-                    logger.log(e, LogLevel.WARN);
+                    logger.log(Level.WARNING, "Unable to validate auth token", e);
                 }
                 break;
         }
@@ -313,27 +308,27 @@ public class ServerImpl extends CoreThread implements Server {
         connectionPool = new ConnectionPool(this);
         database = new UserDatabase(new PropertiesFileInfo(config.get("database"), "User database"));
         matchmakingPool = new MatchmakingPool();
-        gamePool = new GamePool(this, logger);
+        gamePool = new GamePool(this);
         try {
             socket = new ServerSocket(port);
             listen = new Thread(() -> {
-                logger.log("Listening...", LogLevel.INFO);
+                logger.log(Level.INFO, "Listening...");
                 listening = true;
                 while (listening) {
                     try {
                         addEvent(new ServerEvent(this,ServerEventType.Client_Connect,socket.accept()));
                     } catch (SocketException ignored) {
                         listening = false;
-                        logger.log("Listening Stopped", LogLevel.INFO);
+                        logger.log(Level.INFO, "Listening Stopped");
                     } catch (IOException e) {
                         listening = false;
-                        logger.log("Listen Failure", e, LogLevel.WARN);
+                        logger.log(Level.INFO, "Listen Failure", e);
                     }
                 }
             }, "Listen");
             listen.start();
         } catch (IOException e) {
-            logger.log("Server connection failure", e, LogLevel.WARN);
+            logger.log(Level.SEVERE, "Server connection failure", e);
         }
     }
 
@@ -345,12 +340,12 @@ public class ServerImpl extends CoreThread implements Server {
             socket.close();
             listen.join();
         } catch (Exception e) {
-            logger.log("Shutdown error.", e, LogLevel.WARN);
+            logger.log(Level.WARNING, "Shutdown error.", e);
         }
         try {
             config.save();
         } catch (ConfigurationException e) {
-            logger.log("Unable to save configuration.", e, LogLevel.WARN);
+            logger.log(Level.WARNING, "Unable to save configuration.", e);
         }
         gamePool.join();
         if (commandLine != null) {
